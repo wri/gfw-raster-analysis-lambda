@@ -1,0 +1,5 @@
+rasterio[s3]==1.0a8
+shapely==1.6b4
+pyproj==1.9.5
+pillow==3.3.1
+requests==2.16.5

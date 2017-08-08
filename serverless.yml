@@ -1,0 +1,69 @@
+service: raster-ops-demo-tiles
+
+provider:
+  name: aws
+  runtime: python2.7
+  profile: mmcfarland
+  timeout: 10
+  memorySize: 1536
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+         - "s3:GetObject"
+      Resource:
+         - 'arn:aws:s3:::simple-raster-processing-files/*'
+
+package:
+  artifact: dist/raster-ops-deploy.zip
+
+functions:
+  counts_parallel:
+    handler: handler.counts_parallel
+    events:
+      - http:
+          path: demo/counts_parallel
+          method: post
+          cors: true
+  counts:
+    handler: handler.counts
+    events:
+      - http:
+          path: demo/counts
+          method: post
+          cors: true
+  extract:
+    handler: handler.extract
+    events:
+      - http:
+          path: extract/{id}
+          method: post
+          cors: true
+
+  sample:
+    handler: handler.sample
+    events:
+      - http:
+          path: sample
+          method: post
+          cors: true
+
+  tile:
+    handler: handler.tile
+    events:
+      - http:
+          path: tile/{layer}/{z}/{x}/{y}
+          method: get
+          contentHandling: CONVERT_TO_BINARY
+
+  priority:
+    handler: handler.priority
+    events:
+      - http:
+          path: priority/{z}/{x}/{y}/{urban}/{forest}
+          method: get
+          contentHandling: CONVERT_TO_BINARY
+
+custom:
+  apigwBinary:
+    types:
+      - 'image/png'

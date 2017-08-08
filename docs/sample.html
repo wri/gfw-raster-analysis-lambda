@@ -1,0 +1,121 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Demo Sample Points</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.10.1/chartist.min.css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+  <style>
+    .container, html, body {
+        height: 95%;
+        font-family: 'Roboto';
+    }
+
+    #map {
+        width: 98%;
+        height: 95%;
+    }
+
+    div#chart {
+        position: absolute;
+        width: 98%;
+        bottom: 40px;
+        z-index: 1000;
+    }
+    .ct-point {
+        stroke-width: 0px;
+    }
+  </style>
+</head>
+
+<body>
+  <h4>Draw a line to chart elevation changes</h4>
+  <hr/>
+  <div class="container">
+      <div id="map"></div>
+      <div id="chart"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.10.1/chartist.min.js"></script>
+
+  <script>
+    var map = L.map('map', {center: [42.24, -71.2], zoom: 10}),
+    base = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png').addTo(map),
+        drawnItems = L.featureGroup().addTo(map),
+        coverUrl = 'https://mt2qfe33cl.execute-api.us-east-1.amazonaws.com/dev/sample',
+        req = {
+            rasters: [''],
+            src_srs: 'epsg:4326'
+        };
+
+    $.ajaxSetup({
+        contentType: 'application/json'
+    });
+
+    map.addControl(new L.Control.Draw({
+        draw: {
+            marker: false,
+            polyline: true,
+            circle: false,
+            polygon: false,
+            rectangle: false
+        }
+    }));
+
+    map.on(L.Draw.Event.DRAWSTART, function (e) {
+        drawnItems.clearLayers();
+        $('#chart').empty();
+    });
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+        e.layer.options.color = 'red';
+        drawnItems.addLayer(e.layer);
+        req.queryLine = e.layer.toGeoJSON().geometry;
+        getData();
+
+    });
+
+    function getData() {
+        var url = coverUrl.replace('{id}', $('[name="cover"]:checked').val());
+        $.post(url, JSON.stringify(req))
+            .done(function(resp) {
+                console.log(resp);
+
+                cleaned = resp.value.map(function(x) { return x < 0 ? 0 : x; });
+
+                var chart = new Chartist.Line('#chart', {
+                  series: [cleaned]
+                }, {
+                  low: 0,
+                  showArea: true
+                });
+
+                chart.on('draw', function(data) {
+                  if(data.type === 'line' || data.type === 'area') {
+                    data.element.animate({
+                      d: {
+                        begin: 2000 * data.index,
+                        dur: 2000,
+                        from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+                        to: data.path.clone().stringify(),
+                        easing: Chartist.Svg.Easing.easeOutQuint
+                      }
+                    });
+                  }
+                });
+            })
+            .fail(function(error) {
+                alert('darn');
+            });
+    }
+
+  </script>
+</body>
+</html>

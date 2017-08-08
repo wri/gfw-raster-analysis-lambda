@@ -1,0 +1,175 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Demo Lambda Geoprocessing</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.10.1/chartist.min.css" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+  <style>
+    .container, html, body {
+        height: 95%;
+        font-family: 'Roboto';
+    }
+
+    #chart {
+        width: 49%;
+        float: left;
+        padding-left: 5px;
+    }
+    #chart div {
+        height: 400px;
+    }
+
+    #map {
+        width: 50%;
+        height: 95%;
+        float: left;
+    }
+
+    .loader {
+        padding-left: 20px;
+        padding-top: 20px;
+        color: #757575;
+    }
+
+    .small {
+        font-size: 12px;
+    }
+
+  </style>
+</head>
+
+<body>
+<h3>Draw a shape below to perform a land use survey
+    <p id="area" class="small"></p>
+</h3>
+  <div class="container">
+      <div id="map"></div>
+      <div id="chart">
+          <h5>Land Cover (% Coverage)</h5>
+          <div id="nlcd"></div>
+      </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.9/leaflet.draw.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.10.1/chartist.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/3.0.14/turf.min.js"></script>
+
+  <script>
+    var map = L.map('map', {center: [42.2, -71], zoom: 10}),
+        base = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png').addTo(map),
+        overlays = {
+            NLCD: L.tileLayer('https://{s}.tiles.azavea.com/nlcd/{z}/{x}/{y}.png', {opacity: 0.7}),
+            Soil: L.tileLayer('https://{s}.tiles.azavea.com/ssurgo-hydro-group-30m/{z}/{x}/{y}.png', {opacity: 0.7}),
+        },
+        drawnItems = L.featureGroup().addTo(map),
+        url = 'https://mt2qfe33cl.execute-api.us-east-1.amazonaws.com/dev/demo/counts_parallel',
+        nlcd = 'nlcd',
+        soil = 'soil',
+        $area = $('#area'),
+        req = {
+            method: 'count',
+            rasters: [],
+
+        },
+        soil_mapping = {
+            '1': ['a', 'High Infiltration'],
+            '2': ['b', 'Med Infiltration'],
+            '3': ['c', 'Low Infiltration'],
+            '4': ['d', 'V. Low Infiltration'],
+            '5': ['ad', 'High/Very Slow Mix'],
+            '6': ['bd', 'Med/Very Slow Mix'],
+            '7': ['cd', 'Med/Very Slow Mix']
+        },
+        nlcd_mapping = {
+            '11': ['open_water', 'Water'],
+            '12': ['perennial_ice', 'Snow'],
+            '21': ['developed_open', 'Open Space'],
+            '22': ['developed_low', 'Developed, Low'],
+            '23': ['developed_med', 'Developed, Med'],
+            '24': ['developed_high', 'Developed, High'],
+            '31': ['barren_land', 'Barren Land'],
+            '41': ['deciduous_forest', 'Deciduous'],
+            '42': ['evergreen_forest', 'Evergreen'],
+            '43': ['mixed_forest', 'Mixed Forest'],
+            '52': ['shrub', 'Shrub/Scrub'],
+            '71': ['grassland', 'Grassland'],
+            '81': ['pasture', 'Pasture'],
+            '82': ['cultivated_crops', 'Crops'],
+            '90': ['woody_wetlands', 'Woody Wetlands'],
+            '95': ['herbaceous_wetlands', 'Herb. Wetlands']
+        };
+
+    $.ajaxSetup({
+        contentType: 'application/json'
+    });
+
+    L.control.layers(null, overlays).addTo(map);
+
+    map.addControl(new L.Control.Draw({
+        draw: {
+            marker: false,
+            polyline: false,
+            circle: false,
+            polygon: true
+        }
+    }));
+
+    map.on(L.Draw.Event.DRAWSTART, function (e) {
+        drawnItems.clearLayers();
+    });
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+        var prettyArea = parseInt(turf.area(e.layer.toGeoJSON())/1000000).toLocaleString() + ' km&sup2' 
+        $area.html(prettyArea);
+        drawnItems.addLayer(e.layer);
+        req.queryPolygon = e.layer.toGeoJSON().geometry;
+        //getData(soil, 'soil');
+        getData(nlcd, 'nlcd');
+
+    });
+
+    function getData(s3, layer) {
+        var $results = $('#' + layer);
+        req.rasters = [s3];
+        $results.empty().append('<div class="loader">Loading...</div>');
+        $.post(url, JSON.stringify(req))
+            .done(function(resp) {
+                if (resp.errorMessage) { return err(layer) };
+
+                var total = resp.total,
+                    mapping = layer === 'nlcd' ? nlcd_mapping : soil_mapping,
+                    labels = Object.keys(resp.counts).map(function(id) { return mapping[id][1]; }),
+                    values = Object.values(resp.counts).map(function(v) { return v/total * 100; });
+
+                $results.empty();
+                new Chartist.Bar('#' + layer, {
+                        labels: labels,
+                        series: values,
+                    }, {
+                        horizontalBars: true,
+                        distributeSeries: true,
+                        axisY: {
+                            offset: 100
+                        }
+                    }
+                );
+            })
+            .fail(function(error) {
+                err(layer);
+            });
+    }
+
+    function err(layer) {
+        $('#' + layer).empty().append('Error');
+    }
+
+  </script>
+</body>
+</html>
