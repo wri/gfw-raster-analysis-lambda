@@ -22,6 +22,9 @@ package:
 functions:
   mill:
     handler: handler.mill
+
+  receiver:
+    handler: handler.receiver
     events:
       - http:
           path: mill

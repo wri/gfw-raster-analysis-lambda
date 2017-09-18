@@ -10,6 +10,29 @@ from shapely.ops import cascaded_union
 from geop import geo_utils, geoprocessing
 
 s3 = boto3.resource('s3')
+bucket_uri = 'palm-risk-poc'
+
+
+# source https://stackoverflow.com/questions/34294693
+def receiver(event, context):
+
+    client = boto3.client('lambda')
+
+    response = client.invoke(
+    FunctionName='palm-risk-poc-dev-mill',
+    InvocationType='Event',
+    Payload=json.dumps(event)
+    )
+
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({"result":
+        "starting mill processing, check {} for results".format(bucket_uri)
+        })
+    }
 
 
 def mill(event, context):
@@ -49,7 +72,7 @@ def mill(event, context):
             mill_dict[layer_id]['loss'] = loss_dict
 
     out_file = str(uuid.uuid4()) + '.json'
-    s3.Bucket('palm-risk-poc').put_object(Key=out_file, Body=json.dumps(mill_dict))
+    s3.Bucket(bucket_uri).put_object(Key=out_file, Body=json.dumps(mill_dict))
 
     return {
     'statusCode': 200,
