@@ -145,22 +145,8 @@ def subdivide_polygon(geom, factor):
     return children
 
 
-def reproject(geom, to_srs='epsg:5070', from_srs='epsg:4326'):
-    """"
-    Reproject `geom` from one spatial ref to another
+def reproject(geom, from_srs, to_srs):
 
-    Args:
-        geom (Shapely Geometry): A geometry object with coordinates to
-            transform.
-        from_srs (string): An EPSG code in the format of `epsg:nnnn` that
-            specifies the existing spatial ref for `geom`
-        to_srs (string): An EPSG code in the format of `epsg:nnnn` that
-            specifies the desired ref for the returned geometry
-
-    Returns:
-        Shapely Geometry with coordinates transformed to the desired srs
-
-    """
     projection = partial(
         pyproj.transform,
         pyproj.Proj(init=from_srs),

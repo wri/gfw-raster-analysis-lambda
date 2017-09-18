@@ -1,69 +1,29 @@
-service: raster-ops-demo-tiles
+service: palm-risk
 
 provider:
   name: aws
   runtime: python2.7
-  profile: mmcfarland
-  timeout: 10
+  timeout: 300
+  profile: palm
   memorySize: 1536
+  region: 'us-east-1'
+  role: arn:aws:iam::838255262149:role/lambda_basic_execution
+  deploymentBucket: palm-risk-poc
   iamRoleStatements:
     - Effect: "Allow"
       Action:
-         - "s3:GetObject"
+         - "s3:*"
       Resource:
-         - 'arn:aws:s3:::simple-raster-processing-files/*'
+         - 'arn:aws:s3:::palm-risk-poc'
 
 package:
   artifact: dist/raster-ops-deploy.zip
 
 functions:
-  counts_parallel:
-    handler: handler.counts_parallel
+  mill:
+    handler: handler.mill
     events:
       - http:
-          path: demo/counts_parallel
-          method: post
-          cors: true
-  counts:
-    handler: handler.counts
-    events:
-      - http:
-          path: demo/counts
-          method: post
-          cors: true
-  extract:
-    handler: handler.extract
-    events:
-      - http:
-          path: extract/{id}
-          method: post
-          cors: true
-
-  sample:
-    handler: handler.sample
-    events:
-      - http:
-          path: sample
-          method: post
-          cors: true
-
-  tile:
-    handler: handler.tile
-    events:
-      - http:
-          path: tile/{layer}/{z}/{x}/{y}
+          path: mill
           method: get
-          contentHandling: CONVERT_TO_BINARY
-
-  priority:
-    handler: handler.priority
-    events:
-      - http:
-          path: priority/{z}/{x}/{y}/{urban}/{forest}
-          method: get
-          contentHandling: CONVERT_TO_BINARY
-
-custom:
-  apigwBinary:
-    types:
-      - 'image/png'
+          cors: true

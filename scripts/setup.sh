@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create and activate a virtualevn
-virtualenv env --python=/home/mmcfarland/.localpython/bin/python2.7
+virtualenv env
 source env/bin/activate
 pip install pip --upgrade
 pip install -r requirements.txt
