@@ -20,9 +20,6 @@ package:
   artifact: dist/raster-ops-deploy.zip
 
 functions:
-  mill:
-    handler: handler.mill
-
   receiver:
     handler: handler.receiver
     events:
@@ -30,3 +27,7 @@ functions:
           path: mill
           method: get
           cors: true
+  mill:
+    handler: handler.mill
+  risk:
+    handler: handler.risk
