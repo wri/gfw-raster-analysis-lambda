@@ -1,9 +1,6 @@
-import collections
-import itertools
 import numpy as np
-import rasterio
 
-from geop.geo_utils import mask_geom_on_raster, interpolate_points
+from geop.geo_utils import mask_geom_on_raster
 
 
 def count(geom, raster_path, modifications=None):

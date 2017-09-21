@@ -2,9 +2,8 @@ from __future__ import division
 
 from functools import partial
 from rasterio import features
-from shapely.ops import transform, cascaded_union
-from shapely.geometry import shape, mapping, Point
-from shapely.geometry.geo import box
+from shapely.ops import transform
+from shapely.geometry import mapping, Point
 
 import numpy as np
 import math
