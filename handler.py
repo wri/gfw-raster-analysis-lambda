@@ -1,53 +1,43 @@
 import json
-import pyproj
 import boto3
 import uuid
 
-from shapely.geometry import mapping, Point, shape
+from shapely.geometry import shape
 from geop import geo_utils, geoprocessing
 
 s3 = boto3.resource('s3')
 bucket_uri = 'palm-risk-poc'
 client = boto3.client('lambda')
 
-# source https://stackoverflow.com/questions/34294693
-def receiver(event, context):
 
+# source https://stackoverflow.com/questions/34294693
+# return a quick response + then kick off async functions
+def receiver(event, context):
     # define mill guid and pass along to mil event
     mill_guid = str(uuid.uuid4())
     event['out_dir'] = mill_guid
 
     client.invoke(
-    FunctionName='palm-risk-poc-dev-mill',
-    InvocationType='Event',
-    Payload=json.dumps(event))
+        FunctionName='palm-risk-poc-dev-mill',
+        InvocationType='Event',
+        Payload=json.dumps(event))
 
     return {
         'statusCode': 200,
-        'headers': {
-            'Access-Control-Allow-Origin': '*'
-        },
+        'headers': {'Access-Control-Allow-Origin': '*'},
         'body': json.dumps({"result": "starting mill processing, check "
-                "s3://{}/output/{}/ for results".format(bucket_uri, mill_guid)
-        })
-    }
+                                      "s3://{}/output/{}/ for results".format(bucket_uri, mill_guid)
+                            })
+            }
 
 
+# buffer a point, then kick off parallel lambda
+# functions for risk analyses
 def mill(event, context):
     lat = float(event['queryStringParameters']['lat'])
     lon = float(event['queryStringParameters']['lon'])
 
-    # project point to eckert VI
-    wgs84_str = 'EPSG:4326'
-    eckVI_str = "esri:54010"
-
-    eckVI_proj = pyproj.Proj(init="{}".format(eckVI_str))
-    eck_point = Point(eckVI_proj(lon, lat))
-
-    # buffer the eckert point by 50 KM, then convert back to wgs84
-    buffer_eck = eck_point.buffer(50000)
-    buffer_wgs84 = geo_utils.reproject(buffer_eck, eckVI_str, wgs84_str)
-    buffer_wgs84_geojson = json.dumps(mapping(buffer_wgs84))
+    buffer_wgs84_geojson = geo_utils.pt_to_mill_buffer(lat, lon)
 
     # calculate approximate area per 0.00025 degree pixel
     # based on latitude of the mill center point
@@ -63,7 +53,6 @@ def mill(event, context):
 
     for layer in layer_list:
         for calc_type in ['loss', 'area']:
-
             raster_path = '{}/{}/data.vrt'.format(data_root, layer)
 
             # set proper layer_id and calc required
@@ -73,11 +62,12 @@ def mill(event, context):
             func_config['calc_type'] = calc_type
 
             client.invoke(
-            FunctionName='palm-risk-poc-dev-risk',
-            InvocationType='Event',
-            Payload=json.dumps(func_config))
+                FunctionName='palm-risk-poc-dev-risk',
+                InvocationType='Event',
+                Payload=json.dumps(func_config))
 
 
+# analyze our buffered geom by a particular raster or two
 def risk(event, context):
 
     # load geom from geojson string into shapely
@@ -101,8 +91,9 @@ def risk(event, context):
     s3.Bucket(bucket_uri).put_object(Key=out_file, Body=json.dumps(area_stats))
 
 
+# multiply each count by an area coefficient based
+# on the mill center point
 def stats_to_area(input_dict, pixel_area_m2):
-
     area_dict = {}
 
     # update dictionary to point to area_ha, not pixel_count
@@ -110,7 +101,6 @@ def stats_to_area(input_dict, pixel_area_m2):
         area_dict[raster_class] = pixel_count * pixel_area_m2 / 10000
 
     return area_dict
-
 
 
 # to test locally
