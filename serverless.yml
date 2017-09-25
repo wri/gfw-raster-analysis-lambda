@@ -27,6 +27,10 @@ functions:
           path: mill
           method: get
           cors: true
+      - http:
+          path: mill
+          method: post
+          cors: true
   mill:
     handler: handler.mill
   risk:

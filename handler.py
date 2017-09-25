@@ -34,8 +34,13 @@ def receiver(event, context):
 # buffer a point, then kick off parallel lambda
 # functions for risk analyses
 def mill(event, context):
-    lat = float(event['queryStringParameters']['lat'])
-    lon = float(event['queryStringParameters']['lon'])
+
+    try:
+        lat = float(event['queryStringParameters']['lat'])
+        lon = float(event['queryStringParameters']['lon'])
+    except TypeError, KeyError:
+        lat = float(json.loads(event['body'])['lat'])
+        lon = float(json.loads(event['body'])['lon'])
 
     buffer_wgs84_geojson = geo_utils.pt_to_mill_buffer(lat, lon)
 

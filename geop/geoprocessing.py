@@ -80,46 +80,50 @@ def count_pairs(geom, raster_paths):
     # Remove Rows which have masked values
     trim_arr = np.ma.compress_rowcols(arr, 0)
 
-    # Lexicographically sort so that repeated pairs follow one another
-    sorted_arr = trim_arr[np.lexsort(trim_arr.T), :]
+    if len(trim_arr):
 
-    # otherwise no overlap between the two rasters
-    if len(sorted_arr):
+        # Lexicographically sort so that repeated pairs follow one another
+        sorted_arr = trim_arr[np.lexsort(trim_arr.T), :]
 
-        # The difference between index n and n+1 in sorted_arr, for each index.
-        # Since it's sorted, repeated entries will have a value of 0 at that index
-        diff_sort = np.diff(sorted_arr, axis=0)
+        # otherwise no overlap between the two rasters
+        if len(sorted_arr):
 
-        # True or False value for each index of diff_sort based on a diff_sort
-        # having truthy or falsey values.  Indexes with no change (0 values) will
-        # be represented as False in this array
-        indexes_changed_mask = np.any(diff_sort, 1)
+            # The difference between index n and n+1 in sorted_arr, for each index.
+            # Since it's sorted, repeated entries will have a value of 0 at that index
+            diff_sort = np.diff(sorted_arr, axis=0)
 
-        # Get the indexes that are True, indicating an index of sorted_arr that has
-        # a difference with its preceding value - ie, it represents a new
-        # occurrence of a value
-        diff_indexes = np.where(indexes_changed_mask)[0]
+            # True or False value for each index of diff_sort based on a diff_sort
+            # having truthy or falsey values.  Indexes with no change (0 values) will
+            # be represented as False in this array
+            indexes_changed_mask = np.any(diff_sort, 1)
 
-        # Get the rows at the diff indexes, these are unique at each index
-        unique_rows = [sorted_arr[i] for i in diff_indexes] + [sorted_arr[-1]]
+            # Get the indexes that are True, indicating an index of sorted_arr that has
+            # a difference with its preceding value - ie, it represents a new
+            # occurrence of a value
+            diff_indexes = np.where(indexes_changed_mask)[0]
 
-        # Prepend a -1 on the list of diff_indexes and append the index of the last
-        # unique row, resulting in an array of index changes with fenceposts on
-        # both sides.  ie, `[-1, ...list of diff indexes..., <idx of last sorted>]`
-        idx_of_last_val = sorted_arr.shape[0] - 1
-        diff_idx_with_start = np.insert(diff_indexes, 0, -1)
-        fencepost_diff_indexes = np.append(diff_idx_with_start, idx_of_last_val)
+            # Get the rows at the diff indexes, these are unique at each index
+            unique_rows = [sorted_arr[i] for i in diff_indexes] + [sorted_arr[-1]]
 
-        # Get the number of occurrences of each unique row based on the difference
-        # between the indexes at which they change.  Since we put fenceposts up,
-        # we'll get a count for the first and last elements of the diff indexes
-        counts = np.diff(fencepost_diff_indexes)
+            # Prepend a -1 on the list of diff_indexes and append the index of the last
+            # unique row, resulting in an array of index changes with fenceposts on
+            # both sides.  ie, `[-1, ...list of diff indexes..., <idx of last sorted>]`
+            idx_of_last_val = sorted_arr.shape[0] - 1
+            diff_idx_with_start = np.insert(diff_indexes, 0, -1)
+            fencepost_diff_indexes = np.append(diff_idx_with_start, idx_of_last_val)
 
-        # Map the pairs to the count, compressing values to keys in this format:
-        #   cell_r1::cell_r2
-        pair_counts = zip(unique_rows, counts)
-        pair_map = {str(k[0]) + '::' + str(k[1]): cnt for k, cnt in pair_counts}
+            # Get the number of occurrences of each unique row based on the difference
+            # between the indexes at which they change.  Since we put fenceposts up,
+            # we'll get a count for the first and last elements of the diff indexes
+            counts = np.diff(fencepost_diff_indexes)
 
+            # Map the pairs to the count, compressing values to keys in this format:
+            #   cell_r1::cell_r2
+            pair_counts = zip(unique_rows, counts)
+            pair_map = {str(k[0]) + '::' + str(k[1]): cnt for k, cnt in pair_counts}
+
+        else:
+            pair_map = {}
     else:
         pair_map = {}
 
@@ -127,4 +131,3 @@ def count_pairs(geom, raster_paths):
     print type(pair_map)
 
     return pair_map
-
