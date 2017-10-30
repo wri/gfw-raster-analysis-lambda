@@ -38,38 +38,55 @@ def mill(event, context):
     try:
         lat = float(event['queryStringParameters']['lat'])
         lon = float(event['queryStringParameters']['lon'])
+        event['out_dir'] = event['queryStringParameters']['out_dir']
+
     except TypeError, KeyError:
         lat = float(json.loads(event['body'])['lat'])
         lon = float(json.loads(event['body'])['lon'])
+        event['out_dir'] = json.loads(event['body'])['out_dir']
+
+    print event
 
     buffer_wgs84_geojson = geo_utils.pt_to_mill_buffer(lat, lon)
-
-    # calculate approximate area per 0.00025 degree pixel
-    # based on latitude of the mill center point
-    pixel_area_m2 = geo_utils.lat_to_area_m2(lat)
 
     # root dir for raster datasets
     data_root = 's3://palm-risk-poc/data'
 
-    layer_list = ['land_area', 'wdpa', 'peat', 'primary']
+    # our list of analyses we're interested in
+    analysis_list = [('loss', 'wdpa'),
+                     ('landcover', 'wdpa'),
+                     ('primary', 'area')]
 
-    event['pixel_area_m2'] = pixel_area_m2
     event['geojson'] = buffer_wgs84_geojson
 
-    for layer in layer_list:
-        for calc_type in ['loss', 'area']:
-            raster_path = '{}/{}/data.vrt'.format(data_root, layer)
+    for categorical_raster, area_raster in analysis_list:
 
-            # set proper layer_id and calc required
-            func_config = event.copy()
-            func_config['layer'] = layer
-            func_config['raster_path'] = raster_path
-            func_config['calc_type'] = calc_type
+        calc_name = '{}_{}'.format(categorical_raster, area_raster)
 
-            client.invoke(
-                FunctionName='palm-risk-poc-dev-risk',
-                InvocationType='Event',
-                Payload=json.dumps(func_config))
+        if categorical_raster == 'loss':
+            categorical_raster = r's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt'
+        else:
+            categorical_raster = '{}/{}/data.vrt'.format(data_root, categorical_raster)
+
+        if area_raster == 'wdpa':
+            area_raster = '{}/area_filtered_wdpa/data.vrt'.format(data_root)
+        else:
+            area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
+
+        # set proper layer_id and calc required
+        func_config = event.copy()
+        func_config['calc_name'] = calc_name
+        func_config['categorical_raster'] = categorical_raster
+        func_config['area_raster'] = area_raster
+
+        print 'starting event for: '
+        print func_config
+
+        client.invoke(
+            FunctionName='palm-risk-poc-dev-risk',
+            InvocationType='Event',
+            Payload=json.dumps(func_config)
+            )
 
 
 # analyze our buffered geom by a particular raster or two
@@ -78,38 +95,31 @@ def risk(event, context):
     # load geom from geojson string into shapely
     geom = shape(json.loads(event['geojson']))
 
-    if event['calc_type'] == 'area':
-        # returns a tuple of (total_pixels, zstats_dict)
-        # return only the zstats dict to match the count_pairs output format
-        stats = geoprocessing.count(geom, event['raster_path'])[1]
+    stats = geoprocessing.count_pairs(geom, [event['categorical_raster'], event['area_raster']])
 
-    else:
-        loss_vrt = r's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt'
-        stats = geoprocessing.count_pairs(geom, [loss_vrt, event['raster_path']])
+    output_dict = {}
 
-    # convert pixel counts to area_ha
-    area_stats = stats_to_area(stats, event['pixel_area_m2'])
+    # stats is a dict with keys of category_id::area_value and values of
+    # pixel count. To unpack this:
+    for key, pixel_count in stats.iteritems():
+        category, area = key.split('::')
 
-    print area_stats
+        category = int(float(category))
+        area_ha = float(area) * float(pixel_count) / 10000.
 
-    out_file = 'output/{}/{}_{}.json'.format(event['out_dir'], event['layer'], event['calc_type'])
-    s3.Bucket(bucket_uri).put_object(Key=out_file, Body=json.dumps(area_stats))
+        try:
+            output_dict[category] += area_ha
+        except KeyError:
+            output_dict[category] = area_ha
 
-
-# multiply each count by an area coefficient based
-# on the mill center point
-def stats_to_area(input_dict, pixel_area_m2):
-    area_dict = {}
-
-    # update dictionary to point to area_ha, not pixel_count
-    for raster_class, pixel_count in input_dict.iteritems():
-        area_dict[raster_class] = pixel_count * pixel_area_m2 / 10000
-
-    return area_dict
+    out_file = 'output/{}/{}.json'.format(event['out_dir'], event['calc_name'])
+    s3.Bucket(bucket_uri).put_object(Key=out_file, Body=json.dumps(output_dict))
 
 
 # to test locally
 if __name__ == '__main__':
-    d = {'queryStringParameters': {'lon': 112.8515625, 'lat': -2.19672724}}
+    d = {'queryStringParameters':
+            {'lon': 112.8515625, 'lat': -2.19672724, 'out_dir': 'local-test'}
+        }
 
     mill(d, None)
