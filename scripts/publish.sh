@@ -24,7 +24,7 @@ zip -9 -rqy ../../../../dist/raster-ops-deploy.zip * \
     -x pkg_resources\* \
 
 popd  > /dev/null
-zip -9 -rq dist/raster-ops-deploy.zip geop/* handler.py
+zip -9 -rq dist/raster-ops-deploy.zip geop/* serializers/* utilities/* handler.py mock_api.py
 
 # Deploy the function
 serverless deploy -v

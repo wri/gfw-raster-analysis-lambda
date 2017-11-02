@@ -120,14 +120,11 @@ def count_pairs(geom, raster_paths):
             # Map the pairs to the count, compressing values to keys in this format:
             #   cell_r1::cell_r2
             pair_counts = zip(unique_rows, counts)
-            pair_map = {str(k[0]) + '::' + str(k[1]): cnt for k, cnt in pair_counts}
+            pair_map = {k[0].astype(str) + '::' + k[1].astype(str): cnt for k, cnt in pair_counts}
 
         else:
             pair_map = {}
     else:
         pair_map = {}
-
-    print pair_map
-    print type(pair_map)
 
     return pair_map

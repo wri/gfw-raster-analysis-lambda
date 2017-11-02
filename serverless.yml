@@ -33,5 +33,14 @@ functions:
           cors: true
   mill:
     handler: handler.mill
+
   risk:
     handler: handler.risk
+
+  umd-loss-gain:
+    handler: mock_api.umd_loss_gain
+    events:
+        - http:
+            path: umd-loss-gain
+            method: post
+            cors: true
