@@ -1,8 +1,12 @@
+import json
+from shapely.geometry import shape
 
+def unpack_count_histogram(analysis_type, stats):
 
-def unpack_count_histogram(stats, value_offset=0):
+    value_offset = 0
 
-    print '---------- HERE ---------------'
+    if analysis_type == 'loss':
+        value_offset = 2000
 
     output_dict = {}
 
@@ -20,3 +24,15 @@ def unpack_count_histogram(stats, value_offset=0):
     print output_dict
 
     return output_dict
+
+
+def get_shapely_geom(event):
+
+    print event
+    geojson = json.loads(event['body'])['geojson']
+
+    if len(geojson['features']) > 1:
+        raise ValueError('Currently accepting only 1 feature at a time')
+
+    # grab the actual geometry-- that's the level on which shapely operates
+    return shape(geojson['features'][0]['geometry'])

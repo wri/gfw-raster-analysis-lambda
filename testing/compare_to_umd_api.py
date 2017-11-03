@@ -1,5 +1,7 @@
 import json
 import requests
+import time
+from urlparse import urlparse
 
 
 def main():
@@ -10,8 +12,9 @@ def main():
     lambda_url = 'https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/umd-loss-gain'
 
     post_body = {'geojson': geojson}
-    query_params = {'aggregate_values': False}
-    query_params = {}
+    query_params = {'aggregate_values': False,
+                    'period': '2001-01-01,2010-01-01'}
+
 
     umd_api_resp = run_post(umd_api_url, post_body, query_params)
     lambda_resp = run_post(lambda_url, post_body, query_params)
@@ -19,13 +22,39 @@ def main():
     print umd_api_resp
     print lambda_resp
 
-    print umd_api_resp == lambda_resp
+    print findDiff(umd_api_resp, lambda_resp)
 
 
 def run_post(api_url, payload, query_params):
+    start = time.time()
+
     r = requests.post(api_url, json=payload, params=query_params)
 
+    end = time.time()
+    base_url = urlparse(api_url).netloc
+    print '{0} call took {1:.2f} seconds'.format(base_url, end - start)
+
     return r.json()
+
+def findDiff(d1, d2, path=""):
+    # source: https://stackoverflow.com/a/27266178/4355916
+
+    for k in d1.keys():
+        if not d2.has_key(k):
+            print path, ":"
+            print k + " as key not in d2", "\n"
+        else:
+            if type(d1[k]) is dict:
+                if path == "":
+                    path = k
+                else:
+                    path = path + "->" + k
+                findDiff(d1[k],d2[k], path)
+            else:
+                if d1[k] != d2[k]:
+                    print path, ":"
+                    print " - ", k," : ", d1[k]
+                    print " + ", k," : ", d2[k]
 
 
 if __name__ == '__main__':

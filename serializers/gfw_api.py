@@ -1,7 +1,58 @@
 import json
 
+from shapely.geometry import shape
 
-def serialize_loss_gain(loss_area_dict, event):
+
+def serialize_loss_gain(response_list, aoi_polygon_area):
+
+    # response list is three dictionaries
+    # that look like {'extent': 23421}
+    # need to combine them so we can use the keys to extract proper values
+    response_dict = dict([d.json().items()[0] for d in response_list])
+
+    print response_dict
+
+    serialized = {'data': {
+                    'attributes': {
+                        'areaHa': aoi_polygon_area,
+                        'gain': response_dict['gain'],
+                        'loss': response_dict['loss'],
+                        'treeExtent': response_dict['extent']
+                        },
+                    'id': None,
+                    'type': 'umd'
+                    }
+                }
+
+    return http_response(serialized)
+
+
+def serialize_analysis(analysis_type, hist, event):
+
+    if analysis_type == 'loss':
+        return serialize_loss(hist, event)
+
+    else:
+        return serialize_extent_or_gain(analysis_type, hist)
+
+def serialize_extent_or_gain(analysis_type, hist):
+
+    print analysis_type
+    print hist
+
+    area_total = 0
+
+    for pixel_value, area_ha in hist.iteritems():
+
+        if analysis_type == 'extent' and int(pixel_value) >= 30:
+            area_total += area_ha
+        elif analysis_type == 'gain' and int(pixel_value) == 1:
+            area_total += area_ha
+
+    return http_response({analysis_type: area_total})
+
+
+def serialize_loss(loss_area_dict, event):
 
     params = event['queryStringParameters']
 
@@ -27,19 +78,7 @@ def serialize_loss_gain(loss_area_dict, event):
     else:
         loss = sum(loss_area_dict.values())
 
-    serialized = {'data': {
-                    'attributes': {
-                        'areaHa': -9999,
-                        'gain': -9999,
-                        'loss': loss,
-                        'treeExtent': -9999
-                        },
-                    'id': None,
-                    'type': 'umd'
-                    }
-                }
-
-    return http_response(serialized)
+    return http_response({'loss': loss})
 
 
 def serialize_landcover(landcover_dict, event):

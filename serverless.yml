@@ -20,23 +20,6 @@ package:
   artifact: dist/raster-ops-deploy.zip
 
 functions:
-  receiver:
-    handler: handler.receiver
-    events:
-      - http:
-          path: mill
-          method: get
-          cors: true
-      - http:
-          path: mill
-          method: post
-          cors: true
-  mill:
-    handler: handler.mill
-
-  risk:
-    handler: handler.risk
-
   umd-loss-gain:
     handler: mock_api.umd_loss_gain
     events:
@@ -44,3 +27,11 @@ functions:
             path: umd-loss-gain
             method: post
             cors: true
+
+  analysis:
+    handler: mock_api.analysis
+    events:
+      - http:
+          path: analysis
+          method: post
+          cors: true

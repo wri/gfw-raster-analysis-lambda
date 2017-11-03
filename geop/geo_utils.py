@@ -1,15 +1,10 @@
-from __future__ import division
-
 from functools import partial
-from rasterio import features
-from shapely.ops import transform
-from shapely.geometry import mapping, Point
 
-import numpy as np
-import math
-import pyproj
 import rasterio
-import json
+from rasterio import features
+import numpy as np
+import pyproj
+from shapely.ops import transform
 
 
 def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
@@ -117,60 +112,18 @@ def get_window_and_affine(geom, raster_src):
     return window, affine
 
 
-def reproject(geom, from_srs, to_srs):
+def get_polygon_area(geom):
+    # source: https://gis.stackexchange.com/a/166421/30899
 
-    projection = partial(
-        pyproj.transform,
-        pyproj.Proj(init=from_srs),
-        pyproj.Proj(init=to_srs),
-    )
+    geom_area = transform(
+        partial(
+            pyproj.transform,
+            pyproj.Proj(init='EPSG:4326'),
+            pyproj.Proj(
+                proj='aea',
+                lat1=geom.bounds[1],
+                lat2=geom.bounds[3])),
+        geom)
 
-    return transform(projection, geom)
-
-
-def lat_to_area_m2(lat):
-
-    """
-    Calculate geodesic area for Hansen data, assuming a fix pixel size of 0.00025 * 0.00025 degree
-    using WGS 1984 as spatial reference.
-    Pixel size various with latitude, which is it the only input parameter
-    """
-    a = 6378137.0  # Semi major axis of WGS 1984 ellipsoid
-    b = 6356752.314245179  # Semi minor axis of WGS 1984 ellipsoid
-
-    d_lat = 0.00025  # pixel hight
-    d_lon = 0.00025  # pixel width
-
-    pi = math.pi
-
-    q = d_lon / 360
-    e = math.sqrt(1 - (b / a) ** 2)
-
-    area = abs(
-        (pi * b ** 2 * (
-            2 * np.arctanh(e * np.sin(np.radians(lat + d_lat))) /
-            (2 * e) +
-            np.sin(np.radians(lat + d_lat)) /
-            ((1 + e * np.sin(np.radians(lat + d_lat))) * (1 - e * np.sin(np.radians(lat + d_lat)))))) -
-        (pi * b ** 2 * (
-            2 * np.arctanh(e * np.sin(np.radians(lat))) / (2 * e) +
-            np.sin(np.radians(lat)) / ((1 + e * np.sin(np.radians(lat))) * (1 - e * np.sin(np.radians(lat))))))) * q
-
-    return area
-
-
-def pt_to_mill_buffer(lat, lon):
-
-    # project point to eckert VI
-    wgs84_str = 'EPSG:4326'
-    eckVI_str = "esri:54010"
-
-    eckVI_proj = pyproj.Proj(init="{}".format(eckVI_str))
-    eck_point = Point(eckVI_proj(lon, lat))
-
-    # buffer the eckert point by 50 KM, then convert back to wgs84
-    buffer_eck = eck_point.buffer(50000)
-    buffer_wgs84 = reproject(buffer_eck, eckVI_str, wgs84_str)
-
-    # return a json string to be passed to a future lambda function
-    return json.dumps(mapping(buffer_wgs84))
+    # return area in ha
+    return geom_area.area / 10000.

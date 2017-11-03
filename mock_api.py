@@ -1,49 +1,71 @@
 import json
 
-from shapely.geometry import shape
+import grequests
 
 from geop import geo_utils, geoprocessing
 from serializers import gfw_api
-from utilities.util import unpack_count_histogram
+from utilities import util
 
 
 def umd_loss_gain(event, context):
 
-    print event
-    geojson = json.loads(event['body'])['geojson']
+    # get area in ha
+    geom = util.get_shapely_geom(event)
+    area_ha = geo_utils.get_polygon_area(geom)
 
-    if len(geojson['features']) > 1:
-        raise ValueError('Currently accepting only 1 feature at a time')
+    payload = {'geojson': json.loads(event['body'])['geojson']}
+    params = event.get('queryStringParameters')
 
-    # grab the actual geometry-- that's the level on which shapely operates
-    geom = shape(geojson['features'][0]['geometry'])
+    if not params:
+        params = {}
 
-    loss_raster = r's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt'
+    url = 'https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/analysis'
+    request_list = []
+
+    # add specific analysis type for each request
+    for analysis_type in ['loss', 'gain', 'extent']:
+
+        new_params = params.copy()
+        new_params['analysis'] = analysis_type
+
+        request_list.append(grequests.post(url, json=payload, params=new_params))
+
+    # execute these requests in parallel
+    response_list = grequests.map(request_list, size=3)
+
+    return gfw_api.serialize_loss_gain(response_list, area_ha)
+
+
+def analysis(event, context):
+
+    geom = util.get_shapely_geom(event)
+    analysis_type = event['queryStringParameters']['analysis']
+
+    ras_dict = {'loss': 's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt',
+                'extent': 's3://gfw2-data/forest_cover/2000_treecover/data.vrt',
+                'gain': 's3://gfw2-data/forest_change/tree_cover_gain/gaindata_2012/data.vrt'}
+
+    analysis_raster = ras_dict[analysis_type]
     area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
-    stats = geoprocessing.count_pairs(geom, [loss_raster, area_raster])
+
+    stats = geoprocessing.count_pairs(geom, [analysis_raster, area_raster])
 
     # unpack the response from the gp function to standard {year: area} dict
-    hist = unpack_count_histogram(stats, 2000)
+    hist = util.unpack_count_histogram(analysis_type, stats)
 
-    return gfw_api.serialize_loss_gain(hist, event)
+    return gfw_api.serialize_analysis(analysis_type, hist, event)
 
 
 def landcover(event, context):
 
-    print event
-    geojson = json.loads(event['body'])['geojson']
-
-    if len(geojson['features']) > 1:
-        raise ValueError('Currently accepting only 1 feature at a time')
-
     # grab the actual geometry-- that's the level on which shapely operates
-    geom = shape(geojson['features'][0]['geometry'])
+    geom = util.get_shapely_geom(event)
 
     lulc_raster = r's3://palm-risk-poc/data/landcover/data.vrt'
     area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
     stats = geoprocessing.count_pairs(geom, [lulc_raster, area_raster])
 
-    hist = unpack_count_histogram(stats)
+    hist = util.unpack_count_histogram(stats)
 
     return gfw_api.serialize_landcover(hist, event)
 
@@ -55,9 +77,9 @@ if __name__ == '__main__':
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {
-                }
+             'queryStringParameters': {'aggregate_values': False}
              }
 
-    #umd_loss_gain(event, None)
-    landcover(event, None)
+    umd_loss_gain(event, None)
+    #loss(event, None)
+    #landcover(event, None)
