@@ -35,3 +35,19 @@ functions:
           path: analysis
           method: post
           cors: true
+
+  landcover:
+    handler: mock_api.landcover
+    events:
+      - http:
+          path: landcover
+          method: post
+          cors: true
+
+  loss_by_landcover:
+    handler: mock_api.loss_by_landcover
+    events:
+      - http:
+          path: loss-by-landcover
+          method: post
+          cors: true

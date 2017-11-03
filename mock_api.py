@@ -58,16 +58,41 @@ def analysis(event, context):
 
 def landcover(event, context):
 
+    if event['queryStringParameters']['layer'] != 'gfw-landcover-2015':
+        raise ValueError('layer must be gfw-landcover-2015')
+
     # grab the actual geometry-- that's the level on which shapely operates
     geom = util.get_shapely_geom(event)
+    area_ha = geo_utils.get_polygon_area(geom)
 
-    lulc_raster = r's3://palm-risk-poc/data/landcover/data.vrt'
+    lulc_raster = 's3://palm-risk-poc/data/gfw-landcover-2015/data.vrt'
     area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
     stats = geoprocessing.count_pairs(geom, [lulc_raster, area_raster])
 
-    hist = util.unpack_count_histogram(stats)
+    hist = util.unpack_count_histogram('landcover', stats)
 
-    return gfw_api.serialize_landcover(hist, event)
+    return gfw_api.serialize_landcover(hist, area_ha)
+
+
+def loss_by_landcover(event, context):
+
+    # grab the actual geometry-- that's the level on which shapely operates
+    geom = util.get_shapely_geom(event)
+    area_ha = geo_utils.get_polygon_area(geom)
+
+    # something is wrong with this-- nodata value maybe?
+    primary_raster = 's3://palm-risk-poc/data/primary/data.vrt'
+
+    primary_raster = 's3://palm-risk-poc/data/primary/idn_primary.tif'
+    loss_raster = 's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt'
+    area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
+
+    raster_list = [primary_raster, loss_raster, area_raster]
+    stats = geoprocessing.count_pairs(geom, raster_list)
+
+    hist = util.unpack_count_histogram('loss-by-landcover', stats)
+
+    return gfw_api.serialize_loss_by_landcover(hist, area_ha, event)
 
 
 # to test locally
@@ -77,9 +102,11 @@ if __name__ == '__main__':
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {'aggregate_values': False}
+             'queryStringParameters': {'aggregate_values': False,
+                                       'layer': 'gfw-landcover-2015'}
              }
 
-    umd_loss_gain(event, None)
+    #umd_loss_gain(event, None)
     #loss(event, None)
     #landcover(event, None)
+    loss_by_landcover(event, None)

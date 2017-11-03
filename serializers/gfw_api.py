@@ -81,7 +81,7 @@ def serialize_loss(loss_area_dict, event):
     return http_response({'loss': loss})
 
 
-def serialize_landcover(landcover_dict, event):
+def serialize_landcover(landcover_dict, area_ha):
 
     landcover_list = []
     lkp = build_globcover_lookup()
@@ -96,17 +96,51 @@ def serialize_landcover(landcover_dict, event):
 
     serialized = {'data': {
                     'attributes': {
-                        'areaHa': -9999,
-                        'landcover': landcover_list
+                        'areaHa': area_ha,
+                        'landcover': landcover_list,
+                        'type': 'gfw-landcover-2015',
+                        'id': None
                     }
     }}
 
     return http_response(serialized)
 
 
+def serialize_loss_by_landcover(hist, area_ha, event):
+
+    # ultimately need to filter this by period
+    begin = 1
+    end = 16
+    requested_years = range(int(begin + 2000), int(end + 2000) + 1)
+
+    lulc_vals = [0, 1]
+    empty_year_dict = {year: 0 for year in requested_years}
+    final_dict = {str(val): empty_year_dict.copy() for val in lulc_vals}
+    print final_dict
+
+    for combine_value, area_ha in hist.iteritems():
+
+        lulc = str(int(combine_value) / 500)
+        year = 2000 + int(combine_value) % 500
+
+        if year in requested_years:
+            final_dict[lulc][year] = area_ha
+
+    histogram = lookup(final_dict, False)
+
+    serialized = {'data': {
+                    'attributes': {
+                        'areaHa': area_ha,
+                        'histogram': histogram
+                        }
+                    }
+                }
+
+    return http_response(serialized)
+
 def http_response(response):
 
-    print response
+    print json.dumps(response, indent=4, sort_keys=True)
 
     return {
         'statusCode': 200,
@@ -129,3 +163,33 @@ def build_globcover_lookup():
         9: 'Water',
         10: 'Permanent snow and ice'
         }
+
+
+def lookup(result_dict, count_pixels):
+
+    lkp = {'0': 'Not Primary Forest', '1': 'Primary Forest'}
+
+    if count_pixels:
+        area_type = 'pixelCount'
+    else:
+        area_type = 'areaHectares'
+
+    output_list = []
+
+    for key, val in result_dict.items():
+
+        landcover_name = lkp[key]
+
+        result_dict = {'resultType': area_type,
+                    'className': landcover_name,
+                    'classVal': key}
+
+        # unpack year dict into array of dicts
+        if isinstance(val, dict):
+            val = [{'year': year, 'result': result} for year, result in val.items()]
+
+        result_dict['result'] = val
+
+        output_list.append(result_dict)
+
+    return output_list

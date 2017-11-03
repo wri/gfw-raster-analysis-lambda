@@ -70,6 +70,10 @@ def count_pairs(geom, raster_paths):
     layers = tuple(mask_geom_on_raster(geom, raster_path)[0]
                    for raster_path in raster_paths)
 
+    if len(layers) == 3:
+        combined_layer = layers[0] * 500 + layers[1]
+        layers = [combined_layer, layers[2]]
+
     # Take the two masked arrays, and stack them along the third axis
     # Effectively: [[cell_1a, cell_1b], [cell_2a, cell_2b], ..],[[...]]
     pairs = np.ma.dstack(layers)
