@@ -1,7 +1,5 @@
 import json
 
-from shapely.geometry import shape
-
 
 def serialize_loss_gain(response_list, aoi_polygon_area):
 
@@ -34,6 +32,7 @@ def serialize_analysis(analysis_type, hist, event):
 
     else:
         return serialize_extent_or_gain(analysis_type, hist)
+
 
 def serialize_extent_or_gain(analysis_type, hist):
 
@@ -81,7 +80,7 @@ def serialize_loss(loss_area_dict, event):
     return http_response({'loss': loss})
 
 
-def serialize_landcover(landcover_dict, area_ha):
+def serialize_landcover(landcover_dict, input_poly_area):
 
     landcover_list = []
     lkp = build_globcover_lookup()
@@ -91,22 +90,23 @@ def serialize_landcover(landcover_dict, area_ha):
         landcover_list.append({
         'className': lkp[lulc_val],
         'classVal': lulc_val,
-        'result': area_ha
+        'result': area_ha,
+        'resultType': 'areaHectares'
         })
 
     serialized = {'data': {
                     'attributes': {
-                        'areaHa': area_ha,
-                        'landcover': landcover_list,
-                        'type': 'gfw-landcover-2015',
-                        'id': None
-                    }
+                        'areaHa': input_poly_area,
+                        'landcover': landcover_list
+                        },
+                    'type': 'gfw-landcover-2015',
+                    'id': None
     }}
 
     return http_response(serialized)
 
 
-def serialize_loss_by_landcover(hist, area_ha, event):
+def serialize_loss_by_landcover(hist, input_poly_area, event):
 
     # ultimately need to filter this by period
     begin = 1
@@ -130,13 +130,16 @@ def serialize_loss_by_landcover(hist, area_ha, event):
 
     serialized = {'data': {
                     'attributes': {
-                        'areaHa': area_ha,
+                        'areaHa': input_poly_area,
                         'histogram': histogram
-                        }
+                        },
+                    'type': 'primary-forest',
+                    'id': None
                     }
                 }
 
     return http_response(serialized)
+
 
 def http_response(response):
 
@@ -146,6 +149,16 @@ def http_response(response):
         'statusCode': 200,
         'headers': {'Access-Control-Allow-Origin': '*'},
         'body': json.dumps(response)
+            }
+
+
+def api_error(msg):
+    print msg
+
+    return {
+        'statusCode': 400,
+        'headers': {'Access-Control-Allow-Origin': '*'},
+        'body': json.dumps({'error': msg})
             }
 
 

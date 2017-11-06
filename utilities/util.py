@@ -1,6 +1,7 @@
 import json
 from shapely.geometry import shape
 
+
 def unpack_count_histogram(analysis_type, stats):
 
     value_offset = 0

@@ -21,7 +21,7 @@ package:
 
 functions:
   umd-loss-gain:
-    handler: mock_api.umd_loss_gain
+    handler: handler.umd_loss_gain
     events:
         - http:
             path: umd-loss-gain
@@ -29,7 +29,7 @@ functions:
             cors: true
 
   analysis:
-    handler: mock_api.analysis
+    handler: handler.analysis
     events:
       - http:
           path: analysis
@@ -37,15 +37,15 @@ functions:
           cors: true
 
   landcover:
-    handler: mock_api.landcover
+    handler: handler.landcover
     events:
       - http:
           path: landcover
           method: post
           cors: true
 
-  loss_by_landcover:
-    handler: mock_api.loss_by_landcover
+  loss-by-landcover:
+    handler: handler.loss_by_landcover
     events:
       - http:
           path: loss-by-landcover
