@@ -53,7 +53,10 @@ def serialize_loss(loss_area_dict, event):
 
     params = event['queryStringParameters']
     period = params.get('period', None)
-    aggregate_values = params.get('aggregate_values', None)
+    aggregate_values = params.get('aggregate_values', True)
+
+    if isinstance(aggregate_values, (unicode, str)) and aggregate_values.lower() == 'false':
+        aggregate_values = False
 
     # filter by period if given
     if period:
@@ -71,16 +74,15 @@ def serialize_loss(loss_area_dict, event):
     loss_area_dict = dict((k, v) for k, v in loss_area_dict.iteritems() if k >= year_min and k <= year_max)
 
     # if we want year-by-year results . . .
-    if (aggregate_values and isinstance(aggregate_values, (str)) and aggregate_values.lower() == 'false') or (aggregate_values == False):
+    if aggregate_values:
+        loss = sum(loss_area_dict.values())
 
-        # populate data where we have it, leaving the other values empty
+    # populate data where we have it, leaving the other values empty
+    else:
         for year, area_ha in loss_area_dict.iteritems():
             empty_year_dict[year] = area_ha
 
         loss = empty_year_dict
-
-    else:
-        loss = sum(loss_area_dict.values())
 
     return http_response({'loss': loss})
 
