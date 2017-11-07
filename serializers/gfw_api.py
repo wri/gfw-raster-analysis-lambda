@@ -8,8 +8,6 @@ def serialize_loss_gain(response_list, aoi_polygon_area):
     # need to combine them so we can use the keys to extract proper values
     response_dict = dict([d.json().items()[0] for d in response_list])
 
-    print response_dict
-
     serialized = {'data': {
                     'attributes': {
                         'areaHa': aoi_polygon_area,
@@ -54,13 +52,8 @@ def serialize_extent_or_gain(analysis_type, hist):
 def serialize_loss(loss_area_dict, event):
 
     params = event['queryStringParameters']
-
-    if params:
-        period = params.get('period', None)
-        aggregate_values = params.get('aggregate_values', None)
-    else:
-        period = None
-        aggregate_values = None
+    period = params.get('period', None)
+    aggregate_values = params.get('aggregate_values', None)
 
     # filter by period if given
     if period:
@@ -68,11 +61,23 @@ def serialize_loss(loss_area_dict, event):
         year_min = int(date_min.split('-')[0])
         year_max = int(date_max.split('-')[0])
 
-        loss_area_dict = dict((k, v) for k, v in loss_area_dict.iteritems() if k >= year_min and k <= year_max)
+    else:
+        year_min = 2001
+        year_max = 2016
+
+    requested_years = range(year_min, year_max + 1)
+    empty_year_dict = {year: 0 for year in requested_years}
+
+    loss_area_dict = dict((k, v) for k, v in loss_area_dict.iteritems() if k >= year_min and k <= year_max)
 
     # if we want year-by-year results . . .
-    if (aggregate_values and aggregate_values.lower() == 'false') or (aggregate_values == False):
-        loss = loss_area_dict
+    if (aggregate_values and isinstance(aggregate_values, (str)) and aggregate_values.lower() == 'false') or (aggregate_values == False):
+
+        # populate data where we have it, leaving the other values empty
+        for year, area_ha in loss_area_dict.iteritems():
+            empty_year_dict[year] = area_ha
+
+        loss = empty_year_dict
 
     else:
         loss = sum(loss_area_dict.values())
