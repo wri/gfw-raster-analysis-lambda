@@ -96,7 +96,7 @@ def serialize_landcover(landcover_dict, input_poly_area):
 
         landcover_list.append({
         'className': lkp[lulc_val],
-        'classVal': lulc_val,
+        'classVal': str(lulc_val),
         'result': area_ha,
         'resultType': 'areaHectares'
         })
@@ -115,10 +115,18 @@ def serialize_landcover(landcover_dict, input_poly_area):
 
 def serialize_loss_by_landcover(hist, input_poly_area, event):
 
-    # ultimately need to filter this by period
-    begin = 1
-    end = 16
-    requested_years = range(int(begin + 2000), int(end + 2000) + 1)
+    period = event['queryStringParameters'].get('period', None)
+
+    # filter by period if given
+    if period:
+        date_min, date_max = period.split(',')
+        year_min = int(date_min.split('-')[0])
+        year_max = int(date_max.split('-')[0])
+    else:
+        year_min = 2001
+        year_max = 2016
+
+    requested_years = range(year_min, year_max + 1)
 
     lulc_vals = [0, 1]
     empty_year_dict = {year: 0 for year in requested_years}
