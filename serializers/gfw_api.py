@@ -41,7 +41,8 @@ def serialize_extent_or_gain(analysis_type, hist):
 
     for pixel_value, area_ha in hist.iteritems():
 
-        if analysis_type == 'extent' and int(pixel_value) >= 30:
+        # for extent, our the 30% threshold is actually >30
+        if analysis_type == 'extent' and int(pixel_value) > 30:
             area_total += area_ha
         elif analysis_type == 'gain' and int(pixel_value) == 1:
             area_total += area_ha
