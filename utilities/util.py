@@ -1,4 +1,7 @@
 import json
+import datetime
+from collections import defaultdict
+
 from shapely.geometry import shape
 
 
@@ -22,8 +25,6 @@ def unpack_count_histogram(analysis_type, stats):
         except KeyError:
             output_dict[ras1] = area_ha
 
-    print output_dict
-
     return output_dict
 
 
@@ -37,3 +38,62 @@ def get_shapely_geom(event):
 
     # grab the actual geometry-- that's the level on which shapely operates
     return shape(geojson['features'][0]['geometry'])
+
+
+def unpack_glad_histogram(stats, hist_type):
+
+	date_dict = {}
+
+	for conf_days, count in stats.iteritems():
+	    total_days = int(conf_days[1:]) 
+	    year = total_days / 365 + 2015
+	    julian_day = total_days % 365
+	   
+	    # https://stackoverflow.com/questions/17216169/ 
+	    alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
+
+	    try:
+		date_dict[alert_date] += count
+	    except KeyError:
+		date_dict[alert_date] = count
+
+        k = date_dict.keys()
+        v = date_dict.values()
+
+        resp_dict = {
+                     'year': grouped_and_to_rows([x.year for x in k], v, 'year'),
+
+                     # month --> quarter calc: https://stackoverflow.com/questions/1406131
+                     'quarter': grouped_and_to_rows([(x.year, (x.month-1)//3 + 1) for x in k], v, 'quarter'),
+	             'month':  grouped_and_to_rows([(x.year, x.month) for x in k], v, 'month'),
+                     'week': grouped_and_to_rows([(x.year, x.isocalendar()[1]) for x in k], v, 'week')
+                    }
+        
+        # try to find the hist_type in there, otherwise return all
+	return resp_dict.get(hist_type, {'all': resp_dict})
+
+
+def grouped_and_to_rows(keys, vals, agg_type):
+    # source: https://jakevdp.github.io/blog/2017/03/22/group-by-from-scratch/
+    count = defaultdict(int)
+    for key, val in zip(keys, vals):
+        count[key] += val
+    grouped = dict(count)
+
+    final_list = [] 
+
+    for key, val in grouped.iteritems():
+
+        if agg_type == 'year':
+	    row = {agg_type: key}
+        else:
+            row = {'year': key[0], agg_type: key[1]}
+
+        row['count'] = val
+        final_list.append(row)
+
+    return final_list
+
+
+
+

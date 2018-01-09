@@ -222,3 +222,22 @@ def lookup(result_dict, count_pixels):
         output_list.append(result_dict)
 
     return output_list
+
+
+def serialize_glad(hist, area_ha, agg_by):
+
+    serialized = {
+    "data": {
+        "aggregate_by": agg_by, 
+        "aggregate_values": True,
+        "attributes": {
+            "downloadUrls": None,
+            "value": hist},
+        "period": None,
+        "type": "glad-alerts"}
+    }
+
+    return http_response(serialized)
+
+
+ 

@@ -51,3 +51,12 @@ functions:
           path: loss-by-landcover
           method: post
           cors: true
+
+  glad-alerts:
+    handler: handler.glad
+    events:
+      - http:
+          path: glad-alerts
+          method: post
+          cors: true
+
