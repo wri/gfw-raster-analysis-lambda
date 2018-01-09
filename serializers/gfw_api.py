@@ -1,5 +1,7 @@
 import json
 
+from utilities import lulc_util
+
 
 def serialize_loss_gain(response_list, aoi_polygon_area):
 
@@ -88,12 +90,13 @@ def serialize_loss(loss_area_dict, event):
     return http_response({'loss': loss})
 
 
-def serialize_landcover(landcover_dict, input_poly_area):
+def serialize_landcover(landcover_dict, layer_name, input_poly_area):
 
     landcover_list = []
-    lkp = build_globcover_lookup()
+    lkp = lulc_util.build_lulc_lookup(layer_name)
 
     for lulc_val, area_ha in landcover_dict.iteritems():
+        print lulc_val
 
         landcover_list.append({
         'className': lkp[lulc_val],
@@ -107,7 +110,7 @@ def serialize_landcover(landcover_dict, input_poly_area):
                         'areaHa': input_poly_area,
                         'landcover': landcover_list
                         },
-                    'type': 'gfw-landcover-2015',
+                    'type': layer_name,
                     'id': None
     }}
 
@@ -117,6 +120,7 @@ def serialize_landcover(landcover_dict, input_poly_area):
 def serialize_loss_by_landcover(hist, input_poly_area, event):
 
     period = event['queryStringParameters'].get('period', None)
+    layer_name = event['queryStringParameters'].get('layer')
 
     # filter by period if given
     if period:
@@ -129,7 +133,9 @@ def serialize_loss_by_landcover(hist, input_poly_area, event):
 
     requested_years = range(year_min, year_max + 1)
 
-    lulc_vals = [0, 1]
+    lkp = lulc_util.build_lulc_lookup(layer_name)
+    lulc_vals = lkp.keys()
+
     empty_year_dict = {year: 0 for year in requested_years}
     final_dict = {str(val): empty_year_dict.copy() for val in lulc_vals}
     print final_dict
@@ -142,14 +148,14 @@ def serialize_loss_by_landcover(hist, input_poly_area, event):
         if year in requested_years:
             final_dict[lulc][year] = area_ha
 
-    histogram = lookup(final_dict, False)
+    histogram = lookup(final_dict, False, lkp)
 
     serialized = {'data': {
                     'attributes': {
                         'areaHa': input_poly_area,
                         'histogram': histogram
                         },
-                    'type': 'primary-forest',
+                    'type': layer_name,
                     'id': None
                     }
                 }
@@ -178,25 +184,7 @@ def api_error(msg):
             }
 
 
-def build_globcover_lookup():
-
-    return {
-        1: 'Agriculture',
-        2: 'Forest',
-        3: 'Grassland',
-        4: 'Wetland',
-        5: 'Settlement',
-        6: 'Shrubland',
-        7: 'Sparse vegetation',
-        8: 'Bare',
-        9: 'Water',
-        10: 'Permanent snow and ice'
-        }
-
-
-def lookup(result_dict, count_pixels):
-
-    lkp = {'0': 'Not Primary Forest', '1': 'Primary Forest'}
+def lookup(result_dict, count_pixels, lulc_lkp):
 
     if count_pixels:
         area_type = 'pixelCount'
@@ -207,7 +195,7 @@ def lookup(result_dict, count_pixels):
 
     for key, val in result_dict.items():
 
-        landcover_name = lkp[key]
+        landcover_name = lulc_lkp[int(key)]
 
         result_dict = {'resultType': area_type,
                     'className': landcover_name,

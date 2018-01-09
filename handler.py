@@ -4,7 +4,7 @@ import grequests
 
 from geop import geo_utils, geoprocessing
 from serializers import gfw_api
-from utilities import util
+from utilities import util, lulc_util
 
 
 def umd_loss_gain(event, context):
@@ -57,20 +57,24 @@ def analysis(event, context):
 
 def landcover(event, context):
 
-    if event['queryStringParameters'].get('layer') != 'gfw-landcover-2015':
-        msg = 'Layer query param must be gfw-landcover-2015 for this example'
-        return gfw_api.api_error(msg)
-
     geom = util.get_shapely_geom(event)
     area_ha = geo_utils.get_polygon_area(geom)
 
-    lulc_raster = 's3://palm-risk-poc/data/gfw-landcover-2015/data.vrt'
+    layer_name = event['queryStringParameters'].get('layer')
+
+    valid_layers = lulc_util.get_valid_layers()
+
+    if layer_name not in valid_layers:
+        msg = 'Layer query param must be one of: {}'.format(', '.join(valid_layers))
+        return gfw_api.api_error(msg)  
+
+    lulc_raster = lulc_util.ras_lkp(layer_name)
     area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
     stats = geoprocessing.count_pairs(geom, [lulc_raster, area_raster])
 
     hist = util.unpack_count_histogram('landcover', stats)
 
-    return gfw_api.serialize_landcover(hist, area_ha)
+    return gfw_api.serialize_landcover(hist, layer_name, area_ha)
 
 
 def loss_by_landcover(event, context):
@@ -78,15 +82,19 @@ def loss_by_landcover(event, context):
     geom = util.get_shapely_geom(event)
     area_ha = geo_utils.get_polygon_area(geom)
 
-    if event['queryStringParameters'].get('layer') != 'primary-forest':
-        msg = 'Layer query param must be primary-forest for this example'
+    layer_name = event['queryStringParameters'].get('layer')
+    
+    valid_layers = lulc_util.get_valid_layers()
+
+    if layer_name not in valid_layers: 
+        msg = 'Layer query param must be one of: {}'.format(', '.join(valid_layers))
         return gfw_api.api_error(msg)
 
-    primary_raster = 's3://palm-risk-poc/data/primary/data.vrt'
+    lulc_raster = lulc_util.ras_lkp(layer_name)
     loss_raster = 's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt'
     area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
 
-    raster_list = [primary_raster, loss_raster, area_raster]
+    raster_list = [lulc_raster, loss_raster, area_raster]
     stats = geoprocessing.count_pairs(geom, raster_list)
 
     hist = util.unpack_count_histogram('loss-by-landcover', stats)
@@ -131,10 +139,11 @@ if __name__ == '__main__':
     event = {
              'body': json.dumps({'geojson': aoi}),
              'queryStringParameters': {'aggregate_values': 'true',
+                                       'layer': 'primary-forest',
                                        'aggregate_by': 'week'}
             }
 
-    glad(event, None)
+    # glad(event, None)
     # analysis(event, None)
-    # landcover(event, None)
+    landcover(event, None)
     # loss_by_landcover(event, None)
