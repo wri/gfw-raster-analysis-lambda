@@ -127,8 +127,6 @@ def masked_array_count(masked_data):
     # creates a 1D array of just unmasked values.  May be able to speed up
     # by using scipy count_tier_group, but this is working well for now
     values, counts = np.unique(masked_data.compressed(), return_counts=True)
-    print 'in masked array count'
-    print values, counts
 
     # Make dict of val: count with string keys for valid json
     count_map = dict(zip(map(str, values), counts))
