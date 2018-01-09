@@ -3,6 +3,39 @@ import numpy as np
 from geop.geo_utils import mask_geom_on_raster
 
 
+def count(geom, raster_path, modifications=None):
+    """
+    Perform a cell count analysis on a portion of a provided raster.
+
+    Args:
+        geom (Shapley Geometry): A polygon in the same SRS as `raster_path`
+            which will define the area of analysis to count cell values.
+
+        raster_path (string): A local file path to a geographic raster
+            containing values to extract.
+
+        mods (optional list<dict>): A list of geometries and value to alter the
+            source raster, provided as dict containing the following keys:
+
+            geom (geojson): polygon of area where modification should be
+                applied.
+
+            newValue (int|float): value to be written over the source raster
+                in areas where it intersects geom.  Modifications are applied
+                in order, meaning subsequent items can overwrite earlier ones.
+
+    Returns:
+        total (int): total number of cells included in census
+
+        count_map (dict): cell value keys with count of number of occurrences
+            within the raster masked by `geom`
+
+    """
+
+    masked_data, _ = mask_geom_on_raster(geom, raster_path, modifications)
+    return masked_array_count(masked_data)
+
+
 def count_pairs(geom, raster_paths):
     """
     Perform a cell count analysis on groupings of cells from 2 rasters stacked
@@ -87,3 +120,18 @@ def count_pairs(geom, raster_paths):
         pair_map = {}
 
     return pair_map
+
+
+def masked_array_count(masked_data):
+    # Perform count using numpy built-ins.  Compressing the masked array
+    # creates a 1D array of just unmasked values.  May be able to speed up
+    # by using scipy count_tier_group, but this is working well for now
+    values, counts = np.unique(masked_data.compressed(), return_counts=True)
+    print 'in masked array count'
+    print values, counts
+
+    # Make dict of val: count with string keys for valid json
+    count_map = dict(zip(map(str, values), counts))
+
+    return masked_data.count(), count_map
+
