@@ -25,26 +25,29 @@ def serialize_loss_gain(response_list, aoi_polygon_area):
     return http_response(serialized)
 
 
-def serialize_analysis(analysis_type, hist, event):
+def serialize_analysis(hist, event):
+
+    analysis_type = event['queryStringParameters']['analysis']
 
     if analysis_type == 'loss':
         return serialize_loss(hist, event)
 
     else:
-        return serialize_extent_or_gain(analysis_type, hist)
+        return serialize_extent_or_gain(analysis_type, hist, event)
 
 
-def serialize_extent_or_gain(analysis_type, hist):
+def serialize_extent_or_gain(analysis_type, hist, event):
 
     print analysis_type
     print hist
+    thresh = int(event['queryStringParameters']['thresh'])
 
     area_total = 0
 
     for pixel_value, area_ha in hist.iteritems():
 
-        # for extent, our the 30% threshold is actually >30
-        if analysis_type == 'extent' and int(pixel_value) > 30:
+        # for extent, anything over the threshold supplied is valid
+        if analysis_type == 'extent' and int(pixel_value) > thresh:
             area_total += area_ha
         elif analysis_type == 'gain' and int(pixel_value) == 1:
             area_total += area_ha
