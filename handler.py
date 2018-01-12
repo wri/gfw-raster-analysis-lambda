@@ -15,8 +15,16 @@ def umd_loss_gain(event, context):
     payload = {'geojson': json.loads(event['body'])['geojson']}
     params = event.get('queryStringParameters')
 
+    thresh = int(params.get('thresh', 30))
+    valid_thresh = [10, 30, 90]
+
+    if thresh not in valid_thresh:
+        thresh_str = ', '.join([str(x) for x in valid_thresh])
+        msg = 'thresh {} supplied, for this S3 endpoint must be one of {}'.format(thresh, thresh_str)
+        return gfw_api.api_error(msg) 
+
     if not params:
-        params = {}
+        params = {'thresh': thresh}
 
     url = 'https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/analysis'
     request_list = []
@@ -39,8 +47,9 @@ def analysis(event, context):
 
     geom = util.get_shapely_geom(event)
     analysis_type = event['queryStringParameters']['analysis']
+    thresh = event['queryStringParameters']['thresh']
 
-    ras_dict = {'loss': 's3://gfw2-data/forest_change/hansen_2016_masked_30tcd/data.vrt',
+    ras_dict = {'loss': 's3://gfw2-data/forest_change/hansen_2016_masked_{}tcd/data.vrt'.format(thresh),
                 'extent': 's3://gfw2-data/forest_cover/2000_treecover/data.vrt',
                 'gain': 's3://gfw2-data/forest_change/tree_cover_gain/gaindata_2012/data.vrt'}
 
@@ -52,7 +61,7 @@ def analysis(event, context):
     # unpack the response from the gp function to standard {year: area} dict
     hist = util.unpack_count_histogram(analysis_type, stats)
 
-    return gfw_api.serialize_analysis(analysis_type, hist, event)
+    return gfw_api.serialize_analysis(hist, event)
 
 
 def landcover(event, context):
