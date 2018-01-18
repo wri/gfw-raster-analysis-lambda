@@ -5,14 +5,19 @@ from rasterio import features
 import numpy as np
 import pyproj
 from shapely.ops import transform
+import boto3
+from urlparse import urlparse
+import json
+from shapely.geometry import Polygon, MultiPolygon
+
 
 def check_extent(user_poly, raster):
     s3 = boto3.resource('s3')
 
-    bucket = s3.Bucket('palm-risk-poc')
-
     # read context of the index file
     parsed = urlparse(raster)
+    bucket = s3.Bucket(parsed.netloc)
+
     s3obj = parsed.path.replace('data.vrt', 'index.geojson')[1:]
     d = bucket.Object(s3obj).get()['Body'].read()
 
@@ -24,12 +29,6 @@ def check_extent(user_poly, raster):
     
     # read in indexgeom as shapely multipolygon
     index_geom = MultiPolygon(poly_list)
-
-    # get user geom
-    user_geom = user_poly['features'][0]['geometry']['coordinates'][0]
-    
-    # read in user geom as shapely geometry
-    user_poly = Polygon(user_geom)
 
     # check if polygons intersect
     return user_poly.intersects(index_geom)
@@ -108,7 +107,7 @@ def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
         return np.ma.array(data=data, mask=full_mask), shifted_affine
         
     else:
-        return np.array([])
+        return np.array([]), None
 
 
 def get_window_and_affine(geom, raster_src):
