@@ -33,7 +33,10 @@ def count(geom, raster_path, modifications=None):
     """
 
     masked_data, _ = mask_geom_on_raster(geom, raster_path, modifications)
-    return masked_array_count(masked_data)
+    if masked_data:
+        return masked_array_count(masked_data)
+    else:
+        return {},{}
 
 
 def count_pairs(geom, raster_paths):
