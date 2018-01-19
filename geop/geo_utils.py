@@ -25,13 +25,16 @@ def check_extent(user_poly, raster):
     d = json.loads(d)
 
     # get index geom
+    poly_intersects = False
     poly_list = [Polygon(x['geometry']['coordinates'][0]) for x in d['features']]
-    
-    # read in indexgeom as shapely multipolygon
-    index_geom = MultiPolygon(poly_list)
 
     # check if polygons intersect
-    return user_poly.intersects(index_geom)
+    for poly in poly_list:
+        if user_poly.intersects(poly):
+            poly_intersects = True
+            break
+
+    return poly_intersects
     
     
 def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
