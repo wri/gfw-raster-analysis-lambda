@@ -40,47 +40,52 @@ def get_shapely_geom(event):
     return shape(geojson['features'][0]['geometry'])
 
 
+def create_resp_dict(date_dict):
+    k = date_dict.keys() # alert date = datetime.datetime(2015, 6, 4, 0, 0)
+    v = date_dict.values() # count
+
+    resp_dict = {
+                 'year': grouped_and_to_rows([x.year for x in k], v, 'year'),
+                 # month --> quarter calc: https://stackoverflow.com/questions/1406131
+                 'quarter': grouped_and_to_rows([(x.year, (x.month-1)//3 + 1) for x in k], v, 'quarter'),
+                 'month':  grouped_and_to_rows([(x.year, x.month) for x in k], v, 'month'),
+                 'week': grouped_and_to_rows([(x.year, x.isocalendar()[1]) for x in k], v, 'week')
+                }
+
+    return resp_dict
+
+
 def unpack_glad_histogram(stats, hist_type):
 
 	date_dict = {}
 
 	for conf_days, count in stats.iteritems():
-	    total_days = int(conf_days[1:]) 
+	    total_days = int(conf_days[1:])
 	    year = total_days / 365 + 2015
 	    julian_day = total_days % 365
-	   
-	    # https://stackoverflow.com/questions/17216169/ 
+
+	    # https://stackoverflow.com/questions/17216169/
 	    alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
 
 	    try:
-		date_dict[alert_date] += count
+		    date_dict[alert_date] += count # if date exists, add count to id
 	    except KeyError:
-		date_dict[alert_date] = count
+		    date_dict[alert_date] = count # if date doesn't exist, create it, set equal to count
 
-        k = date_dict.keys()
-        v = date_dict.values()
+        resp_dict = create_resp_dict(date_dict)
 
-        resp_dict = {
-                     'year': grouped_and_to_rows([x.year for x in k], v, 'year'),
-
-                     # month --> quarter calc: https://stackoverflow.com/questions/1406131
-                     'quarter': grouped_and_to_rows([(x.year, (x.month-1)//3 + 1) for x in k], v, 'quarter'),
-	             'month':  grouped_and_to_rows([(x.year, x.month) for x in k], v, 'month'),
-                     'week': grouped_and_to_rows([(x.year, x.isocalendar()[1]) for x in k], v, 'week')
-                    }
-        
-        # try to find the hist_type in there, otherwise return all
 	return resp_dict.get(hist_type, {'all': resp_dict})
 
 
 def grouped_and_to_rows(keys, vals, agg_type):
+
     # source: https://jakevdp.github.io/blog/2017/03/22/group-by-from-scratch/
     count = defaultdict(int)
     for key, val in zip(keys, vals):
         count[key] += val
     grouped = dict(count)
 
-    final_list = [] 
+    final_list = []
 
     for key, val in grouped.iteritems():
 
@@ -94,6 +99,15 @@ def grouped_and_to_rows(keys, vals, agg_type):
 
     return final_list
 
+def fires_date_conv(hist_type, stats):
 
+    stats = {"2015-05-17": 155, "2015-05-18": 72, "2015-05-19": 345}
 
+    mydate_conv = {}
 
+    # glad comes in format of "yyyy-mm-dd" but shared function expects datetime format
+    for d, count in stats.iteritems():
+        mydate_conv[datetime.datetime.strptime(d, "%Y-%m-%d")]=count
+
+    # send formatted dictionary to grouped_and_to_rows
+    resp_dict = create_resp_dict(mydate_conv)
