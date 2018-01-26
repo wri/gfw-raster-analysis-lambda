@@ -26,7 +26,7 @@ def umd_loss_gain(event, context):
     if thresh not in valid_thresh:
         thresh_str = ', '.join([str(x) for x in valid_thresh])
         msg = 'thresh {} supplied, for this S3 endpoint must be one of {}'.format(thresh, thresh_str)
-        return gfw_api.api_error(msg) 
+        return gfw_api.api_error(msg)
 
     url = 'https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/analysis'
     request_list = []
@@ -66,6 +66,17 @@ def analysis(event, context):
     return gfw_api.serialize_analysis(hist, event)
 
 
+def fire_analysis(event, context):
+
+    geom = util.get_shapely_geom(event)
+    tile_id = event['queryStringParameters']['tile_id']
+
+    date_list = geoprocessing.point_stats(geom, tile_id) # looks like [u'2016-05-09', u'2016-05-13', u'2016-06-03', u'2016-05-07', u'2016-05-07']
+
+    # makes json formatted info of tile_id: date list
+    return gfw_api.serialize_fire_analysis(date_list, tile_id)
+
+
 def landcover(event, context):
 
     geom = util.get_shapely_geom(event)
@@ -81,7 +92,7 @@ def landcover(event, context):
 
     if layer_name not in valid_layers:
         msg = 'Layer query param must be one of: {}'.format(', '.join(valid_layers))
-        return gfw_api.api_error(msg)  
+        return gfw_api.api_error(msg)
 
     lulc_raster = lulc_util.ras_lkp(layer_name)
     area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
@@ -102,10 +113,10 @@ def loss_by_landcover(event, context):
         params = {}
 
     layer_name = params.get('layer')
-    
+
     valid_layers = lulc_util.get_valid_layers()
 
-    if layer_name not in valid_layers: 
+    if layer_name not in valid_layers:
         msg = 'Layer query param must be one of: {}'.format(', '.join(valid_layers))
         return gfw_api.api_error(msg)
 
@@ -121,7 +132,40 @@ def loss_by_landcover(event, context):
     return gfw_api.serialize_loss_by_landcover(hist, area_ha, event)
 
 
-def glad(event, context):
+def fire_alerts(event, context):
+
+    geom = util.get_shapely_geom(event)
+    area_ha = geo_utils.get_polygon_area(geom)
+
+    payload = {'geojson': json.loads(event['body'])['geojson']}
+
+    params = event.get('queryStringParameters')
+    if not params:
+        params = {}
+
+    # send list of tiles to another enpoint called fire_analysis(geom, tile)
+    url = 'https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/fire_analysis'
+    request_list = []
+
+    # get list of tiles that intersect the aoi
+    tiles = geoprocessing.find_tiles(geom)
+
+    # add specific analysis type for each request
+    for tile in tiles:
+
+        new_params = params.copy()
+        new_params['tile_id'] = tile
+
+        request_list.append(grequests.post(url, json=payload, params=new_params))
+
+    # execute these requests in parallel
+    response_list = grequests.map(request_list, size=len(tiles))
+
+    # what should i return here? maybe call serialize_glad -> serialize glad_or_fires?
+    return gfw_api.serialize_glad(response_list, area_ha)
+
+
+def glad_alerts(event, context):
 
     geom = util.get_shapely_geom(event)
     area_ha = geo_utils.get_polygon_area(geom)
@@ -132,19 +176,23 @@ def glad(event, context):
     if not params:
         params = {}
 
-    agg_values = params.get('aggregate_values', 'false').lower()
+    agg_values = params.get('aggregate_values', False)
     agg_by = params.get('aggregate_by')
+
+    if agg_values in ['true', 'TRUE', 'True', True]:
+        agg_values = True
+
 
     agg_list = ['week', 'month', 'year', 'quarter', 'all']
 
-    if agg_by not in agg_list or agg_values != 'true':
+    if agg_by not in agg_list or agg_values != True:
         msg = 'For this batch service, aggregate_values must be True, and ' \
-              'aggregate_by must be in {}'.format(', '.join(agg_list)) 
+              'aggregate_by must be in {}'.format(', '.join(agg_list))
         return gfw_api.api_error(msg)
 
     analysis_raster = 's3://palm-risk-poc/data/glad/data.vrt'
 
-    count, stats = geoprocessing.count(geom, analysis_raster)
+    stats = geoprocessing.count(geom, analysis_raster)
 
     hist = util.unpack_glad_histogram(stats, agg_by)
 
@@ -152,20 +200,17 @@ def glad(event, context):
 
 
 if __name__ == '__main__':
-#    aoi = {"type": "FeatureCollection","features": [{"type": "Feature","properties": {},"geometry": {"type": "Polygon", "coordinates": [[[112.52347809425214, -2.4629252286881287], [112.52375417593427, -2.5017628816946242], [112.51916147519748, -2.5402267045362503], [112.50974204699374, -2.577946263970524], [112.49558330886562, -2.614558288658496], [112.47681732740618, -2.6497101679925885], [112.45361971343202, -2.6830633484981927], [112.42620812990329, -2.7142965950846145], [112.39484041908888, -2.7431090857103273], [112.35981235819803, -2.7692233096203624], [112.3214550556943, -2.792387741195524], [112.28013200376171, -2.8123792636063976], [112.23623580588652, -2.8290053188698887], [112.19018460220374, -2.842105763539243], [112.1424182190733, -2.851554412095351], [112.09339407322184, -2.857260253120008], [112.04358286462103, -2.8591683264916665], [111.9934640959716, -2.857260253120008], [111.94352146012484, -2.851554412095351], [111.894238139886, -2.8421057635392435], [111.84609206731211, -2.829005318869889], [111.79955119173738, -2.8123792636063984], [111.75506880725054, -2.792387741195524], [111.71307899113648, -2.769223309620364], [111.6739922048242, -2.7431090857103277], [111.6381911081168, -2.714296595084616], [111.60602663590022, -2.6830633484981936], [111.57781438413839, -2.6497101679925903], [111.55383134878588, -2.614558288658497], [111.53431305732953, -2.5779462639705244], [111.51945112806735, -2.5402267045362517], [111.50939128702453, -2.5017628816946242], [111.50423186668532, -2.462925228688129], [111.50402280458742, -2.4240877731073645], [111.50876515339806, -2.3856245349570426], [111.5184111074848, -2.3479059250133516], [111.53286454433317, -2.3112951781314286], [111.55198207256961, -2.276144855818887], [111.57557457194386, -2.2427934517202726], [111.60340920452126, -2.211562132664538], [111.63521187064549, -2.182751646622346], [111.6706700780462, -2.15663942731472], [111.70943618787126, -2.1334769233240363], [111.75113099748947, -2.113487177400656], [111.7953476166845, -2.096862679253675], [111.8416555913836, -2.0837635124853295], [111.88960522734892, -2.0743158135003075], [111.9387320653001, -2.0686105572207465], [111.98856145871547, -2.066702681293707], [112.03861320603454, -2.068610557220746], [112.08840619009754, -2.074315813500307], [112.13746297934445, -2.083763512485329], [112.185314347468, -2.096862679253675], [112.23150367078676, -2.1134871774006547], [112.27559116547985, -2.133476923324035], [112.3171579299057, -2.1566394273147185], [112.35580976042468, -2.1827516466223447], [112.39118071236838, -2.2115621326645356], [112.42293638097355, -2.2427934517202703], [112.45077688015866, -2.2761448558188837], [112.47443949992143, -2.311295178131426], [112.49370102584041, -2.3479059250133494], [112.50837970666139, -2.3856245349570395], [112.51833685824398, -2.4240877731073605], [112.52347809425214, -2.4629252286881256], [112.52347809425214, -2.4629252286881287]]]}}]}
-    # aoi = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[40.638427734375,-5.7690358661221355],[40.528564453125,-6.195168442930952],[40.869140625,-6.195168442930952],[40.638427734375,-5.7690358661221355]]]}}]}
-#    aoi = {"type": "FeatureCollection", "features": [{"geometry": {"type": "Polygon", "coordinates": [[[21.1376953125, -2.6357885741666065], [20.4345703125, -4.258768357307995], [22.8955078125, -4.258768357307995], [21.1376953125, -2.6357885741666065]]]}, "type": "Feature", "properties": {}}]}
-#    aoi = {"type": "FeatureCollection", "features": [ { "type": "Feature", "properties": {}, "geometry": { "type": "Polygon", "coordinates": [ [ [ -3.2958984375, 45.02695045318546 ], [ -3.9990234375, 44.18220395771566 ], [ -2.7685546874999996, 44.37098696297173 ], [ -3.2958984375, 45.02695045318546 ] ] ] } } ] }
-    aoi = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[-53.822021484375,-8.401733990731849],[-53.6297607421875,-8.874217009053554],[-53.228759765625,-8.830795184328931],[-53.1903076171875,-8.3799965384869],[-53.822021484375,-8.401733990731849]]]}}]}
+    aoi ={"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[117.164337416055,-0.146001213786356],[117.155703106841,-0.057749439573639],[117.130133243555,0.027110960960791],[117.088610223703,0.105318959360494],[117.032729390131,0.173868987816331],[116.9646379261,0.230126442445014],[116.886952514797,0.271929022470392],[116.802658856842,0.297669979066676],[116.714996872182,0.306360018259741],[116.62733601195,0.297665417784521],[116.543045531146,0.271920848997643],[116.465364792161,0.230116400643847],[116.397278664419,0.173859331577133],[116.341402857481,0.105312081565839],[116.299883592981,0.027108993740147],[116.274315418049,-0.057744991082702],[116.265680230058,-0.145989746845834],[116.274309760144,-0.234235059943345],[116.299872885489,-0.319090657019565],[116.341388234208,-0.397296240890491],[116.397261631207,-0.465846611406709],[116.465347025389,-0.522107112718315],[116.543028657773,-0.563914980303813],[116.627321403215,-0.589662660364852],[116.714985480799,-0.598359835271131],[116.80265112075,-0.589671696300947],[116.886948340271,-0.56393193102085],[116.964636750894,-0.522129896874692],[117.032730315149,-0.465872485244865],[117.088612191345,-0.397322188160817],[117.130135233987,-0.319113812726435],[117.155704320927,-0.234253104759971],[117.164337416055,-0.146001213786356]]]}}]}
 
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {}
+             'queryStringParameters': {'aggregate_by':'year', 'aggregate_values': 'True', 'tile_id': '10N_00W'}
             }
 
-    # glad(event, None)
+    #glad_alerts(event, None)
     #analysis(event, None)
     #landcover(event, None)
-    loss_by_landcover(event, None)
+    #loss_by_landcover(event, None)
     #umd_loss_gain(event, None)
+    fire_analysis(event, None)

@@ -1,7 +1,8 @@
 import numpy as np
+import fiona
+from shapely.geometry import shape, Polygon
 
-from geop.geo_utils import mask_geom_on_raster
-
+from geo_utils import mask_geom_on_raster
 
 def count(geom, raster_path, modifications=None):
     """
@@ -33,10 +34,10 @@ def count(geom, raster_path, modifications=None):
     """
 
     masked_data, _ = mask_geom_on_raster(geom, raster_path, modifications)
-    if masked_data:
+    if masked_data.any():
         return masked_array_count(masked_data)
     else:
-        return {},{}
+        return {}
 
 
 def count_pairs(geom, raster_paths):
@@ -72,52 +73,52 @@ def count_pairs(geom, raster_paths):
     	pairs = np.ma.dstack(layers)
     	# Get the array in 2D form
     	arr = pairs.reshape(-1, pairs.shape[-1])
-	
+
     	# Remove Rows which have masked values
     	trim_arr = np.ma.compress_rowcols(arr, 0)
-	
+
     	if len(trim_arr):
-	
+
         	# Lexicographically sort so that repeated pairs follow one another
         	sorted_arr = trim_arr[np.lexsort(trim_arr.T), :]
-	
+
         	# otherwise no overlap between the two rasters
         	if len(sorted_arr):
-	
+
             		# The difference between index n and n+1 in sorted_arr, for each index.
             		# Since it's sorted, repeated entries will have a value of 0 at that index
             		diff_sort = np.diff(sorted_arr, axis=0)
-		
+
             		# True or False value for each index of diff_sort based on a diff_sort
             		# having truthy or falsey values.  Indexes with no change (0 values) will
             		# be represented as False in this array
             		indexes_changed_mask = np.any(diff_sort, 1)
-		
+
             		# Get the indexes that are True, indicating an index of sorted_arr that has
             		# a difference with its preceding value - ie, it represents a new
             		# occurrence of a value
             		diff_indexes = np.where(indexes_changed_mask)[0]
-		
+
             		# Get the rows at the diff indexes, these are unique at each index
             		unique_rows = [sorted_arr[i] for i in diff_indexes] + [sorted_arr[-1]]
-		
+
             		# Prepend a -1 on the list of diff_indexes and append the index of the last
             		# unique row, resulting in an array of index changes with fenceposts on
             		# both sides.  ie, `[-1, ...list of diff indexes..., <idx of last sorted>]`
             		idx_of_last_val = sorted_arr.shape[0] - 1
             		diff_idx_with_start = np.insert(diff_indexes, 0, -1)
             		fencepost_diff_indexes = np.append(diff_idx_with_start, idx_of_last_val)
-		
+
             		# Get the number of occurrences of each unique row based on the difference
             		# between the indexes at which they change.  Since we put fenceposts up,
             		# we'll get a count for the first and last elements of the diff indexes
             		counts = np.diff(fencepost_diff_indexes)
-		
+
             		# Map the pairs to the count, compressing values to keys in this format:
             		#   cell_r1::cell_r2
             		pair_counts = zip(unique_rows, counts)
             		pair_map = {k[0].astype(str) + '::' + k[1].astype(str): cnt for k, cnt in pair_counts}
-		
+
         	else:
                        	pair_map = {}
     	else:
@@ -129,14 +130,53 @@ def count_pairs(geom, raster_paths):
 
     return pair_map
 
+
 def masked_array_count(masked_data):
     # Perform count using numpy built-ins.  Compressing the masked array
     # creates a 1D array of just unmasked values.  May be able to speed up
     # by using scipy count_tier_group, but this is working well for now
-    values, counts = np.unique(masked_data.compressed(), return_counts=True)
+
+    # trying to run this compress funx only on np array
+    if isinstance(masked_data, np.ndarray):
+        masked_data = masked_data.compressed()
+
+    values, counts = np.unique(masked_data, return_counts=True)
 
     # Make dict of val: count with string keys for valid json
     count_map = dict(zip(map(str, values), counts))
 
-    return masked_data.count(), count_map
+    return count_map
 
+# print masked_array_count([u'2016-05-09', u'2016-05-13', u'2016-06-03'])
+
+def find_tiles(aoi):
+
+    aoi_coords = aoi['coordinates'][0]
+    aoi_geom = Polygon(aoi_coords)
+
+    tiles = 'index.geojson'
+    int_tiles = []
+
+    with fiona.open(tiles, 'r', 'GeoJSON') as tiles:
+        for tile in tiles:
+            if shape(tile['geometry']).intersects(aoi_geom):
+                tile_dict = tile['properties']
+                tile_name = tile_dict['location'][-12:].replace(".tif", "")
+
+                int_tiles.append(tile_name)
+
+    return int_tiles
+
+
+def point_stats(geom, tile_id):
+    # returns fire points within aoi
+    intersect_list = []
+
+    with fiona.open('s3://gfw2-data/alerts-tsv/temp/fires-vrt-test/data.vrt', layer='clipped_remove_all_day_only') as src:
+        for pt in src:
+            if shape(pt['geometry']).intersects(geom):
+                fire_date = pt['properties']['fire_date']
+                intersect_list.append(fire_date) ## need to include modis/veers too
+
+    # intersect list looks like: [u'2016-05-09', u'2016-05-13', u'2016-06-03', u'2016-05-07', u'2016-05-07']
+    return intersect_list
