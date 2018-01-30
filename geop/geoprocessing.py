@@ -1,5 +1,4 @@
 import numpy as np
-import fiona
 from shapely.geometry import shape, Polygon
 
 from geo_utils import mask_geom_on_raster
@@ -147,36 +146,3 @@ def masked_array_count(masked_data):
 
     return count_map
 
-# print masked_array_count([u'2016-05-09', u'2016-05-13', u'2016-06-03'])
-
-def find_tiles(aoi):
-
-    aoi_coords = aoi['coordinates'][0]
-    aoi_geom = Polygon(aoi_coords)
-
-    tiles = 'index.geojson'
-    int_tiles = []
-
-    with fiona.open(tiles, 'r', 'GeoJSON') as tiles:
-        for tile in tiles:
-            if shape(tile['geometry']).intersects(aoi_geom):
-                tile_dict = tile['properties']
-                tile_name = tile_dict['location'][-12:].replace(".tif", "")
-
-                int_tiles.append(tile_name)
-
-    return int_tiles
-
-
-def point_stats(geom, tile_id):
-    # returns fire points within aoi
-    intersect_list = []
-
-    with fiona.open('s3://gfw2-data/alerts-tsv/temp/fires-vrt-test/data.vrt', layer='clipped_remove_all_day_only') as src:
-        for pt in src:
-            if shape(pt['geometry']).intersects(geom):
-                fire_date = pt['properties']['fire_date']
-                intersect_list.append(fire_date) ## need to include modis/veers too
-
-    # intersect list looks like: [u'2016-05-09', u'2016-05-13', u'2016-06-03', u'2016-05-07', u'2016-05-07']
-    return intersect_list

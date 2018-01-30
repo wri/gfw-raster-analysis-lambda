@@ -53,7 +53,7 @@ functions:
           cors: true
 
   glad-alerts:
-    handler: handler.glad
+    handler: handler.glad_alerts
     events:
       - http:
           path: glad-alerts
