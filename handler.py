@@ -178,7 +178,7 @@ def glad_alerts(event, context):
 
     # do not allow user to query this because api doens't recognize it
     if params.get('period'):
-        msg = 'This api does not filter GLAD by date. Please remove the 'period' parameter'
+        msg = "This api does not filter GLAD by date. Please remove the 'period' parameter"
         return gfw_api.api_error(msg)
 
 
