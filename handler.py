@@ -178,7 +178,7 @@ def glad_alerts(event, context):
 
     # do not allow user to query this because api doens't recognize it
     if params.get('period'):
-        msg = 'This api does not filter GLAD by date. Please remove the "period" parameter'
+        msg = 'This api does not filter GLAD by date. Please remove the 'period' parameter'
         return gfw_api.api_error(msg)
 
 
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {'period': 'blah', 'aggregate_by':'all', 'aggregate_values': 'True', 'tile_id': '10N_00W'}
+             'queryStringParameters': {'aggregate_by':'all', 'aggregate_values': 'True', 'tile_id': '10N_00W'}
             }
 
     glad_alerts(event, None)
