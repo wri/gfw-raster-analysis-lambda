@@ -176,6 +176,12 @@ def glad_alerts(event, context):
     if not params:
         params = {}
 
+    # do not allow user to query this because api doens't recognize it
+    if params.get('period'):
+        msg = 'This api does not filter GLAD by date. Please remove the "period" parameter'
+        return gfw_api.api_error(msg)
+
+
     agg_values = params.get('aggregate_values', False)
     agg_by = params.get('aggregate_by')
 
@@ -183,7 +189,7 @@ def glad_alerts(event, context):
         agg_values = True
 
 
-    agg_list = ['week', 'month', 'year', 'quarter', 'all']
+    agg_list = ['day', 'week', 'month', 'year', 'quarter', 'all']
 
     if agg_by not in agg_list or agg_values != True:
         msg = 'For this batch service, aggregate_values must be True, and ' \
@@ -200,17 +206,17 @@ def glad_alerts(event, context):
 
 
 if __name__ == '__main__':
-    aoi ={"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[117.164337416055,-0.146001213786356],[117.155703106841,-0.057749439573639],[117.130133243555,0.027110960960791],[117.088610223703,0.105318959360494],[117.032729390131,0.173868987816331],[116.9646379261,0.230126442445014],[116.886952514797,0.271929022470392],[116.802658856842,0.297669979066676],[116.714996872182,0.306360018259741],[116.62733601195,0.297665417784521],[116.543045531146,0.271920848997643],[116.465364792161,0.230116400643847],[116.397278664419,0.173859331577133],[116.341402857481,0.105312081565839],[116.299883592981,0.027108993740147],[116.274315418049,-0.057744991082702],[116.265680230058,-0.145989746845834],[116.274309760144,-0.234235059943345],[116.299872885489,-0.319090657019565],[116.341388234208,-0.397296240890491],[116.397261631207,-0.465846611406709],[116.465347025389,-0.522107112718315],[116.543028657773,-0.563914980303813],[116.627321403215,-0.589662660364852],[116.714985480799,-0.598359835271131],[116.80265112075,-0.589671696300947],[116.886948340271,-0.56393193102085],[116.964636750894,-0.522129896874692],[117.032730315149,-0.465872485244865],[117.088612191345,-0.397322188160817],[117.130135233987,-0.319113812726435],[117.155704320927,-0.234253104759971],[117.164337416055,-0.146001213786356]]]}}]}
+    aoi ={"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"MultiPolygon","coordinates":[[[[21.0723461722907,-3.17077555929246],[21.0710301780474,-3.09152122482142],[21.1729995906205,-3.09152122482142],[21.1743219533783,-3.17077555929246],[21.0723461722907,-3.17077555929246]]]]}}]}
 
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {'aggregate_by':'year', 'aggregate_values': 'True', 'tile_id': '10N_00W'}
+             'queryStringParameters': {'period': 'blah', 'aggregate_by':'all', 'aggregate_values': 'True', 'tile_id': '10N_00W'}
             }
 
-    #glad_alerts(event, None)
+    glad_alerts(event, None)
     #analysis(event, None)
     #landcover(event, None)
     #loss_by_landcover(event, None)
     #umd_loss_gain(event, None)
-    fire_analysis(event, None)
+    #fire_analysis(event, None)
