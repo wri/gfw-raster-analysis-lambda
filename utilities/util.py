@@ -49,7 +49,8 @@ def create_resp_dict(date_dict):
                  # month --> quarter calc: https://stackoverflow.com/questions/1406131
                  'quarter': grouped_and_to_rows([(x.year, (x.month-1)//3 + 1) for x in k], v, 'quarter'),
                  'month':  grouped_and_to_rows([(x.year, x.month) for x in k], v, 'month'),
-                 'week': grouped_and_to_rows([(x.year, x.isocalendar()[1]) for x in k], v, 'week')
+                 'week': grouped_and_to_rows([(x.year, x.isocalendar()[1]) for x in k], v, 'week'),
+                 'day': grouped_and_to_rows([(x.year, x.strftime('%Y-%m-%d')) for x in k], v, 'day')
                 }
 
     return resp_dict
