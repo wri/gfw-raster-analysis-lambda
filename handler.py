@@ -66,17 +66,6 @@ def analysis(event, context):
     return gfw_api.serialize_analysis(hist, event)
 
 
-def fire_analysis(event, context):
-
-    geom = util.get_shapely_geom(event)
-    tile_id = event['queryStringParameters']['tile_id']
-
-    date_list = geoprocessing.point_stats(geom, tile_id) # looks like [u'2016-05-09', u'2016-05-13', u'2016-06-03', u'2016-05-07', u'2016-05-07']
-
-    # makes json formatted info of tile_id: date list
-    return gfw_api.serialize_fire_analysis(date_list, tile_id)
-
-
 def landcover(event, context):
 
     geom = util.get_shapely_geom(event)
@@ -132,39 +121,6 @@ def loss_by_landcover(event, context):
     return gfw_api.serialize_loss_by_landcover(hist, area_ha, event)
 
 
-def fire_alerts(event, context):
-
-    geom = util.get_shapely_geom(event)
-    area_ha = geo_utils.get_polygon_area(geom)
-
-    payload = {'geojson': json.loads(event['body'])['geojson']}
-
-    params = event.get('queryStringParameters')
-    if not params:
-        params = {}
-
-    # send list of tiles to another enpoint called fire_analysis(geom, tile)
-    url = 'https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/fire_analysis'
-    request_list = []
-
-    # get list of tiles that intersect the aoi
-    tiles = geoprocessing.find_tiles(geom)
-
-    # add specific analysis type for each request
-    for tile in tiles:
-
-        new_params = params.copy()
-        new_params['tile_id'] = tile
-
-        request_list.append(grequests.post(url, json=payload, params=new_params))
-
-    # execute these requests in parallel
-    response_list = grequests.map(request_list, size=len(tiles))
-
-    # what should i return here? maybe call serialize_glad -> serialize glad_or_fires?
-    return gfw_api.serialize_glad(response_list, area_ha)
-
-
 def glad_alerts(event, context):
 
     geom = util.get_shapely_geom(event)
@@ -206,17 +162,17 @@ def glad_alerts(event, context):
 
 
 if __name__ == '__main__':
-    aoi ={"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"MultiPolygon","coordinates":[[[[21.0723461722907,-3.17077555929246],[21.0710301780474,-3.09152122482142],[21.1729995906205,-3.09152122482142],[21.1743219533783,-3.17077555929246],[21.0723461722907,-3.17077555929246]]]]}}]}
+
+    aoi = {"type": "FeatureCollection", "features": [{"geometry": {"type": "Polygon", "coordinates": [[[-64.01513089930181, -10.250867673952202], [-64.01547724159283, -10.255188574409503], [-64.01627009532785, -10.259456511252596], [-64.01750186316461, -10.263630379052934], [-64.0191607173417, -10.267669976817634], [-64.02123071224656, -10.2715363953137], [-64.02369193682378, -10.2751923920038], [-64.0265207054007, -10.27860274997372], [-64.02968978512828, -10.281734617385585], [-64.03316865787271, -10.28455782417545], [-64.03692381404983, -10.2870451729338], [-64.04091907557586, -10.289172701154769], [-64.04511594481502, -10.290919912316015], [-64.04947397614296, -10.292269973551893], [-64.0539511665169, -10.293209878004708], [-64.05850436124986, -10.293730570282827], [-64.0630896710332, -10.293827033807522], [-64.06766289613611, -10.293498339204145], [-64.07217995363852, -10.29274765326688], [-64.07659730352252, -10.291582208411123], [-64.08087236945916, -10.290013232909372], [-64.08496395018159, -10.288055842586774], [-64.08883261743107, -10.28572889502616], [-64.092441096599, -10.283054807694453], [-64.09575462636374, -10.280059341754091], [-64.09874129383302, -10.276771353650766], [-64.10137234195015, -10.273222516883683], [-64.10362244620131, -10.269447016649996], [-64.10546995796813, -10.265481220316367], [-64.10689711220245, -10.261363326903165], [-64.10789019745539, -10.2571329989683], [-64.1084396866631, -10.252830980443619], [-64.10854032747912, -10.24849870411266], [-64.1081911913373, -10.244177892515113], [-64.10739568083196, -10.239910156123585], [-64.1061614954035, -10.235736592663397], [-64.10450055572001, -10.23169739143185], [-64.1024288875389, -10.2278314464234], [-64.09996646621865, -10.224175981979519], [-64.0971370234221, -10.22076619456048], [-64.09396781790822, -10.217634914078262], [-64.09048937264474, -10.214812288041438], [-64.08673518078797, -10.212325491541488], [-64.08274138336343, -10.210198465861323], [-64.07854642174233, -10.208451688210761], [-64.07419066824033, -10.207101974796126], [-64.06971603836466, -10.206162319108248], [-64.0651655884037, -10.20564176697906], [-64.06058310218604, -10.205545329601257], [-64.05601267093442, -10.20587393534477], [-64.05149827020276, -10.206624420830288], [-64.0470833379107, -10.20778956134566], [-64.0428103574805, -10.209358140314016], [-64.03872045003418, -10.211315057148683], [-64.0348529795274, -10.213641472462912], [-64.0312451745786, -10.216314989243612], [-64.02793177059962, -10.219309868254328], [-64.02494467564891, -10.222597275604668], [-64.02231266321103, -10.226145560113492], [-64.02006109485808, -10.229920557806684], [-64.01821167547318, -10.233885920629877], [-64.01678224341305, -10.23800346622217], [-64.01578659766221, -10.242233545392244], [-64.01523436368298, -10.24653542376819], [-64.01513089930181, -10.250867673952202]]]}, "type": "Feature", "properties": {}}]}
 
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {'aggregate_by':'all', 'aggregate_values': 'True', 'tile_id': '10N_00W'}
+             'queryStringParameters': {'aggregate_by':'day', 'aggregate_values': 'True', 'tile_id': '10N_00W', 'layer': 'primary-forest'}
             }
 
-    glad_alerts(event, None)
+    #glad_alerts(event, None)
     #analysis(event, None)
-    #landcover(event, None)
+    landcover(event, None)
     #loss_by_landcover(event, None)
     #umd_loss_gain(event, None)
-    #fire_analysis(event, None)

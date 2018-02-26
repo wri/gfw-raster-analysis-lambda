@@ -230,7 +230,3 @@ def serialize_glad(hist, area_ha, agg_by):
 
     return http_response(serialized)
 
-
-def serialize_fire_analysis(date_list, tile_id):
-
-    return http_response({tile_id: date_list})

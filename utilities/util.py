@@ -100,15 +100,3 @@ def grouped_and_to_rows(keys, vals, agg_type):
 
     return final_list
 
-def fires_date_conv(hist_type, stats):
-
-    stats = {"2015-05-17": 155, "2015-05-18": 72, "2015-05-19": 345}
-
-    mydate_conv = {}
-
-    # glad comes in format of "yyyy-mm-dd" but shared function expects datetime format
-    for d, count in stats.iteritems():
-        mydate_conv[datetime.datetime.strptime(d, "%Y-%m-%d")]=count
-
-    # send formatted dictionary to grouped_and_to_rows
-    resp_dict = create_resp_dict(mydate_conv)
