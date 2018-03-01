@@ -127,36 +127,20 @@ def glad_alerts(event, context):
     area_ha = geo_utils.get_polygon_area(geom)
 
     payload = {'geojson': json.loads(event['body'])['geojson']}
-    params = event.get('queryStringParameters')
 
-    if not params:
-        params = {}
-
-    # do not allow user to query this because api doens't recognize it
-    if params.get('period'):
-        msg = "This api does not filter GLAD by date. Please remove the 'period' parameter"
-        return gfw_api.api_error(msg)
-
-
-    agg_values = params.get('aggregate_values', False)
-    agg_by = params.get('aggregate_by')
-
-    if agg_values in ['true', 'TRUE', 'True', True]:
-        agg_values = True
-
-
-    agg_list = ['day', 'week', 'month', 'year', 'quarter', 'all']
-
-    if agg_by not in agg_list or agg_values != True:
-        msg = 'For this batch service, aggregate_values must be True, and ' \
-              'aggregate_by must be in {}'.format(', '.join(agg_list))
-        return gfw_api.api_error(msg)
+    try:
+        params = util.validate_glad_params(event)
+    except ValueError, e:
+        return gfw_api.api_error(str(e))
 
     analysis_raster = 's3://palm-risk-poc/data/glad/data.vrt'
 
     stats = geoprocessing.count(geom, analysis_raster)
 
-    hist = util.unpack_glad_histogram(stats, agg_by)
+    agg_by = params.get('aggregate_by')
+    period = params.get('period')
+
+    hist = util.unpack_glad_histogram(stats, agg_by, period)
 
     return gfw_api.serialize_glad(hist, area_ha, agg_by)
 
@@ -170,9 +154,13 @@ if __name__ == '__main__':
              'body': json.dumps({'geojson': aoi}),
              'queryStringParameters': {'aggregate_by':'day', 'aggregate_values': 'True', 'tile_id': '10N_00W', 'layer': 'primary-forest'}
             }
+    event = {
+             'body': json.dumps({'geojson': aoi}),
+             'queryStringParameters': {'aggregate_by':'day', 'aggregate_values': 'True', 'period':'2016-01-01,2017-01-01'}
+            }
 
-    #glad_alerts(event, None)
+    glad_alerts(event, None)
     #analysis(event, None)
-    landcover(event, None)
+    #landcover(event, None)
     #loss_by_landcover(event, None)
     #umd_loss_gain(event, None)
