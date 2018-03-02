@@ -2,8 +2,11 @@ import json
 import datetime
 from collections import defaultdict
 import sys
+from functools import partial
 
+import pyproj
 from shapely.geometry import shape
+from shapely.ops import transform
 
 
 def unpack_count_histogram(analysis_type, stats):
@@ -38,7 +41,10 @@ def get_shapely_geom(event):
         raise ValueError('Currently accepting only 1 feature at a time')
 
     # grab the actual geometry-- that's the level on which shapely operates
-    return shape(geojson['features'][0]['geometry'])
+    geom = shape(geojson['features'][0]['geometry'])
+    area_ha = get_polygon_area(geom)
+
+    return geom, area_ha
 
 
 def create_resp_dict(date_dict):
@@ -57,22 +63,25 @@ def create_resp_dict(date_dict):
     return resp_dict
 
 
-def unpack_glad_histogram(stats, hist_type, period):
+def unpack_glad_histogram(stats, params):
 
-	date_dict = {}
+    hist_type = params['aggregate_by']
+    period = params['period']
 
-	for conf_days, count in stats.iteritems():
-	    total_days = int(conf_days[1:])
-	    year = total_days / 365 + 2015
-	    julian_day = total_days % 365
+    date_dict = {}
 
-	    # https://stackoverflow.com/questions/17216169/
-	    alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
+    for conf_days, count in stats.iteritems():
+        total_days = int(conf_days[1:])
+        year = total_days / 365 + 2015
+        julian_day = total_days % 365
 
-	    try:
-		    date_dict[alert_date] += count # if date exists, add count to id
-	    except KeyError:
-		    date_dict[alert_date] = count # if date doesn't exist, create it, set equal to count
+        # https://stackoverflow.com/questions/17216169/
+        alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
+
+        try:
+    	    date_dict[alert_date] += count # if date exists, add count to id
+        except KeyError:
+    	    date_dict[alert_date] = count # if date doesn't exist, create it, set equal to count
 
         # filter dates by period
         start_date, end_date = period_to_dates(period)
@@ -80,7 +89,7 @@ def unpack_glad_histogram(stats, hist_type, period):
 
         resp_dict = create_resp_dict(filtered_by_period)
 
-	return resp_dict.get(hist_type, {'all': resp_dict})
+    return resp_dict.get(hist_type, {'all': resp_dict})
 
 
 def grouped_and_to_rows(keys, vals, agg_type):
@@ -169,3 +178,20 @@ def period_to_dates(period):
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
 
     return start_date, end_date
+
+
+def get_polygon_area(geom):
+    # source: https://gis.stackexchange.com/a/166421/30899
+
+    geom_area = transform(
+        partial(
+            pyproj.transform,
+            pyproj.Proj(init='EPSG:4326'),
+            pyproj.Proj(
+                proj='aea',
+                lat1=geom.bounds[1],
+                lat2=geom.bounds[3])),
+        geom)
+
+    # return area in ha
+    return geom_area.area / 10000.
