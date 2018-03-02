@@ -24,8 +24,5 @@ node_modules/
 # Output
 dist/
 
-# intermediate output
-*.geojson
-
 # pycharm
 .idea/

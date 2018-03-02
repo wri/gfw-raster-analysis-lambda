@@ -1,10 +1,9 @@
-from functools import partial
+import os
 
 import rasterio
 from rasterio import features
 import numpy as np
-import pyproj
-from shapely.ops import transform
+
 import boto3
 from urlparse import urlparse
 import json
@@ -35,8 +34,8 @@ def check_extent(user_poly, raster):
             break
 
     return poly_intersects
-    
-    
+
+
 def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
     """"
     For a given polygon, returns a numpy masked array with the intersecting
@@ -71,7 +70,8 @@ def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
        supplied geometry does not intersect are masked.
 
     """
-    if check_extent(geom, raster_path):
+    # if we're testing and the raster is local, assume geom intersects
+    if  os.path.exists(raster_path) or check_extent(geom, raster_path):
         # Read a chunk of the raster that contains the bounding box of the
         # input geometry.  This has memory implications if that rectangle
         # is large. The affine transformation maps geom coordinates to the
@@ -108,7 +108,7 @@ def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
 
         # Mask the data array, with modifications applied, by the query polygon
         return np.ma.array(data=data, mask=full_mask), shifted_affine
-        
+
     else:
         return np.array([]), None
 
@@ -144,20 +144,3 @@ def get_window_and_affine(geom, raster_src):
     affine = rasterio.windows.transform(window, raster_src.transform)
 
     return window, affine
-
-
-def get_polygon_area(geom):
-    # source: https://gis.stackexchange.com/a/166421/30899
-
-    geom_area = transform(
-        partial(
-            pyproj.transform,
-            pyproj.Proj(init='EPSG:4326'),
-            pyproj.Proj(
-                proj='aea',
-                lat1=geom.bounds[1],
-                lat2=geom.bounds[3])),
-        geom)
-
-    # return area in ha
-    return geom_area.area / 10000.
