@@ -71,12 +71,15 @@ def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
 
     """
     # if we're testing and the raster is local, assume geom intersects
+
     if  os.path.exists(raster_path) or check_extent(geom, raster_path):
+
         # Read a chunk of the raster that contains the bounding box of the
         # input geometry.  This has memory implications if that rectangle
         # is large. The affine transformation maps geom coordinates to the
         # image mask below.
         with rasterio.open(raster_path) as src:
+
             window, shifted_affine = get_window_and_affine(geom, src)
             data = src.read(1, masked=True, window=window)
 
@@ -136,6 +139,7 @@ def get_window_and_affine(geom, raster_src):
     """
 
     # Create a window range from the bounds
+    print raster_src
     ul = raster_src.index(*geom.bounds[0:2])
     lr = raster_src.index(*geom.bounds[2:4])
     window = ((lr[0], ul[0]+1), (ul[1], lr[1]+1))
