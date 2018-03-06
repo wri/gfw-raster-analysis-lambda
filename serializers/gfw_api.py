@@ -215,18 +215,18 @@ def lookup(result_dict, count_pixels, lulc_lkp):
     return output_list
 
 
-def serialize_glad(hist, area_ha, agg_by):
+def serialize_glad(hist, area_ha, agg_by, period):
 
     serialized = {
     "data": {
         "aggregate_by": agg_by,
         "aggregate_values": True,
         "attributes": {
+            "area_ha": area_ha,
             "downloadUrls": None,
             "value": hist},
-        "period": None,
+        "period": period,
         "type": "glad-alerts"}
     }
 
     return http_response(serialized)
-

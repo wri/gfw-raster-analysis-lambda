@@ -145,4 +145,3 @@ def masked_array_count(masked_data):
     count_map = dict(zip(map(str, values), counts))
 
     return count_map
-
