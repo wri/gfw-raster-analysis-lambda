@@ -65,12 +65,17 @@ def create_resp_dict(date_dict):
 
 def unpack_glad_histogram(stats, params):
 
+    # if there are no glad alerts, give it something to work with so response is empty list
+    if stats == {}:
+        stats = {'0000':0}
+
     hist_type = params['aggregate_by']
     period = params['period']
 
     date_dict = {}
 
     for conf_days, count in stats.iteritems():
+        print conf_days
         total_days = int(conf_days[1:])
         year = total_days / 365 + 2015
         julian_day = total_days % 365
