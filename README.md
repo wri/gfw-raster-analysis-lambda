@@ -1,4 +1,4 @@
-# gfw-umd-loss-gain-lambda
+# gfw-raster-analysis-lambda
 
 ### Background
 
@@ -25,6 +25,9 @@ Matches the /landcover endpoint on the GFW API, but only provides analysis for `
 /loss-by-landcover:
 Matches the /loss-by-landcover endpoint, again only providing results for `primary-forest` data
 
+/glad-alerts
+Matches the /glad-alerts endpoint, but requires aggregate_values to be set to True (designed for batch processing only)
+
 ### Limitations
 
 Our main obstacle here is speed; particularly large areas may time out. This isn't an issue for the palm-risk use case (all areas are 50 km buffers of palm oil mills) but we could run into this if we expand the usage of this repo.
@@ -35,11 +38,12 @@ If we need to cross this bridge, the subdivide_polygon function in the [original
 
 1. Install Serverless Framework
 ```
-npm install
+npm install -g serverless
 ```
 
 2. Install python dependencies in virtualenv
 ```
+pip install virtualenv
 ./scripts/setup.sh
 ```
 
