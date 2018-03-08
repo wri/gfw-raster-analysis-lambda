@@ -26,3 +26,4 @@ dist/
 
 # pycharm
 .idea/
+.DS_Store
