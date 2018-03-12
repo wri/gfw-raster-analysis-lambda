@@ -139,7 +139,6 @@ def get_window_and_affine(geom, raster_src):
     """
 
     # Create a window range from the bounds
-    print raster_src
     ul = raster_src.index(*geom.bounds[0:2])
     lr = raster_src.index(*geom.bounds[2:4])
     window = ((lr[0], ul[0]+1), (ul[1], lr[1]+1))

@@ -42,17 +42,17 @@ class TestLossGainExtent(TestCase):
     def test_gain_results(self):
 
         response = self.run_analysis('gain')
-        self.assertEqual(response['gain'], 401.33428713899997)
+        self.assertEqual(int(response['gain']), 401)
 
     def test_loss_results(self):
 
         response = self.run_analysis('loss')
-        self.assertEqual(response['loss'], 17771.868082227997)
+        self.assertEqual(int(response['loss']), 17771)
 
     def test_extent_results(self):
 
         response = self.run_analysis('extent')
-        self.assertEqual(response['extent'], 57735.43895505203)
+        self.assertEqual(int(response['extent']), 57735)
 
     def test_bad_thresh(self):
         payload = self.generate_payload()
