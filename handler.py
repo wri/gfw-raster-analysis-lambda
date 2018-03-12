@@ -148,12 +148,12 @@ if __name__ == '__main__':
     # why this crazy structure? Oh lambda . . . sometimes I wonder
     event = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {'aggregate_values': True, 'aggregate_by': 'day', 'thresh': '30', 'period':'2016-01-01,2017-01-01'}
+             'queryStringParameters': {'gladConfirmOnly': True, 'thresh': '30', 'period':'2016-01-01,2017-01-01'}
             }
 
 
-    #glad_alerts(event, None)
+    glad_alerts(event, None)
     #analysis(event, None, loss_raster, area_raster)
     #landcover(event, None)
     #loss_by_landcover(event, None)
-    umd_loss_gain(event, None)
+    #umd_loss_gain(event, None)

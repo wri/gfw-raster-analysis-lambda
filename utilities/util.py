@@ -57,7 +57,8 @@ def create_resp_dict(date_dict):
                  'quarter': grouped_and_to_rows([(x.year, (x.month-1)//3 + 1) for x in k], v, 'quarter'),
                  'month':  grouped_and_to_rows([(x.year, x.month) for x in k], v, 'month'),
                  'week': grouped_and_to_rows([(x.year, x.isocalendar()[1]) for x in k], v, 'week'),
-                 'day': grouped_and_to_rows([(x.year, x.strftime('%Y-%m-%d')) for x in k], v, 'day')
+                 'day': grouped_and_to_rows([(x.year, x.strftime('%Y-%m-%d')) for x in k], v, 'day'),
+                 'total': sum(v)
                 }
 
     return resp_dict
@@ -75,24 +76,36 @@ def unpack_glad_histogram(stats, params):
     date_dict = {}
 
     for conf_days, count in stats.iteritems():
-        print conf_days
         total_days = int(conf_days[1:])
         year = total_days / 365 + 2015
         julian_day = total_days % 365
 
+        conf = int(conf_days[0]) 
+
         # https://stackoverflow.com/questions/17216169/
         alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
 
-        try:
-    	    date_dict[alert_date] += count # if date exists, add count to id
-        except KeyError:
-    	    date_dict[alert_date] = count # if date doesn't exist, create it, set equal to count
+        valid_pixel = False
 
-        # filter dates by period
-        start_date, end_date = period_to_dates(period)
-        filtered_by_period = {alert_date : count for alert_date, count in date_dict.iteritems() if start_date < alert_date < end_date}
+        # if we're filtering by confidence, only select conf values of 3
+        if params['gladConfirmOnly']:
+            if conf == 3:
+                valid_pixel = True
+        else:
+            print 'in else?'
+            valid_pixel = True
 
-        resp_dict = create_resp_dict(filtered_by_period)
+        if valid_pixel:
+            try:
+                date_dict[alert_date] += count # if date exists, add count to id
+            except KeyError:
+                date_dict[alert_date] = count # if date doesn't exist, create it, set equal to count
+
+    # filter dates by period
+    start_date, end_date = period_to_dates(period)
+    filtered_by_period = {alert_date : count for alert_date, count in date_dict.iteritems() if start_date < alert_date < end_date}
+
+    resp_dict = create_resp_dict(filtered_by_period)
 
     return resp_dict.get(hist_type, {'all': resp_dict})
 
@@ -143,22 +156,29 @@ def validate_glad_params(event):
     except ValueError, e:
         raise ValueError(e)
 
-
-    agg_values = params.get('aggregate_values', False)
+    agg_values = check_param_true(params.get('aggregate_values', False))
+    glad_confirm_only = check_param_true(params.get('gladConfirmOnly', False))
     agg_by = params.get('aggregate_by')
-
-    if agg_values in ['true', 'TRUE', 'True', True]:
-        agg_values = True
 
     agg_list = ['day', 'week', 'month', 'year', 'quarter', 'all']
 
-    if agg_by not in agg_list or agg_values != True:
-        msg = 'For this batch service, aggregate_values must be True, and ' \
-              'aggregate_by must be in {}'.format(', '.join(agg_list))
+    if agg_values and agg_by not in agg_list:
+        msg = 'If aggregate_values is True,  ' \
+              'aggregate_by must be one of {}'.format(', '.join(agg_list))
         raise ValueError(msg)
 
+    params['aggregate_values'] = agg_values
+    params['gladConfirmOnly'] = glad_confirm_only
+
+    # if agg_by not set, just return total alerts
+    if not agg_by:
+       params['aggregate_by'] = 'total' 
 
     return params
+
+
+def check_param_true(param):
+    return param in ['true', 'TRUE', 'True', True]
 
 
 def check_dates(period):
