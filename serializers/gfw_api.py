@@ -68,7 +68,7 @@ def serialize_extent_by_landcover(hist, layer_name, input_poly_area, event):
     for pixel_value, area_ha in hist.iteritems():
 
         # only take values with density greater than threshold
-        if pixel_value % 500 >= thresh:
+        if pixel_value % 500 > thresh:
 
             # the categorical layer's categories have been multiplied by 500
             # the category for this area is the number of times 500 goes into pixel_value
