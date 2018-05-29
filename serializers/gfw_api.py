@@ -38,9 +38,8 @@ def serialize_analysis(hist, event):
 
 def serialize_extent_or_gain(analysis_type, hist, event):
 
-    print analysis_type
-    print hist
-    thresh = int(event['queryStringParameters']['thresh'])
+    thresh = (int(event['queryStringParameters']['thresh'])
+              if 'thresh' in event['queryStringParameters'] else 30)
 
     area_total = 0
 
@@ -53,6 +52,54 @@ def serialize_extent_or_gain(analysis_type, hist, event):
             area_total += area_ha
 
     return http_response({analysis_type: area_total})
+
+
+def serialize_extent_by_landcover(hist, layer_name, input_poly_area, event):
+
+    thresh = (int(event['queryStringParameters']['thresh'])
+              if 'thresh' in event['queryStringParameters'] else 30)
+
+    landcover_list = []
+    lkp = lulc_util.build_lulc_lookup(layer_name)
+
+    print(hist)
+
+    areas_by_class_val = {}
+    for pixel_value, area_ha in hist.iteritems():
+
+        # only take values with density greater than threshold
+        if pixel_value % 500 >= thresh:
+
+            # the categorical layer's categories have been multiplied by 500
+            # the category for this area is the number of times 500 goes into pixel_value
+            class_val = int(pixel_value / 500)
+            if class_val in areas_by_class_val:
+                areas_by_class_val[class_val] += area_ha
+            else:
+                areas_by_class_val[class_val] = area_ha
+
+    print(areas_by_class_val)
+
+    for lulc_val, area_ha in areas_by_class_val.iteritems():
+
+        landcover_list.append({
+        'className': lkp[lulc_val],
+        'classVal': str(lulc_val),
+        'result': area_ha,
+        'resultType': 'areaHectares'
+        })
+
+    serialized = {'data': {
+                    'attributes': {
+                        'areaHa': input_poly_area,
+                        'landcover': landcover_list
+                        },
+                    'type': layer_name,
+                    'id': None
+    }}
+
+    return http_response(serialized)
+
 
 
 def serialize_loss(loss_area_dict, event):
@@ -99,7 +146,6 @@ def serialize_landcover(landcover_dict, layer_name, input_poly_area):
     lkp = lulc_util.build_lulc_lookup(layer_name)
 
     for lulc_val, area_ha in landcover_dict.iteritems():
-        print lulc_val
 
         landcover_list.append({
         'className': lkp[lulc_val],
@@ -141,7 +187,6 @@ def serialize_loss_by_landcover(hist, input_poly_area, event):
 
     empty_year_dict = {year: 0 for year in requested_years}
     final_dict = {str(val): empty_year_dict.copy() for val in lulc_vals}
-    print final_dict
 
     for combine_value, area_ha in hist.iteritems():
 
