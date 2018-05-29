@@ -34,7 +34,6 @@ def unpack_count_histogram(analysis_type, stats):
 
 def get_shapely_geom(event):
 
-    print event
     geojson = json.loads(event['body'])['geojson']
 
     if len(geojson['features']) > 1:
