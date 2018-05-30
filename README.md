@@ -34,33 +34,32 @@ Our main obstacle here is speed; particularly large areas may time out. This isn
 
 If we need to cross this bridge, the subdivide_polygon function in the [original repo](https://github.com/mmcfarland/foss4g-lambda-demo/blob/master/handler.py#L63) will likely help.
 
+
 ## Development
-
-1. Install Serverless Framework
+1. Clone locally
+2. Set the following environment variables:
 ```
-npm install -g serverless
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
 ```
-
-2. Install python dependencies in virtualenv
+3. Spin up the docker container and ssh in
 ```
-pip install virtualenv
-./scripts/setup.sh
-```
-
-3. Activate virtualenv
-```
-source env/bin/activate
+docker-compose run base
 ```
 
-4. Test locally
+4. Change to shared directory
 ```
-python handler.py
-```
-
-5. Configure `serverless.yml` to specify your AWS profile and s3 buckets
-
-6. Create serverless stack and deploy
-```
-./scripts/publish.sh
+cd /home/geolambda/
 ```
 
+5. Run handler.py to test analysis and alerts endpoints (see `if __name__ == '__main__':` block)
+
+
+## Deployment
+1. install serverless `npm install -g serverless`
+
+2. Test! Run `docker-compose run test` to automatically spin up the docker container and run your tests (in the `/test` folder)
+
+3. Package - `docker-compose run package`
+
+4. Deploy - `serverless deploy -v`
