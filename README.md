@@ -37,10 +37,10 @@ If we need to cross this bridge, the subdivide_polygon function in the [original
 
 ## Development
 1. Clone locally
-2. Set the following environment variables:
+2. Create .env file to store AWS credentials in the root of this project
 ```
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
+AWS_ACCESS_KEY_ID=<my key id>
+AWS_SECRET_ACCESS_KEY=<my key>
 ```
 3. Spin up the docker container and ssh in
 ```
@@ -63,3 +63,4 @@ cd /home/geolambda/
 3. Package - `docker-compose run package`
 
 4. Deploy - `serverless deploy -v`
+
