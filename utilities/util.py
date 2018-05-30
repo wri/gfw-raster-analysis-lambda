@@ -92,7 +92,6 @@ def unpack_glad_histogram(stats, params):
             if conf == 3:
                 valid_pixel = True
         else:
-            print 'in else?'
             valid_pixel = True
 
         if valid_pixel:
@@ -103,7 +102,7 @@ def unpack_glad_histogram(stats, params):
 
     # filter dates by period
     start_date, end_date = period_to_dates(period)
-    filtered_by_period = {alert_date : count for alert_date, count in date_dict.iteritems() if start_date < alert_date < end_date}
+    filtered_by_period = {alert_date : count for alert_date, count in date_dict.iteritems() if start_date <= alert_date <= end_date}
 
     resp_dict = create_resp_dict(filtered_by_period)
 
