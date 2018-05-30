@@ -14,7 +14,7 @@ class TestLossGainExtent(TestCase):
 
     def generate_payload(self, analysis_type='loss'):
 
-        with open(os.path.join(root_dir, 'tests/data/confresa.geojson')) as src_geojson:
+        with open(os.path.join(root_dir, 'test/data/confresa.geojson')) as src_geojson:
             aoi = json.load(src_geojson)
 
         payload = {
@@ -30,8 +30,8 @@ class TestLossGainExtent(TestCase):
 
         payload = self.generate_payload(analysis_type)
 
-        analysis_raster = 'tests/data/10S_060W_{}.tif'.format(analysis_type)
-        area_raster = 'tests/data/10S_060W_area.tif'
+        analysis_raster = 'test/data/10S_060W_{}.tif'.format(analysis_type)
+        area_raster = 'test/data/10S_060W_area.tif'
 
         result = handler.analysis(payload, None, analysis_raster, area_raster)
 
