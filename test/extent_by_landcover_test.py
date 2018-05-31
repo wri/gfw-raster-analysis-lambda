@@ -51,16 +51,15 @@ class TestExtentByLandcover(TestCase):
         return data
 
 
-    def extract_extent(self, response):
-        result = [result for result in response['data']['attributes']['landcover'] if result['className'] == 'Primary Forest'][0]
-        return int(result['result'])
+    def validate(self, response, validation_data, testing_id):
+        # extract extent from response
+        result = [result for result in response['data']['attributes']['landcover'] if result['className'] == 'Primary Forest']
+        returned_extent = result[0]['result'] if result else 0
 
+        # extract extent from validation data
+        validation_extent = validation_data[testing_id]['extent'] if testing_id in validation_data.keys() else 0
 
-    def validate(self, val1, val2):
-        if isinstance(val1, list) and isinstance(val2, list):
-            val1 = sum(val1)
-            val2 = sum(val2)
-        return abs(val1 - val2)/float(val2) <= 0.01
+        return abs(returned_extent - validation_extent)/(float(validation_extent + 1e-8)) * 100 <= 1.0
 
 
     def test_results_by_location(self):
@@ -69,5 +68,5 @@ class TestExtentByLandcover(TestCase):
         validation_data = self.get_validation_data()
 
         for testing_id in testing_ids:
-            response = self.run_analysis(testing_id, 'primary-forest')
-            self.assertEqual(int(self.validate(self.extract_extent(response), validation_data[testing_id]['extent'])), 1)
+            response = self.run_analysis(testing_id)
+            self.assertEqual(int(self.validate(response, validation_data, testing_id)), 1)
