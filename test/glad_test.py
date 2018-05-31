@@ -18,7 +18,7 @@ class TestAlerts(TestCase):
     def setUpClass(cls):
 
         # load Bumba AOI
-        with open(os.path.join(root_dir, 'tests/data/bumba.geojson')) as src_geojson:
+        with open(os.path.join(root_dir, 'test/data/bumba.geojson')) as src_geojson:
             aoi = json.load(src_geojson)
 
         payload = {
@@ -28,7 +28,7 @@ class TestAlerts(TestCase):
                                       'period': '2015-05-23,2017-10-05'}
         }
 
-        glad_raster = os.path.join(root_dir, 'tests/data/afr_all_years_clip.tif')
+        glad_raster = os.path.join(root_dir, 'test/data/afr_all_years_clip.tif')
         result = handler.glad_alerts(payload, None, glad_raster)
 
         response = json.loads(result['body'])
@@ -89,7 +89,7 @@ class TestAlertsConfOnly(TestCase):
     def setUpClass(cls):
 
         # load Bumba AOI
-        with open(os.path.join(root_dir, 'tests/data/bumba.geojson')) as src_geojson:
+        with open(os.path.join(root_dir, 'test/data/bumba.geojson')) as src_geojson:
             aoi = json.load(src_geojson)
 
         payload = {
@@ -100,7 +100,7 @@ class TestAlertsConfOnly(TestCase):
                                       'period': '2015-10-01,2018-02-01'}
         }
 
-        glad_raster = os.path.join(root_dir, 'tests/data/afr_all_years_clip.tif')
+        glad_raster = os.path.join(root_dir, 'test/data/afr_all_years_clip.tif')
         result = handler.glad_alerts(payload, None, glad_raster)
 
         response = json.loads(result['body'])

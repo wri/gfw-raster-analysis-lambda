@@ -219,3 +219,4 @@ def get_polygon_area(geom):
 
     # return area in ha
     return geom_area.area / 10000.
+

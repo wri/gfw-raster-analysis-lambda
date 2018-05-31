@@ -21,9 +21,9 @@ node_modules/
 # Serverless directories
 .serverless
 
-# Output
-dist/
-
 # pycharm
 .idea/
 .DS_Store
+
+# environment file
+.env

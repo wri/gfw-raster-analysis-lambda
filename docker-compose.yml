@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+
+  base:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    entrypoint: /bin/bash
+    env_file: .env
+    volumes:
+      - '.:/home/geolambda'
+
+  test:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    entrypoint: bash -c 'nosetests --nologcapture -v -s -w /home/geolambda/;'
+    env_file: .env
+    volumes:
+      - '.:/home/geolambda'
+
+  package:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    command:  /home/geolambda/scripts/publish.sh
+    working_dir: /home/geolambda
+    volumes:
+      - '.:/home/geolambda'
+
