@@ -125,7 +125,6 @@ def extent_by_landcover(event, context):
 
     hist = util.unpack_count_histogram('extent-by-landcover', stats)
 
-    print(layer_name)
     return gfw_api.serialize_extent_by_landcover(hist, layer_name, area_ha, event)
 
 
