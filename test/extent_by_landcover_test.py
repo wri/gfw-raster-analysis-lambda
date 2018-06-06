@@ -62,7 +62,7 @@ class TestExtentByLandcover(TestCase):
         return abs(returned_extent - validation_extent)/(float(validation_extent + 1e-8)) * 100 <= 1.0
 
 
-    def test_results_by_location(self):
+    def validate_results_by_location(self):
 
         testing_ids = self.get_location_list()
         validation_data = self.get_validation_data()
@@ -70,3 +70,17 @@ class TestExtentByLandcover(TestCase):
         for testing_id in testing_ids:
             response = self.run_analysis(testing_id)
             self.assertEqual(int(self.validate(response, validation_data, testing_id)), 1)
+
+
+    def test_id501_9(self):
+
+        testing_id = 'id501_9'
+        extent_primary = 16391.528850349976
+        extent_not_primary = 76535.10236554101
+
+        response = self.run_analysis(testing_id)
+        results = response['data']['attributes']['landcover']
+        [result_primary] = [result['result'] for result in results if result['className'] == 'Primary Forest']
+        [result_not_primary] = [result['result'] for result in results if result['className'] == 'Not Primary Forest']
+        self.assertEqual(result_primary, extent_primary)
+        self.assertEqual(result_not_primary, extent_not_primary)
