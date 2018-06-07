@@ -34,7 +34,6 @@ def unpack_count_histogram(analysis_type, stats):
 
 def get_shapely_geom(event):
 
-    print event
     geojson = json.loads(event['body'])['geojson']
 
     if len(geojson['features']) > 1:
@@ -219,3 +218,4 @@ def get_polygon_area(geom):
 
     # return area in ha
     return geom_area.area / 10000.
+
