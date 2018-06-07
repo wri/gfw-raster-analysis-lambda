@@ -44,6 +44,14 @@ functions:
           method: post
           cors: true
 
+  extent-by-landcover:
+    handler: handler.extent_by_landcover
+    events:
+      - http:
+          path: extent-by-landcover
+          method: post
+          cors: true
+
   loss-by-landcover:
     handler: handler.loss_by_landcover
     events:
