@@ -27,13 +27,14 @@ class TestLossGainExtent(TestCase):
 
     def run_analysis(self, analysis_type):
 
-
         payload = self.generate_payload(analysis_type)
 
-        analysis_raster = 'test/data/10S_060W_{}.tif'.format(analysis_type)
-        area_raster = 'test/data/10S_060W_area.tif'
+        kwargs = {
+                  'analysis_raster': 'test/data/10S_060W_{}.tif'.format(analysis_type), 
+                  'area_raster': 'test/data/10S_060W_area.tif'
+                }
 
-        result = handler.analysis(payload, None, analysis_raster, area_raster)
+        result = handler.analysis(payload, None, **kwargs)
 
         return json.loads(result['body'])
 
@@ -65,3 +66,4 @@ class TestLossGainExtent(TestCase):
         msg = 'thresh {} supplied, for this S3 endpoint must be one of {}'.format(thresh, thresh_str)
         response = json.loads(response['body'])['error']
         self.assertEqual(response, msg)
+

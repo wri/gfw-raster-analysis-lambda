@@ -20,10 +20,7 @@ def umd_loss_gain(event, context):
 
     geom, area_ha = util.get_shapely_geom(event)
     payload = {'geojson': json.loads(event['body'])['geojson']}
-
-    params = event.get('queryStringParameters')
-    if not params:
-        params = {}
+    params = event['queryStringParameters'] if event['queryStringParameters'] else {}
 
     thresh = int(params.get('thresh', 30))
     params['thresh'] = thresh
@@ -78,10 +75,7 @@ def analysis(event, context, analysis_raster=None, area_raster=None):
 def landcover(event, context):
 
     geom, area_ha = util.get_shapely_geom(event)
-
-    params = event['queryStringParameters']
-    if not params:
-        params = {}
+    params = event['queryStringParameters'] if event['queryStringParameters'] else {}
 
     layer_name = params.get('layer')
 
@@ -100,13 +94,11 @@ def landcover(event, context):
     return gfw_api.serialize_landcover(hist, layer_name, area_ha)
 
 
-def extent_by_landcover(event, context):
+def extent_by_landcover(event, context, lulc_raster=None, extent_raster=None, area_raster=None):
 
     geom, area_ha = util.get_shapely_geom(event)
 
-    params = event['queryStringParameters']
-    if not params:
-        params = {}
+    params = event['queryStringParameters'] if event['queryStringParameters'] else {}
 
     layer_name = params.get('layer')
 
@@ -116,9 +108,10 @@ def extent_by_landcover(event, context):
         msg = 'Layer query param must be one of: {}'.format(', '.join(valid_layers))
         return gfw_api.api_error(msg)
 
-    lulc_raster = lulc_util.ras_lkp(layer_name)
-    extent_raster = 's3://gfw2-data/forest_cover/2000_treecover/data.vrt'
-    area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
+    if not lulc_raster:
+        lulc_raster = lulc_util.ras_lkp(layer_name)
+        extent_raster = 's3://gfw2-data/forest_cover/2000_treecover/data.vrt'
+        area_raster = 's3://gfw2-data/analyses/area_28m/data.vrt'
 
     raster_list = [lulc_raster, extent_raster, area_raster]
     stats = geoprocessing.count_pairs(geom, raster_list)
@@ -131,10 +124,7 @@ def extent_by_landcover(event, context):
 def loss_by_landcover(event, context):
 
     geom, area_ha = util.get_shapely_geom(event)
-
-    params = event['queryStringParameters']
-    if not params:
-        params = {}
+    params = event['queryStringParameters'] if event['queryStringParameters'] else {}
 
     layer_name = params.get('layer')
 
