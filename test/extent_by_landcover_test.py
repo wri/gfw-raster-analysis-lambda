@@ -10,77 +10,41 @@ sys.path.append(root_dir)
 import handler
 
 
-class TestExtentByLandcover(TestCase):
+class TestExtentByLandCover(TestCase):
 
+    def generate_payload(self, lulc_layer):
 
-    def generate_payload(self, location):
-
-        with open(os.path.join(root_dir, 'test/data/palmoilmillgeneric.json')) as src_geojson:
-            aoi_all = json.load(src_geojson)
-
-        aoi = {
-            'type': 'FeatureCollection',
-            'features': [f for f in aoi_all['features'] if f['properties']['testing_id'] == location]
-        }
+        with open(os.path.join(root_dir, 'test/data/id_950.geojson')) as src_geojson:
+            aoi = json.load(src_geojson)
 
         payload = {
          'body': json.dumps({'geojson': aoi}),
-         'queryStringParameters': {'layer': 'primary-forest'}
+         'queryStringParameters': {'layer': lulc_layer}
         }
 
         return payload
 
+    def run_analysis(self, lulc_layer):
 
-    def run_analysis(self, location):
+        payload = self.generate_payload(lulc_layer)
 
-        payload = self.generate_payload(location)
-        result = handler.extent_by_landcover(payload, None)
+        kwargs = {
+                    'lulc_raster': 'test/data/10N_100E_{}.tif'.format(lulc_layer),
+                    'extent_raster': 'test/data/10N_100E_extent.tif',
+                    'area_raster': 'test/data/10N_100E_area.tif'
+                 }
 
-        return json.loads(result['body'])
+        result = handler.extent_by_landcover(payload, None, **kwargs)
 
+        return json.loads(result['body'])['data']['attributes']['landcover']
 
-    def get_location_list(self):
-        with open(os.path.join(root_dir, 'test/data/palmoilmillgeneric.json')) as src_geojson:
-            aoi = json.load(src_geojson)
-        return [f['properties']['testing_id'] for f in aoi['features']]
+    def test_primary_forest_results(self):
 
+        response = self.run_analysis('primary-forest')
 
-    def get_validation_data(self):
-        with open(os.path.join(root_dir, 'test/data/palmoilmillgeneric_primaryforest_treecover_QA.json')) as src:
-            data = json.load(src)
-        return data
+        primary_forest = [x['result'] for x in response if x['className'] == 'Primary Forest'][0]
+        not_primary_forest = [x['result'] for x in response if x['className'] == 'Not Primary Forest'][0]
 
+        self.assertEqual(primary_forest, 59517.48647186706)
+        self.assertEqual(not_primary_forest, 29187.073098955003)
 
-    def validate(self, response, validation_data, testing_id):
-        # extract extent from response
-        result = [result for result in response['data']['attributes']['landcover'] if result['className'] == 'Primary Forest']
-        returned_extent = result[0]['result'] if result else 0
-
-        # extract extent from validation data
-        validation_extent = validation_data[testing_id]['extent'] if testing_id in validation_data.keys() else 0
-
-        return abs(returned_extent - validation_extent)/(float(validation_extent + 1e-8)) * 100 <= 1.0
-
-
-    def validate_results_by_location(self):
-
-        testing_ids = self.get_location_list()
-        validation_data = self.get_validation_data()
-
-        for testing_id in testing_ids:
-            response = self.run_analysis(testing_id)
-            self.assertEqual(int(self.validate(response, validation_data, testing_id)), 1)
-
-
-    def test_id501_9(self):
-
-        testing_id = 'id501_9'
-        extent_primary = 16391.528850349976
-        extent_not_primary = 76535.10236554101
-
-        response = self.run_analysis(testing_id)
-        results = response['data']['attributes']['landcover']
-        [result_primary] = [result['result'] for result in results if result['className'] == 'Primary Forest']
-        [result_not_primary] = [result['result'] for result in results if result['className'] == 'Not Primary Forest']
-        self.assertEqual(result_primary, extent_primary)
-        self.assertEqual(result_not_primary, extent_not_primary)

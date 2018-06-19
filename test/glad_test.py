@@ -166,3 +166,4 @@ def filter_rows(row_list, year_val, time_val=None):
 
     # grab the first row in this 1 object list, and return count
     return filtered_rows[0]['count']
+
