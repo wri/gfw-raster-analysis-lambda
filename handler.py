@@ -178,7 +178,7 @@ if __name__ == '__main__':
     }
     event_landcover = {
              'body': json.dumps({'geojson': aoi}),
-             'queryStringParameters': {'layer': 'primary-forest'}
+             'queryStringParameters': {'layer': 'idn-landcover'}
             }
 
 
