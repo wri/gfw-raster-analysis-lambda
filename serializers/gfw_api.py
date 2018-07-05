@@ -142,18 +142,25 @@ def serialize_loss(loss_area_dict, event):
 
 def serialize_landcover(landcover_dict, layer_name, input_poly_area):
 
-    landcover_list = []
     lkp = lulc_util.build_lulc_lookup(layer_name)
+    lulc_vals = lkp.keys()
 
-    for lulc_val, area_ha in landcover_dict.iteritems():
+    landcover_list = []
+
+    for lulc_val in lulc_vals:
+
+        if lulc_val in landcover_dict.keys():
+            area_ha = landcover_dict[lulc_val]
+        else:
+            area_ha = 0
 
         landcover_list.append({
-        'className': lkp[lulc_val],
-        'classVal': str(lulc_val),
-        'result': area_ha,
-        'resultType': 'areaHectares'
+            'className': lkp[lulc_val],
+            'classVal': str(lulc_val),
+            'result': area_ha,
+            'resultType': 'areaHectares'
         })
-
+    
     serialized = {'data': {
                     'attributes': {
                         'areaHa': input_poly_area,
