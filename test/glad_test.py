@@ -4,9 +4,12 @@ import json
 
 from unittest import TestCase
 
-from handler import app
+from api import app
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# set environment variable so that we know we're testing
+os.environ['ENV'] = 'test'
 
 
 class TestAlerts(TestCase):

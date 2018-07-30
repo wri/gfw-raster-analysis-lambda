@@ -20,8 +20,6 @@ services:
     build:
       context: .
     entrypoint: bash -c 'nosetests --nologcapture -v -s -w /home/geolambda/;'
-    environment:
-       - ENV=test
     env_file: .env
     volumes:
       - '.:/home/geolambda'
