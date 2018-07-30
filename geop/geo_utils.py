@@ -4,24 +4,17 @@ import rasterio
 from rasterio import features
 import numpy as np
 
-import boto3
-from urlparse import urlparse
 import json
 from shapely.geometry import Polygon, MultiPolygon
 
 
 def check_extent(user_poly, raster):
-    s3 = boto3.resource('s3')
 
-    # read context of the index file
-    parsed = urlparse(raster)
-    bucket = s3.Bucket(parsed.netloc)
+    raster_ext = os.path.splitext(raster)[1]
+    geojson_src = raster.replace(raster_ext, '.geojson')
 
-    s3obj = parsed.path.replace('data.vrt', 'index.geojson')[1:]
-    d = bucket.Object(s3obj).get()['Body'].read()
-
-    # get contents from string to dictionary
-    d = json.loads(d)
+    with open(geojson_src) as src:
+        d = json.load(src)
 
     # get index geom
     poly_intersects = False
@@ -44,7 +37,7 @@ def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
     SRS as the raster.  Currently only reads from a single band.
 
     Args:
-        geom (Shapley Geometry): A polygon in the same SRS as `raster_path`
+        geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
             which will define the area of the raster to mask.
 
         raster_path (string): A local file path to a geographic raster
@@ -70,47 +63,48 @@ def mask_geom_on_raster(geom, raster_path, mods=None, all_touched=False):
        supplied geometry does not intersect are masked.
 
     """
-    # if we're testing and the raster is local, assume geom intersects
 
-    if  os.path.exists(raster_path) or check_extent(geom, raster_path):
+    if check_extent(geom, raster_path):
 
         # Read a chunk of the raster that contains the bounding box of the
         # input geometry.  This has memory implications if that rectangle
         # is large. The affine transformation maps geom coordinates to the
         # image mask below.
-        with rasterio.open(raster_path) as src:
+        # can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+        with rasterio.Env():
+            with rasterio.open(raster_path) as src:
 
-            window, shifted_affine = get_window_and_affine(geom, src)
-            data = src.read(1, masked=True, window=window)
+                window, shifted_affine = get_window_and_affine(geom, src)
+                data = src.read(1, masked=True, window=window)
 
-        # Burn new raster values in from provided vector modifications. Mods
-        # are applied in order, so later polygons will overwrite previous ones
-        # if they overlap
-        if mods:
-            # This copies over `data` in place.
-            for mod in mods:
-                features.rasterize(
-                    [(mod['geom'], mod['newValue'])],
-                    out=data,
-                    transform=shifted_affine,
-                    all_touched=all_touched,
-                )
+            # Burn new raster values in from provided vector modifications. Mods
+            # are applied in order, so later polygons will overwrite previous ones
+            # if they overlap
+            if mods:
+                # This copies over `data` in place.
+                for mod in mods:
+                    features.rasterize(
+                        [(mod['geom'], mod['newValue'])],
+                        out=data,
+                        transform=shifted_affine,
+                        all_touched=all_touched,
+                    )
 
-        # Create a numpy array to mask cells which don't intersect with the
-        # polygon. Cells that intersect will have value of 0 (unmasked), the
-        # rest are filled with 1s (masked)
-        geom_mask = features.geometry_mask(
-            [geom],
-            out_shape=data.shape,
-            transform=shifted_affine,
-            all_touched=all_touched
-        )
+            # Create a numpy array to mask cells which don't intersect with the
+            # polygon. Cells that intersect will have value of 0 (unmasked), the
+            # rest are filled with 1s (masked)
+            geom_mask = features.geometry_mask(
+                [geom],
+                out_shape=data.shape,
+                transform=shifted_affine,
+                all_touched=all_touched
+            )
 
-        # Include any NODATA mask
-        full_mask = geom_mask | data.mask
+            # Include any NODATA mask
+            full_mask = geom_mask | data.mask
 
-        # Mask the data array, with modifications applied, by the query polygon
-        return np.ma.array(data=data, mask=full_mask), shifted_affine
+            # Mask the data array, with modifications applied, by the query polygon
+            return np.ma.array(data=data, mask=full_mask), shifted_affine
 
     else:
         return np.array([]), None
