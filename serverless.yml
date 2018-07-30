@@ -16,15 +16,20 @@ provider:
       Resource:
          - 'arn:aws:s3:::palm-risk-poc'
 
+plugins:
+  - serverless-wsgi
+
 package:
   artifact: dist/raster-ops-deploy.zip
+
+custom:
+  wsgi:
+    app: api.app
 
 functions:
   glad-alerts:
     handler: handler.glad_alerts
     events:
-      - http:
-          path: glad-alerts
-          method: post
-          cors: true
+      - http: ANY /
+      - http: ANY {proxy+}
 

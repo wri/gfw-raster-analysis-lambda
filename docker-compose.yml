@@ -4,26 +4,30 @@ services:
 
   base:
     build:
-      dockerfile: Dockerfile
       context: .
-    entrypoint: /bin/bash
+    entrypoint: flask run --host=0.0.0.0
     env_file: .env
+    environment:
+      - FLASK_APP=handler.py
+      - FLASK_DEBUG=1
     working_dir: /home/geolambda
+    ports:
+      - "5000:5000"
     volumes:
       - '.:/home/geolambda'
 
   test:
     build:
-      dockerfile: Dockerfile
       context: .
     entrypoint: bash -c 'nosetests --nologcapture -v -s -w /home/geolambda/;'
+    environment:
+       - ENV=test
     env_file: .env
     volumes:
       - '.:/home/geolambda'
 
   package:
     build:
-      dockerfile: Dockerfile
       context: .
     command:  /home/geolambda/scripts/publish.sh
     working_dir: /home/geolambda

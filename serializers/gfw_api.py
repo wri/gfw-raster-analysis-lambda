@@ -1,27 +1,10 @@
-import json
-
-from utilities import lulc_util
-
-
-def http_response(response):
-
-    # print json.dumps(response, indent=4, sort_keys=True)
-
-    return {
-        'statusCode': 200,
-        'headers': {'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps(response)
-            }
+from flask import jsonify
 
 
 def api_error(msg):
     print msg
 
-    return {
-        'statusCode': 400,
-        'headers': {'Access-Control-Allow-Origin': '*'},
-        'body': json.dumps({'error': msg})
-            }
+    return jsonify({'error': msg}), 400
 
 
 def serialize_glad(hist, area_ha, agg_by, period): 
@@ -37,5 +20,5 @@ def serialize_glad(hist, area_ha, agg_by, period):
         "type": "glad-alerts"}
     }
 
-    return http_response(serialized)
+    return jsonify(serialized), 200
 
