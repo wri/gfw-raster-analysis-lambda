@@ -9,29 +9,6 @@ from shapely.geometry import shape
 from shapely.ops import transform
 
 
-def unpack_count_histogram(analysis_type, stats):
-
-    value_offset = 0
-
-    if analysis_type == 'loss':
-        value_offset = 2000
-
-    output_dict = {}
-
-    for key, pixel_count in stats.iteritems():
-        ras1, area = key.split('::')
-
-        ras1 = value_offset + int(float(ras1))
-        area_ha = float(area) * float(pixel_count) / 10000.
-
-        try:
-            output_dict[ras1] += area_ha
-        except KeyError:
-            output_dict[ras1] = area_ha
-
-    return output_dict
-
-
 def get_shapely_geom(event):
 
     try:
