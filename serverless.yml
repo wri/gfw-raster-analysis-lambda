@@ -3,7 +3,7 @@ service: palm-risk-poc
 provider:
   name: aws
   runtime: python2.7
-  timeout: 300
+  timeout: 30
   profile: palm
   memorySize: 3008
   region: 'us-east-1'
@@ -20,46 +20,6 @@ package:
   artifact: dist/raster-ops-deploy.zip
 
 functions:
-  umd-loss-gain:
-    handler: handler.umd_loss_gain
-    events:
-        - http:
-            path: umd-loss-gain
-            method: post
-            cors: true
-
-  analysis:
-    handler: handler.analysis
-    events:
-      - http:
-          path: analysis
-          method: post
-          cors: true
-
-  landcover:
-    handler: handler.landcover
-    events:
-      - http:
-          path: landcover
-          method: post
-          cors: true
-
-  extent-by-landcover:
-    handler: handler.extent_by_landcover
-    events:
-      - http:
-          path: extent-by-landcover
-          method: post
-          cors: true
-
-  loss-by-landcover:
-    handler: handler.loss_by_landcover
-    events:
-      - http:
-          path: loss-by-landcover
-          method: post
-          cors: true
-
   glad-alerts:
     handler: handler.glad_alerts
     events:

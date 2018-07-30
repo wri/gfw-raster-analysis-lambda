@@ -5,7 +5,7 @@
     <NoDataValue>0</NoDataValue>
     <ColorInterp>Gray</ColorInterp>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/372a45-se_asia_all_years.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/se_asia_all_years.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="244004" RasterYSize="80004" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="244004" ySize="80004" />
@@ -13,7 +13,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7a7acb-fe_all_years.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/fe_all_years.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="48004" RasterYSize="44004" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="48004" ySize="44004" />
@@ -21,7 +21,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/967e28-nsa_all_years.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/nsa_all_years.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="192004" RasterYSize="186561" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="192004" ySize="186561" />
@@ -29,7 +29,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b9f88f-africa_all_years.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/africa_all_years.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="116000" RasterYSize="112000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="116000" ySize="112000" />

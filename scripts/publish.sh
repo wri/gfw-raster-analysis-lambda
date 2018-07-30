@@ -7,6 +7,11 @@ nosetests --nologcapture -v -s -w /home/geolambda/;
 echo "Packaging dependencies..."
 mkdir dist -p
 
+# rm existing deploy file if it exists
+# sometimes zip is too large if we don't do this
+# apparently zip just adds to raster-ops-deploy if it already exists?
+rm -f dist/raster-ops-deploy.zip
+
 pushd . > /dev/null
 cd /usr/local/lib64/python2.7/site-packages
 cp -r /usr/local/lib/python2.7/site-packages/* .
@@ -31,4 +36,5 @@ popd  > /dev/null
 zip -9 -rq dist/raster-ops-deploy.zip geop/* data/* serializers/* utilities/* handler.py 
 
 # Deploy the function
-printf "Packaging complete!"
+printf "Packaging complete! Run sls deploy -v to deploy.\n"
+
