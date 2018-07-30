@@ -1,9 +1,14 @@
+import os
 
 
-lulc_dict = {'primary-forest': 's3://palm-risk-poc/data/primary/data.vrt',
-             'gfw-landcover-2015': 's3://palm-risk-poc/data/gfw-landcover-2015/data.vrt',
-             'sea-landcover': 's3://palm-risk-poc/data/sea-landcover/data.vrt',
-             'idn-landcover': 's3://palm-risk-poc/data/idn-landcover/data.vrt'}
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+data_dir = os.path.join(root_dir, 'data')
+
+
+lulc_dict = {'primary-forest': os.path.join(data_dir, 'primary_forest.vrt'),
+             'gfw-landcover-2015': os.path.join(data_dir, 'gfw_landcover.vrt'),
+             'sea-landcover': os.path.join(data_dir, 'sea_landcover.vrt'),
+             'idn-landcover': os.path.join(data_dir, 'idn_landcover.vrt')}
 
 def ras_lkp(layer_name):
     return lulc_dict[layer_name]

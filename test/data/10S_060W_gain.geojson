@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "10S_060W_gain",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "location": "10S_060W_gain.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -51.7510986328125, -10.40137755454354 ], [ -51.391296386718743, -10.40137755454354 ], [ -51.391296386718743, -10.783395622088589 ], [ -51.7510986328125, -10.783395622088589 ], [ -51.7510986328125, -10.40137755454354 ] ] ] } }
+]
+}

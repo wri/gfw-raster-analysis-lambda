@@ -1,0 +1,40 @@
+<VRTDataset rasterXSize="952004" rasterYSize="348004">
+  <SRS>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform> -8.2000500000000002e+01,  2.5000000000000011e-04,  0.0000000000000000e+00,  5.3000500000000002e+01,  0.0000000000000000e+00, -2.5000000000000011e-04</GeoTransform>
+  <VRTRasterBand dataType="UInt16" band="1">
+    <NoDataValue>0</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/372a45-se_asia_all_years.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="244004" RasterYSize="80004" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="244004" ySize="80004" />
+      <DstRect xOff="708000" yOff="180000" xSize="244004" ySize="80004" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7a7acb-fe_all_years.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="48004" RasterYSize="44004" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="48004" ySize="44004" />
+      <DstRect xOff="848000" yOff="0" xSize="48004" ySize="44004" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/967e28-nsa_all_years.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="192004" RasterYSize="186561" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="192004" ySize="186561" />
+      <DstRect xOff="0" yOff="161443" xSize="192004" ySize="186561" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b9f88f-africa_all_years.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="116000" RasterYSize="112000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="116000" ySize="112000" />
+      <DstRect xOff="356002" yOff="156002" xSize="116000" ySize="112000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

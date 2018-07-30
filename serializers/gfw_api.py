@@ -62,8 +62,6 @@ def serialize_extent_by_landcover(hist, layer_name, input_poly_area, event):
     landcover_list = []
     lkp = lulc_util.build_lulc_lookup(layer_name)
 
-    print(hist)
-
     areas_by_class_val = {}
     for pixel_value, area_ha in hist.iteritems():
 
@@ -77,8 +75,6 @@ def serialize_extent_by_landcover(hist, layer_name, input_poly_area, event):
                 areas_by_class_val[class_val] += area_ha
             else:
                 areas_by_class_val[class_val] = area_ha
-
-    print(areas_by_class_val)
 
     for lulc_val, area_ha in areas_by_class_val.iteritems():
 
@@ -142,25 +138,18 @@ def serialize_loss(loss_area_dict, event):
 
 def serialize_landcover(landcover_dict, layer_name, input_poly_area):
 
-    lkp = lulc_util.build_lulc_lookup(layer_name)
-    lulc_vals = lkp.keys()
-
     landcover_list = []
+    lkp = lulc_util.build_lulc_lookup(layer_name)
 
-    for lulc_val in lulc_vals:
-
-        if lulc_val in landcover_dict.keys():
-            area_ha = landcover_dict[lulc_val]
-        else:
-            area_ha = 0
+    for lulc_val, area_ha in landcover_dict.iteritems():
 
         landcover_list.append({
-            'className': lkp[lulc_val],
-            'classVal': str(lulc_val),
-            'result': area_ha,
-            'resultType': 'areaHectares'
+        'className': lkp[lulc_val],
+        'classVal': str(lulc_val),
+        'result': area_ha,
+        'resultType': 'areaHectares'
         })
-    
+
     serialized = {'data': {
                     'attributes': {
                         'areaHa': input_poly_area,
@@ -220,7 +209,7 @@ def serialize_loss_by_landcover(hist, input_poly_area, event):
 
 def http_response(response):
 
-    print json.dumps(response, indent=4, sort_keys=True)
+    # print json.dumps(response, indent=4, sort_keys=True)
 
     return {
         'statusCode': 200,

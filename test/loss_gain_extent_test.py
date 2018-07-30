@@ -55,15 +55,3 @@ class TestLossGainExtent(TestCase):
         response = self.run_analysis('extent')
         self.assertEqual(int(response['extent']), 57735)
 
-    def test_bad_thresh(self):
-        payload = self.generate_payload()
-        thresh = 15
-        payload['queryStringParameters']['thresh'] = thresh
-
-        response = handler.umd_loss_gain(payload, None)
-        valid_thresh = [10, 30, 90]
-        thresh_str = ', '.join([str(x) for x in valid_thresh])
-        msg = 'thresh {} supplied, for this S3 endpoint must be one of {}'.format(thresh, thresh_str)
-        response = json.loads(response['body'])['error']
-        self.assertEqual(response, msg)
-

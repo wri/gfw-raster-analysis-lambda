@@ -8,6 +8,7 @@ services:
       context: .
     entrypoint: /bin/bash
     env_file: .env
+    working_dir: /home/geolambda
     volumes:
       - '.:/home/geolambda'
 
@@ -28,4 +29,3 @@ services:
     working_dir: /home/geolambda
     volumes:
       - '.:/home/geolambda'
-

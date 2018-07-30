@@ -34,7 +34,10 @@ def unpack_count_histogram(analysis_type, stats):
 
 def get_shapely_geom(event):
 
-    geojson = json.loads(event['body'])['geojson']
+    try:
+        geojson = json.loads(event['body'])['geojson']
+    except TypeError:
+        geojson = event['body']['geojson']
 
     if len(geojson['features']) > 1:
         raise ValueError('Currently accepting only 1 feature at a time')

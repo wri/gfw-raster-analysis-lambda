@@ -1,0 +1,2864 @@
+<VRTDataset rasterXSize="1440000" rasterYSize="560000">
+  <SRS>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4326"]]</SRS>
+  <GeoTransform> -1.8000000000000000e+02,  2.5000000000000017e-04,  0.0000000000000000e+00,  8.0000000000000000e+01,  0.0000000000000000e+00, -2.5000000000000017e-04</GeoTransform>
+  <VRTRasterBand dataType="Byte" band="1">
+    <NoDataValue>0</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/00494d-00N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/00bcc6-20N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/0135ac-20N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/021062-80N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/042fee-40S_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/053a54-60N_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/05ef32-20S_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/064ae7-50N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/06df03-30S_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/07a37d-50N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/0ab0b4-20N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/0c6680-70N_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/0e03be-10S_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/0efbd1-60N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/101858-40N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/10aa83-80N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/11613e-60N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/13adcf-80N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1471f4-80N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/15853e-50N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/158610-30N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/159294-00N_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/15ba64-10S_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/15e2ed-10N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/16b405-60N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/16c4cc-20N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/171f4c-60N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/17ee47-10N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/183dd9-40N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1849ed-10S_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1ac072-10S_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1bff17-50N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1d3954-80N_150W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1e3571-40N_040W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1e7b0e-40N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1e94cf-20S_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1e9b1e-80N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1f237f-50N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1f80af-10N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/1fcc7f-70N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/203418-80N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/219bba-10N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/21d62c-10N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/239bc4-60N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/24227a-60N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/242592-80N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/25f78d-40N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/26b721-50N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/26e56f-40N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/278e93-20N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/279217-40N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/29283b-40S_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2a5885-10S_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2b044e-50N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2bc503-40S_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2c22cb-20S_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2cf4f8-30S_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2d9bb7-00N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2dcab3-40S_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2e4da3-80N_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/2ffe0d-30N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3058dd-10S_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/30630c-30N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/308be3-70N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/31fd81-10N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/322390-20S_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3234bf-80N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/326b40-30S_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3354cf-00N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/33612f-30N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/337300-30N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/338b08-60N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/349a72-50N_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/353366-60N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/362f12-40N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/363cfb-00N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3657a1-80N_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/376008-30N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3800d1-10S_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/385843-80N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3858fd-70N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/390cc9-30S_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/395213-50N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3ccb48-80N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3d239e-00N_040W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3d4b8a-30S_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3d4f96-10N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3eff6e-20N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/3ff1b2-40N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4021f7-70N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/40b8dd-70N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/41bfcf-30N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/41fbaa-50S_040W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/42b53e-40S_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/435478-50N_130W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/44cb6e-40S_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/44f016-10N_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4624e9-00N_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/46a826-10N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/478e1f-30N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/479eea-00N_140W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/487c2f-20N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/491fe1-30S_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4b1ba2-20N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4b6910-40S_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4ba234-30N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4c51f3-70N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4d1726-60N_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4d2c40-60N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4d30ac-70N_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4d4933-50S_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4d4a9b-70N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4d797c-50N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4e382a-20S_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4eff35-70N_030W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4f895a-60N_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/4f9c16-70N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/504ff7-30N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/50b2e5-50S_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/50f7d3-20S_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/5151f9-00N_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/521b1c-70N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/52ec11-50N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/537314-50N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/550301-00N_150W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/55f02d-50N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/588ce9-80N_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/58ba25-20S_130W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/59766c-20N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/5afa4d-70N_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/5b1c98-10N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/5b2962-10S_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/5dca3b-10S_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/5e4a77-80N_130W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/615906-70N_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/61b544-10S_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6324bb-30N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/67053b-10N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6728aa-60N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6788c9-70N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/67c4c7-80N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/682445-30S_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/68e38c-60N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6a073c-20S_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6bd062-40N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6c28bb-20N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6cbb3c-30S_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6d67d2-00N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6e14e8-30S_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/6e6d25-10N_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/723a8b-60N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/734c3d-20S_150W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/737df9-10S_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/743642-60N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/74a307-50S_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/757ec9-80N_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/768f9b-00N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/77d098-30S_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/788f33-20N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7917c7-60N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7a7c0c-00N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7aa459-20S_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7becda-40N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7f1bd8-70N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/7feef1-60N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/802626-80N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/8035e4-30N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/80e61a-50S_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/815a18-30N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/821ff6-30N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/824f30-50N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/83d840-40S_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/84f729-40N_030W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/856c66-60N_150W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/85948e-40N_130W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/85ad51-00N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/87a8cd-30S_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/87f6a6-50N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/8865ec-30S_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/890a4c-10S_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/8b6133-50N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/8cb1f2-20S_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/8d05df-50N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/905cb8-60N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/91242c-50S_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9173de-50N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/91d06a-20S_030W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/91f46d-70N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/93e05d-30N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/94849c-70N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/959735-20S_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/96b750-20N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/97399f-30N_110W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/975c64-60N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/99a5b5-60N_130W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9a40b6-60N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9a9407-70N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9b848f-60N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9c6693-80N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9cfda9-50N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9e5827-10N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9e7a49-80N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/9ea909-70N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a0e598-40N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a0efb9-80N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a17420-00N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a26db8-10N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a2b048-10N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a4f859-80N_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a51209-30N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a515bf-20S_140W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a5ca1e-80N_040W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a60de3-40N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a64067-10N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a71be7-70N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a81f20-70N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a8652e-70N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a8723b-20S_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a8d3f0-20N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a936ac-70N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a9dc36-20N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/a9f452-30N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/aaa50c-20S_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ac00a5-40N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ac70d9-80N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/af64ea-10N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/af7033-20N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/af7bbf-00N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b0a3f1-00N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b13aeb-60N_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b158e7-00N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b1fc2f-20S_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b2662a-40N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b3a009-40N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b41937-50S_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b563d7-10S_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b63f17-60N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b64103-50N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b68c34-00N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/b9737a-80N_030W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bc101c-40N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bc565c-60N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bc91d1-80N_140W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bdc874-10N_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bea20b-00N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bedc63-70N_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bf085e-70N_150W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bf0b82-40S_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bf6327-70N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bfa2de-20N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/bfdca4-20N_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c09f7c-70N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c1bfe3-30S_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c235cc-10N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c29dc4-50S_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c2b844-80N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c2bf7d-80N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c3365f-50S_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c477bd-60N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c49e41-10S_140W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c595bd-60N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c6cf46-60N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c6fa85-30S_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c76934-80N_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c77ad0-40N_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c7daa4-00N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c9721f-00N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c981bf-00N_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/c9e0c0-40S_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ca665d-60N_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/cc457b-70N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/cca222-20S_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/cd0bc7-10N_100E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/cec91b-40N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/cefc40-30N_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/cfcbc6-40S_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d10db4-70N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d19257-50S_030W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d198e7-60N_140W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d1d985-40N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d20d0e-30N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d20ed7-20N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d2b7b6-40N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d43e67-50N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d461f6-30N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d4b417-40N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d4b643-00N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d5c914-30N_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d6aa57-10N_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d7d055-60N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d87c63-80N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d99c58-30N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/d9acd0-70N_130W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/da69a1-20N_080W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/db8b92-20N_170E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1400000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/dec68d-70N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/df3d6a-10S_160E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1360000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/df7ff8-20S_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e12d11-10S_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e175b0-10S_040W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e1c37f-10N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e2ada0-00N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e2ebbe-70N_040W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e35e80-10S_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e39ffe-80N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e4df4d-20N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e5accc-10N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e65a8f-70N_140W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e67780-20S_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e68208-00N_090W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e6d515-30N_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e79b2b-10S_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e7d032-60N_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e834d1-40N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/e8e92b-20S_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ea3704-30N_100W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/eaa839-10S_150W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ec7283-50S_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ecf107-00N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ed21b8-70N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ee0ff2-20N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ee1310-10N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ee327d-20S_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ee4091-00N_070E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ee4ec0-20N_060W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/eef29a-30S_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/ef2a5c-70N_150E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1320000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f01048-20N_020E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f03c4d-80N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f26e96-50N_010E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f33c53-10S_060E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f3c90c-50N_080E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f404dd-10S_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f4b1b8-20S_130E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1240000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f4e3aa-10N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f4f857-20N_160W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f5f235-40S_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="480000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f6305b-10N_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f6dd9e-40N_040E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f736cf-30N_010W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f74f46-10S_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f7ffe9-20N_030E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f90210-20N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f90381-10S_050W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/f9493b-10N_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fa05cf-80N_050E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fa2517-10S_180W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fa5034-10N_170W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fa770f-20N_030W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/faa200-20S_110E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="400000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fad7ac-30S_020W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="440000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/faeec9-00N_070W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="320000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fb1223-80N_090E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fd0132-50N_120W_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fd450a-10S_140E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1280000" yOff="360000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fdbd31-80N_120E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1200000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/gfwpro-raster-data/fe4128-50S_000E_loss_at_90tcd.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="Byte" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="520000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

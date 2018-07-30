@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "Running tests"
+nosetests --nologcapture -v -s -w /home/geolambda/;
+
 echo "Packaging dependencies..."
 mkdir dist -p
 
@@ -25,7 +28,7 @@ zip -9 -rqy ../../../../../home/geolambda/dist/raster-ops-deploy.zip * \
     -x pkg_resources\* \
 
 popd  > /dev/null
-zip -9 -rq dist/raster-ops-deploy.zip geop/* serializers/* utilities/* handler.py mock_api.py
+zip -9 -rq dist/raster-ops-deploy.zip geop/* data/* serializers/* utilities/* handler.py 
 
 # Deploy the function
-printf "Packaging complete! To deploy run: \n sls deploy -v\n"
+printf "Packaging complete!"
