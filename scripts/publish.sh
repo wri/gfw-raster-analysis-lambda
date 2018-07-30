@@ -33,7 +33,7 @@ zip -9 -rqy ../../../../../home/geolambda/dist/raster-ops-deploy.zip * \
     -x pkg_resources\* \
 
 popd  > /dev/null
-zip -9 -rq dist/raster-ops-deploy.zip geop/* data/* serializers/* utilities/* handler.py 
+zip -9 -rq dist/raster-ops-deploy.zip geop/* data/* serializers/* utilities/* api.py wsgi.py
 
 # Deploy the function
 printf "Packaging complete! Run sls deploy -v to deploy.\n"

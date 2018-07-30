@@ -42,4 +42,3 @@ def glad_alerts():
 def download_glad():
     return jsonify({'this': 'ok'}), 200
 
-
