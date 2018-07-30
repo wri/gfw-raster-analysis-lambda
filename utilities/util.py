@@ -7,14 +7,12 @@ from functools import partial
 import pyproj
 from shapely.geometry import shape
 from shapely.ops import transform
+from flask import request
 
 
-def get_shapely_geom(event):
+def get_shapely_geom():
 
-    try:
-        geojson = json.loads(event['body'])['geojson']
-    except TypeError:
-        geojson = event['body']['geojson']
+    geojson = request.get_json().get('geojson', None) if request.get_json() else None
 
     if len(geojson['features']) > 1:
         raise ValueError('Currently accepting only 1 feature at a time')
@@ -116,15 +114,13 @@ def set_default_period():
 
     return "2015-01-01,{}".format(today)
 
-def validate_glad_params(event):
+def validate_glad_params():
 
-    params = event.get('queryStringParameters')
-
-    if not params:
-        params = {}
+    # create empty params dict of final params
+    params = {}
 
     # if period isn't supplied, set default
-    period = params.get('period', set_default_period())
+    period = request.args.get('period', set_default_period())
 
     params['period'] = period
 
@@ -134,9 +130,9 @@ def validate_glad_params(event):
     except ValueError, e:
         raise ValueError(e)
 
-    agg_values = check_param_true(params.get('aggregate_values', False))
-    glad_confirm_only = check_param_true(params.get('gladConfirmOnly', False))
-    agg_by = params.get('aggregate_by')
+    agg_values = check_param_true(request.args.get('aggregate_values', False))
+    glad_confirm_only = check_param_true(request.args.get('gladConfirmOnly', False))
+    agg_by = request.args.get('aggregate_by', 'total')
 
     agg_list = ['day', 'week', 'month', 'year', 'quarter', 'all']
 
@@ -146,11 +142,8 @@ def validate_glad_params(event):
         raise ValueError(msg)
 
     params['aggregate_values'] = agg_values
+    params['aggregate_by'] = agg_by
     params['gladConfirmOnly'] = glad_confirm_only
-
-    # if agg_by not set, just return total alerts
-    if not agg_by:
-       params['aggregate_by'] = 'total' 
 
     return params
 

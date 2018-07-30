@@ -4,7 +4,8 @@
   "description": "",
   "main": "",
   "dependencies": {
-    "serverless": "^1.18.0"
+    "serverless": "^1.18.0",
+    "serverless-wsgi": "^1.4.9"
   },
   "devDependencies": {},
   "scripts": {

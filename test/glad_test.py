@@ -1,13 +1,12 @@
 import os
 import sys
 import json
+
 from unittest import TestCase
 
+from handler import app
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(root_dir)
-
-import handler
 
 
 class TestAlerts(TestCase):
@@ -17,21 +16,21 @@ class TestAlerts(TestCase):
     @classmethod
     def setUpClass(cls):
 
+        # create the test client, so we can pass POSTs directly to app
+        cls.app = app.test_client()
+
         # load Bumba AOI
         with open(os.path.join(root_dir, 'test/data/bumba.geojson')) as src_geojson:
             aoi = json.load(src_geojson)
 
-        payload = {
-            'body': json.dumps({'geojson': aoi}),
-            'queryStringParameters': {'aggregate_values': 'true',
-                                      'aggregate_by': 'all',
-                                      'period': '2015-05-23,2017-10-05'}
-        }
+        payload = json.dumps({'geojson': aoi})
+        params = {'aggregate_values': 'true',
+                  'aggregate_by': 'all',
+                  'period': '2015-05-23,2017-10-05'}
 
-        glad_raster = os.path.join(root_dir, 'test/data/afr_all_years_clip.tif')
-        result = handler.glad_alerts(payload, None, glad_raster)
+        response = cls.app.post('glad-alerts', data=payload, query_string=params, content_type='application/json')
 
-        response = json.loads(result['body'])
+        response = response.get_json()
         cls.response_dict = response['data']['attributes']['value']['all']
 
     def test_year_results(self):
@@ -88,22 +87,22 @@ class TestAlertsConfOnly(TestCase):
     @classmethod
     def setUpClass(cls):
 
+        # create the test client, so we can pass POSTs directly to app
+        cls.app = app.test_client()
+
         # load Bumba AOI
         with open(os.path.join(root_dir, 'test/data/bumba.geojson')) as src_geojson:
             aoi = json.load(src_geojson)
 
-        payload = {
-            'body': json.dumps({'geojson': aoi}),
-            'queryStringParameters': {'aggregate_values': 'true',
-                                      'aggregate_by': 'all',
-                                      'gladConfirmOnly': 'TRUE',
-                                      'period': '2015-10-01,2018-02-01'}
-        }
+        payload = json.dumps({'geojson': aoi})
+        params = {'aggregate_values': 'true',
+                  'aggregate_by': 'all',
+                  'gladConfirmOnly': 'TRUE',
+                  'period': '2015-10-01,2018-02-01'}
 
-        glad_raster = os.path.join(root_dir, 'test/data/afr_all_years_clip.tif')
-        result = handler.glad_alerts(payload, None, glad_raster)
+        response = cls.app.post('glad-alerts', data=payload, query_string=params, content_type='application/json')
 
-        response = json.loads(result['body'])
+        response = response.get_json()
         cls.response_dict = response['data']['attributes']['value']['all']
 
     def test_year_results(self):
