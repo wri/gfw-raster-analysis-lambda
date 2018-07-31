@@ -53,23 +53,10 @@ def unpack_glad_histogram(stats, params):
     date_dict = {}
 
     for conf_days, count in stats.iteritems():
-        total_days = int(conf_days[1:])
-        year = total_days / 365 + 2015
-        julian_day = total_days % 365
 
-        conf = int(conf_days[0]) 
+        alert_date, conf = glad_val_to_date_conf(conf_days)
 
-        # https://stackoverflow.com/questions/17216169/
-        alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
-
-        valid_pixel = False
-
-        # if we're filtering by confidence, only select conf values of 3
-        if params['gladConfirmOnly']:
-            if conf == 3:
-                valid_pixel = True
-        else:
-            valid_pixel = True
+        valid_pixel = check_conf(conf, params)
 
         if valid_pixel:
             try:
@@ -84,6 +71,36 @@ def unpack_glad_histogram(stats, params):
     resp_dict = create_resp_dict(filtered_by_period)
 
     return resp_dict.get(hist_type, {'all': resp_dict})
+
+
+def check_conf(conf_val, params):
+
+    valid_pixel = False
+
+    # if we're filtering by confidence, only select conf values of 3
+    if params['gladConfirmOnly']:
+        if int(conf_val) == 3:
+            valid_pixel = True
+    else:
+        valid_pixel = True
+
+    return valid_pixel	
+
+    
+def glad_val_to_date_conf(glad_val):
+
+    glad_str = str(glad_val)
+
+    total_days = int(glad_str[1:])
+    year = total_days / 365 + 2015
+    julian_day = total_days % 365
+
+    conf = int(glad_str[0]) 
+
+    # https://stackoverflow.com/questions/17216169/
+    alert_date = datetime.datetime(year, 1, 1) + datetime.timedelta(julian_day - 1)
+
+    return alert_date, conf
 
 
 def grouped_and_to_rows(keys, vals, agg_type):
@@ -177,8 +194,8 @@ def period_to_dates(period):
 
 
 def get_polygon_area(geom):
-    # source: https://gis.stackexchange.com/a/166421/30899
 
+    # source: https://gis.stackexchange.com/a/166421/30899
     geom_area = transform(
         partial(
             pyproj.transform,
@@ -191,4 +208,21 @@ def get_polygon_area(geom):
 
     # return area in ha
     return geom_area.area / 10000.
+
+
+def filter_rows(input_tuple, params):
+
+    x, y, z = input_tuple
+
+    period = params['period']
+    start_date, end_date = period_to_dates(period)
+
+    alert_date, conf = glad_val_to_date_conf(z)
+
+    valid_conf = check_conf(conf, params)
+
+    if start_date <= alert_date <= end_date and valid_conf:
+        return (alert_date.year, alert_date.timetuple().tm_yday, conf)
+    else:
+        return False
 
