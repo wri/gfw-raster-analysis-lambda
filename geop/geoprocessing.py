@@ -3,7 +3,8 @@ from shapely.geometry import shape, Polygon
 
 from geo_utils import mask_geom_on_raster
 
-def count(geom, raster_path, modifications=None):
+
+def count(geom, raster_path):
 	"""
 	Perform a cell count analysis on a portion of a provided raster.
 
@@ -32,7 +33,7 @@ def count(geom, raster_path, modifications=None):
 
 	"""
 
-	masked_data, _ = mask_geom_on_raster(geom, raster_path, modifications)
+	masked_data, _ = mask_geom_on_raster(geom, raster_path)
 	if masked_data.any():
 		return masked_array_count(masked_data)
 	else:
@@ -146,3 +147,4 @@ def masked_array_count(masked_data):
 	count_map = dict(zip(map(str, values), counts))
 
 	return count_map
+
