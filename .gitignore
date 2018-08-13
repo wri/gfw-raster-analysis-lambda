@@ -25,8 +25,9 @@ node_modules/
 .idea/
 .DS_Store
 
-# environment file
+# environment files
 .env
+.envrc
 
 # any calculated raster stats
 *.tif.aux.xml
