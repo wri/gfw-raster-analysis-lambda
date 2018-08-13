@@ -150,6 +150,7 @@ def validate_glad_params():
     agg_values = check_param_true(request.args.get('aggregate_values', False))
     glad_confirm_only = check_param_true(request.args.get('gladConfirmOnly', False))
     agg_by = request.args.get('aggregate_by', 'total')
+    download_format = parse_download_format(request.args.get('format', 'csv'))
 
     agg_list = ['day', 'week', 'month', 'year', 'quarter', 'all']
 
@@ -161,12 +162,20 @@ def validate_glad_params():
     params['aggregate_values'] = agg_values
     params['aggregate_by'] = agg_by
     params['gladConfirmOnly'] = glad_confirm_only
+    params['format'] = download_format
 
     return params
 
 
 def check_param_true(param):
     return param in ['true', 'TRUE', 'True', True]
+
+
+def parse_download_format(fmt):
+    if fmt not in ['csv', 'json']:
+        raise ValueError("format must be one of ['csv', 'json']")
+
+    return fmt
 
 
 def check_dates(period):
@@ -222,7 +231,17 @@ def filter_rows(input_tuple, params):
     valid_conf = check_conf(conf, params)
 
     if start_date <= alert_date <= end_date and valid_conf:
-        return (alert_date.year, alert_date.timetuple().tm_yday, conf)
+        row = (x, y, alert_date.year, alert_date.timetuple().tm_yday, conf)
+        return format_row(row, params['format'])
     else:
         return False
+
+
+def format_row(row, response_format):
+
+     if response_format == 'csv':
+         return '{},{},{},{},{}\n'.format(*row[0:2] + row)
+     else:
+         row_dict = {"year": row[2], "long": row[0], "lat": row[1], "julian_day": row[3], "confidence": row[4]}
+         return json.dumps(row_dict) + ',\n'
 
