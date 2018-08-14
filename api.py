@@ -63,22 +63,5 @@ def download(geom, glad_raster, params):
     else:
          rows = json.dumps({'data': rows})
 
-    #def generate():
-
-    #    if params['format'] == 'csv':
-    #         yield 'longitude,latitude,year,julian_day,confidence\n'
-    #    else:
-    #         yield '{"data": ['
-
-    #    for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine):
-    #        filtered_row = util.filter_rows(row, params)
-
-    #        if filtered_row:
-    #            yield filtered_row
-
-    #    if params['format'] == 'json':
-    #        yield ']}'
-
-    #return Response(generate(), mimetype=mimetype_dict[params['format']])
     return Response(rows, mimetype=mimetype_dict[params['format']])
 
