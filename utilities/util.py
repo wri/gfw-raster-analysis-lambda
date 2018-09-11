@@ -9,13 +9,15 @@ from shapely.geometry import shape
 from shapely.ops import transform
 from flask import request
 
+from errors import Error
+
 
 def get_shapely_geom():
 
     geojson = request.get_json().get('geojson', None) if request.get_json() else None
 
     if len(geojson['features']) > 1:
-        raise ValueError('Currently accepting only 1 feature at a time')
+        raise Error('Currently accepting only 1 feature at a time')
 
     # grab the actual geometry-- that's the level on which shapely operates
     geom = shape(geojson['features'][0]['geometry'])
@@ -142,10 +144,7 @@ def validate_glad_params():
     params['period'] = period
 
     # make sure the supplied period is in the right format, dates make sense
-    try:
-        check_dates(period)
-    except ValueError, e:
-        raise ValueError(e)
+    check_dates(period)
 
     agg_values = check_param_true(request.args.get('aggregate_values', False))
     glad_confirm_only = check_param_true(request.args.get('gladConfirmOnly', False))
@@ -157,7 +156,7 @@ def validate_glad_params():
     if agg_values and agg_by not in agg_list:
         msg = 'If aggregate_values is True,  ' \
               'aggregate_by must be one of {}'.format(', '.join(agg_list))
-        raise ValueError(msg)
+        raise Error(msg)
 
     params['aggregate_values'] = agg_values
     params['aggregate_by'] = agg_by
@@ -173,7 +172,7 @@ def check_param_true(param):
 
 def parse_download_format(fmt):
     if fmt not in ['csv', 'json']:
-        raise ValueError("format must be one of ['csv', 'json']")
+        raise Error("format must be one of ['csv', 'json']")
 
     return fmt
 
@@ -183,14 +182,14 @@ def check_dates(period):
     try:
         start_date, end_date = period_to_dates(period)
     except ValueError:
-        raise ValueError('period must be formatted as YYYY-mm-dd,YYYY-mm-dd')
+        raise Error('period must be formatted as YYYY-mm-dd,YYYY-mm-dd')
 
     if start_date > end_date:
-        raise ValueError('Start date must be <= end date')
+        raise Error('Start date must be <= end date')
 
     earliest_date = datetime.datetime.strptime('2015-01-01', '%Y-%m-%d')
     if start_date < earliest_date:
-        raise ValueError('Start date must be later than Jan 1, 2015')
+        raise Error('Start date must be later than Jan 1, 2015')
 
 
 def period_to_dates(period):
