@@ -14,19 +14,19 @@ sys.path.insert(0, root_dir)
 
 from geop import geo_utils, geoprocessing
 from serializers import gfw_api
-from utilities import util 
+from utilities import util, errors 
 
+
+@app.errorhandler(errors.Error)
+def handle_error(error):
+    return error.serialize
 
 @app.route("/glad-alerts", methods=['POST'])
 @app.route("/glad-alerts/download", methods=['POST'])
 def glad_alerts():
 
     geom, area_ha = util.get_shapely_geom()
-
-    try:
-        params = util.validate_glad_params()
-    except ValueError, e:
-        return gfw_api.api_error(str(e))
+    params = util.validate_glad_params()
 
     if os.environ.get('ENV') == 'test':
         glad_raster = os.path.join(root_dir, 'test', 'data', 'afr_all_years_clip.tif')
@@ -55,8 +55,12 @@ def download(geom, glad_raster, params):
 
     mimetype_dict = {'csv': 'text/csv', 'json': 'application/json'}
 
-    rows = [util.filter_rows(row, params) for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine)]
-    rows = filter(lambda x: x is not False, rows)
+    # make sure that our AOI covers the raster of interest
+    if masked_data:
+        rows = [util.filter_rows(row, params) for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine)]
+        rows = filter(lambda x: x is not False, rows)
+    else:
+        rows = []
 
     if params['format'] == 'csv':
          rows = ['longitude,latitude,year,julian_day,confidence\n'] + rows
