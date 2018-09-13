@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -49,21 +48,21 @@ def download(geom, glad_raster, params):
 
     masked_data, shifted_affine = geo_utils.mask_geom_on_raster(geom, glad_raster)
 
-    mimetype_dict = {'csv': 'text/csv', 'json': 'application/json'}
-
     # make sure that our AOI covers the raster of interest
     if masked_data.any():
+
+        # we could do this as a generator, but want to return all download points or fail
+        # convert to list first, then to generator for use in generate() below
         rows = [util.filter_rows(row, params) for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine)]
-        rows = filter(lambda x: x is not False, rows)
-    else:
-        rows = []
+        rows = (n for n in filter(lambda x: x is not False, rows))
 
-    if params['format'] == 'csv':
-         rows = ['longitude,latitude,year,julian_day,confidence\n'] + rows
     else:
-         rows = json.dumps({'data': rows})
+        rows = util.empty_generator()
 
-    return Response(rows, mimetype=mimetype_dict[params['format']])
+    out_format = params['format']
+    mimetype_dict = {'csv': 'text/csv', 'json': 'application/json'}
+
+    return Response(gfw_api.stream_download(rows, out_format), mimetype=mimetype_dict[out_format])
 
 
 @app.errorhandler(errors.Error)

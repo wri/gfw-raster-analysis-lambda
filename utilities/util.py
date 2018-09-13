@@ -241,6 +241,10 @@ def format_row(row, response_format):
      if response_format == 'csv':
          return ','.join([str(x) for x in row]) + '\n'
      else:
-         row_dict = {"year": row[2], "long": row[0], "lat": row[1], "julian_day": row[3], "confidence": row[4]}
-         return json.dumps(row_dict) + ',\n'
+         return {"year": row[2], "long": row[0], "lat": row[1], "julian_day": row[3], "confidence": row[4]}
 
+
+def empty_generator():
+    # https://stackoverflow.com/a/13243870/
+    return
+    yield
