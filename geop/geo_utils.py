@@ -1,11 +1,12 @@
 import os
+import json
 
+import numpy as np
 import rasterio
 from rasterio import features
-import numpy as np
-
-import json
 from shapely.geometry import Polygon, MultiPolygon
+
+from utilities.errors import Error
 
 
 def check_extent(user_poly, raster):
@@ -61,7 +62,12 @@ def mask_geom_on_raster(geom, raster_path):
             with rasterio.open(raster_path) as src:
 
                 window, shifted_affine = get_window_and_affine(geom, src)
-                data = src.read(1, masked=True, window=window)
+
+                try:
+                    data = src.read(1, masked=True, window=window)
+                except MemoryError:
+                    raise Error('Out of memory- input polygon or input extent too large. ' 
+                                'Try splitting the polygon into multiple requests.')
 
             # Create a numpy array to mask cells which don't intersect with the
             # polygon. Cells that intersect will have value of 0 (unmasked), the
