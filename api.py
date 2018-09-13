@@ -17,10 +17,6 @@ from serializers import gfw_api
 from utilities import util, errors 
 
 
-@app.errorhandler(errors.Error)
-def handle_error(error):
-    return error.serialize
-
 @app.route("/glad-alerts", methods=['POST'])
 @app.route("/glad-alerts/download", methods=['POST'])
 def glad_alerts():
@@ -68,4 +64,9 @@ def download(geom, glad_raster, params):
          rows = json.dumps({'data': rows})
 
     return Response(rows, mimetype=mimetype_dict[params['format']])
+
+
+@app.errorhandler(errors.Error)
+def handle_error(error):
+    return error.serialize
 
