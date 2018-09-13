@@ -52,7 +52,7 @@ def download(geom, glad_raster, params):
     mimetype_dict = {'csv': 'text/csv', 'json': 'application/json'}
 
     # make sure that our AOI covers the raster of interest
-    if masked_data:
+    if masked_data.any():
         rows = [util.filter_rows(row, params) for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine)]
         rows = filter(lambda x: x is not False, rows)
     else:
