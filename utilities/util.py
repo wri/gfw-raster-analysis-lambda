@@ -239,7 +239,7 @@ def filter_rows(input_tuple, params):
 def format_row(row, response_format):
 
      if response_format == 'csv':
-         return ','.join([str(x) for x in row]) + '\n'
+         return row
      else:
          return {"year": row[2], "long": row[0], "lat": row[1], "julian_day": row[3], "confidence": row[4]}
 
