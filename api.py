@@ -1,7 +1,8 @@
 import os
 import sys
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request, Response, redirect
+
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
@@ -54,16 +55,15 @@ def download(geom, glad_raster, params):
         # we could do this as a generator, but want to return all download points or fail
         # convert to list first, then to generator for use in generate() below
         rows = [util.filter_rows(row, params) for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine)]
-        rows = (n for n in filter(lambda x: x is not False, rows))
+        rows = [n for n in filter(lambda x: x is not False, rows)]
 
     else:
-        rows = util.empty_generator()
+        rows = []
 
-    out_format = params['format']
-    mimetype_dict = {'csv': 'text/csv', 'json': 'application/json'}
+    s3_url = gfw_api.write_to_s3(rows, params['format'])
 
-    return Response(gfw_api.stream_download(rows, out_format), mimetype=mimetype_dict[out_format])
-
+    return redirect(s3_url, code=302)
+     
 
 @app.errorhandler(errors.Error)
 def handle_error(error):
