@@ -3,7 +3,7 @@ service: palm-risk-poc
 provider:
   name: aws
   runtime: python2.7
-  timeout: 30
+  timeout: 120
   profile: palm
   memorySize: 3008
   region: 'us-east-1'
