@@ -5,6 +5,670 @@
     <NoDataValue>0</NoDataValue>
     <ColorInterp>Gray</ColorInterp>
     <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_00N_010E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_10N_010E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_10S_010E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_20N_010E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010E_00N_020E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010E_10N_020E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010E_10S_020E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010E_20N_020E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010E_20S_020E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010E_30S_020E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010W_00N_000E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010W_10N_000E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/010W_20N_000E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020E_00N_030E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020E_10N_030E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020E_10S_030E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020E_20N_030E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020E_20S_030E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020E_30S_030E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020W_00N_010W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020W_10N_010W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/020W_20N_010W_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030E_00N_040E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030E_10N_040E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030E_10S_040E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030E_20N_040E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030E_20S_040E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030E_30S_040E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/030W_10N_020W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/040E_00N_050E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/040E_10N_050E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/040E_10S_050E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/040E_20N_050E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/040E_20S_050E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/040E_30S_050E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/050E_00N_060E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/050E_10N_060E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/050E_10S_060E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/050E_20N_060E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/050E_20S_060E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/050E_30S_060E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/060E_20N_070E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/070E_00N_080E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/070E_10N_080E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/070E_20N_080E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/080E_00N_090E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/080E_10N_090E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/080E_20N_090E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/090E_00N_100E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/090E_10N_100E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/090E_10S_100E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/090E_20N_100E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/100E_00N_110E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/100E_10N_110E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/100E_10S_110E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/100E_20N_110E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/110E_00N_120E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/110E_10N_120E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/110E_10S_120E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/110E_20N_120E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/110E_20S_120E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/110E_30S_120E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/120E_00N_130E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/120E_10N_130E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/120E_10S_130E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/120E_20N_130E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/120E_20S_130E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/120E_30S_130E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/130E_00N_140E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/130E_10S_140E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/130E_20N_140E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="0" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/130E_20S_140E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/130E_30S_140E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/140E_10S_150E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/140E_20S_150E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/140E_30S_150E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/150E_10S_160E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/150E_20S_160E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/150E_30S_160E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/160E_10S_170E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/160E_20S_170E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/160E_30S_170E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/170E_20S_180E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
       <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/040W_10S_030W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
@@ -258,374 +922,6 @@
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
       <DstRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/060E_20N_070E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="720000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/070E_00N_080E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="760000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/070E_10N_080E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="760000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/070E_20N_080E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="760000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/080E_00N_090E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="800000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/080E_10N_090E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="800000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/080E_20N_090E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="800000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/090E_00N_100E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/090E_10N_100E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/090E_10S_100E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/090E_20N_100E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/100E_00N_110E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/100E_10N_110E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/100E_10S_110E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/100E_20N_110E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/110E_00N_120E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/110E_10N_120E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/110E_10S_120E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/110E_20N_120E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/110E_20S_120E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/110E_30S_120E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/120E_00N_130E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/120E_10N_130E_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/120E_10S_130E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/120E_20N_130E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/120E_20S_130E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/120E_30S_130E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/130E_00N_140E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/130E_10S_140E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/130E_20N_140E_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/130E_20S_140E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/130E_30S_140E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/140E_10S_150E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1040000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/140E_20S_150E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1040000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/140E_30S_150E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1040000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/150E_10S_160E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1080000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/150E_20S_160E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1080000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/150E_30S_160E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1080000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/160E_10S_170E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1120000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/160E_20S_170E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1120000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/160E_30S_170E_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1120000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/asia/tiles/170E_20S_180E_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1160000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/africa/tiles/008E_00N_022E_14N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="56000" RasterYSize="56000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="56000" ySize="56000" />
-      <DstRect xOff="512000" yOff="64000" xSize="56000" ySize="56000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/africa/tiles/008E_14S_022E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="56000" RasterYSize="56000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="56000" ySize="56000" />
-      <DstRect xOff="512000" yOff="120000" xSize="56000" ySize="56000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/africa/tiles/022E_00N_036E_14N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="56000" RasterYSize="56000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="56000" ySize="56000" />
-      <DstRect xOff="568000" yOff="64000" xSize="56000" ySize="56000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/africa/tiles/022E_14S_036E_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="56000" RasterYSize="56000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="56000" ySize="56000" />
-      <DstRect xOff="568000" yOff="120000" xSize="56000" ySize="56000" />
       <NODATA>0</NODATA>
     </ComplexSource>
   </VRTRasterBand>
