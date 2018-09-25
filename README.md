@@ -6,7 +6,9 @@ This repo takes Matt McFarland's [raster lambda demo](https://github.com/mmcfarl
 
 ### Data
 
-After receiving an input polygon and an operation type (stats or download), the code looks at the GLAD raster mosaic stored in data/glad.vrt. This points to a bunch of rasters, like this one over part of Nigeria: s3://palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_00N_010E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif
+After receiving an input polygon and an operation type (stats or download), the code looks at the GLAD raster mosaic stored in data/glad.vrt. This points to a bunch of rasters, like this one over part of Nigeria: 
+
+s3://palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_00N_010E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif
 
 ### Endpoints
 
@@ -15,10 +17,12 @@ The endpoints deployed are designed to exactly mimic existing GFW API endpoints,
 Base URL:
 https://0kepi1kf41.execute-api.us-east-1.amazonaws.com/dev/
 
-/glad-alerts
+#### /glad-alerts
+
 Matches the /glad-alerts endpoint
 
-/glad-alerts/download
+#### /glad-alerts/download
+
 Allows for vector download of GLAD data in CSV or JSON format. Called when someone wants to download an AOI or geostore from: https://github.com/gfw-api/glad-analysis-tiled
 
 ### Limitations
