@@ -1,38 +1,33 @@
-# gfw-raster-analysis-lambda
+# glad-raster-analysis-lambda
 
 ### Background
 
-This repo takes Matt McFarland's [raster lambda demo](https://github.com/mmcfarland/foss4g-lambda-demo) and uses it to provide a scalable alternative to the GEE-backed [umd-loss-gain](https://github.com/wri/gfw-umd-loss-gain-lambda).
+This repo takes Matt McFarland's [raster lambda demo](https://github.com/mmcfarland/foss4g-lambda-demo) and uses it to provide stats and raster-to-vector downloads for our GLAD data.
 
-This usage grew out of the need to process 2000 palm oil mills in under 5 minutes, per the requirements for the upcoming GFW Pro application. 
+### Data
+
+After receiving an input polygon and an operation type (stats or download), the code looks at the GLAD raster mosaic stored in data/glad.vrt. This points to a bunch of rasters, like this one over part of Nigeria: 
+
+s3://palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_00N_010E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif
 
 ### Endpoints
 
 The endpoints deployed are designed to exactly mimic existing GFW API endpoints, making it easy to 'plug' this service into existing code. The current exposed endpoints are as follows:
 
 Base URL:
-https://0yvx7602sb.execute-api.us-east-1.amazonaws.com/dev/
+https://0kepi1kf41.execute-api.us-east-1.amazonaws.com/dev/
 
-/umd-loss-gain:
-Replicates the existing umd-loss-gain endpoint
+#### /glad-alerts
 
-/analysis:
-Runs analysis for loss | gain | extent against a polygon AOI. These requests are parallelized under the hood as part of the umd-loss-gain endpoint
+Matches the /glad-alerts endpoint
 
-/landcover:
-Matches the /landcover endpoint on the GFW API, but only provides analysis for `primary-forest` data (the only layer required by GFW Pro batch analysis at this time)
+#### /glad-alerts/download
 
-/loss-by-landcover:
-Matches the /loss-by-landcover endpoint, again only providing results for `primary-forest` data
-
-/glad-alerts
-Matches the /glad-alerts endpoint, but requires aggregate_values to be set to True (designed for batch processing only)
+Allows for vector download of GLAD data in CSV or JSON format. Called when someone wants to download an AOI or geostore from: https://github.com/gfw-api/glad-analysis-tiled
 
 ### Limitations
 
-Our main obstacle here is speed; particularly large areas may time out. This isn't an issue for the palm-risk use case (all areas are 50 km buffers of palm oil mills) but we could run into this if we expand the usage of this repo.
-
-If we need to cross this bridge, the subdivide_polygon function in the [original repo](https://github.com/mmcfarland/foss4g-lambda-demo/blob/master/handler.py#L63) will likely help.
+Our main obstacle here is speed; particularly large areas may time out. If we need to cross this bridge, the subdivide_polygon function in the [original repo](https://github.com/mmcfarland/foss4g-lambda-demo/blob/master/handler.py#L63) will likely help.
 
 
 ## Development
