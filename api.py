@@ -53,7 +53,6 @@ def download(geom, glad_raster, params):
     if masked_data.any():
 
         # we could do this as a generator, but want to return all download points or fail
-        # convert to list first, then to generator for use in generate() below
         rows = [util.filter_rows(row, params) for row in geo_utils.array_to_xyz_rows(masked_data, shifted_affine)]
         rows = [n for n in filter(lambda x: x is not False, rows)]
 
