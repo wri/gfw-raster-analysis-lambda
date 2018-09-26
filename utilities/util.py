@@ -23,6 +23,10 @@ def get_shapely_geom():
     geom = shape(geojson['features'][0]['geometry'])
     area_ha = get_polygon_area(geom)
 
+    if area_ha > 10000000:
+        raise Error('Geometry is too large for custom stats/download. ' \
+                    'Please try again with a smaller area of interest')
+
     return geom, area_ha
 
 
