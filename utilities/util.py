@@ -128,7 +128,7 @@ def grouped_and_to_rows(keys, vals, agg_type):
     
         # compatibility with old API
         if agg_type == 'day':
-            row['value'] = row['day']
+            row['alert_date'] = row['day']
 
         row['count'] = val
         final_list.append(row)
