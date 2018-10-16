@@ -1,5 +1,6 @@
 {
 "type": "FeatureCollection",
+"name": "index",
 "features": [
 { "type": "Feature", "properties": { "location": "afr_asia\/tiles\/000E_00N_010E_10N\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 0.0, 10.0 ], [ 10.0, 10.0 ], [ 10.0, 0.0 ], [ 0.0, 0.0 ], [ 0.0, 10.0 ] ] ] } },
 { "type": "Feature", "properties": { "location": "afr_asia\/tiles\/000E_10N_010E_20N\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 0.0, 20.0 ], [ 10.0, 20.0 ], [ 10.0, 10.0 ], [ 0.0, 10.0 ], [ 0.0, 20.0 ] ] ] } },
@@ -84,6 +85,7 @@
 { "type": "Feature", "properties": { "location": "afr_asia\/tiles\/160E_20S_170E_10S\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 160.0, -10.0 ], [ 170.0, -10.0 ], [ 170.0, -20.0 ], [ 160.0, -20.0 ], [ 160.0, -10.0 ] ] ] } },
 { "type": "Feature", "properties": { "location": "afr_asia\/tiles\/160E_30S_170E_20S\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 160.0, -20.0 ], [ 170.0, -20.0 ], [ 170.0, -30.0 ], [ 160.0, -30.0 ], [ 160.0, -20.0 ] ] ] } },
 { "type": "Feature", "properties": { "location": "afr_asia\/tiles\/170E_20S_180E_10S\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 170.0, -10.0 ], [ 180.0, -10.0 ], [ 180.0, -20.0 ], [ 170.0, -20.0 ], [ 170.0, -10.0 ] ] ] } },
+{ "type": "Feature", "properties": { "location": "dc_temp\/tiles\/temp\/raster_processing\/date_conf\/1_prep\/glad_dc.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -80.0, 40.0 ], [ -70.0, 40.0 ], [ -70.0, 30.0 ], [ -80.0, 30.0 ], [ -80.0, 40.0 ] ] ] } },
 { "type": "Feature", "properties": { "location": "south_america\/tiles\/040W_10S_030W_00N\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -40.0, -0.0 ], [ -30.0, -0.0 ], [ -30.0, -10.0 ], [ -40.0, -10.0 ], [ -40.0, -0.0 ] ] ] } },
 { "type": "Feature", "properties": { "location": "south_america\/tiles\/040W_20S_030W_10S\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -40.0, -10.0 ], [ -30.0, -10.0 ], [ -30.0, -20.0 ], [ -40.0, -20.0 ], [ -40.0, -10.0 ] ] ] } },
 { "type": "Feature", "properties": { "location": "south_america\/tiles\/050W_00N_040W_10N\/raster_processing\/date_conf\/1_prep\/date_conf_all_nd_0.tif" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -50.0, 10.0 ], [ -40.0, 10.0 ], [ -40.0, -0.0 ], [ -50.0, -0.0 ], [ -50.0, 10.0 ] ] ] } },
