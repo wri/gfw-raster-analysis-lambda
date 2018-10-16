@@ -1,6 +1,6 @@
-<VRTDataset rasterXSize="1200000" rasterYSize="280000">
+<VRTDataset rasterXSize="1200000" rasterYSize="320000">
   <SRS>GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433],AUTHORITY["EPSG","4326"]]</SRS>
-  <GeoTransform> -1.2000000000000003e+02,  2.5000000000000017e-04,  0.0000000000000000e+00,  3.0000000000000014e+01,  0.0000000000000000e+00, -2.5000000000000017e-04</GeoTransform>
+  <GeoTransform> -1.2000000000000003e+02,  2.5000000000000017e-04,  0.0000000000000000e+00,  4.0000000000000000e+01,  0.0000000000000000e+00, -2.5000000000000017e-04</GeoTransform>
   <VRTRasterBand dataType="UInt16" band="1">
     <NoDataValue>0</NoDataValue>
     <ColorInterp>Gray</ColorInterp>
@@ -9,7 +9,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="480000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -17,7 +17,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="480000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -25,7 +25,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="480000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -33,7 +33,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="480000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="480000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -41,7 +41,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="520000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -49,7 +49,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="520000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -57,7 +57,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="520000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -65,7 +65,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="520000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -73,7 +73,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="520000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -81,7 +81,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="520000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="520000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -89,7 +89,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="440000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -97,7 +97,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="440000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -105,7 +105,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="440000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="440000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -113,7 +113,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="560000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -121,7 +121,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="560000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -129,7 +129,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="560000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -137,7 +137,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="560000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -145,7 +145,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="560000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -153,7 +153,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="560000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="560000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -161,7 +161,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="400000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -169,7 +169,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="400000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -177,7 +177,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="400000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="400000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -185,7 +185,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="600000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -193,7 +193,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="600000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -201,7 +201,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="600000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -209,7 +209,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="600000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -217,7 +217,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="600000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -225,7 +225,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="600000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="600000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -233,7 +233,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="360000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="360000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -241,7 +241,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="640000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -249,7 +249,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="640000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -257,7 +257,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="640000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -265,7 +265,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="640000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -273,7 +273,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="640000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -281,7 +281,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="640000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="640000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -289,7 +289,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="680000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -297,7 +297,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="680000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -305,7 +305,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="680000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -313,7 +313,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="680000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -321,7 +321,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="680000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -329,7 +329,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="680000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="680000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -337,7 +337,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="720000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="720000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -345,7 +345,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="760000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -353,7 +353,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="760000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -361,7 +361,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="760000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="760000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -369,7 +369,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="800000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -377,7 +377,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="800000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -385,7 +385,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="800000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="800000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -393,7 +393,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -401,7 +401,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -409,7 +409,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -417,7 +417,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="840000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="840000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -425,7 +425,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -433,7 +433,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -441,7 +441,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -449,7 +449,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="880000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="880000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -457,7 +457,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -465,7 +465,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -473,7 +473,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -481,7 +481,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -489,7 +489,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -497,7 +497,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="920000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="920000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -505,7 +505,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -513,7 +513,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -521,7 +521,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -529,7 +529,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -537,7 +537,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -545,7 +545,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="960000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="960000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -553,7 +553,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="80000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="120000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -561,7 +561,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -569,7 +569,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -577,7 +577,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -585,7 +585,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1000000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1000000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -593,7 +593,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1040000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -601,7 +601,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1040000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -609,7 +609,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1040000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1040000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -617,7 +617,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1080000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -625,7 +625,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1080000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -633,7 +633,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1080000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1080000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -641,7 +641,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1120000" yOff="120000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="160000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -649,7 +649,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1120000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -657,7 +657,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1120000" yOff="200000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1120000" yOff="240000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -665,171 +665,11 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="1160000" yOff="160000" xSize="40000" ySize="40000" />
+      <DstRect xOff="1160000" yOff="200000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/040W_10S_030W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="320000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/040W_20S_030W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="320000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_00N_040W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="280000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_10S_040W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="280000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_20S_040W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="280000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_30S_040W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="280000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_00N_050W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="240000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_10N_050W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="240000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_10S_050W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="240000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_20S_050W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="240000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_30S_050W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="240000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_40S_050W_30S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="240000" yOff="240000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_00N_060W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="200000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_10N_060W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="200000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_10S_060W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="200000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_20S_060W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="200000" yOff="160000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_30S_060W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="200000" yOff="200000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_00N_070W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="160000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_10N_070W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="160000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_10S_070W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="160000" yOff="120000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_20N_070W_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/dc_temp/tiles/temp/raster_processing/date_conf/1_prep/glad_dc.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -837,7 +677,159 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_20S_070W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/040W_10S_030W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/040W_20S_030W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="320000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_00N_040W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_10S_040W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_20S_040W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/050W_30S_040W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="280000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_00N_050W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_10N_050W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_10S_050W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_20S_050W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_30S_050W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/060W_40S_050W_30S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="240000" yOff="280000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_00N_060W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_10N_060W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_10S_060W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_20S_060W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="200000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/070W_30S_060W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="200000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_00N_070W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="120000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_10N_070W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_10S_070W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -845,7 +837,15 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_30S_070W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_20N_070W_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="40000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_20S_070W_10S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -853,23 +853,15 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/080W_30S_070W_20S/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="160000" yOff="240000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
       <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/090W_00N_080W_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="120000" yOff="80000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/090W_10N_080W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="120000" yOff="40000" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/090W_10S_080W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -877,11 +869,27 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/090W_10N_080W_20N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="80000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/090W_10S_080W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
+      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="160000" xSize="40000" ySize="40000" />
+      <NODATA>0</NODATA>
+    </ComplexSource>
+    <ComplexSource>
       <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/090W_20N_080W_30N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="120000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="120000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -889,7 +897,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="80000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -897,7 +905,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="80000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="80000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -905,7 +913,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="40000" yOff="40000" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="80000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -913,7 +921,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="40000" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="40000" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
@@ -921,7 +929,7 @@
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
+      <DstRect xOff="0" yOff="40000" xSize="40000" ySize="40000" />
       <NODATA>0</NODATA>
     </ComplexSource>
   </VRTRasterBand>
