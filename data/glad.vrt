@@ -669,14 +669,6 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/dc_temp/tiles/temp/raster_processing/date_conf/1_prep/glad_dc.tif</SourceFilename>
-      <SourceBand>1</SourceBand>
-      <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
-      <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
-      <DstRect xOff="160000" yOff="0" xSize="40000" ySize="40000" />
-      <NODATA>0</NODATA>
-    </ComplexSource>
-    <ComplexSource>
       <SourceFilename relativeToVRT="1">/vsis3/palm-risk-poc/data/glad/analysis-staging/south_america/tiles/040W_10S_030W_00N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
