@@ -5,7 +5,7 @@
     <NoDataValue>0</NoDataValue>
     <ColorInterp>Gray</ColorInterp>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/000E_00N_010E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/000E_00N_010E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -13,7 +13,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/000E_10N_010E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/000E_10N_010E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -21,7 +21,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/000E_10S_010E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/000E_10S_010E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -29,7 +29,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/000E_20N_010E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/000E_20N_010E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -37,7 +37,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010E_00N_020E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010E_00N_020E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -45,7 +45,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010E_10N_020E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010E_10N_020E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -53,7 +53,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010E_10S_020E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010E_10S_020E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -61,7 +61,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010E_20N_020E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010E_20N_020E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -69,7 +69,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010E_20S_020E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010E_20S_020E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -77,7 +77,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010E_30S_020E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010E_30S_020E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -85,7 +85,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010W_00N_000E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010W_00N_000E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -93,7 +93,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010W_10N_000E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010W_10N_000E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -101,7 +101,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/010W_20N_000E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/010W_20N_000E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -109,7 +109,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020E_00N_030E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020E_00N_030E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -117,7 +117,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020E_10N_030E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020E_10N_030E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -125,7 +125,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020E_10S_030E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020E_10S_030E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -133,7 +133,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020E_20N_030E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020E_20N_030E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -141,7 +141,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020E_20S_030E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020E_20S_030E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -149,7 +149,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020E_30S_030E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020E_30S_030E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -157,7 +157,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020W_00N_010W_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020W_00N_010W_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -165,7 +165,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020W_10N_010W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020W_10N_010W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -173,7 +173,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/020W_20N_010W_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/020W_20N_010W_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -181,7 +181,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030E_00N_040E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030E_00N_040E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -189,7 +189,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030E_10N_040E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030E_10N_040E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -197,7 +197,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030E_10S_040E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030E_10S_040E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -205,7 +205,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030E_20N_040E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030E_20N_040E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -213,7 +213,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030E_20S_040E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030E_20S_040E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -221,7 +221,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030E_30S_040E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030E_30S_040E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -229,7 +229,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/030W_10N_020W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/030W_10N_020W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -237,7 +237,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040E_00N_050E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040E_00N_050E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -245,7 +245,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040E_10N_050E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040E_10N_050E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -253,7 +253,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040E_10S_050E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040E_10S_050E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -261,7 +261,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040E_20N_050E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040E_20N_050E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -269,7 +269,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040E_20S_050E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040E_20S_050E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -277,7 +277,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040E_30S_050E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040E_30S_050E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -285,7 +285,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050E_00N_060E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050E_00N_060E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -293,7 +293,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050E_10N_060E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050E_10N_060E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -301,7 +301,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050E_10S_060E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050E_10S_060E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -309,7 +309,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050E_20N_060E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050E_20N_060E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -317,7 +317,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050E_20S_060E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050E_20S_060E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -325,7 +325,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050E_30S_060E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050E_30S_060E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -333,7 +333,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060E_20N_070E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060E_20N_070E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -341,7 +341,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070E_00N_080E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070E_00N_080E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -349,7 +349,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070E_10N_080E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070E_10N_080E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -357,7 +357,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070E_20N_080E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070E_20N_080E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -365,7 +365,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080E_00N_090E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080E_00N_090E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -373,7 +373,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080E_10N_090E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080E_10N_090E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -381,7 +381,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080E_20N_090E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080E_20N_090E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -389,7 +389,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090E_00N_100E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090E_00N_100E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -397,7 +397,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090E_10N_100E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090E_10N_100E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -405,7 +405,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090E_10S_100E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090E_10S_100E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -413,7 +413,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090E_20N_100E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090E_20N_100E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -421,7 +421,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/100E_00N_110E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/100E_00N_110E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -429,7 +429,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/100E_10N_110E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/100E_10N_110E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -437,7 +437,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/100E_10S_110E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/100E_10S_110E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -445,7 +445,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/100E_20N_110E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/100E_20N_110E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -453,7 +453,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110E_00N_120E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110E_00N_120E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -461,7 +461,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110E_10N_120E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110E_10N_120E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -469,7 +469,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110E_10S_120E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110E_10S_120E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -477,7 +477,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110E_20N_120E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110E_20N_120E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -485,7 +485,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110E_20S_120E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110E_20S_120E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -493,7 +493,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110E_30S_120E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110E_30S_120E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -501,7 +501,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120E_00N_130E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120E_00N_130E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -509,7 +509,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120E_10N_130E_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120E_10N_130E_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -517,7 +517,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120E_10S_130E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120E_10S_130E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -525,7 +525,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120E_20N_130E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120E_20N_130E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -533,7 +533,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120E_20S_130E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120E_20S_130E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -541,7 +541,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120E_30S_130E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120E_30S_130E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -549,7 +549,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/130E_00N_140E_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/130E_00N_140E_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -557,7 +557,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/130E_10S_140E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/130E_10S_140E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -565,7 +565,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/130E_20N_140E_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/130E_20N_140E_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -573,7 +573,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/130E_20S_140E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/130E_20S_140E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -581,7 +581,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/130E_30S_140E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/130E_30S_140E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -589,7 +589,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/140E_10S_150E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/140E_10S_150E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -597,7 +597,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/140E_20S_150E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/140E_20S_150E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -605,7 +605,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/140E_30S_150E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/140E_30S_150E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -613,7 +613,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/150E_10S_160E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/150E_10S_160E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -621,7 +621,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/150E_20S_160E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/150E_20S_160E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -629,7 +629,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/150E_30S_160E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/150E_30S_160E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -637,7 +637,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/160E_10S_170E_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/160E_10S_170E_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -645,7 +645,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/160E_20S_170E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/160E_20S_170E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -653,7 +653,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/160E_30S_170E_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/160E_30S_170E_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -661,7 +661,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/170E_20S_180E_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/170E_20S_180E_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -669,7 +669,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040W_10S_030W_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040W_10S_030W_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -677,7 +677,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/040W_20S_030W_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/040W_20S_030W_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -685,7 +685,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050W_00N_040W_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050W_00N_040W_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -693,7 +693,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050W_10S_040W_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050W_10S_040W_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -701,7 +701,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050W_20S_040W_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050W_20S_040W_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -709,7 +709,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/050W_30S_040W_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/050W_30S_040W_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -717,7 +717,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060W_00N_050W_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060W_00N_050W_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -725,7 +725,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060W_10N_050W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060W_10N_050W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -733,7 +733,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060W_10S_050W_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060W_10S_050W_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -741,7 +741,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060W_20S_050W_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060W_20S_050W_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -749,7 +749,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060W_30S_050W_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060W_30S_050W_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -757,7 +757,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/060W_40S_050W_30S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/060W_40S_050W_30S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -765,7 +765,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070W_00N_060W_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070W_00N_060W_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -773,7 +773,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070W_10N_060W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070W_10N_060W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -781,7 +781,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070W_10S_060W_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070W_10S_060W_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -789,7 +789,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070W_20S_060W_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070W_20S_060W_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -797,7 +797,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/070W_30S_060W_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/070W_30S_060W_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -805,7 +805,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080W_00N_070W_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080W_00N_070W_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -813,7 +813,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080W_10N_070W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080W_10N_070W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -821,7 +821,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080W_10S_070W_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080W_10S_070W_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -829,7 +829,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080W_20N_070W_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080W_20N_070W_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -837,7 +837,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080W_20S_070W_10S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080W_20S_070W_10S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -845,7 +845,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/080W_30S_070W_20S.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/080W_30S_070W_20S.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -853,7 +853,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090W_00N_080W_10N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090W_00N_080W_10N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -861,7 +861,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090W_10N_080W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090W_10N_080W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -869,7 +869,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090W_10S_080W_00N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090W_10S_080W_00N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -877,7 +877,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/090W_20N_080W_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/090W_20N_080W_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -885,7 +885,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/100W_10N_090W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/100W_10N_090W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -893,7 +893,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/100W_20N_090W_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/100W_20N_090W_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -901,7 +901,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110W_10N_100W_20N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110W_10N_100W_20N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -909,7 +909,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/110W_20N_100W_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/110W_20N_100W_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
@@ -917,7 +917,7 @@
       <NODATA>0</NODATA>
     </ComplexSource>
     <ComplexSource>
-      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/stage/analysis/120W_20N_110W_30N.tif</SourceFilename>
+      <SourceFilename relativeToVRT="1">/vsis3/gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/120W_20N_110W_30N.tif</SourceFilename>
       <SourceBand>1</SourceBand>
       <SourceProperties RasterXSize="40000" RasterYSize="40000" DataType="UInt16" BlockXSize="256" BlockYSize="256" />
       <SrcRect xOff="0" yOff="0" xSize="40000" ySize="40000" />
