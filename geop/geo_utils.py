@@ -7,6 +7,7 @@ from rasterio import features
 from shapely.geometry import Polygon, MultiPolygon
 
 from utilities.errors import Error
+import math
 
 
 def check_extent(user_poly, raster):
@@ -69,6 +70,8 @@ def mask_geom_on_raster(geom, raster_path):
                     raise Error('Out of memory- input polygon or input extent too large. ' 
                                 'Try splitting the polygon into multiple requests.')
 
+                no_data = src.nodata
+
             # Create a numpy array to mask cells which don't intersect with the
             # polygon. Cells that intersect will have value of 0 (unmasked), the
             # rest are filled with 1s (masked)
@@ -82,7 +85,7 @@ def mask_geom_on_raster(geom, raster_path):
             full_mask = geom_mask | data.mask
 
             # Mask the data array, with modifications applied, by the query polygon
-            return np.ma.array(data=data, mask=full_mask), shifted_affine
+            return np.ma.array(data=data, mask=full_mask), no_data
 
     else:
         return np.array([]), None
@@ -130,3 +133,32 @@ def array_to_xyz_rows(arr, shifted_affine):
     for x, y, z in zip(masked_x, masked_y, arr.compressed()):
         yield (x, y, z)
 
+
+def get_area(lat):
+    """
+    Calculate geodesic area for Hansen data, assuming a fix pixel size of 0.00025 * 0.00025 degree
+    using WGS 1984 as spatial reference.
+    Pixel size various with latitude, which is it the only input parameter.
+    """
+    a = 6378137.0  # Semi major axis of WGS 1984 ellipsoid
+    b = 6356752.314245179  # Semi minor axis of WGS 1984 ellipsoid
+
+    d_lat = 0.00025  # pixel hight
+    d_lon = 0.00025  # pixel width
+
+    pi = math.pi
+
+    q = d_lon / 360
+    e = math.sqrt(1 - (b / a) ** 2)
+
+    area = abs(
+        (pi * b ** 2 * (
+                2 * np.arctanh(e * np.sin(np.radians(lat + d_lat))) /
+                (2 * e) +
+                np.sin(np.radians(lat + d_lat)) /
+                ((1 + e * np.sin(np.radians(lat + d_lat))) * (1 - e * np.sin(np.radians(lat + d_lat)))))) -
+        (pi * b ** 2 * (
+                2 * np.arctanh(e * np.sin(np.radians(lat))) / (2 * e) +
+                np.sin(np.radians(lat)) / ((1 + e * np.sin(np.radians(lat))) * (1 - e * np.sin(np.radians(lat))))))) *q
+
+    return area

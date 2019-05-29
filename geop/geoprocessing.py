@@ -1,150 +1,92 @@
 import numpy as np
-from shapely.geometry import shape, Polygon
-
-from geo_utils import mask_geom_on_raster
-
-
-def count(geom, raster_path):
-	"""
-	Perform a cell count analysis on a portion of a provided raster.
-
-	Args:
-		geom (Shapley Geometry): A polygon in the same SRS as `raster_path`
-			which will define the area of analysis to count cell values.
-
-		raster_path (string): A local file path to a geographic raster
-			containing values to extract.
-
-		mods (optional list<dict>): A list of geometries and value to alter the
-			source raster, provided as dict containing the following keys:
-
-			geom (geojson): polygon of area where modification should be
-				applied.
-
-			newValue (int|float): value to be written over the source raster
-				in areas where it intersects geom.  Modifications are applied
-				in order, meaning subsequent items can overwrite earlier ones.
-
-	Returns:
-		total (int): total number of cells included in census
-
-		count_map (dict): cell value keys with count of number of occurrences
-			within the raster masked by `geom`
-
-	"""
-
-	masked_data, _ = mask_geom_on_raster(geom, raster_path)
-	if masked_data.any():
-		return masked_array_count(masked_data)
-	else:
-		return {}
+import pandas as pd
+import rasterio
+from utilities.errors import Error
+import json
+from geo_utils import mask_geom_on_raster, get_area
 
 
-def count_pairs(geom, raster_paths):
-	"""
-	Perform a cell count analysis on groupings of cells from 2 rasters stacked
-	on top of each other.
+def sum_analysis(geom, *rasters, threshold=0, area=True):
+    """
+    If area is true, it will always sum the area for unique layer combinations.
+    If area is false, it will sum values of the last input raster
+    If threshold is > 0, the 2nd and 3rd raster need to be tcd2000 and tcd2010
+    :param geom:
+    :param rasters:
+    :param threshold:
+    :param area:
+    :return:
+    """
+    masked_data, no_data = mask_geom_on_raster(geom, rasters[0])
+    if masked_data.any():
+        if threshold > 0:
+            tcd_2000_mask = _mask_by_threshold(_read_window(rasters[1], geom.extent), threshold)
+            tcd_2010_mask = _mask_by_threshold(_read_window(rasters[2], geom.extent), threshold)
 
-	Args:
-		geom (Shapley Geometry): A polygon in the same SRS as `raster_path`
-			which will define the area of analysis to count cell values.
+            mean_area = get_area((geom.extent.maxy - geom.extent.miny) / 2)
+            tcd_2000_extent = tcd_2000_mask * masked_data.mask * mean_area/10000
+            tcd_2010_extent = tcd_2010_mask * masked_data.mask * mean_area/10000
 
-		raster_paths (list<string>): Two local file paths to geographic rasters
-			containing values to group and count.
+            rasters_to_process = [rasters[0]]
+            if len(rasters)>3:
+                rasters_to_process += rasters[3:]
 
-	Returns:
-		pairs (dict): Grouped pairs as key with count of number of occurrences
-			within the two rasters masked by geom
-			ex:  { cell1_rastA::cell1_rastB: 42 }
-	"""
+        else:
+            tcd_2000_mask = 1
+            rasters_to_process = rasters
+            tcd_2000_extent = None
+            tcd_2010_extent = None
 
-	# Read in two rasters and mask geom on both of them
-	layers = tuple(mask_geom_on_raster(geom, raster_path)[0]
-				   for raster_path in raster_paths)
-	empty_array_returned = [x for x in layers if x.size == 0]
+        value_mask = _mask_by_nodata(masked_data, no_data)
+        final_mask = value_mask * tcd_2000_mask * masked_data.mask
 
-	if not empty_array_returned:
+        contextual_array = _build_array(final_mask, rasters_to_process, extent=geom.extent, area=area)
 
-		if len(layers) == 3:
-			combined_layer = layers[0] * 500 + layers[1]
-			layers = [combined_layer, layers[2]]
-			
-		# Take the two masked arrays, and stack them along the third axis
-		# Effectively: [[cell_1a, cell_1b], [cell_2a, cell_2b], ..],[[...]]
-		pairs = np.ma.dstack(layers)
-		# Get the array in 2D form
-		arr = pairs.reshape(-1, pairs.shape[-1])
-
-		# Remove Rows which have masked values
-		trim_arr = np.ma.compress_rowcols(arr, 0)
-
-		if len(trim_arr):
-
-			# Lexicographically sort so that repeated pairs follow one another
-			sorted_arr = trim_arr[np.lexsort(trim_arr.T), :]
-
-			# otherwise no overlap between the two rasters
-			if len(sorted_arr):
-
-					# The difference between index n and n+1 in sorted_arr, for each index.
-					# Since it's sorted, repeated entries will have a value of 0 at that index
-					diff_sort = np.diff(sorted_arr, axis=0)\
-
-					# True or False value for each index of diff_sort based on a diff_sort
-					# having truthy or falsey values.  Indexes with no change (0 values) will
-					# be represented as False in this array
-					indexes_changed_mask = np.any(diff_sort, 1)
-
-					# Get the indexes that are True, indicating an index of sorted_arr that has
-					# a difference with its preceding value - ie, it represents a new
-					# occurrence of a value
-					diff_indexes = np.where(indexes_changed_mask)[0]
-
-					# Get the rows at the diff indexes, these are unique at each index
-					unique_rows = [sorted_arr[i] for i in diff_indexes] + [sorted_arr[-1]]
-
-					# Prepend a -1 on the list of diff_indexes and append the index of the last
-					# unique row, resulting in an array of index changes with fenceposts on
-					# both sides.  ie, `[-1, ...list of diff indexes..., <idx of last sorted>]`
-					idx_of_last_val = sorted_arr.shape[0] - 1
-					diff_idx_with_start = np.insert(diff_indexes, 0, -1)
-					fencepost_diff_indexes = np.append(diff_idx_with_start, idx_of_last_val)
-
-					# Get the number of occurrences of each unique row based on the difference
-					# between the indexes at which they change.  Since we put fenceposts up,
-					# we'll get a count for the first and last elements of the diff indexes
-					counts = np.diff(fencepost_diff_indexes)
-
-					# Map the pairs to the count, compressing values to keys in this format:
-					#   cell_r1::cell_r2
-					pair_counts = zip(unique_rows, counts)
-					pair_map = {k[0].astype(str) + '::' + k[1].astype(str): cnt for k, cnt in pair_counts}
-
-			else:
-						pair_map = {}
-		else:
-			pair_map = {}
-
-	else:
-		pair_map = {}
+        j = json.loads(_aggregate(contextual_array))
+        j["extent_2000"] = tcd_2000_extent
+        j["extent_2010"] = tcd_2010_extent
+        return j
+    else:
+        return pd.DataFrame().to_json()
 
 
-	return pair_map
+def _read_window(raster, window):
+    with rasterio.Env():
+        with rasterio.open(raster) as src:
+            try:
+                data = src.read(1, masked=True, window=window)
+            except MemoryError:
+                raise Error('Out of memory- input polygon or input extent too large. '
+                            'Try splitting the polygon into multiple requests.')
+    return data
 
 
-def masked_array_count(masked_data):
-	# Perform count using numpy built-ins.  Compressing the masked array
-	# creates a 1D array of just unmasked values.  May be able to speed up
-	# by using scipy count_tier_group, but this is working well for now
+def _mask_by_threshold(raster, threshold):
+    return raster > threshold
 
-	# trying to run this compress funx only on np array
-	if isinstance(masked_data, np.ndarray):
-		masked_data = masked_data.compressed()
 
-	values, counts = np.unique(masked_data, return_counts=True)
+def _mask_by_nodata(raster, no_data):
+    return raster != no_data
 
-	# Make dict of val: count with string keys for valid json
-	count_map = dict(zip(map(str, values), counts))
 
-	return count_map
+def _build_array(final_mask, *rasters, extent, area=True):
+    result = np.array()
+    for raster in rasters:
+        values = np.extract(final_mask, raster)
+        result = np.ma.dstack(result, values)
+
+    if area:
+        area = get_area((extent.maxy - extent.miny) / 2)
+        result = np.ma.dstack(result,np.ones(result.len) * area)
+
+    return result
+
+
+def _aggregate(array, extent):
+
+    df = pd.DataFrame(array)
+    df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
+
+    return df.groupby(list(df.columns[:-1]), axis=0).sum().to_json
+
 
