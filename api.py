@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask, jsonify, request, Response, redirect
+from flask import Flask, request, redirect
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
