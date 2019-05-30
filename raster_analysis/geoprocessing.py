@@ -34,15 +34,15 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
             tcd_2000_extent = None
             tcd_2010_extent = None
 
-        value_mask = _mask_by_nodata(masked_data, no_data)
+        value_mask = _mask_by_nodata(masked_data.data, no_data)
         final_mask = value_mask * tcd_2000_mask * masked_data.mask
 
-        contextual_array = _build_array(final_mask, masked_data.data, rasters_to_process, geom=geom, area=area)
+        contextual_array = _build_array(final_mask, masked_data.data, *rasters_to_process, geom=geom, area=area)
 
-        j = json.loads(_sum(contextual_array))
-        j["extent_2000"] = tcd_2000_extent
-        j["extent_2010"] = tcd_2010_extent
-        return j
+        result = json.loads(_sum(contextual_array).to_json())
+        result["extent_2000"] = tcd_2000_extent
+        result["extent_2010"] = tcd_2010_extent
+        return json.dumps(result)
     else:
         return pd.DataFrame().to_json()
 
@@ -79,7 +79,8 @@ def _sum(array):
 
     df = pd.DataFrame(array)
     df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
-
-    return df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
+    result = df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
+    print("Dataframe ", result)
+    return result
 
 
