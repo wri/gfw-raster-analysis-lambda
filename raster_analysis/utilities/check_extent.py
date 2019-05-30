@@ -1,5 +1,4 @@
 import boto3
-import ast
 from shapely.geometry import Polygon, MultiPolygon
 import json
 from urlparse import urlparse

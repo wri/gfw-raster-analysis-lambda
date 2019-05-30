@@ -4,14 +4,43 @@ import json
 import numpy as np
 import rasterio
 from rasterio import features
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon
 
-from utilities.errors import Error
+from raster_analysis.utilities.errors import Error
 import math
+import logging
+
+
+def read_window(raster, geom):
+    # Read a chunk of the raster that contains the bounding box of the
+    # input geometry.  This has memory implications if that rectangle
+    # is large. The affine transformation maps geom coordinates to the
+    # image mask below.
+    # can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+
+    with rasterio.Env():
+        with rasterio.open(raster) as src:
+            try:
+                window, shifted_affine = get_window_and_affine(geom, src)
+                data = src.read(1, masked=True, window=window)
+                no_data_value = src.nodata
+            except MemoryError:
+                raise Error('Out of memory- input polygon or input extent too large. '
+                            'Try splitting the polygon into multiple requests.')
+    return data, shifted_affine, no_data_value
+
+
+def read_window_ignore_missing(raster, geom):
+    try:
+        data = read_window(raster, geom)
+    except rasterio.errors.RasterioIOError as e:
+        logging.warning(e)
+        data = np.array([]), None, None
+
+    return data
 
 
 def check_extent(user_poly, raster):
-
     raster_ext = os.path.splitext(raster)[1]
     geojson_src = raster.replace(raster_ext, '.geojson')
 
@@ -52,43 +81,27 @@ def mask_geom_on_raster(geom, raster_path):
 
     """
 
-    if check_extent(geom, raster_path):
+    data, shifted_affine, no_data_value = read_window_ignore_missing(raster_path, geom)
 
-        # Read a chunk of the raster that contains the bounding box of the
-        # input geometry.  This has memory implications if that rectangle
-        # is large. The affine transformation maps geom coordinates to the
-        # image mask below.
-        # can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
-        with rasterio.Env():
-            with rasterio.open(raster_path) as src:
+    if data.any():
 
-                window, shifted_affine = get_window_and_affine(geom, src)
+        # Create a numpy array to mask cells which don't intersect with the
+        # polygon. Cells that intersect will have value of 0 (unmasked), the
+        # rest are filled with 1s (masked)
+        geom_mask = features.geometry_mask(
+            [geom],
+            out_shape=data.shape,
+            transform=shifted_affine
+        )
 
-                try:
-                    data = src.read(1, masked=True, window=window)
-                except MemoryError:
-                    raise Error('Out of memory- input polygon or input extent too large. ' 
-                                'Try splitting the polygon into multiple requests.')
+        # Include any NODATA mask
+        full_mask = geom_mask | data.mask
 
-                no_data = src.nodata
-
-            # Create a numpy array to mask cells which don't intersect with the
-            # polygon. Cells that intersect will have value of 0 (unmasked), the
-            # rest are filled with 1s (masked)
-            geom_mask = features.geometry_mask(
-                [geom],
-                out_shape=data.shape,
-                transform=shifted_affine
-            )
-
-            # Include any NODATA mask
-            full_mask = geom_mask | data.mask
-
-            # Mask the data array, with modifications applied, by the query polygon
-            return np.ma.array(data=data, mask=full_mask), no_data
+        # Mask the data array, with modifications applied, by the query polygon
+        return np.ma.array(data=data, mask=full_mask), shifted_affine, no_data_value
 
     else:
-        return np.array([]), None
+        return np.array([]), None, None
 
 
 def get_window_and_affine(geom, raster_src):
@@ -116,7 +129,7 @@ def get_window_and_affine(geom, raster_src):
     # Create a window range from the bounds
     ul = raster_src.index(*geom.bounds[0:2])
     lr = raster_src.index(*geom.bounds[2:4])
-    window = ((lr[0], ul[0]+1), (ul[1], lr[1]+1))
+    window = ((lr[0], ul[0] + 1), (ul[1], lr[1] + 1))
 
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)
@@ -125,7 +138,6 @@ def get_window_and_affine(geom, raster_src):
 
 
 def array_to_xyz_rows(arr, shifted_affine):
-
     i, j = np.where(arr.mask == False)
     masked_x = j * .00025 + shifted_affine.xoff + 0.000125
     masked_y = i * -.00025 + shifted_affine.yoff - 0.000125
@@ -159,6 +171,6 @@ def get_area(lat):
                 ((1 + e * np.sin(np.radians(lat + d_lat))) * (1 - e * np.sin(np.radians(lat + d_lat)))))) -
         (pi * b ** 2 * (
                 2 * np.arctanh(e * np.sin(np.radians(lat))) / (2 * e) +
-                np.sin(np.radians(lat)) / ((1 + e * np.sin(np.radians(lat))) * (1 - e * np.sin(np.radians(lat))))))) *q
+                np.sin(np.radians(lat)) / ((1 + e * np.sin(np.radians(lat))) * (1 - e * np.sin(np.radians(lat))))))) * q
 
     return area
