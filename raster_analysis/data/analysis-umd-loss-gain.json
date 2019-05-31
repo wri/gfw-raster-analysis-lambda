@@ -1,0 +1,30 @@
+{
+    "id": "umd-loss-gain",
+    "tilesets": [
+        {
+            "id": "hansen_2010_extent",
+            "path": "projects/wri-datalab/HansenTreeCover2010",
+            "band": "b1",
+            "no_data_value": 0
+         },
+         {
+             "id": "hansen_2017_v1_5",
+             "path": "UMD/hansen/global_forest_change_2017_v1_5",
+             "band": "treecover2000",
+             "no_data_value": 0
+         },
+         {
+             "id": "hansen",
+             "path": "projects/wri-datalab/HansenComposite_17",
+             "band": "gain",
+             "no_data_value": 0
+         }
+     ],
+     "aggregate_stats":["sum"],
+     "input_args":["geojson", "threshold"],
+     "properties":
+     {
+         "description": "For a given geometry, tree cover thresh-hold, start and end years, calculates the extent in hectares of tree cover in 2000 and 2010, tree cover gain between the start and end years, and annual tree cover loss for each year between the start and end years.",
+         "units": "hectares"
+     }
+ }

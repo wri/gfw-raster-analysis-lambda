@@ -1,0 +1,145 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "tilesets",
+    "aggregate_stats",
+    "input_args",
+    "properties"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "string",
+      "title": "The Id Schema",
+      "default": "",
+      "examples": [
+        "umd-loss-gain"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "tilesets": {
+      "$id": "#/properties/tilesets",
+      "type": "array",
+      "title": "The Tilesets Schema",
+      "items": {
+        "$id": "#/properties/tilesets/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "id",
+          "path",
+          "band",
+          "no_data_value"
+        ],
+        "properties": {
+          "id": {
+            "$id": "#/properties/tilesets/items/properties/id",
+            "type": "string",
+            "title": "The Id Schema",
+            "default": "",
+            "examples": [
+              "hansen_2010_extent"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "path": {
+            "$id": "#/properties/tilesets/items/properties/path",
+            "type": "string",
+            "title": "The Path Schema",
+            "default": "",
+            "examples": [
+              "projects/wri-datalab/HansenTreeCover2010"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "band": {
+            "$id": "#/properties/tilesets/items/properties/band",
+            "type": "string",
+            "title": "The Band Schema",
+            "default": "",
+            "examples": [
+              "b1"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "no_data_value": {
+            "$id": "#/properties/tilesets/items/properties/no_data_value",
+            "type": "integer",
+            "title": "The No_data_value Schema",
+            "default": 0,
+            "examples": [
+              0
+            ]
+          }
+        }
+      }
+    },
+    "aggregate_stats": {
+      "$id": "#/properties/aggregate_stats",
+      "type": "array",
+      "title": "The Aggregate_stats Schema",
+      "items": {
+        "$id": "#/properties/aggregate_stats/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "sum"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "input_args": {
+      "$id": "#/properties/input_args",
+      "type": "array",
+      "title": "The Input_args Schema",
+      "items": {
+        "$id": "#/properties/input_args/items",
+        "type": "string",
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "geojson",
+          "threshold"
+        ],
+        "pattern": "^(.*)$"
+      }
+    },
+    "properties": {
+      "$id": "#/properties/properties",
+      "type": "object",
+      "title": "The Properties Schema",
+      "required": [
+        "description",
+        "units"
+      ],
+      "properties": {
+        "description": {
+          "$id": "#/properties/properties/properties/description",
+          "type": "string",
+          "title": "The Description Schema",
+          "default": "",
+          "examples": [
+            "For a given geometry, tree cover thresh-hold, start and end years, calculates the extent in hectares of tree cover in 2000 and 2010, tree cover gain between the start and end years, and annual tree cover loss for each year between the start and end years."
+          ],
+          "pattern": "^(.*)$"
+        },
+        "units": {
+          "$id": "#/properties/properties/properties/units",
+          "type": "string",
+          "title": "The Units Schema",
+          "default": "",
+          "examples": [
+            "hectares"
+          ],
+          "pattern": "^(.*)$"
+        }
+      }
+    }
+  }
+}
