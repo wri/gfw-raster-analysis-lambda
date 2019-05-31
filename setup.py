@@ -5,7 +5,7 @@ setup(
     version="0.1.0",
     description="Lambda function to run serverless on the fly raster analysis",
     packages=["raster_analysis"],
-    author="Thomas Maschler, Charlie Hoffmann",
+    author="Thomas Maschler",
     license="MIT",
     install_requires=["rasterio[s3]==1.0.23",
                     "shapely==1.6.4.post2",
