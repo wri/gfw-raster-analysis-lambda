@@ -25,6 +25,6 @@ def lambda_handler(event, context):
     if analysis == "area_sum":
         result = geoprocessing.sum_analysis(geoprocessing, rasters, threshold=threshold, area=True)
     else:
-        result = {"error": "anlysis type unknown"}
+        result = {"error": "analysis type unknown"}
 
     return result

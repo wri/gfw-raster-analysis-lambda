@@ -42,9 +42,9 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
         result = json.loads(_sum(contextual_array).to_json())
         result["extent_2000"] = tcd_2000_extent
         result["extent_2010"] = tcd_2010_extent
-        return json.dumps(result)
+        return result
     else:
-        return pd.DataFrame().to_json()
+        return json.loads(pd.DataFrame().to_json())
 
 
 def _mask_by_threshold(raster, threshold):
