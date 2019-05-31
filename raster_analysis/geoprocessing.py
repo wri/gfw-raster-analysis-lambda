@@ -15,13 +15,13 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
     :param area:
     :return:
     """
-    masked_data, no_data = mask_geom_on_raster(geom, rasters[0])
+    masked_data, no_data, _ = mask_geom_on_raster(geom, rasters[0])
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2)
 
     if masked_data.any():
         if threshold > 0:
-            tcd_2000_mask = _mask_by_threshold(read_window(rasters[1], geom), threshold)
-            tcd_2010_mask = _mask_by_threshold(read_window(rasters[2], geom), threshold)
+            tcd_2000_mask = _mask_by_threshold(read_window(rasters[1], geom)[0], threshold)
+            tcd_2010_mask = _mask_by_threshold(read_window(rasters[2], geom)[0], threshold)
 
             tcd_2000_extent = tcd_2000_mask * masked_data.mask * mean_area/10000
             tcd_2010_extent = tcd_2010_mask * masked_data.mask * mean_area/10000
@@ -80,7 +80,6 @@ def _sum(array):
     df = pd.DataFrame(array)
     df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
     result = df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
-    print("Dataframe ", result)
     return result
 
 

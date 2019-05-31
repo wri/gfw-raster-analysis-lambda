@@ -11,7 +11,7 @@ import math
 import logging
 
 
-def read_window(raster, geom):
+def read_window(raster, geom, masked=False):
     # Read a chunk of the raster that contains the bounding box of the
     # input geometry.  This has memory implications if that rectangle
     # is large. The affine transformation maps geom coordinates to the
@@ -22,7 +22,7 @@ def read_window(raster, geom):
         with rasterio.open(raster) as src:
             try:
                 window, shifted_affine = get_window_and_affine(geom, src)
-                data = src.read(1, masked=True, window=window)
+                data = src.read(1, masked=masked, window=window)
                 no_data_value = src.nodata
             except MemoryError:
                 raise Error('Out of memory- input polygon or input extent too large. '
@@ -30,9 +30,9 @@ def read_window(raster, geom):
     return data, shifted_affine, no_data_value
 
 
-def read_window_ignore_missing(raster, geom):
+def read_window_ignore_missing(raster, geom, masked=False):
     try:
-        data = read_window(raster, geom)
+        data = read_window(raster, geom, masked=masked)
     except rasterio.errors.RasterioIOError as e:
         logging.warning(e)
         data = np.array([]), None, None
@@ -81,7 +81,7 @@ def mask_geom_on_raster(geom, raster_path):
 
     """
 
-    data, shifted_affine, no_data_value = read_window_ignore_missing(raster_path, geom)
+    data, shifted_affine, no_data_value = read_window_ignore_missing(raster_path, geom, masked=True)
 
     if data.any():
 
