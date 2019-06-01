@@ -37,9 +37,9 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
         value_mask = _mask_by_nodata(masked_data.data, no_data)
         final_mask = value_mask * tcd_2000_mask * masked_data.mask
 
-        contextual_array = _build_array(final_mask, masked_data.data, *rasters_to_process, geom=geom, area=area)
+        contextual_array = _build_array(final_mask, masked_data.data, *rasters_to_process, geom=geom)
 
-        result = {"data": _sum_area(contextual_array, area)}
+        result = {"data": _sum_area(contextual_array, mean_area)}
         result["extent_2000"] = tcd_2000_extent
         result["extent_2010"] = tcd_2010_extent
         return result
@@ -55,7 +55,7 @@ def _mask_by_nodata(raster, no_data):
     return raster != no_data
 
 
-def _build_array(mask, array, *rasters, geom=None, area=False):
+def _build_array(mask, array, *rasters, geom=None):
     result = np.extract(mask, array)
 
     for raster in rasters:
@@ -67,27 +67,11 @@ def _build_array(mask, array, *rasters, geom=None, area=False):
         data = None
         result = np.dstack((result, values))
 
-    if area:
-        area = get_area((geom.bounds[3] - geom.bounds[1]) / 2)
-        result = np.dstack((result, np.ones(len(result[0])) * area))
-
     return result[0]
-
-
-# def _sum(array):
-#
-#     df = pd.DataFrame(array)
-#     df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
-#     result = df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
-#     return result
 
 
 def _sum_area(array, area):
     unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
-    total_area = occur_count * area
+    total_area = (occur_count * area).reshape(len(occur_count),1)
 
-    print(total_area)
-    print(unique_rows)
-    print(occur_count)
-
-    return np.vstack((unique_rows, total_area))
+    return (np.hstack((unique_rows, total_area))).tolist()
