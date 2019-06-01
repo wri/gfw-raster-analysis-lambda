@@ -2,8 +2,8 @@ from raster_analysis import geoprocessing
 from shapely.geometry import Polygon
 from unittest import mock
 import numpy as np
-import pandas as pd
 import affine
+
 
 A = np.array([[1, 2, 3],
               [2, 3, 4],
@@ -19,12 +19,27 @@ C = np.array([[3, 4, 5],
 
 AREA = 769.288482
 
-AREA_ARRAY = np.array([[3., 4., 5., AREA],
-                       [3., 4., 5., AREA],
-                       [4., 5., 6., AREA],
-                       [3., 4., 5., AREA],
-                       [4., 5., 6., AREA],
-                       [5., 6., 7., AREA]])
+ARRAY = np.array([[3, 4, 5],
+                  [3, 4, 5],
+                  [4, 5, 6],
+                  [3, 4, 5],
+                  [4, 5, 6],
+                  [5, 6, 7]])
+
+AREA_ARRAY = np.array([[3, 4, 5, AREA],
+                       [3, 4, 5, AREA],
+                       [4, 5, 6, AREA],
+                       [3, 4, 5, AREA],
+                       [4, 5, 6, AREA],
+                       [5, 6, 7, AREA]])
+
+SUM_AREA_ARRAY = np.array([[3., 4., 5., AREA * 3],
+                           [4., 5., 6., AREA * 2],
+                           [5., 6., 7., AREA]])
+
+COUNT_ARRAY = np.array([[3., 4., 5., 3],
+                       [4., 5., 6., 2],
+                       [5., 6., 7., 1]])
 
 MASK = np.array([[False, False, True],
                  [False, True, True],
@@ -90,15 +105,26 @@ def test__mask_by_nodata():
 def test__build_array(mock_data):
     mock_data.side_effect = [(B, None, None), (C, None, None)]
     result = geoprocessing._build_array(MASK, A, "src_b", "src_c", geom=GEOMETRY)
-    expected_result = np.array([[3, 4, 5],
-                                [3, 4, 5],
-                                [4, 5, 6],
-                                [3, 4, 5],
-                                [4, 5, 6],
-                                [5, 6, 7]])
+    expected_result = ARRAY
 
     np.testing.assert_array_equal(result, expected_result)
 
+
+def test__sum_area():
+    result = geoprocessing._sum_area(ARRAY, AREA)
+    expected_result = SUM_AREA_ARRAY
+    np.testing.assert_array_equal(result, expected_result)
+
+
+def test__sum():
+    result = geoprocessing._sum(AREA_ARRAY)
+    expected_result = SUM_AREA_ARRAY
+    np.testing.assert_array_equal(result, expected_result)
+
+def test__count():
+    result = geoprocessing._count(ARRAY)
+    expected_result = COUNT_ARRAY
+    np.testing.assert_array_equal(result, expected_result)
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
