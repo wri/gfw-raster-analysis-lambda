@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import json
 from raster_analysis.utilities.geo_utils import read_window, mask_geom_on_raster, get_area, read_window_ignore_missing
 
@@ -23,8 +23,8 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
             tcd_2000_mask = _mask_by_threshold(read_window(rasters[1], geom)[0], threshold)
             tcd_2010_mask = _mask_by_threshold(read_window(rasters[2], geom)[0], threshold)
 
-            tcd_2000_extent = tcd_2000_mask * masked_data.mask * mean_area/10000
-            tcd_2010_extent = tcd_2010_mask * masked_data.mask * mean_area/10000
+            tcd_2000_extent = tcd_2000_mask * masked_data.mask * mean_area / 10000
+            tcd_2010_extent = tcd_2010_mask * masked_data.mask * mean_area / 10000
 
             rasters_to_process = rasters[3:]
 
@@ -39,12 +39,12 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
 
         contextual_array = _build_array(final_mask, masked_data.data, *rasters_to_process, geom=geom, area=area)
 
-        result = json.loads(_sum(contextual_array).to_json())
+        result = {"data": _sum_area(contextual_array, area)}
         result["extent_2000"] = tcd_2000_extent
         result["extent_2010"] = tcd_2010_extent
         return result
     else:
-        return json.loads(pd.DataFrame().to_json())
+        return {}
 
 
 def _mask_by_threshold(raster, threshold):
@@ -56,7 +56,6 @@ def _mask_by_nodata(raster, no_data):
 
 
 def _build_array(mask, array, *rasters, geom=None, area=False):
-
     result = np.extract(mask, array)
 
     for raster in rasters:
@@ -75,11 +74,20 @@ def _build_array(mask, array, *rasters, geom=None, area=False):
     return result[0]
 
 
-def _sum(array):
+# def _sum(array):
+#
+#     df = pd.DataFrame(array)
+#     df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
+#     result = df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
+#     return result
 
-    df = pd.DataFrame(array)
-    df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
-    result = df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
-    return result
 
+def _sum_area(array, area):
+    unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
+    total_area = occur_count * area
 
+    print(total_area)
+    print(unique_rows)
+    print(occur_count)
+
+    return np.vstack((unique_rows, total_area))
