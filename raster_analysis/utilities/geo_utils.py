@@ -6,7 +6,7 @@ import rasterio
 from rasterio import features
 from shapely.geometry import Polygon
 
-from raster_analysis.utilities.errors import Error
+# from raster_analysis.utilities.errors import Error
 import math
 import logging
 
@@ -25,7 +25,7 @@ def read_window(raster, geom, masked=False):
                 data = src.read(1, masked=masked, window=window)
                 no_data_value = src.nodata
             except MemoryError:
-                raise Error('Out of memory- input polygon or input extent too large. '
+                raise Exception('Out of memory- input polygon or input extent too large. '
                             'Try splitting the polygon into multiple requests.')
     return data, shifted_affine, no_data_value
 
