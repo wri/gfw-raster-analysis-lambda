@@ -39,7 +39,7 @@ def sum_analysis(geom, *rasters, threshold=0, area=True):
 
         contextual_array = _build_array(final_mask, masked_data.data, *rasters_to_process, geom=geom)
 
-        result = {"data": _sum_area(contextual_array, mean_area)}
+        result = {"data": _sum_area(contextual_array, mean_area).tolist()}
         result["extent_2000"] = tcd_2000_extent
         result["extent_2010"] = tcd_2010_extent
         return result
@@ -74,4 +74,11 @@ def _sum_area(array, area):
     unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
     total_area = (occur_count * area).reshape(len(occur_count),1)
 
-    return (np.hstack((unique_rows, total_area))).tolist()
+    return np.hstack((unique_rows, total_area))
+
+
+def _count(array):
+    unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
+    counts = occur_count.reshape(len(occur_count),1)
+
+    return (np.hstack((unique_rows, counts))).tolist()
