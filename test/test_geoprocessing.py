@@ -100,40 +100,19 @@ def test__build_array(mock_data):
     np.testing.assert_array_equal(result, expected_result)
 
 
-@mock.patch("raster_analysis.geoprocessing.read_window_ignore_missing")
-def test__build_array_with_area(mock_data):
-    mock_data.side_effect = [(B, None, None), (C, None, None)]
-    result = geoprocessing._build_array(MASK, A, "src_b", "src_c", geom=GEOMETRY, area=True)
-    expected_result = AREA_ARRAY
-
-    np.testing.assert_allclose(result, expected_result, rtol=1e-6, atol=0)
-
-
-def test__sum():
-    result = geoprocessing._sum(AREA_ARRAY)
-    expected_result = pd.DataFrame(
-        {'col0': [3., 4., 5.],
-         'col1': [4., 5., 6.],
-         'col2': [5., 6., 7.],
-         'value': [AREA * 3, AREA * 2, AREA]})
-
-    pd.testing.assert_frame_equal(result, expected_result)
-
-
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
 @mock.patch("raster_analysis.geoprocessing.read_window_ignore_missing")
 def test_sum_analysis_simple(mock_data_ignore, mock_data, mock_masked_data):
-    mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0
+    mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
     mock_data.side_effect = [(B, None, None), (C, None, None)]
     mock_data_ignore.side_effect = [(B, None, None), (C, None, None)]
 
     result = geoprocessing.sum_analysis(GEOMETRY, "ras0", "ras1", "ras2")
 
-    expected_result = {"col0": {"0": 3.0, "1": 4.0, "2": 5.0},
-                       "col1": {"0": 4.0, "1": 5.0, "2": 6.0},
-                       "col2": {"0": 5.0, "1": 6.0, "2": 7.0},
-                       "value": {"0": 2307.865445462, "1": 1538.5769636414, "2": 769.2884818207},
+    expected_result = {"data": [[3.0, 4.0, 5.0, 2307.8654454620364],
+                                [4.0, 5.0, 6.0, 1538.5769636413575],
+                                [5.0, 6.0, 7.0, 769.2884818206787]],
                        "extent_2000": None,
                        "extent_2010": None}
     print(result)
