@@ -101,15 +101,6 @@ def test__mask_by_nodata():
     np.testing.assert_array_equal(result, expected_result)
 
 
-@mock.patch("raster_analysis.geoprocessing.read_window_ignore_missing")
-def test__build_array(mock_data):
-    mock_data.side_effect = [(B, None, None), (C, None, None)]
-    result = geoprocessing._build_array(MASK, A, "src_b", "src_c", geom=GEOMETRY)
-    expected_result = ARRAY
-
-    np.testing.assert_array_equal(result, expected_result)
-
-
 def test__sum_area():
     result = geoprocessing._sum_area(ARRAY, AREA)
     expected_result = SUM_AREA_ARRAY

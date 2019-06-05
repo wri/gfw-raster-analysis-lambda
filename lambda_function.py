@@ -1,5 +1,5 @@
 from raster_analysis import geoprocessing
-from raster_analysis.utilities import grid_id
+from raster_analysis.utilities import grid
 from shapely.geometry import shape
 
 import sys
@@ -14,9 +14,7 @@ def lambda_handler(event, context):
     geometry = shape(event["geometry"])
     threshold = event["threshold"]
 
-    centroid = geometry.centroid
 
-    tile_id = grid_id.get_gridid(centroid)
 
     rasters = list()
     for raster_id in raster_ids:
