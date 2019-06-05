@@ -1,7 +1,9 @@
 import math
 
+BASE_URL = "/vsis3/gfw-files/2018_update/{raster_id}/{tile_id}.tif"
 
-def get_gridid(point, grid_size=10):
+
+def get_grid_id(point, grid_size=10):
     col = int(math.floor(point.x / grid_size)) * grid_size
     if col >= 0:
 
@@ -17,3 +19,12 @@ def get_gridid(point, grid_size=10):
         lat = str(-row).zfill(2) + "S"
 
     return "{}_{}".format(lat, long)
+
+
+def get_tile_id(geometry):
+    centroid = geometry.centroid
+    return get_grid_id(centroid)
+
+
+def get_raster_url(raster_id, tile_id):
+    return BASE_URL.format(raster_id=raster_id, tile_id=tile_id)
