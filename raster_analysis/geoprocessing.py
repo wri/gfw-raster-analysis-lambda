@@ -1,6 +1,6 @@
 import numpy as np
 from raster_analysis.utilities.grid import get_tile_id, get_raster_url
-from raster_analysis.utilities.arrays import to_structured_array
+from raster_analysis.utilities.arrays import to_structured_array, build_array, concat_arrays, fields_view, get_fields_by_type
 
 # import pandas as pd
 import json
@@ -27,6 +27,7 @@ def sum_analysis(geom, *raster_ids, threshold=0, area=True):
     masked_data, no_data, _ = mask_geom_on_raster(geom, raster)
 
     if masked_data.any():
+
         if threshold > 0:
             tcd_2000_url = get_raster_url(raster_ids[1], tile_id)
             tcd_2000_mask = _mask_by_threshold(read_window(tcd_2000_url, geom)[0], threshold)
@@ -45,19 +46,19 @@ def sum_analysis(geom, *raster_ids, threshold=0, area=True):
             tcd_2000_extent = None
             tcd_2010_extent = None
 
+        primary_array = to_structured_array(masked_data.data, raster_ids[0])
         value_mask = _mask_by_nodata(masked_data.data, no_data)
         final_mask = value_mask * tcd_2000_mask * masked_data.mask
 
-        primary_array = to_structured_array(masked_data.data, raster_ids[0])
-
-        contextual_array = _build_array(final_mask, primary_array, *rasters_to_process, geom=geom)
+        contextual_array = build_array(final_mask, primary_array, *rasters_to_process, geom=geom)
 
         result = {"data": _sum_area(contextual_array, mean_area).tolist()}
         result["extent_2000"] = tcd_2000_extent
         result["extent_2010"] = tcd_2010_extent
         return result
+
     else:
-        return {}
+        return dict()
 
 
 def _mask_by_threshold(raster, threshold):
@@ -68,40 +69,58 @@ def _mask_by_nodata(raster, no_data):
     return raster != no_data
 
 
-def _build_array(mask, array, *raster_ids, geom=None):
-
-    tile_id = _get_tile_id(geom)
-
-    result = np.extract(mask, array)
-
-    for raster_id in raster_ids:
-        raster = _get_raster_url(raster_id, tile_id)
-        data, _, _ = read_window_ignore_missing(raster, geom)
-        if data.any():
-            values = np.extract(mask, data)
-        else:
-            values = np.zeros(len(result))
-        data = None
-        result = np.dstack((result, values))
-
-    return result[0]
-
-
 def _sum_area(array, area):
     unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
-    total_area = (occur_count * area).reshape(len(occur_count),1)
+    total_area = (occur_count * area)
+    total_area.dtype = np.dtype([("AREA", "float")])
 
-    return np.hstack((unique_rows, total_area))
+    return concat_arrays(unique_rows, total_area)
 
 
 def _count(array):
     unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
-    counts = occur_count.reshape(len(occur_count), 1)
 
-    return (np.hstack((unique_rows, counts))).tolist()
+    return concat_arrays(unique_rows, occur_count)
 
 
 def _sum(array):
+
+    group_fields = get_fields_by_type(array.dtype, "float", exclude=True)
+    value_fields = get_fields_by_type(array.dtype, "float", exclude=False)
+
+    group_array = fields_view(array, group_fields)
+    value_array = fields_view(array, value_fields)
+
+    unique_rows, occur_count = np.unique(group_array, axis=0, return_counts=True)
+
+    sum = list()
+
+    for i in unique_rows:
+        mask = group_array == i
+        masked_values = np.extract(mask, value_array)
+
+        group_sum = list()
+        for field in value_fields:
+            group_sum.append(masked_values[field].sum())
+
+        print(group_sum)
+        sum.append(group_sum)
+
+    sum_array = np.array(sum, dtype=[(n, "float") for n in value_fields])
+    print(sum_array)
+
+    print(unique_rows)
+
+    print(sum_array[0])
+
+    return concat_arrays(unique_rows, sum_array)
+
+
+
+
+
+
+
     row_length = len(array[0])
     row_number = len(array)
     group = np.resize(array, row_length-1, row_number)
