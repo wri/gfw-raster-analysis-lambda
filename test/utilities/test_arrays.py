@@ -3,7 +3,6 @@ from unittest import mock
 from shapely.geometry import Polygon
 import numpy as np
 
-
 A = np.array([[1, 2, 3],
               [2, 3, 4],
               [3, 4, 5]])
@@ -22,15 +21,17 @@ MASK = np.array([[False, False, True],
 
 GEOMETRY = Polygon([(0, 0), (1, 1), (1, 0)])
 
-ARRAY = np.array([[1, 2, 3], [4, 5, 6], [7,8,9]])
-STRUCTURED_ARRAY = np.array([[1, 2, 3], [4, 5, 6], [7,8,9]], dtype=[("test", "int")])
+STRUCTURED_ARRAY = np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5]], dtype=[("test", "int")])
 STRUCTURED_ARRAY_BOOL = np.array([True, False, True], dtype=[("bool", "bool_")])
 STRUCTURED_ARRAY_INT = np.array([1, 2, 3], dtype=[("int", "int")])
 STRUCTURED_ARRAY_FLOAT = np.array([1., 2., 3.], dtype=[("float", "float")])
 
+COMBINED_ARRAY = np.array([(3, 4, 5), (3, 4, 5), (4, 5, 6), (3, 4, 5), (4, 5, 6), (5, 6, 7)],
+                          dtype=[('test', '<i8'), ('src_b', '<i8'), ('src_c', '<i8')])
+
 
 def test_to_structured_array():
-    result = arrays.to_structured_array(ARRAY, "test")
+    result = arrays.to_structured_array(A, "test")
     expected_result = STRUCTURED_ARRAY
 
     np.testing.assert_array_equal(result, expected_result)
@@ -60,12 +61,10 @@ def test__build_array():
     np.testing.assert_array_equal(result, expected_result)
 
 
-@mock.patch("raster_analysis.geoprocessing.read_window_ignore_missing")
+@mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
 def test_build_array(mock_data):
     mock_data.side_effect = [(B, None, None), (C, None, None)]
-    result = arrays.build_array(MASK, A, "src_b", "src_c", geom=GEOMETRY)
-    expected_result = ARRAY
+    result = arrays.build_array(MASK, STRUCTURED_ARRAY, "src_b", "src_c", geom=GEOMETRY)
+    expected_result = COMBINED_ARRAY
 
     np.testing.assert_array_equal(result, expected_result)
-
-

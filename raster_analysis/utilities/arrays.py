@@ -16,20 +16,22 @@ def build_array(mask, array, *raster_ids, geom=None):
         raster = get_raster_url(raster_id, tile_id)
         data, _, _ = read_window_ignore_missing(raster, geom)
         if data.any():
-            data = to_structured_array(array, raster_id)
+            data = to_structured_array(data, raster_id)
             values = np.extract(mask, data)
         else:
-            values = to_structured_array(np.zeros(len(result)), 'bool_')
+            values = to_structured_array(np.zeros(len(arrays[0])), 'bool_')
 
         return values
 
     tile_id = get_tile_id(geom)
 
-    result = np.extract(mask, array)
+    arrays = [np.extract(mask, array)]
 
     for raster_id in raster_ids:
         values = _get_values()
-        result = _build_array(result, values)
+        arrays.append(values)
+
+    result = _build_array(*arrays)
 
     return result
 
@@ -46,8 +48,12 @@ def _fill_array(fill_array, *arrays):
     return fill_array
 
 
-def _build_array(a, b):
-    dt = np.dtype(_dtype_to_list(a.dtype) + _dtype_to_list(b.dtype))
-    array = np.empty(len(a), dtype=dt)
+def _build_array(*arrays):
+    dts = list()
+    for array in arrays:
+        dts += _dtype_to_list(array.dtype)
+    dt = np.dtype(dts)
 
-    return _fill_array(array, a, b)
+    array = np.empty(len(arrays[0]), dtype=dt)
+
+    return _fill_array(array, *arrays)
