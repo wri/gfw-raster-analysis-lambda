@@ -29,6 +29,11 @@ STRUCTURED_ARRAY_FLOAT = np.array([1., 2., 3.], dtype=[("float", "float")])
 COMBINED_ARRAY = np.array([(3, 4, 5), (3, 4, 5), (4, 5, 6), (3, 4, 5), (4, 5, 6), (5, 6, 7)],
                           dtype=[('test', '<i8'), ('src_b', '<i8'), ('src_c', '<i8')])
 
+COMBINED_VIEW = np.array([(4, 5), (4, 5), (5, 6), (4, 5), (5, 6), (6, 7)],
+                         dtype=[('src_b', '<i8'), ('src_c', '<i8')])
+
+DT = np.dtype([("A", "int"), ("B", "int"), ("C", "int"), ("AREA", "float")])
+
 
 def test_to_structured_array():
     result = arrays.to_structured_array(A, "test")
@@ -55,7 +60,7 @@ def test__fill_array():
 
 def test__build_array():
     dt = ([("bool", "bool_"), ("int", "int")])
-    result = arrays._build_array(STRUCTURED_ARRAY_BOOL, STRUCTURED_ARRAY_INT)
+    result = arrays.concat_arrays(STRUCTURED_ARRAY_BOOL, STRUCTURED_ARRAY_INT)
     expected_result = np.array([(True, 1), (False, 2), (True, 3)], dtype=dt)
 
     np.testing.assert_array_equal(result, expected_result)
@@ -68,3 +73,24 @@ def test_build_array(mock_data):
     expected_result = COMBINED_ARRAY
 
     np.testing.assert_array_equal(result, expected_result)
+
+
+def test_field_view():
+    result = arrays.fields_view(COMBINED_ARRAY, ["src_b", "src_c"])
+    expected_result = COMBINED_VIEW
+
+    np.testing.assert_array_equal(result, expected_result)
+
+
+def test_get_fields_by_type_include():
+    result = arrays.get_fields_by_type(DT, "int")
+    expected_results = ["A", "B", "C"]
+
+    assert result == expected_results
+
+
+def test_get_fields_by_type_exclude():
+    result = arrays.get_fields_by_type(DT, "int", exclude=True)
+    expected_results = ["AREA"]
+
+    assert result == expected_results

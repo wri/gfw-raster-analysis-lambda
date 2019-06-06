@@ -17,29 +17,33 @@ C = np.array([[3, 4, 5],
               [4, 5, 6],
               [5, 6, 7]])
 
+DT = [("A", "int"), ("B", "int"), ("C", "int")]
+AREA_DT = [("A", "int"), ("B", "int"), ("C", "int"), ("AREA", "float")]
+COUNT_DT = [("A", "int"), ("B", "int"), ("C", "int"), ("COUNT", "int")]
+
 AREA = 769.288482
 
-ARRAY = np.array([[3, 4, 5],
-                  [3, 4, 5],
-                  [4, 5, 6],
-                  [3, 4, 5],
-                  [4, 5, 6],
-                  [5, 6, 7]])
+ARRAY = np.array([(3, 4, 5),
+                  (3, 4, 5),
+                  (4, 5, 6),
+                  (3, 4, 5),
+                  (4, 5, 6),
+                  (5, 6, 7)], dtype=DT)
 
-AREA_ARRAY = np.array([[3, 4, 5, AREA],
-                       [3, 4, 5, AREA],
-                       [4, 5, 6, AREA],
-                       [3, 4, 5, AREA],
-                       [4, 5, 6, AREA],
-                       [5, 6, 7, AREA]])
+AREA_ARRAY = np.array([(3, 4, 5, AREA),
+                       (3, 4, 5, AREA),
+                       (4, 5, 6, AREA),
+                       (3, 4, 5, AREA),
+                       (4, 5, 6, AREA),
+                       (5, 6, 7, AREA)], dtype=AREA_DT)
 
-SUM_AREA_ARRAY = np.array([[3., 4., 5., AREA * 3],
-                           [4., 5., 6., AREA * 2],
-                           [5., 6., 7., AREA]])
+SUM_AREA_ARRAY = np.array([(3, 4, 5, AREA * 3),
+                           (4, 5, 6, AREA * 2),
+                           (5, 6, 7, AREA)], dtype=AREA_DT)
 
-COUNT_ARRAY = np.array([[3., 4., 5., 3],
-                       [4., 5., 6., 2],
-                       [5., 6., 7., 1]])
+COUNT_ARRAY = np.array([[3, 4, 5, 3],
+                       [4, 5, 6, 2],
+                       [5, 6, 7, 1]], dtype=COUNT_DT)
 
 MASK = np.array([[False, False, True],
                  [False, True, True],
