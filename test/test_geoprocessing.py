@@ -3,6 +3,7 @@ from shapely.geometry import Polygon
 from unittest import mock
 import numpy as np
 import affine
+import pytest
 
 A = np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5]])
 
@@ -155,15 +156,20 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="area")
 
-    expected_result = {
-        "data": [
-            (3, 4, 5, 2307.8654454620364),
-            (4, 5, 6, 1538.5769636413575),
-            (5, 6, 7, 769.2884818206787),
+    expected_data = [
+            (3, 4, 5, AREA * 3/ 10000),
+            (4, 5, 6, AREA * 2/ 10000),
+            (5, 6, 7, AREA / 10000),
         ]
-    }
+    expected_dtype = [('ras0', '<i8'), ('ras1', '<i8'), ('ras2', '<i8'), ('AREA', '<f8')]
     print(result)
-    assert result == expected_result
+
+    result_dtype = result.pop("dtype")
+    result_data = result.pop("data")
+
+    for i, r in enumerate(result_data):
+        assert r == pytest.approx(expected_data[i], 0.000001)
+    assert result_dtype == expected_dtype
 
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
@@ -175,7 +181,7 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_data_ignore.side_effect = [(F1, None, None), (F2, None, None)]
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
+    expected_result = {"data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)],
+                       "dtype": [('ras0', '<i8'), ('ras1', '<f8'), ('ras2', '<f8')]}
 
-    expected_result = {"data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)]}
-    print(result)
     assert result == expected_result

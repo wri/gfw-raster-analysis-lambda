@@ -90,10 +90,11 @@ def mask_geom_on_raster(geom, raster_path):
     if data.any():
 
         # Create a numpy array to mask cells which don't intersect with the
-        # polygon. Cells that intersect will have value of 0 (unmasked), the
-        # rest are filled with 1s (masked)
+        # polygon. Cells that intersect will have value of 1 (unmasked), the
+        # rest are filled with 0s (masked)
         geom_mask = features.geometry_mask(
-            [geom], out_shape=data.shape, transform=shifted_affine
+            [geom], out_shape=data.shape, transform=shifted_affine, invert=True
+
         )
 
         # Include any NODATA mask
@@ -132,6 +133,7 @@ def get_window_and_affine(geom, raster_src):
     ul = raster_src.index(*geom.bounds[0:2])
     lr = raster_src.index(*geom.bounds[2:4])
     window = ((lr[0], ul[0] + 1), (ul[1], lr[1] + 1))
+    # window = ((lr[0], ul[0]), (ul[1], lr[1])) # TODO: figure out why we have to extent the bounds
 
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)
