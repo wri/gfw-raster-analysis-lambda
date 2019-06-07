@@ -17,6 +17,7 @@ def build_array(mask, array, *raster_ids, geom=None):
         if data.any():
             data = to_structured_array(data, raster_id)
             values = np.extract(mask, data)
+
         else:
             values = to_structured_array(np.zeros(len(arrays[0])), raster_id, "bool_")
 
@@ -38,7 +39,7 @@ def build_array(mask, array, *raster_ids, geom=None):
 def concat_arrays(*arrays):
     dts = list()
     for array in arrays:
-        dts += _dtype_to_list(array.dtype)
+        dts += dtype_to_list(array.dtype)
     dt = np.dtype(dts)
 
     array = np.empty(len(arrays[0]), dtype=dt)
@@ -53,7 +54,6 @@ def fields_view(arr, fields):
 
 
 def get_fields_by_type(dtypes, dtype, exclude=False):
-
     if isinstance(dtype, (str,)):
         dtype = np.dtype(dtype).type
 
@@ -71,5 +71,5 @@ def fill_array(fill_array, *arrays):
     return fill_array
 
 
-def _dtype_to_list(dtype):
-    return [(n, dtype[n]) for n in dtype.names]
+def dtype_to_list(dtype):
+    return [(n, dtype[n].descr[0][1]) for n in dtype.names]

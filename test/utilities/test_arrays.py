@@ -39,7 +39,7 @@ def test_to_structured_array():
 
 
 def test__dtype_to_list():
-    result = arrays._dtype_to_list(STRUCTURED_ARRAY.dtype)
+    result = arrays.dtype_to_list(STRUCTURED_ARRAY.dtype)
     expected_result = [("test", np.dtype("int64"))]
 
     assert result == expected_result
