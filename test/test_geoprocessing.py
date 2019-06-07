@@ -157,15 +157,20 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="area")
 
     expected_data = [
-            (3, 4, 5, AREA * 3/ 10000),
-            (4, 5, 6, AREA * 2/ 10000),
-            (5, 6, 7, AREA / 10000),
-        ]
-    expected_dtype = [('ras0', '<i8'), ('ras1', '<i8'), ('ras2', '<i8'), ('AREA', '<f8')]
+        (3, 4, 5, AREA * 3 / 10000),
+        (4, 5, 6, AREA * 2 / 10000),
+        (5, 6, 7, AREA / 10000),
+    ]
+    expected_dtype = [
+        ("ras0", "<i8"),
+        ("ras1", "<i8"),
+        ("ras2", "<i8"),
+        ("AREA", "<f8"),
+    ]
     print(result)
 
-    result_dtype = result.pop("dtype")
-    result_data = result.pop("data")
+    result_dtype = result["body"].pop("dtype")
+    result_data = result["body"].pop("data")
 
     for i, r in enumerate(result_data):
         assert r == pytest.approx(expected_data[i], 0.000001)
@@ -181,7 +186,12 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_data_ignore.side_effect = [(F1, None, None), (F2, None, None)]
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
-    expected_result = {"data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)],
-                       "dtype": [('ras0', '<i8'), ('ras1', '<f8'), ('ras2', '<f8')]}
+    expected_result = {
+        "status": 200,
+        "body": {
+            "data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)],
+            "dtype": [("ras0", "<i8"), ("ras1", "<f8"), ("ras2", "<f8")],
+        },
+    }
 
     assert result == expected_result
