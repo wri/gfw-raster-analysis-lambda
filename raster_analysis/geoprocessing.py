@@ -7,7 +7,7 @@ from raster_analysis.utilities.arrays import (
     fields_view,
     get_fields_by_type,
     fill_array,
-    dtype_to_list
+    dtype_to_list,
 )
 from raster_analysis.utilities.io import read_window, mask_geom_on_raster
 from raster_analysis.utilities.geodesy import get_area
@@ -26,7 +26,7 @@ def analysis(geom, *raster_ids, threshold=0, analysis="area"):
 
     def _conf():
 
-        _result = dict()
+        _result = {"status": 200, "body": dict()}
 
         if threshold:
             tcd_2000_url = get_raster_url(raster_ids[1], tile_id)
@@ -39,14 +39,14 @@ def analysis(geom, *raster_ids, threshold=0, analysis="area"):
                 read_window(tcd_2010_url, geom)[0], threshold
             )
 
-            _result["extent_2000"] = (
-                    (tcd_2000_mask * masked_data.mask).sum() * mean_area
-            )
-            _result["extent_2010"] = (
-                    (tcd_2010_mask * masked_data.mask).sum() * mean_area
-            )
+            _result["body"]["extent_2000"] = (
+                tcd_2000_mask * masked_data.mask
+            ).sum() * mean_area
+            _result["body"]["extent_2010"] = (
+                tcd_2010_mask * masked_data.mask
+            ).sum() * mean_area
 
-            _result["threshold"] = threshold
+            _result["body"]["threshold"] = threshold
 
             _rasters_to_process = raster_ids[3:]
 
@@ -87,13 +87,13 @@ def analysis(geom, *raster_ids, threshold=0, analysis="area"):
 
         a = _analysis()
 
-        result["data"] = a.tolist()
-        result["dtype"] = dtype_to_list(a.dtype)
+        result["body"]["data"] = a.tolist()
+        result["body"]["dtype"] = dtype_to_list(a.dtype)
 
         return result
 
     else:
-        return dict()
+        return {"status": 200, "body": dict()}
 
 
 def _mask_by_threshold(raster, threshold):

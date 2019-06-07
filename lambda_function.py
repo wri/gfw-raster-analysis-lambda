@@ -13,9 +13,13 @@ def lambda_handler(event, context):
     geometry = shape(event["geometry"])
     threshold = event["threshold"]
 
-    result = geoprocessing.analysis(
-        geometry, *raster_ids, threshold=threshold, analysis=analysis
-    )
+    try:
+        result = geoprocessing.analysis(
+            geometry, *raster_ids, threshold=threshold, analysis=analysis
+        )
+    except Exception as e:
+        result = {"status": 500,
+                  "message": e}
 
     return result
 
