@@ -52,7 +52,7 @@ def test__dtype_to_list():
 def test__fill_array():
     dt = ([("bool", "bool_"), ("int", "int"), ("float", "float")])
     e = np.empty(3, dtype=dt)
-    result = arrays._fill_array(e, STRUCTURED_ARRAY_BOOL, STRUCTURED_ARRAY_INT, STRUCTURED_ARRAY_FLOAT)
+    result = arrays.fill_array(e, STRUCTURED_ARRAY_BOOL, STRUCTURED_ARRAY_INT, STRUCTURED_ARRAY_FLOAT)
     expected_result = np.array([(True, 1, 1.), (False, 2, 2.), (True, 3, 3.)], dtype=dt)
 
     np.testing.assert_array_equal(result, expected_result)

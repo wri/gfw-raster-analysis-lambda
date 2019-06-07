@@ -20,9 +20,6 @@ def build_array(mask, array, *raster_ids, geom=None):
         else:
             values = to_structured_array(np.zeros(len(arrays[0])), raster_id, 'bool_')
 
-        print(raster_id)
-        print(values)
-
         return values
 
     tile_id = get_tile_id(geom)
@@ -46,7 +43,7 @@ def concat_arrays(*arrays):
 
     array = np.empty(len(arrays[0]), dtype=dt)
 
-    return _fill_array(array, *arrays)
+    return fill_array(array, *arrays)
 
 
 def fields_view(arr, fields):
@@ -56,19 +53,26 @@ def fields_view(arr, fields):
 
 
 def get_fields_by_type(dtypes, dtype, exclude=False):
+
+    if isinstance(dtype, (str,)):
+        dtype = np.dtype(dtype).type
+
     if exclude:
         return [n for n in dtypes.names if not np.issubdtype(dtypes[n], dtype)]
     else:
         return [n for n in dtypes.names if np.issubdtype(dtypes[n], dtype)]
 
 
-def _dtype_to_list(dtype):
-    return [(n, dtype[n]) for n in dtype.names]
-
-
-def _fill_array(fill_array, *arrays):
+def fill_array(fill_array, *arrays):
     for array in arrays:
         for n in array.dtype.names:
             fill_array[n] = array[n]
 
     return fill_array
+
+
+def _dtype_to_list(dtype):
+    return [(n, dtype[n]) for n in dtype.names]
+
+
+
