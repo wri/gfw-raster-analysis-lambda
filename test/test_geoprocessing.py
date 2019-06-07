@@ -155,18 +155,16 @@ def test__count():
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
 @mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
-def test_sum_analysis_area(mock_data_ignore, mock_data, mock_masked_data):
+def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
     mock_data.side_effect = [(B, None, None), (C, None, None)]
     mock_data_ignore.side_effect = [(B, None, None), (C, None, None)]
 
-    result = geoprocessing.sum_analysis(GEOMETRY, "ras0", "ras1", "ras2", area=True)
+    result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="area")
 
     expected_result = {"data": [(3, 4, 5, 2307.8654454620364),
                                 (4, 5, 6, 1538.5769636413575),
-                                (5, 6, 7, 769.2884818206787)],
-                       "extent_2000": None,
-                       "extent_2010": None}
+                                (5, 6, 7, 769.2884818206787)]}
     print(result)
     assert result == expected_result
 
@@ -179,12 +177,10 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_data.side_effect = [(F1, None, None), (F2, None, None)]
     mock_data_ignore.side_effect = [(F1, None, None), (F2, None, None)]
 
-    result = geoprocessing.sum_analysis(GEOMETRY, "ras0", "ras1", "ras2", area=False)
+    result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
 
     expected_result = {"data": [(3, 12., 15.),
                                 (4, 10., 12.),
-                                (5, 6., 7.)],
-                       "extent_2000": None,
-                       "extent_2010": None}
+                                (5, 6., 7.)]}
     print(result)
     assert result == expected_result
