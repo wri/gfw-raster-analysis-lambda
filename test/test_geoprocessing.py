@@ -4,7 +4,6 @@ from unittest import mock
 import numpy as np
 import affine
 
-
 A = np.array([[1, 2, 3],
               [2, 3, 4],
               [3, 4, 5]])
@@ -37,13 +36,24 @@ AREA_ARRAY = np.array([(3, 4, 5, AREA),
                        (4, 5, 6, AREA),
                        (5, 6, 7, AREA)], dtype=AREA_DT)
 
+AREA_ARRAY2 = np.array([(3, 4, 5, AREA, AREA),
+                        (3, 4, 5, AREA, AREA),
+                        (4, 5, 6, AREA, AREA),
+                        (3, 4, 5, AREA, AREA),
+                        (4, 5, 6, AREA, AREA),
+                        (5, 6, 7, AREA, AREA)], dtype=AREA_DT + [("AREA2", "float")])
+
 SUM_AREA_ARRAY = np.array([(3, 4, 5, AREA * 3),
                            (4, 5, 6, AREA * 2),
                            (5, 6, 7, AREA)], dtype=AREA_DT)
 
-COUNT_ARRAY = np.array([[3, 4, 5, 3],
-                       [4, 5, 6, 2],
-                       [5, 6, 7, 1]], dtype=COUNT_DT)
+SUM_AREA_ARRAY2 = np.array([(3, 4, 5, AREA * 3, AREA * 3),
+                            (4, 5, 6, AREA * 2, AREA * 2),
+                            (5, 6, 7, AREA, AREA)], dtype=AREA_DT + [("AREA2", "float")])
+
+COUNT_ARRAY = np.array([(3, 4, 5, 3),
+                        (4, 5, 6, 2),
+                        (5, 6, 7, 1)], dtype=COUNT_DT)
 
 MASK = np.array([[False, False, True],
                  [False, True, True],
@@ -116,10 +126,18 @@ def test__sum():
     expected_result = SUM_AREA_ARRAY
     np.testing.assert_array_equal(result, expected_result)
 
+
+def test__sum2():
+    result = geoprocessing._sum(AREA_ARRAY2)
+    expected_result = SUM_AREA_ARRAY2
+    np.testing.assert_array_equal(result, expected_result)
+
+
 def test__count():
     result = geoprocessing._count(ARRAY)
     expected_result = COUNT_ARRAY
     np.testing.assert_array_equal(result, expected_result)
+
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
