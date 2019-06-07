@@ -79,6 +79,7 @@ def _sum_area(array, area):
 
 def _count(array):
     unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
+    occur_count.dtype= [("COUNT", "int")]
 
     return concat_arrays(unique_rows, occur_count)
 
@@ -93,25 +94,21 @@ def _sum(array):
 
     unique_rows, occur_count = np.unique(group_array, axis=0, return_counts=True)
 
-    sum = list()
+    field_sum = list()
 
-    for i in unique_rows:
-        mask = group_array == i
-        masked_values = np.extract(mask, value_array)
+    for field in value_fields:
+        field_sum = list()
 
-        group_sum = list()
-        for field in value_fields:
-            group_sum.append(masked_values[field].sum())
+        for i in unique_rows:
 
-        print(group_sum)
-        sum.append(group_sum)
+            mask = group_array == i
+            masked_values = np.extract(mask, value_array)
 
-    sum_array = np.array(sum, dtype=[(n, "float") for n in value_fields])
+            field_sum.append(masked_values[field].sum())
+
+    sum_array = np.array(field_sum, dtype=[(n, "float") for n in value_fields])
+
     print(sum_array)
-
-    print(unique_rows)
-
-    print(sum_array[0])
 
     return concat_arrays(unique_rows, sum_array)
 

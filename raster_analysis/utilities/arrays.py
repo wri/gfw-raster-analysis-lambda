@@ -18,7 +18,10 @@ def build_array(mask, array, *raster_ids, geom=None):
             data = to_structured_array(data, raster_id)
             values = np.extract(mask, data)
         else:
-            values = to_structured_array(np.zeros(len(arrays[0])), 'bool_')
+            values = to_structured_array(np.zeros(len(arrays[0])), raster_id, 'bool_')
+
+        print(raster_id)
+        print(values)
 
         return values
 
