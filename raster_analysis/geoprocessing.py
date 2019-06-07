@@ -1,10 +1,13 @@
 import numpy as np
 from raster_analysis.utilities.grid import get_tile_id, get_raster_url
-from raster_analysis.utilities.arrays import to_structured_array, build_array, concat_arrays, fields_view, \
-    get_fields_by_type, fill_array
-
-# import pandas as pd
-import json
+from raster_analysis.utilities.arrays import (
+    to_structured_array,
+    build_array,
+    concat_arrays,
+    fields_view,
+    get_fields_by_type,
+    fill_array,
+)
 from raster_analysis.utilities.io import read_window, mask_geom_on_raster
 from raster_analysis.utilities.geodesy import get_area
 
@@ -26,13 +29,21 @@ def analysis(geom, *raster_ids, threshold=0, analysis="area"):
 
         if threshold:
             tcd_2000_url = get_raster_url(raster_ids[1], tile_id)
-            tcd_2000_mask = _mask_by_threshold(read_window(tcd_2000_url, geom)[0], threshold)
+            tcd_2000_mask = _mask_by_threshold(
+                read_window(tcd_2000_url, geom)[0], threshold
+            )
 
             tcd_2010_url = get_raster_url(raster_ids[2], tile_id)
-            tcd_2010_mask = _mask_by_threshold(read_window(tcd_2010_url, geom)[0], threshold)
+            tcd_2010_mask = _mask_by_threshold(
+                read_window(tcd_2010_url, geom)[0], threshold
+            )
 
-            _result["extent_2000"] = tcd_2000_mask * masked_data.mask * mean_area / 10000
-            _result["extent_2010"] = tcd_2010_mask * masked_data.mask * mean_area / 10000
+            _result["extent_2000"] = (
+                tcd_2000_mask * masked_data.mask * mean_area / 10000
+            )
+            _result["extent_2010"] = (
+                tcd_2010_mask * masked_data.mask * mean_area / 10000
+            )
 
             _rasters_to_process = raster_ids[3:]
 
@@ -66,7 +77,9 @@ def analysis(geom, *raster_ids, threshold=0, analysis="area"):
         rasters_to_process, mask, result = _conf()
         primary_array = to_structured_array(masked_data.data, raster_ids[0])
 
-        contextual_array = build_array(mask, primary_array, *rasters_to_process, geom=geom)
+        contextual_array = build_array(
+            mask, primary_array, *rasters_to_process, geom=geom
+        )
 
         result["data"] = _analysis()
 
@@ -86,7 +99,7 @@ def _mask_by_nodata(raster, no_data):
 
 def _sum_area(array, area):
     unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
-    total_area = (occur_count * area)
+    total_area = occur_count * area
     total_area.dtype = np.dtype([("AREA", "float")])
 
     return concat_arrays(unique_rows, total_area)
@@ -122,9 +135,6 @@ def _sum(array):
         print(sum_array)
         print(np.array(field_sum, dtype=[(field, "float")]))
 
-        sum_array = fill_array(sum_array,
-                               np.array(field_sum, dtype=[(field, "float")]))
-
-    # sum_array = np.array(field_sum, dtype=[(n, "float") for n in value_fields])
+        sum_array = fill_array(sum_array, np.array(field_sum, dtype=[(field, "float")]))
 
     return concat_arrays(unique_rows, sum_array)

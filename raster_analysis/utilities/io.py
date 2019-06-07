@@ -25,8 +25,10 @@ def read_window(raster, geom, masked=False):
                 data = src.read(1, masked=masked, window=window)
                 no_data_value = src.nodata
             except MemoryError:
-                raise Exception('Out of memory- input polygon or input extent too large. '
-                            'Try splitting the polygon into multiple requests.')
+                raise Exception(
+                    "Out of memory- input polygon or input extent too large. "
+                    "Try splitting the polygon into multiple requests."
+                )
     return data, shifted_affine, no_data_value
 
 
@@ -42,14 +44,14 @@ def read_window_ignore_missing(raster, geom, masked=False):
 
 def check_extent(user_poly, raster):
     raster_ext = os.path.splitext(raster)[1]
-    geojson_src = raster.replace(raster_ext, '.geojson')
+    geojson_src = raster.replace(raster_ext, ".geojson")
 
     with open(geojson_src) as src:
         d = json.load(src)
 
     # get index geom
     poly_intersects = False
-    poly_list = [Polygon(x['geometry']['coordinates'][0]) for x in d['features']]
+    poly_list = [Polygon(x["geometry"]["coordinates"][0]) for x in d["features"]]
 
     # check if polygons intersect
     for poly in poly_list:
@@ -81,7 +83,9 @@ def mask_geom_on_raster(geom, raster_path):
 
     """
 
-    data, shifted_affine, no_data_value = read_window_ignore_missing(raster_path, geom, masked=True)
+    data, shifted_affine, no_data_value = read_window_ignore_missing(
+        raster_path, geom, masked=True
+    )
 
     if data.any():
 
@@ -89,9 +93,7 @@ def mask_geom_on_raster(geom, raster_path):
         # polygon. Cells that intersect will have value of 0 (unmasked), the
         # rest are filled with 1s (masked)
         geom_mask = features.geometry_mask(
-            [geom],
-            out_shape=data.shape,
-            transform=shifted_affine
+            [geom], out_shape=data.shape, transform=shifted_affine
         )
 
         # Include any NODATA mask
@@ -139,9 +141,8 @@ def get_window_and_affine(geom, raster_src):
 
 def array_to_xyz_rows(arr, shifted_affine):
     i, j = np.where(arr.mask == False)
-    masked_x = j * .00025 + shifted_affine.xoff + 0.000125
-    masked_y = i * -.00025 + shifted_affine.yoff - 0.000125
+    masked_x = j * 0.00025 + shifted_affine.xoff + 0.000125
+    masked_y = i * -0.00025 + shifted_affine.yoff - 0.000125
 
     for x, y, z in zip(masked_x, masked_y, arr.compressed()):
         yield (x, y, z)
-
