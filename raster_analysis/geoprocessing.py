@@ -1,10 +1,10 @@
 import numpy as np
 from raster_analysis.utilities.grid import get_tile_id, get_raster_url
-from raster_analysis.utilities.arrays import to_structured_array, build_array, concat_arrays, fields_view, get_fields_by_type
+from raster_analysis.utilities.arrays import to_structured_array, build_array, concat_arrays, fields_view, get_fields_by_type, fill_array
 
 # import pandas as pd
 import json
-from raster_analysis.utilities.io import read_window, mask_geom_on_raster, read_window_ignore_missing
+from raster_analysis.utilities.io import read_window, mask_geom_on_raster
 from raster_analysis.utilities.geodesy import get_area
 
 
@@ -52,7 +52,11 @@ def sum_analysis(geom, *raster_ids, threshold=0, area=True):
 
         contextual_array = build_array(final_mask, primary_array, *rasters_to_process, geom=geom)
 
-        result = {"data": _sum_area(contextual_array, mean_area).tolist()}
+        if area:
+            result = {"data": _sum_area(contextual_array, mean_area).tolist()}
+        else:
+            result = {"data": _sum(contextual_array).tolist()}
+
         result["extent_2000"] = tcd_2000_extent
         result["extent_2010"] = tcd_2010_extent
         return result
@@ -94,7 +98,7 @@ def _sum(array):
 
     unique_rows, occur_count = np.unique(group_array, axis=0, return_counts=True)
 
-    field_sum = list()
+    sum_array = np.empty(len(unique_rows), dtype=value_array.dtype)
 
     for field in value_fields:
         field_sum = list()
@@ -106,19 +110,14 @@ def _sum(array):
 
             field_sum.append(masked_values[field].sum())
 
-    sum_array = np.array(field_sum, dtype=[(n, "float") for n in value_fields])
 
-    print(sum_array)
+        print(sum_array)
+        print(np.array(field_sum, dtype=[(field, "float")]))
+
+
+        sum_array = fill_array(sum_array,
+                               np.array(field_sum, dtype=[(field, "float")]))
+
+    #sum_array = np.array(field_sum, dtype=[(n, "float") for n in value_fields])
 
     return concat_arrays(unique_rows, sum_array)
-
-
-
-
-
-
-
-    row_length = len(array[0])
-    row_number = len(array)
-    group = np.resize(array, row_length-1, row_number)
-    values = np.array_split(array,len(array[0]),1)[len(array[0])-1]

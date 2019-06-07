@@ -16,7 +16,16 @@ C = np.array([[3, 4, 5],
               [4, 5, 6],
               [5, 6, 7]])
 
+F1 = np.array([[2., 3., 4.],
+               [3., 4., 5.],
+               [4., 5., 6.]])
+
+F2 = np.array([[3., 4., 5.],
+               [4., 5., 6.],
+               [5., 6., 7.]])
+
 DT = [("A", "int"), ("B", "int"), ("C", "int")]
+DT_F = [("A", "int"), ("F1", "float"), ("F2", "float")]
 AREA_DT = [("A", "int"), ("B", "int"), ("C", "int"), ("AREA", "float")]
 COUNT_DT = [("A", "int"), ("B", "int"), ("C", "int"), ("COUNT", "int")]
 
@@ -36,20 +45,24 @@ AREA_ARRAY = np.array([(3, 4, 5, AREA),
                        (4, 5, 6, AREA),
                        (5, 6, 7, AREA)], dtype=AREA_DT)
 
-AREA_ARRAY2 = np.array([(3, 4, 5, AREA, AREA),
-                        (3, 4, 5, AREA, AREA),
-                        (4, 5, 6, AREA, AREA),
-                        (3, 4, 5, AREA, AREA),
-                        (4, 5, 6, AREA, AREA),
-                        (5, 6, 7, AREA, AREA)], dtype=AREA_DT + [("AREA2", "float")])
+AREA_ARRAY2 = np.array([(3, 4, 5, AREA, AREA * 2),
+                        (3, 4, 5, AREA, AREA * 2),
+                        (4, 5, 6, AREA, AREA * 2),
+                        (3, 4, 5, AREA, AREA * 2),
+                        (4, 5, 6, AREA, AREA * 2),
+                        (5, 6, 7, AREA, AREA * 2)], dtype=AREA_DT + [("AREA2", "float")])
 
 SUM_AREA_ARRAY = np.array([(3, 4, 5, AREA * 3),
                            (4, 5, 6, AREA * 2),
                            (5, 6, 7, AREA)], dtype=AREA_DT)
 
-SUM_AREA_ARRAY2 = np.array([(3, 4, 5, AREA * 3, AREA * 3),
-                            (4, 5, 6, AREA * 2, AREA * 2),
-                            (5, 6, 7, AREA, AREA)], dtype=AREA_DT + [("AREA2", "float")])
+SUM_AREA_ARRAY2 = np.array([(3, 4, 5, AREA * 3, AREA * 6),
+                            (4, 5, 6, AREA * 2, AREA * 4),
+                            (5, 6, 7, AREA, AREA * 2)], dtype=AREA_DT + [("AREA2", "float")])
+
+SUM_ARRAY = np.array([(3, 12., 15.),
+                      (4, 8., 12.),
+                      (5, 5., 7.)], dtype=DT_F)
 
 COUNT_ARRAY = np.array([(3, 4, 5, 3),
                         (4, 5, 6, 2),
@@ -141,17 +154,36 @@ def test__count():
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
-@mock.patch("raster_analysis.geoprocessing.read_window_ignore_missing")
-def test_sum_analysis_simple(mock_data_ignore, mock_data, mock_masked_data):
+@mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
+def test_sum_analysis_area(mock_data_ignore, mock_data, mock_masked_data):
     mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
     mock_data.side_effect = [(B, None, None), (C, None, None)]
     mock_data_ignore.side_effect = [(B, None, None), (C, None, None)]
 
-    result = geoprocessing.sum_analysis(GEOMETRY, "ras0", "ras1", "ras2")
+    result = geoprocessing.sum_analysis(GEOMETRY, "ras0", "ras1", "ras2", area=True)
 
-    expected_result = {"data": [[3.0, 4.0, 5.0, 2307.8654454620364],
-                                [4.0, 5.0, 6.0, 1538.5769636413575],
-                                [5.0, 6.0, 7.0, 769.2884818206787]],
+    expected_result = {"data": [(3, 4, 5, 2307.8654454620364),
+                                (4, 5, 6, 1538.5769636413575),
+                                (5, 6, 7, 769.2884818206787)],
+                       "extent_2000": None,
+                       "extent_2010": None}
+    print(result)
+    assert result == expected_result
+
+
+@mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
+@mock.patch("raster_analysis.geoprocessing.read_window")
+@mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
+def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
+    mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
+    mock_data.side_effect = [(F1, None, None), (F2, None, None)]
+    mock_data_ignore.side_effect = [(F1, None, None), (F2, None, None)]
+
+    result = geoprocessing.sum_analysis(GEOMETRY, "ras0", "ras1", "ras2", area=False)
+
+    expected_result = {"data": [(3, 12., 15.),
+                                (4, 10., 12.),
+                                (5, 6., 7.)],
                        "extent_2000": None,
                        "extent_2010": None}
     print(result)
