@@ -1,5 +1,4 @@
 from raster_analysis import geoprocessing
-from raster_analysis.utilities import grid
 from shapely.geometry import shape
 
 import sys
@@ -14,17 +13,9 @@ def lambda_handler(event, context):
     geometry = shape(event["geometry"])
     threshold = event["threshold"]
 
-    rasters = list()
-    for raster_id in raster_ids:
-        raster = BASE_URL.format(raster_id=raster_id, tile_id=tile_id)
-        rasters.append(raster)
-
-    if analysis == "area_sum":
-        result = geoprocessing.sum_analysis(
-            geometry, *rasters, threshold=threshold, area=True
-        )
-    else:
-        result = {"error": "analysis type unknown"}
+    result = geoprocessing.analysis(
+        geometry, *raster_ids, threshold=threshold, analysis=analysis
+    )
 
     return result
 
