@@ -4,25 +4,15 @@ from unittest import mock
 import numpy as np
 import affine
 
-A = np.array([[1, 2, 3],
-              [2, 3, 4],
-              [3, 4, 5]])
+A = np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5]])
 
-B = np.array([[2, 3, 4],
-              [3, 4, 5],
-              [4, 5, 6]])
+B = np.array([[2, 3, 4], [3, 4, 5], [4, 5, 6]])
 
-C = np.array([[3, 4, 5],
-              [4, 5, 6],
-              [5, 6, 7]])
+C = np.array([[3, 4, 5], [4, 5, 6], [5, 6, 7]])
 
-F1 = np.array([[2., 3., 4.],
-               [3., 4., 5.],
-               [4., 5., 6.]])
+F1 = np.array([[2.0, 3.0, 4.0], [3.0, 4.0, 5.0], [4.0, 5.0, 6.0]])
 
-F2 = np.array([[3., 4., 5.],
-               [4., 5., 6.],
-               [5., 6., 7.]])
+F2 = np.array([[3.0, 4.0, 5.0], [4.0, 5.0, 6.0], [5.0, 6.0, 7.0]])
 
 DT = [("A", "int"), ("B", "int"), ("C", "int")]
 DT_F = [("A", "int"), ("F1", "float"), ("F2", "float")]
@@ -31,46 +21,52 @@ COUNT_DT = [("A", "int"), ("B", "int"), ("C", "int"), ("COUNT", "int")]
 
 AREA = 769.288482
 
-ARRAY = np.array([(3, 4, 5),
-                  (3, 4, 5),
-                  (4, 5, 6),
-                  (3, 4, 5),
-                  (4, 5, 6),
-                  (5, 6, 7)], dtype=DT)
+ARRAY = np.array(
+    [(3, 4, 5), (3, 4, 5), (4, 5, 6), (3, 4, 5), (4, 5, 6), (5, 6, 7)], dtype=DT
+)
 
-AREA_ARRAY = np.array([(3, 4, 5, AREA),
-                       (3, 4, 5, AREA),
-                       (4, 5, 6, AREA),
-                       (3, 4, 5, AREA),
-                       (4, 5, 6, AREA),
-                       (5, 6, 7, AREA)], dtype=AREA_DT)
+AREA_ARRAY = np.array(
+    [
+        (3, 4, 5, AREA),
+        (3, 4, 5, AREA),
+        (4, 5, 6, AREA),
+        (3, 4, 5, AREA),
+        (4, 5, 6, AREA),
+        (5, 6, 7, AREA),
+    ],
+    dtype=AREA_DT,
+)
 
-AREA_ARRAY2 = np.array([(3, 4, 5, AREA, AREA * 2),
-                        (3, 4, 5, AREA, AREA * 2),
-                        (4, 5, 6, AREA, AREA * 2),
-                        (3, 4, 5, AREA, AREA * 2),
-                        (4, 5, 6, AREA, AREA * 2),
-                        (5, 6, 7, AREA, AREA * 2)], dtype=AREA_DT + [("AREA2", "float")])
+AREA_ARRAY2 = np.array(
+    [
+        (3, 4, 5, AREA, AREA * 2),
+        (3, 4, 5, AREA, AREA * 2),
+        (4, 5, 6, AREA, AREA * 2),
+        (3, 4, 5, AREA, AREA * 2),
+        (4, 5, 6, AREA, AREA * 2),
+        (5, 6, 7, AREA, AREA * 2),
+    ],
+    dtype=AREA_DT + [("AREA2", "float")],
+)
 
-SUM_AREA_ARRAY = np.array([(3, 4, 5, AREA * 3),
-                           (4, 5, 6, AREA * 2),
-                           (5, 6, 7, AREA)], dtype=AREA_DT)
+SUM_AREA_ARRAY = np.array(
+    [(3, 4, 5, AREA * 3), (4, 5, 6, AREA * 2), (5, 6, 7, AREA)], dtype=AREA_DT
+)
 
-SUM_AREA_ARRAY2 = np.array([(3, 4, 5, AREA * 3, AREA * 6),
-                            (4, 5, 6, AREA * 2, AREA * 4),
-                            (5, 6, 7, AREA, AREA * 2)], dtype=AREA_DT + [("AREA2", "float")])
+SUM_AREA_ARRAY2 = np.array(
+    [
+        (3, 4, 5, AREA * 3, AREA * 6),
+        (4, 5, 6, AREA * 2, AREA * 4),
+        (5, 6, 7, AREA, AREA * 2),
+    ],
+    dtype=AREA_DT + [("AREA2", "float")],
+)
 
-SUM_ARRAY = np.array([(3, 12., 15.),
-                      (4, 8., 12.),
-                      (5, 5., 7.)], dtype=DT_F)
+SUM_ARRAY = np.array([(3, 12.0, 15.0), (4, 8.0, 12.0), (5, 5.0, 7.0)], dtype=DT_F)
 
-COUNT_ARRAY = np.array([(3, 4, 5, 3),
-                        (4, 5, 6, 2),
-                        (5, 6, 7, 1)], dtype=COUNT_DT)
+COUNT_ARRAY = np.array([(3, 4, 5, 3), (4, 5, 6, 2), (5, 6, 7, 1)], dtype=COUNT_DT)
 
-MASK = np.array([[False, False, True],
-                 [False, True, True],
-                 [True, True, True]])
+MASK = np.array([[False, False, True], [False, True, True], [True, True, True]])
 
 GEOMETRY = Polygon([(0, 0), (1, 1), (1, 0)])
 
@@ -84,7 +80,6 @@ class DummySrc(object):
 
 
 class DummySrcA(DummySrc):
-
     def read(self, band, masked, window):
         if masked:
             return np.ma.array(A, mask=MASK)
@@ -93,7 +88,6 @@ class DummySrcA(DummySrc):
 
 
 class DummySrcB(DummySrc):
-
     def read(self, band, masked, window):
         if masked:
             return np.ma.array(B, mask=MASK)
@@ -102,7 +96,6 @@ class DummySrcB(DummySrc):
 
 
 class DummySrcC(DummySrc):
-
     def read(self, band, masked, window):
         if masked:
             return np.ma.array(C, mask=MASK)
@@ -112,18 +105,18 @@ class DummySrcC(DummySrc):
 
 def test__mask_by_threshold():
     result = geoprocessing._mask_by_threshold(A, 2)
-    expected_result = np.array([[False, False, True],
-                                [False, True, True],
-                                [True, True, True]])
+    expected_result = np.array(
+        [[False, False, True], [False, True, True], [True, True, True]]
+    )
 
     np.testing.assert_array_equal(result, expected_result)
 
 
 def test__mask_by_nodata():
     result = geoprocessing._mask_by_nodata(A, 2)
-    expected_result = np.array([[True, False, True],
-                                [False, True, True],
-                                [True, True, True]])
+    expected_result = np.array(
+        [[True, False, True], [False, True, True], [True, True, True]]
+    )
 
     np.testing.assert_array_equal(result, expected_result)
 
@@ -162,9 +155,13 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="area")
 
-    expected_result = {"data": [(3, 4, 5, 2307.8654454620364),
-                                (4, 5, 6, 1538.5769636413575),
-                                (5, 6, 7, 769.2884818206787)]}
+    expected_result = {
+        "data": [
+            (3, 4, 5, 2307.8654454620364),
+            (4, 5, 6, 1538.5769636413575),
+            (5, 6, 7, 769.2884818206787),
+        ]
+    }
     print(result)
     assert result == expected_result
 
@@ -179,8 +176,6 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
 
-    expected_result = {"data": [(3, 12., 15.),
-                                (4, 10., 12.),
-                                (5, 6., 7.)]}
+    expected_result = {"data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)]}
     print(result)
     assert result == expected_result

@@ -16,6 +16,6 @@ setup(
         "urllib3==1.24.3",
         "awscli==1.16.169",
         "aws-sam-cli==0.16.1",
-        "click==6.7"]
-
+        "click==6.7",
+    ],
 )

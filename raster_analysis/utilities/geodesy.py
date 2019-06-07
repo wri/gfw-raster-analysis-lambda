@@ -19,14 +19,34 @@ def get_area(lat):
     q = d_lon / 360
     e = math.sqrt(1 - (b / a) ** 2)
 
-    area = abs(
-        (pi * b ** 2 * (
-                2 * np.arctanh(e * np.sin(np.radians(lat + d_lat))) /
-                (2 * e) +
-                np.sin(np.radians(lat + d_lat)) /
-                ((1 + e * np.sin(np.radians(lat + d_lat))) * (1 - e * np.sin(np.radians(lat + d_lat)))))) -
-        (pi * b ** 2 * (
-                2 * np.arctanh(e * np.sin(np.radians(lat))) / (2 * e) +
-                np.sin(np.radians(lat)) / ((1 + e * np.sin(np.radians(lat))) * (1 - e * np.sin(np.radians(lat))))))) * q
+    area = (
+        abs(
+            (
+                pi
+                * b ** 2
+                * (
+                    2 * np.arctanh(e * np.sin(np.radians(lat + d_lat))) / (2 * e)
+                    + np.sin(np.radians(lat + d_lat))
+                    / (
+                        (1 + e * np.sin(np.radians(lat + d_lat)))
+                        * (1 - e * np.sin(np.radians(lat + d_lat)))
+                    )
+                )
+            )
+            - (
+                pi
+                * b ** 2
+                * (
+                    2 * np.arctanh(e * np.sin(np.radians(lat))) / (2 * e)
+                    + np.sin(np.radians(lat))
+                    / (
+                        (1 + e * np.sin(np.radians(lat)))
+                        * (1 - e * np.sin(np.radians(lat)))
+                    )
+                )
+            )
+        )
+        * q
+    )
 
     return area
