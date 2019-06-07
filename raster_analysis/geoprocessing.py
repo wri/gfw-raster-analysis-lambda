@@ -39,11 +39,13 @@ def analysis(geom, *raster_ids, threshold=0, analysis="area"):
             )
 
             _result["extent_2000"] = (
-                tcd_2000_mask * masked_data.mask * mean_area / 10000
+                (tcd_2000_mask * masked_data.mask).sum() * mean_area / 10000
             )
             _result["extent_2010"] = (
-                tcd_2010_mask * masked_data.mask * mean_area / 10000
+                (tcd_2010_mask * masked_data.mask).sum() * mean_area / 10000
             )
+
+            _result["threshold"] = threshold
 
             _rasters_to_process = raster_ids[3:]
 
