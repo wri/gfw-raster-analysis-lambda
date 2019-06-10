@@ -148,7 +148,7 @@ def test__count():
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
-@mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
+@mock.patch("raster_analysis.arrays.read_window_ignore_missing")
 def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
     mock_data.side_effect = [(B, None, None), (C, None, None)]
@@ -169,8 +169,8 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
     ]
     print(result)
 
-    result_dtype = result["body"].pop("dtype")
-    result_data = result["body"].pop("data")
+    result_dtype = result.pop("dtype")
+    result_data = result.pop("data")
 
     for i, r in enumerate(result_data):
         assert r == pytest.approx(expected_data[i], 0.000001)
@@ -179,7 +179,7 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
 @mock.patch("raster_analysis.geoprocessing.read_window")
-@mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
+@mock.patch("raster_analysis.arrays.read_window_ignore_missing")
 def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
     mock_data.side_effect = [(F1, None, None), (F2, None, None)]
@@ -187,11 +187,8 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
     expected_result = {
-        "status": 200,
-        "body": {
-            "data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)],
-            "dtype": [("ras0", "<i8"), ("ras1", "<f8"), ("ras2", "<f8")],
-        },
+        "data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)],
+        "dtype": [("ras0", "<i8"), ("ras1", "<f8"), ("ras2", "<f8")]
     }
 
     assert result == expected_result

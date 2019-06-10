@@ -31,3 +31,6 @@ node_modules/
 
 # any calculated raster stats
 *.tif.aux.xml
+
+lambda.zip
+lambda/

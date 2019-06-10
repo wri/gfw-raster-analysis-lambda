@@ -8,18 +8,31 @@ BASE_URL = "/vsis3/gfw-files/2018_update/{raster_id}/{tile_id}.tif"
 
 
 def lambda_handler(event, context):
-    raster_ids = event["raster_ids"]
-    analysis = event["analysis"]
-    geometry = shape(event["geometry"])
-    threshold = event["threshold"]
+    try:
+        raster_ids = event["raster_ids"]
+        analysis = event["analysis"]
+        geometry = shape(event["geometry"])
+        threshold = event["threshold"]
+    except KeyError:
+        return {"statusCode": 400,
+                "headers": {"Content-Type": "application/json"},
+                "body": {"message": "Bad input parameters."}
+                }
 
     try:
-        result = geoprocessing.analysis(
+        body = geoprocessing.analysis(
             geometry, *raster_ids, threshold=threshold, analysis=analysis
         )
+
+        result = {"statusCode": 200,
+                  "headers": {"Content-Type": "application/json"},
+                  "body": body}
+
     except Exception as e:
-        result = {"status": 500,
-                  "message": e}
+        result = {"statusCode": 500,
+                  "headers": {"Content-Type": "application/json"},
+                  "body": {"message": e}
+                  }
 
     return result
 

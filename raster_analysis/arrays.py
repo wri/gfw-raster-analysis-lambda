@@ -1,5 +1,5 @@
-from raster_analysis.utilities.grid import get_tile_id, get_raster_url
-from raster_analysis.utilities.io import read_window_ignore_missing
+from raster_analysis.grid import get_tile_id, get_raster_url
+from raster_analysis.io import read_window_ignore_missing
 import numpy as np
 
 
