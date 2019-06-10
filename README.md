@@ -9,7 +9,7 @@ This function produces the following statistics:
 #### Count pixels
 Counts number of pixels for unique value combinations of the given input bands inside the given geometry. 
 
-### Calculate area
+#### Calculate area
 Calculates the geodesic area for unique value combinations of the given input bands inside the given geometry.
 Precision is best for smaller geometries. The function currently calculates the mean area for the input geometry
 and multiplies this area with the pixel count for unique value combinations. 
