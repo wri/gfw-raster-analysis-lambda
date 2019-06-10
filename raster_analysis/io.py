@@ -1,22 +1,17 @@
-import os
-import json
-
+from rasterio import features
 import numpy as np
 import rasterio
-from rasterio import features
-from shapely.geometry import Polygon
-
-# from raster_analysis.utilities.errors import Error
-import math
 import logging
 
 
 def read_window(raster, geom, masked=False):
-    # Read a chunk of the raster that contains the bounding box of the
-    # input geometry.  This has memory implications if that rectangle
-    # is large. The affine transformation maps geom coordinates to the
-    # image mask below.
-    # can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+    """
+    Read a chunk of the raster that contains the bounding box of the
+    input geometry.  This has memory implications if that rectangle
+    is large. The affine transformation maps geom coordinates to the
+    image mask below.
+    can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+    """
 
     with rasterio.Env():
         with rasterio.open(raster) as src:
@@ -40,26 +35,6 @@ def read_window_ignore_missing(raster, geom, masked=False):
         data = np.array([]), None, None
 
     return data
-
-
-def check_extent(user_poly, raster):
-    raster_ext = os.path.splitext(raster)[1]
-    geojson_src = raster.replace(raster_ext, ".geojson")
-
-    with open(geojson_src) as src:
-        d = json.load(src)
-
-    # get index geom
-    poly_intersects = False
-    poly_list = [Polygon(x["geometry"]["coordinates"][0]) for x in d["features"]]
-
-    # check if polygons intersect
-    for poly in poly_list:
-        if user_poly.intersects(poly):
-            poly_intersects = True
-            break
-
-    return poly_intersects
 
 
 def mask_geom_on_raster(geom, raster_path):
@@ -138,12 +113,3 @@ def get_window_and_affine(geom, raster_src):
     affine = rasterio.windows.transform(window, raster_src.transform)
 
     return window, affine
-
-
-def array_to_xyz_rows(arr, shifted_affine):
-    i, j = np.where(arr.mask == False)
-    masked_x = j * 0.00025 + shifted_affine.xoff + 0.000125
-    masked_y = i * -0.00025 + shifted_affine.yoff - 0.000125
-
-    for x, y, z in zip(masked_x, masked_y, arr.compressed()):
-        yield (x, y, z)
