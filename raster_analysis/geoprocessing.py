@@ -1,50 +1,99 @@
 import numpy as np
-import pandas as pd
-import json
-from raster_analysis.utilities.geo_utils import read_window, mask_geom_on_raster, get_area, read_window_ignore_missing
+from raster_analysis.grid import get_tile_id, get_raster_url
+from raster_analysis.arrays import (
+    to_structured_array,
+    build_array,
+    concat_arrays,
+    fields_view,
+    get_fields_by_type,
+    fill_array,
+    dtype_to_list,
+)
+from raster_analysis.io import read_window, mask_geom_on_raster
+from raster_analysis.geodesy import get_area
 
 
-def sum_analysis(geom, *rasters, threshold=0, area=True):
+def analysis(geom, *raster_ids, threshold=0, analysis="area"):
     """
-    If area is true, it will always sum the area for unique layer combinations.
-    If area is false, it will sum values of the last input raster
-    If threshold is > 0, the 2nd and 3rd raster need to be tcd2000 and tcd2010
-    :param geom:
-    :param rasters:
-    :param threshold:
-    :param area:
-    :return:
+    Supported analysis:
+        area: calculates geodesic area for unique pixel combinations across all input rasters
+        sum: Sums values for all floating point rasters for unique pixel combintions of non-floating point rasters
+        count: Counts occurrences of unique pixel combinations across all input rasters
+
+    If threshold is > 0, the 2nd and 3rd raster need to be tcd2000 and tcd2010.
+        It will use tcd2000 layer as additional mask and add
     """
-    masked_data, no_data, _ = mask_geom_on_raster(geom, rasters[0])
-    mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2)
 
-    if masked_data.any():
-        if threshold > 0:
-            tcd_2000_mask = _mask_by_threshold(read_window(rasters[1], geom)[0], threshold)
-            tcd_2010_mask = _mask_by_threshold(read_window(rasters[2], geom)[0], threshold)
+    def _conf():
 
-            tcd_2000_extent = tcd_2000_mask * masked_data.mask * mean_area/10000
-            tcd_2010_extent = tcd_2010_mask * masked_data.mask * mean_area/10000
+        _result = dict()
 
-            rasters_to_process = rasters[3:]
+        if threshold:
+            tcd_2000_url = get_raster_url(raster_ids[1], tile_id)
+            tcd_2000_mask = _mask_by_threshold(
+                read_window(tcd_2000_url, geom)[0], threshold
+            )
+
+            tcd_2010_url = get_raster_url(raster_ids[2], tile_id)
+            tcd_2010_mask = _mask_by_threshold(
+                read_window(tcd_2010_url, geom)[0], threshold
+            )
+
+            _result["extent_2000"] = (
+                tcd_2000_mask * masked_data.mask
+            ).sum() * mean_area
+            _result["extent_2010"] = (
+                tcd_2010_mask * masked_data.mask
+            ).sum() * mean_area
+
+            _result["threshold"] = threshold
+
+            _rasters_to_process = raster_ids[3:]
 
         else:
             tcd_2000_mask = 1
-            rasters_to_process = rasters[1:]
-            tcd_2000_extent = None
-            tcd_2010_extent = None
+            _rasters_to_process = raster_ids[1:]
+
+        _mask = tcd_2000_mask * masked_data.mask * value_mask
+
+        return _rasters_to_process, _mask, _result
+
+    def _analysis():
+        if analysis == "area":
+            return _sum_area(contextual_array, mean_area)
+        elif analysis == "sum":
+            return _sum(contextual_array)
+        elif analysis == "count":
+            return _count(contextual_array)
+        else:
+            raise ValueError("Unknown analysis: " + analysis)
+
+    mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
+    tile_id = get_tile_id(geom)
+
+    raster = get_raster_url(raster_ids[0], tile_id)
+    masked_data, no_data, _ = mask_geom_on_raster(geom, raster)
+
+    if masked_data.any():
 
         value_mask = _mask_by_nodata(masked_data.data, no_data)
-        final_mask = value_mask * tcd_2000_mask * masked_data.mask
 
-        contextual_array = _build_array(final_mask, masked_data.data, *rasters_to_process, geom=geom, area=area)
+        rasters_to_process, mask, result = _conf()
+        primary_array = to_structured_array(masked_data.data, raster_ids[0])
 
-        result = json.loads(_sum(contextual_array).to_json())
-        result["extent_2000"] = tcd_2000_extent
-        result["extent_2010"] = tcd_2010_extent
+        contextual_array = build_array(
+            mask, primary_array, *rasters_to_process, geom=geom
+        )
+
+        a = _analysis()
+
+        result["data"] = a.tolist()
+        result["dtype"] = dtype_to_list(a.dtype)
+
         return result
+
     else:
-        return json.loads(pd.DataFrame().to_json())
+        return dict()
 
 
 def _mask_by_threshold(raster, threshold):
@@ -55,31 +104,44 @@ def _mask_by_nodata(raster, no_data):
     return raster != no_data
 
 
-def _build_array(mask, array, *rasters, geom=None, area=False):
+def _sum_area(array, area):
+    unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
+    total_area = occur_count * area
+    total_area.dtype = np.dtype([("AREA", "float")])
 
-    result = np.extract(mask, array)
+    return concat_arrays(unique_rows, total_area)
 
-    for raster in rasters:
-        data, _, _ = read_window_ignore_missing(raster, geom)
-        if data.any():
-            values = np.extract(mask, data)
-        else:
-            values = np.zeros(len(result))
-        data = None
-        result = np.dstack((result, values))
 
-    if area:
-        area = get_area((geom.bounds[3] - geom.bounds[1]) / 2)
-        result = np.dstack((result, np.ones(len(result[0])) * area))
+def _count(array):
+    unique_rows, occur_count = np.unique(array, axis=0, return_counts=True)
+    occur_count.dtype = [("COUNT", "int")]
 
-    return result[0]
+    return concat_arrays(unique_rows, occur_count)
 
 
 def _sum(array):
+    group_fields = get_fields_by_type(array.dtype, "float", exclude=True)
+    value_fields = get_fields_by_type(array.dtype, "float", exclude=False)
 
-    df = pd.DataFrame(array)
-    df.columns = ["col{}".format(i) if i < len(df.columns) - 1 else "value" for i in df.columns]
-    result = df.groupby(list(df.columns[:-1]), axis=0).sum().reset_index()
-    return result
+    group_array = fields_view(array, group_fields)
+    value_array = fields_view(array, value_fields)
 
+    unique_rows, occur_count = np.unique(group_array, axis=0, return_counts=True)
 
+    sum_array = np.empty(len(unique_rows), dtype=value_array.dtype)
+
+    for field in value_fields:
+        field_sum = list()
+
+        for i in unique_rows:
+            mask = group_array == i
+            masked_values = np.extract(mask, value_array)
+
+            field_sum.append(masked_values[field].sum())
+
+        print(sum_array)
+        print(np.array(field_sum, dtype=[(field, "float")]))
+
+        sum_array = fill_array(sum_array, np.array(field_sum, dtype=[(field, "float")]))
+
+    return concat_arrays(unique_rows, sum_array)

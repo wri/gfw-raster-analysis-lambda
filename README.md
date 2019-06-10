@@ -1,61 +1,146 @@
-# glad-raster-analysis-lambda
+# GFW raster analsyis in AWS Lambda
 
-### Background
+### Functionality
 
-This repo takes Matt McFarland's [raster lambda demo](https://github.com/mmcfarland/foss4g-lambda-demo) and uses it to provide stats and raster-to-vector downloads for our GLAD data.
+Run zonal statistics on any given combination of rasters for a given geometry.
 
-### Data
+This function produces the following statistics:
 
-After receiving an input polygon and an operation type (stats or download), the code looks at the GLAD raster mosaic stored in data/glad.vrt. This points to a bunch of rasters, like this one over part of Nigeria: 
+#### Count pixels
+Counts number of pixels for unique value combinations of the given input bands inside the given geometry. 
 
-s3://palm-risk-poc/data/glad/analysis-staging/afr_asia/tiles/000E_00N_010E_10N/raster_processing/date_conf/1_prep/date_conf_all_nd_0.tif
+### Calculate area
+Calculates the geodesic area for unique value combinations of the given input bands inside the given geometry.
+Precision is best for smaller geometries. The function currently calculates the mean area for the input geometry
+and multiplies this area with the pixel count for unique value combinations. 
+Use the Sum function together with an area raster for more precise results.
+
+#### Sum values
+Calculates the sum of pixel values for any given raster layer with `Float` datatype for unique value combinations 
+of the given input bands with `Integer` datatype inside the given geometry.
+
+
+### Input Parameters
+
+|Parameter|Type|Description|Example|
+|---------|----|-----------|-------|
+|raster_ids| [String] | List of raster ids to be used for analysis | ["loss", "tcd_2000", "tcd_2010", "wdpa"] |
+|analysis| String | Analysis to be performed | One of: `area`, `sum`, `count` |
+|threshold| Integer | Tree cover threshold to be used for analysis. Threshold will be used to mask input rasters as well as to calculate tree cover extents for 2000 and 2010. When value is greater than 0, second and thrid raster id must be `tcd2000` and `tcd2010` | Any value between `0` and `100` |
+|geometry| Object | A valid GeoJSON geometry (see further specification in `Limitations and assumtions` | `"geometry": {"type": "Polygon", "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],}`|
+
+
+#### Examples
+
+Payload:
+```
+{
+    "raster_ids": ["loss", "tcd_2000", "tcd_2010", "wdpa"],
+    "analysis": "area",
+    "threshold": 30,
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
+    }
+}
+
+```
+
+Response:
+```
+{
+  "statusCode": 200,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": {
+        "extent_2000": 11830.244769451865,
+        "extent_2010": 11700.999560754286,
+        "threshold": 30,
+        "data": [
+            [0, 0, 2106.3891750831863],
+            [0, 1, 9088.39998493891],
+            [1, 0, 10.539639042600312],
+            [1, 1, 5.539080372753449],
+            [2, 0, 76.7008768282665],
+            [2, 1, 0.6923850465941811],
+            [3, 0, 6.462260434879024],
+            [3, 1, 4.308173623252682],
+            [5, 0, 4.231241951408885],
+            [5, 1, 0.3846583592189895],
+            [6, 0, 67.46907620701076],
+            [6, 1, 4.462036966940278],
+            [7, 1, 0.2307950155313937],
+            [8, 0, 1.7694284524073516],
+            [8, 1, 5.000558669846863],
+            [9, 1, 0.9231800621255748],
+            [10, 0, 154.4787970623462],
+            [10, 1, 32.8498238773017],
+            [11, 0, 32.695960533614105],
+            [11, 1, 3.000335201908118],
+            [12, 0, 0.1538633436875958],
+            [13, 0, 12.924520869758048],
+            [13, 1, 2.7695401863767244],
+            [14, 0, 22.156321491013795],
+            [14, 1, 73.62360995451459],
+            [15, 0, 0.5385217029065853],
+            [15, 1, 1.1539750776569684],
+            [16, 0, 8.847142262036758],
+            [17, 0, 48.31308991790508],
+            [17, 1, 5.077490341690662],
+            [18, 0, 45.92820809074735],
+            [18, 1, 2.231018483470139],
+        ],
+        "dtype": [["loss", "|u1"], ["wdpa", "|u1"], ["AREA", "<f8"]],
+    }
+}
+
+```
+
 
 ### Endpoints
 
-The endpoints deployed are designed to exactly mimic existing GFW API endpoints, making it easy to 'plug' this service into existing code. The current exposed endpoints are as follows:
+https://hjebg1jly1.execute-api.us-east-1.amazonaws.com/default/gfw-raster-analysis
 
-Base URL:
-https://0kepi1kf41.execute-api.us-east-1.amazonaws.com/dev/
-
-#### /glad-alerts
-
-Matches the /glad-alerts endpoint
-
-#### /glad-alerts/download
-
-Allows for vector download of GLAD data in CSV or JSON format. Called when someone wants to download an AOI or geostore from: https://github.com/gfw-api/glad-analysis-tiled
-
-### Limitations
-
-Our main obstacle here is speed; particularly large areas may time out. If we need to cross this bridge, the subdivide_polygon function in the [original repo](https://github.com/mmcfarland/foss4g-lambda-demo/blob/master/handler.py#L63) will likely help.
+Max memory: 3GB
 
 
-## Development
-1. Clone locally
-2. Create .env file to store AWS credentials in the root of this project
-```
-AWS_ACCESS_KEY_ID=<my key id>
-AWS_SECRET_ACCESS_KEY=<my key>
-```
-3. Spin up the docker container and ssh in
-```
-docker-compose run base
-```
+### Assumptions and limitations
 
-4. Change to shared directory
-```
-cd /home/geolambda/
-```
+This function works best with smaller geometries and lower number of input rasters. 
+Maximum number of rasters you will be able to process at oncedepends on available memory of Lambda function (up to 3GB), 
+data type of rasters and size of your geometry. 
 
-5. Run handler.py to test analysis and alerts endpoints (see `if __name__ == '__main__':` block)
+To speed up requests, break down your geometry into smaller blocks and send them as multiple requests, 
+allowing AWS Lambda to process them in parallel.
 
+GFW raster tiles are organized in 10 x 10 Degree grids and have a pixel size of 0.00025 x 0.00025 degree.
+They are saved as Cloud Optimized TIFFs with 400 x 400 pixels blocks.
+Ideally, input geometries width and height should be a multiple of 400 pixel and align with 0.1 x 0.1 degree grid 
+to minimize read requests to S3. Geometries must always be inside a 10 x 10 degree grid cell.
+
+The current function does not try to correct geometries or optimize requests. 
+This efforts will still need to be done on the client side.
 
 ## Deployment
-1. install serverless `npm install -g serverless`
 
-2. Test! Run `docker-compose run test` to automatically spin up the docker container and run your tests (in the `/test` folder)
+We need to package our lambda function together with its dependencies. We can do this inside Docker:
 
-3. Package - `docker-compose run package`
+Build Docker image
 
-4. Deploy - `serverless deploy -v`
+`docker build -t gfw/raster-analysis-lambda .`
 
+Copy lambda package from Docker file
+
+`docker cp <docker containter id>:/var/task/lambda.zip lambda.zip`
+
+Deploy lambda function by uploading ZIP archive to AWS using cli, console or any other deployment method.
+To enable HTTP requests, you will need to add the lambda function to an API Gateway.
+
+When deploying the function use the following settings:
+
+```
+Runtime: Python 3.7
+Handler: lambda_function.lambda_handler
+``` 
+ 

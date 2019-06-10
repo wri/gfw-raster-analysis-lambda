@@ -1,4 +1,6 @@
 .git
 .pytest_cache
 *.egg-info
-venv
+venv/
+lambda/
+lambda.zip
