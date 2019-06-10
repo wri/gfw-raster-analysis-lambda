@@ -1,4 +1,4 @@
-from raster_analysis.utilities import arrays
+from raster_analysis import arrays
 from unittest import mock
 from shapely.geometry import Polygon
 import numpy as np
@@ -66,7 +66,7 @@ def test__build_array():
     np.testing.assert_array_equal(result, expected_result)
 
 
-@mock.patch("raster_analysis.utilities.arrays.read_window_ignore_missing")
+@mock.patch("raster_analysis.arrays.read_window_ignore_missing")
 def test_build_array(mock_data):
     mock_data.side_effect = [(B, None, None), (C, None, None)]
     result = arrays.build_array(MASK, STRUCTURED_ARRAY, "src_b", "src_c", geom=GEOMETRY)

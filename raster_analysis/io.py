@@ -94,7 +94,6 @@ def mask_geom_on_raster(geom, raster_path):
         # rest are filled with 0s (masked)
         geom_mask = features.geometry_mask(
             [geom], out_shape=data.shape, transform=shifted_affine, invert=True
-
         )
 
         # Include any NODATA mask
