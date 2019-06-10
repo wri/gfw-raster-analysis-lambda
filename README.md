@@ -32,22 +32,33 @@ of the given input bands with `Integer` datatype inside the given geometry.
 
 #### Examples
 
-Payload:
-```
-{
-    "raster_ids": ["loss", "tcd_2000", "tcd_2010", "wdpa"],
-    "analysis": "area",
-    "threshold": 30,
-    "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
+Request:
+```python
+import requests
+import json
+
+url = "https://hjebg1jly1.execute-api.us-east-1.amazonaws.com/default/gfw-raster-analysis"
+
+payload = {
+        "raster_ids": ["loss", "tcd_2000", "tcd_2010", "wdpa"],
+        "analysis": "area",
+        "threshold": 30,
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
+        }
     }
-}
+
+headers = {
+    "Content-Type": "application/json",
+    }
+
+response = requests.request("POST", url, data=json.dumps(payload), headers=headers)
 
 ```
 
 Response:
-```
+```JSON
 {
   "statusCode": 200,
   "headers": {
