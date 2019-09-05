@@ -7,16 +7,16 @@ Run zonal statistics on any given combination of rasters for a given geometry.
 This function produces the following statistics:
 
 #### Count pixels
-Counts number of pixels for unique value combinations of the given input bands inside the given geometry. 
+Counts number of pixels for unique value combinations of the given input bands inside the given geometry.
 
 #### Calculate area
 Calculates the geodesic area for unique value combinations of the given input bands inside the given geometry.
 Precision is best for smaller geometries. The function currently calculates the mean area for the input geometry
-and multiplies this area with the pixel count for unique value combinations. 
+and multiplies this area with the pixel count for unique value combinations.
 Use the Sum function together with an area raster for more precise results.
 
 #### Sum values
-Calculates the sum of pixel values for any given raster layer with `Float` datatype for unique value combinations 
+Calculates the sum of pixel values for any given raster layer with `Float` datatype for unique value combinations
 of the given input bands with `Integer` datatype inside the given geometry.
 
 
@@ -118,19 +118,19 @@ Max memory: 3GB
 
 ### Assumptions and limitations
 
-This function works best with smaller geometries and lower number of input rasters. 
-Maximum number of rasters you will be able to process at oncedepends on available memory of Lambda function (up to 3GB), 
-data type of rasters and size of your geometry. 
+This function works best with smaller geometries and lower number of input rasters.
+Maximum number of rasters you will be able to process at oncedepends on available memory of Lambda function (up to 3GB),
+data type of rasters and size of your geometry.
 
-To speed up requests, break down your geometry into smaller blocks and send them as multiple requests, 
+To speed up requests, break down your geometry into smaller blocks and send them as multiple requests,
 allowing AWS Lambda to process them in parallel.
 
 GFW raster tiles are organized in 10 x 10 Degree grids and have a pixel size of 0.00025 x 0.00025 degree.
 They are saved as Cloud Optimized TIFFs with 400 x 400 pixels blocks.
-Ideally, input geometries width and height should be a multiple of 400 pixel and align with 0.1 x 0.1 degree grid 
+Ideally, input geometries width and height should be a multiple of 400 pixel and align with 0.1 x 0.1 degree grid
 to minimize read requests to S3. Geometries must always be inside a 10 x 10 degree grid cell.
 
-The current function does not try to correct geometries or optimize requests. 
+The current function does not try to correct geometries or optimize requests.
 This efforts will still need to be done on the client side.
 
 ## Deployment
@@ -153,5 +153,5 @@ When deploying the function use the following settings:
 ```
 Runtime: Python 3.7
 Handler: lambda_function.lambda_handler
-``` 
- 
+```
+

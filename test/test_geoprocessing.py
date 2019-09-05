@@ -188,7 +188,7 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
     expected_result = {
         "data": [(3, 12.0, 15.0), (4, 10.0, 12.0), (5, 6.0, 7.0)],
-        "dtype": [("ras0", "<i8"), ("ras1", "<f8"), ("ras2", "<f8")]
+        "dtype": [("ras0", "<i8"), ("ras1", "<f8"), ("ras2", "<f8")],
     }
 
     assert result == expected_result
