@@ -139,9 +139,6 @@ def _sum(array):
 
             field_sum.append(masked_values[field].sum())
 
-        print(sum_array)
-        print(np.array(field_sum, dtype=[(field, "float")]))
-
         sum_array = fill_array(sum_array, np.array(field_sum, dtype=[(field, "float")]))
 
     return concat_arrays(unique_rows, sum_array)
