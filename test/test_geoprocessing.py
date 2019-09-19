@@ -1,4 +1,5 @@
 from raster_analysis import geoprocessing
+from raster_analysis.geoprocessing import Filter
 from shapely.geometry import Polygon
 from unittest import mock
 import numpy as np
@@ -68,6 +69,10 @@ SUM_ARRAY = np.array([(3, 12.0, 15.0), (4, 8.0, 12.0), (5, 5.0, 7.0)], dtype=DT_
 COUNT_ARRAY = np.array([(3, 4, 5, 3), (4, 5, 6, 2), (5, 6, 7, 1)], dtype=COUNT_DT)
 
 MASK = np.array([[False, False, True], [False, True, True], [True, True, True]])
+
+FILTER = np.array([[50, 10, 35], [40, 80, 30], [10, 60, 90]])
+
+THRESHOLD = 30
 
 GEOMETRY = Polygon([(0, 0), (1, 1), (1, 0)])
 
@@ -150,9 +155,9 @@ def test__count():
 @mock.patch("raster_analysis.geoprocessing.read_window")
 @mock.patch("raster_analysis.arrays.read_window_ignore_missing")
 def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
-    mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
-    mock_data.side_effect = [(B, None, None), (C, None, None)]
-    mock_data_ignore.side_effect = [(B, None, None), (C, None, None)]
+    mock_masked_data.return_value = np.ma.array(np.copy(A), mask=np.copy(MASK)), 0, None
+    mock_data.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
+    mock_data_ignore.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="area")
 
@@ -181,9 +186,12 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
 @mock.patch("raster_analysis.geoprocessing.read_window")
 @mock.patch("raster_analysis.arrays.read_window_ignore_missing")
 def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
-    mock_masked_data.return_value = np.ma.array(A, mask=MASK), 0, None
-    mock_data.side_effect = [(F1, None, None), (F2, None, None)]
-    mock_data_ignore.side_effect = [(F1, None, None), (F2, None, None)]
+    mock_masked_data.return_value = np.ma.array(np.copy(A), mask=np.copy(MASK)), 0, None
+    mock_data.side_effect = [(np.copy(F1), None, None), (np.copy(F2), None, None)]
+    mock_data_ignore.side_effect = [
+        (np.copy(F1), None, None),
+        (np.copy(F2), None, None),
+    ]
 
     result = geoprocessing.analysis(GEOMETRY, "ras0", "ras1", "ras2", analysis="sum")
     expected_result = {
@@ -191,4 +199,41 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
         "dtype": [("ras0", "<i8"), ("ras1", "<f8"), ("ras2", "<f8")],
     }
 
-    assert result == expected_result
+    assert result["dtype"] == expected_result["dtype"]
+    assert result["data"] == expected_result["data"]
+
+
+@mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
+@mock.patch("raster_analysis.geoprocessing.read_window")
+@mock.patch("raster_analysis.arrays.read_window_ignore_missing")
+def test_count_with_filter(mock_data_ignore, mock_data, mock_masked_data):
+    mock_masked_data.return_value = np.ma.array(np.copy(A), mask=np.copy(MASK)), 0, None
+    mock_data.side_effect = [
+        (FILTER, None, None),
+        (np.copy(B), None, None),
+        (np.copy(C), None, None),
+    ]
+    mock_data_ignore.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
+
+    expected_data = [(3, 4, 5, 2), (4, 5, 6, 1), (5, 6, 7, 1)]
+
+    expected_dtype = [
+        ("ras0", "<i8"),
+        ("ras1", "<i8"),
+        ("ras2", "<i8"),
+        ("COUNT", "<i8"),
+    ]
+    expected_extent = AREA * 4 / 10000
+
+    result = geoprocessing.analysis(
+        GEOMETRY,
+        "ras0",
+        "ras1",
+        "ras2",
+        filters=[Filter(FILTER, THRESHOLD)],
+        analysis="count",
+    )
+
+    assert result["dtype"] == expected_dtype
+    assert result["data"] == expected_data
+    assert result["extent"] == pytest.approx(expected_extent, 0.000001)
