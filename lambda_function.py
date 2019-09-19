@@ -37,9 +37,10 @@ def serialize(func):
 
 @serialize
 def lambda_handler(event, context):
-    missing_params = [
-        param not in event for param in ["raster_ids", "analysis", "geometry"]
-    ]
+    missing_params = list(
+        filter(lambda param: param not in event, ["raster_ids", "analysis", "geometry"])
+    )
+
     if len(missing_params) != 0:
         raise ValueError("Missing parameters: " + ", ".join(missing_params))
 
@@ -58,5 +59,5 @@ def lambda_handler(event, context):
 
 
 if __name__ == "__main__":
-    #     #"{\"raster_ids\":[\"loss\", \"tcd_2000\", \"tcd_2010\", \"wdpa\"], \"analysis\":\"area_sum\", \"threshold\":30, \"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[9.0,4.1],[9.1,4.1],[9.1,4.2],[9.0,4.2],[9.0,4.1]]]}}"
+    # "{\"raster_ids\":[\"loss\", \"wdpa\"], \"analysis\":\"area\", \"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[9.0,4.1],[9.1,4.1],[9.1,4.2],[9.0,4.2],[9.0,4.1]]]},\"filters\":[{\"raster_id\":\"tcd_2000\",\"threshold\":30}]}")
     print(lambda_handler(json.loads(sys.argv[1]), None))

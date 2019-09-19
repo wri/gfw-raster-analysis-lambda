@@ -1,3 +1,4 @@
+.lambdaignore
 *-info/*
 affine/tests/*
 awscli/examples/*
@@ -26,7 +27,7 @@ numpy/polynomial/tests/*
 numpy/random/tests/*
 numpy/testing/tests/*
 numpy/tests/*
-numpy/tests/*
+pandas/tests/*
 past/tests/*
 pip/*
 pkg_resources/*
@@ -41,6 +42,7 @@ samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs/*
 samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs6/*
 samcli/local/init/templates/cookiecutter-aws-sam-hello-python/{{cookiecutter.project_name}}/tests/*
 samcli/local/init/templates/cookiecutter-aws-sam-hello-ruby/*
+setup.pyc
 setuptools/*
 shapely/examples/*
 tzlocal/test_data/*
