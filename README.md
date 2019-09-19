@@ -24,11 +24,10 @@ of the given input bands with `Integer` datatype inside the given geometry.
 
 |Parameter|Type|Description|Example|
 |---------|----|-----------|-------|
-|raster_ids| [String] | List of raster ids to be used for analysis | ["loss", "tcd_2000", "tcd_2010", "wdpa"] |
+|raster_ids| [String] | List of raster ids to be used for analysis | ["loss", "wdpa"] |
 |analysis| String | Analysis to be performed | One of: `area`, `sum`, `count` |
-|threshold| Integer | Tree cover threshold to be used for analysis. Threshold will be used to mask input rasters as well as to calculate tree cover extents for 2000 and 2010. When value is greater than 0, second and thrid raster id must be `tcd2000` and `tcd2010` | Any value between `0` and `100` |
 |geometry| Object | A valid GeoJSON geometry (see further specification in `Limitations and assumtions` | `"geometry": {"type": "Polygon", "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],}`|
-
+|filters| [Object] | A list of rasters to use a mask on the geometry during analysis. Includes the raster id and a threshold value. | `[{"raster_id": "tcd_2000", "threshold": 30}]`|
 
 #### Examples
 
@@ -40,13 +39,18 @@ import json
 url = "https://hjebg1jly1.execute-api.us-east-1.amazonaws.com/default/gfw-raster-analysis"
 
 payload = {
-        "raster_ids": ["loss", "tcd_2000", "tcd_2010", "wdpa"],
+        "raster_ids": ["loss", "wdpa"],
         "analysis": "area",
-        "threshold": 30,
         "geometry": {
             "type": "Polygon",
             "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
-        }
+        },
+        "filters": [
+            {
+                "raster_id": "tcd_2000",
+                "threshold": 30
+            }
+        ]
     }
 
 headers = {
@@ -65,8 +69,7 @@ Response:
     "Content-Type": "application/json"
   },
   "body": {
-        "extent_2000": 11830.244769451865,
-        "extent_2010": 11700.999560754286,
+        "extent": 11830.244769451865,
         "threshold": 30,
         "data": [
             [0, 0, 2106.3891750831863],
@@ -143,7 +146,13 @@ Build Docker image
 
 Copy lambda package from Docker file
 
-`docker cp <docker containter id>:/var/task/lambda.zip lambda.zip`
+```
+docker run --name lambda -itd gfw/raster-analysis-lambda /bin/bash
+docker cp lambda:/tmp/package.zip package.zip
+docker stop lambda
+docker rm lambda
+```
+
 
 Deploy lambda function by uploading ZIP archive to AWS using cli, console or any other deployment method.
 To enable HTTP requests, you will need to add the lambda function to an API Gateway.
@@ -151,7 +160,7 @@ To enable HTTP requests, you will need to add the lambda function to an API Gate
 When deploying the function use the following settings:
 
 ```
-Runtime: Python 3.7
+Runtime: Python 3.6
 Handler: lambda_function.lambda_handler
 ```
 
