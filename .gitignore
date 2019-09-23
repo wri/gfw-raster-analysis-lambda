@@ -35,4 +35,5 @@ node_modules/
 lambda.zip
 lambda/
 .mypy_cache/*
-venv/*
+venv*
+package.zip
