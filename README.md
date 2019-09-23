@@ -2,7 +2,7 @@
 
 ### Functionality
 
-Run zonal statistics on any given combination of rasters for a given geometry.
+Run zonal statistics on any given combination of rasters for a given geometry, returning a serialized pandas DataFrame.
 
 This function produces the following statistics:
 
@@ -24,10 +24,12 @@ of the given input bands with `Integer` datatype inside the given geometry.
 
 |Parameter|Type|Description|Example|
 |---------|----|-----------|-------|
-|raster_ids| [String] | List of raster ids to be used for analysis | ["loss", "wdpa"] |
+|analysis_raster_id| String | Primary raster to base analysis off of. Any NoData pixels in this raster will be ignored.| "loss" |
+|contextual_raster_ids| [String] | List of rasters to contextualize analysis. Analysis results will be aggregated by unique combinations of contextual and analysis raster values. | ["wdpa"] |
 |analysis| String | Analysis to be performed | One of: `area`, `sum`, `count` |
 |geometry| Object | A valid GeoJSON geometry (see further specification in `Limitations and assumtions` | `"geometry": {"type": "Polygon", "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],}`|
 |filters| [Object] | A list of rasters to use a mask on the geometry during analysis. Includes the raster id and a threshold value. | `[{"raster_id": "tcd_2000", "threshold": 30}]`|
+|aggregate_rasters_ids| [String] | List of value rasters to aggregate. Certain analyses (currently only `sum`) will aggregate the pixel values of these rasters across unique combinations of contextual layers. | ["tcd_2000", "tcd_2010"] |
 
 #### Examples
 
@@ -39,7 +41,8 @@ import json
 url = "https://hjebg1jly1.execute-api.us-east-1.amazonaws.com/default/gfw-raster-analysis"
 
 payload = {
-        "raster_ids": ["loss", "wdpa"],
+        "analysis_raster_id": "loss",
+        "contextual_raster_ids": ["wdpa"],
         "analysis": "area",
         "geometry": {
             "type": "Polygon",
@@ -70,42 +73,72 @@ Response:
   },
   "body": {
         "extent": 11830.244769451865,
-        "threshold": 30,
-        "data": [
-            [0, 0, 2106.3891750831863],
-            [0, 1, 9088.39998493891],
-            [1, 0, 10.539639042600312],
-            [1, 1, 5.539080372753449],
-            [2, 0, 76.7008768282665],
-            [2, 1, 0.6923850465941811],
-            [3, 0, 6.462260434879024],
-            [3, 1, 4.308173623252682],
-            [5, 0, 4.231241951408885],
-            [5, 1, 0.3846583592189895],
-            [6, 0, 67.46907620701076],
-            [6, 1, 4.462036966940278],
-            [7, 1, 0.2307950155313937],
-            [8, 0, 1.7694284524073516],
-            [8, 1, 5.000558669846863],
-            [9, 1, 0.9231800621255748],
-            [10, 0, 154.4787970623462],
-            [10, 1, 32.8498238773017],
-            [11, 0, 32.695960533614105],
-            [11, 1, 3.000335201908118],
-            [12, 0, 0.1538633436875958],
-            [13, 0, 12.924520869758048],
-            [13, 1, 2.7695401863767244],
-            [14, 0, 22.156321491013795],
-            [14, 1, 73.62360995451459],
-            [15, 0, 0.5385217029065853],
-            [15, 1, 1.1539750776569684],
-            [16, 0, 8.847142262036758],
-            [17, 0, 48.31308991790508],
-            [17, 1, 5.077490341690662],
-            [18, 0, 45.92820809074735],
-            [18, 1, 2.231018483470139],
-        ],
-        "dtype": [["loss", "|u1"], ["wdpa", "|u1"], ["AREA", "<f8"]],
+        "data":{  
+             "loss":{  
+                    "0":1,
+                    "1":1,
+                    "2":2,
+                    "3":2,
+                    "4":3,
+                    "5":3,
+                    "6":5,
+                    "7":5,
+                    "8":6,
+                    "9":6,
+                    "10":7,
+                    "11":8,
+                    "12":8,
+                    "13":9,
+                    "14":10,
+                    "15":10,
+                    "16":11,
+                    "17":11,
+                    "18":12,
+                    "19":13,
+                    "20":13,
+                    "21":14,
+                    "22":14,
+                    "23":15,
+                    "24":15,
+                    "25":16,
+                    "26":17,
+                    "27":17,
+                    "28":18,
+                    "29":18
+             },
+             "wdpa":{  
+                    "0":0,
+                    "1":1,
+                    "2":0,
+                    "3":1,
+                    "4":0,
+                    "5":1,
+                    "6":0,
+                    "7":1,
+                    "8":0,
+                    "9":1,
+                    "10":1,
+                    "11":0,
+                    "12":1,
+                    "13":1,
+                    "14":0,
+                    "15":1,
+                    "16":0,
+                    "17":1,
+                    "18":0,
+                    "19":0,
+                    "20":1,
+                    "21":0,
+                    "22":1,
+                    "23":0,
+                    "24":1,
+                    "25":0,
+                    "26":0,
+                    "27":1,
+                    "28":0,
+                    "29":1
+             }
+        }
     }
 }
 

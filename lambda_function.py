@@ -30,21 +30,27 @@ def serialize(func):
                 "body": {"message": e},
             }
 
-        return result
+        return json.dumps(result)
 
     return wrapper
 
 
 @serialize
 def lambda_handler(event, context):
-    missing_params = list(
-        filter(lambda param: param not in event, ["raster_ids", "analysis", "geometry"])
+    missing_required_params = []
+    if "analysis_raster_id" not in event:
+        missing_required_params.append("analysis_raster_id")
+    elif "geometry" not in event:
+        missing_required_params.append("geometry")
+
+    if missing_required_params:
+        raise ValueError("Missing parameters: " + ", ".join(missing_required_params))
+
+    analysis_raster_id = event["analysis_raster_id"]
+    contextual_raster_ids = event["contextual_raster_ids"]
+    aggregate_raster_ids = (
+        event["aggregate_raster_ids"] if "aggregate_raster_ids" in event else []
     )
-
-    if len(missing_params) != 0:
-        raise ValueError("Missing parameters: " + ", ".join(missing_params))
-
-    raster_ids = event["raster_ids"]
     analysis = event["analysis"]
     geometry = shape(event["geometry"])
 
@@ -54,10 +60,15 @@ def lambda_handler(event, context):
     filters = [Filter(**f) for f in event["filters"]] if "filters" in event else []
 
     return geoprocessing.analysis(
-        geometry, *raster_ids, filters=filters, analysis=analysis
+        geometry,
+        analysis_raster_id,
+        contextual_raster_ids,
+        aggregate_raster_ids,
+        filters,
+        analysis,
     )
 
 
 if __name__ == "__main__":
-    # "{\"raster_ids\":[\"loss\", \"wdpa\"], \"analysis\":\"area\", \"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[9.0,4.1],[9.1,4.1],[9.1,4.2],[9.0,4.2],[9.0,4.1]]]},\"filters\":[{\"raster_id\":\"tcd_2000\",\"threshold\":30}]}")
+    # "{\"analysis_raster_id\":\"loss\", \"contextual_raster_ids\":[\"wdpa\"], \"aggregate_raster_ids\":[\"tcd_2000\", \"tcd_2010\"], \"analysis\":\"sum\", \"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[9.0,4.1],[9.1,4.1],[9.1,4.2],[9.0,4.2],[9.0,4.1]]]},\"filters\":[{\"raster_id\":\"tcd_2000\",\"threshold\":30}]}"), None))
     print(lambda_handler(json.loads(sys.argv[1]), None))

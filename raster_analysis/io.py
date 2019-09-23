@@ -75,10 +75,10 @@ def mask_geom_on_raster(geom, raster_path):
         full_mask = geom_mask | data.mask
 
         # Mask the data array, with modifications applied, by the query polygon
-        return np.ma.array(data=data, mask=full_mask), shifted_affine, no_data_value
+        return data, full_mask, shifted_affine, no_data_value
 
     else:
-        return np.array([]), None, None
+        return np.array([]), np.array([]), None, None
 
 
 def get_window_and_affine(geom, raster_src):
