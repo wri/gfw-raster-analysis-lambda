@@ -21,13 +21,13 @@ def serialize(func):
             return {
                 "statusCode": 400,
                 "headers": {"Content-Type": "application/json"},
-                "body": {"message": e},
+                "body": {"message": str(e)},
             }
         except Exception as e:
             result = {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
-                "body": {"message": e},
+                "body": {"message": str(e)},
             }
 
         return json.dumps(result)
@@ -47,11 +47,13 @@ def lambda_handler(event, context):
         raise ValueError("Missing parameters: " + ", ".join(missing_required_params))
 
     analysis_raster_id = event["analysis_raster_id"]
-    contextual_raster_ids = event["contextual_raster_ids"]
+    contextual_raster_ids = (
+        event["contextual_raster_ids"] if "contextual_raster_ids" in event else []
+    )
     aggregate_raster_ids = (
         event["aggregate_raster_ids"] if "aggregate_raster_ids" in event else []
     )
-    analysis = event["analysis"]
+    analysis = event["analysis"] if "analysis" in event else "count"
     geometry = shape(event["geometry"])
 
     if analysis not in ["area", "sum", "count"]:

@@ -104,11 +104,7 @@ def get_window_and_affine(geom, raster_src):
     """
 
     # Create a window range from the bounds
-    ul = raster_src.index(*geom.bounds[0:2])
-    lr = raster_src.index(*geom.bounds[2:4])
-    window = ((lr[0], ul[0] + 1), (ul[1], lr[1] + 1))
-    # window = ((lr[0], ul[0]), (ul[1], lr[1])) # TODO: figure out why we have to extent the bounds
-
+    window = raster_src.window(*geom.bounds)
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)
 

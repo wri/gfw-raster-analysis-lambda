@@ -1,5 +1,4 @@
-import numpy as np
-from raster_analysis.grid import get_tile_id, get_raster_url
+from raster_analysis.grid import get_raster_url
 from raster_analysis.io import (
     read_window,
     read_window_ignore_missing,
@@ -8,6 +7,8 @@ from raster_analysis.io import (
 from raster_analysis.geodesy import get_area
 from collections import namedtuple
 import pandas as pd
+import logging
+import numpy as np
 
 Filter = namedtuple("Filter", "raster_id threshold")
 
@@ -29,16 +30,25 @@ def analysis(
     If threshold is > 0, the 2nd and 3rd raster need to be tcd2000 and tcd2010.
         It will use tcd2000 layer as additional mask and add
     """
+
+    logging.info(
+        "[INFO][RasterAnalysis] Running analysis:  `"
+        + analysis
+        + "` across layer `"
+        + analysis_raster_id
+        + "` with geometry: "
+        + geom.to_wkt()
+    )
+
     result = dict()
 
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
-    tile_id = get_tile_id(geom)
 
-    raster = get_raster_url(analysis_raster_id, tile_id)
+    raster = get_raster_url(analysis_raster_id)
     data, geom_mask, _, no_data = mask_geom_on_raster(geom, raster)
 
     if geom_mask.any():
-        mask = _generate_full_mask(data, geom_mask, no_data, geom, filters, tile_id)
+        mask = _generate_full_mask(data, geom_mask, no_data, geom, filters)
 
         # extract the analysis raster data first since it'll be used as a reference
         extracted_data = {analysis_raster_id: np.extract(mask, data)}
@@ -49,7 +59,6 @@ def analysis(
                 contextual_raster_ids + aggregate_raster_ids,
                 geom,
                 mask,
-                tile_id,
                 len(extracted_data[analysis_raster_id]),
             )
         )
@@ -66,6 +75,9 @@ def analysis(
 
         return result
     else:
+        logging.debug(
+            "[DEBUG][RasterAnalysis] Skipping analysis because entire geometry is masked"
+        )
         return dict()
 
 
@@ -94,17 +106,17 @@ def _sum(df, raster_ids):
     return df.groupby(raster_ids).sum().reset_index()
 
 
-def _generate_full_mask(data, geom_mask, no_data, geom, filters, tile_id):
+def _generate_full_mask(data, geom_mask, no_data, geom, filters):
     value_mask = _mask_by_nodata(data, no_data)
     mask = geom_mask * value_mask
-    return _apply_filters(filters, mask, geom, tile_id)
+    return _apply_filters(filters, mask, geom)
 
 
-def _extract_raster_data(raster_ids, geom, mask, tile_id, missing_length):
+def _extract_raster_data(raster_ids, geom, mask, missing_length):
     extracted_data = dict()
 
     for raster_id in raster_ids:
-        raster = get_raster_url(raster_id, tile_id)
+        raster = get_raster_url(raster_id)
         data, _, _ = read_window_ignore_missing(raster, geom)
         if data.any():
             extracted_data[raster_id] = np.extract(mask, data)
@@ -122,10 +134,10 @@ def _mask_by_nodata(raster, no_data):
     return raster != no_data
 
 
-def _apply_filters(filters, mask, geom, tile_id):
+def _apply_filters(filters, mask, geom):
     if filters:
         for curr_filter in filters:
-            curr_filter_url = get_raster_url(curr_filter.raster_id, tile_id)
+            curr_filter_url = get_raster_url(curr_filter.raster_id)
             curr_filter_mask = _mask_by_threshold(
                 read_window(curr_filter_url, geom)[0], curr_filter.threshold
             )
