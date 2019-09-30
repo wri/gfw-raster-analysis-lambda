@@ -1,6 +1,8 @@
 from raster_analysis import geoprocessing
 from raster_analysis.geoprocessing import Filter
 from shapely.geometry import shape
+import traceback
+import logging
 
 import sys
 import json
@@ -23,11 +25,12 @@ def serialize(func):
                 "headers": {"Content-Type": "application/json"},
                 "body": {"message": str(e)},
             }
-        except Exception as e:
+        except Exception:
+            logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
             result = {
                 "statusCode": 500,
                 "headers": {"Content-Type": "application/json"},
-                "body": {"message": str(e)},
+                "body": {"message": "Internal Server Error. Please check logs."},
             }
 
         return json.dumps(result)
@@ -53,11 +56,11 @@ def lambda_handler(event, context):
     aggregate_raster_ids = (
         event["aggregate_raster_ids"] if "aggregate_raster_ids" in event else []
     )
-    analysis = event["analysis"] if "analysis" in event else "count"
+    analyses = event["analyses"] if "analyses" in event else ["count", "area"]
     geometry = shape(event["geometry"])
 
-    if analysis not in ["area", "sum", "count"]:
-        raise ValueError("Unknown analysis: " + analysis)
+    if any(analysis not in ["area", "sum", "count"] for analysis in analyses):
+        raise ValueError("Unknown analysis: " + analyses)
 
     filters = [Filter(**f) for f in event["filters"]] if "filters" in event else []
 
@@ -67,7 +70,7 @@ def lambda_handler(event, context):
         contextual_raster_ids,
         aggregate_raster_ids,
         filters,
-        analysis,
+        analyses,
     )
 
 

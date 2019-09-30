@@ -2,6 +2,7 @@ from rasterio import features
 import numpy as np
 import rasterio
 import logging
+import traceback
 
 
 def read_window(raster, geom, masked=False):
@@ -20,6 +21,7 @@ def read_window(raster, geom, masked=False):
                 data = src.read(1, masked=masked, window=window)
                 no_data_value = src.nodata
             except MemoryError:
+                logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
                 raise Exception(
                     "Out of memory- input polygon or input extent too large. "
                     "Try splitting the polygon into multiple requests."
@@ -37,7 +39,7 @@ def read_window_ignore_missing(raster, geom, masked=False):
     return data
 
 
-def mask_geom_on_raster(geom, raster_path):
+def mask_geom_on_raster(geom, raster_path, masked=False):
     """"
     For a given polygon, returns a numpy masked array with the intersecting
     values of the raster at `raster_path` unmasked, all non-intersecting
@@ -59,7 +61,7 @@ def mask_geom_on_raster(geom, raster_path):
     """
 
     data, shifted_affine, no_data_value = read_window_ignore_missing(
-        raster_path, geom, masked=True
+        raster_path, geom, masked=masked
     )
 
     if data.any():
@@ -72,7 +74,7 @@ def mask_geom_on_raster(geom, raster_path):
         )
 
         # Include any NODATA mask
-        full_mask = geom_mask | data.mask
+        full_mask = geom_mask | data.mask if masked else geom_mask
 
         # Mask the data array, with modifications applied, by the query polygon
         return data, full_mask, shifted_affine, no_data_value
