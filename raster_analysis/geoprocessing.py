@@ -10,6 +10,14 @@ import pandas as pd
 import logging
 import numpy as np
 
+AREA_FIELD = "area"
+COUNT_FIELD = "count"
+SUM_FIELD = "sum"
+FILTERED_AREA_FIELD = "filtered_area"
+LAYER_AREA_FIELD = "{raster_id}_area"
+FILTER_FIELD = "filter"
+
+
 Filter = namedtuple("Filter", "raster_id threshold")
 
 
@@ -19,7 +27,7 @@ def analysis(
     contextual_raster_ids=[],
     aggregate_raster_ids=[],
     filters=[],
-    analysis="count",
+    analyses=["count", "area"],
 ):
     """
     Supported analysis:
@@ -31,85 +39,177 @@ def analysis(
         It will use tcd2000 layer as additional mask and add
     """
 
+    # always log parameters so we can reproduce later
     logging.info(
-        "[INFO][RasterAnalysis] Running analysis:  `"
-        + analysis
-        + "` across layer `"
+        "[INFO][RasterAnalysis] Running analysis with parameters: "
+        + "analyses: "
+        + str(analyses)
+        + ", "
+        + "analysis_raster_id: "
         + analysis_raster_id
-        + "` with geometry: "
-        + geom.to_wkt()
+        + ", "
+        + "contextual_raster_ids: "
+        + str(contextual_raster_ids)
+        + ", "
+        + "aggregate_raster_ids: "
+        + str(aggregate_raster_ids)
+        + ", "
+        + "filters: "
+        + str(filters)
+        + ", "
+        + "geom: "
+        + str(geom.to_wkt())
     )
 
     result = dict()
 
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
 
+    # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
     raster = get_raster_url(analysis_raster_id)
-    data, geom_mask, _, no_data = mask_geom_on_raster(geom, raster)
+    data, mask, _, no_data = mask_geom_on_raster(geom, raster)
+    logging.debug(
+        "[DEBUG][RasterAnalysis] Successfully masked geometry onto analysis layer."
+    )
 
-    if geom_mask.any():
-        mask = _generate_full_mask(data, geom_mask, no_data, geom, filters)
+    # extract the analysis raster data first since it'll be used to get geometry mask
+    extracted_data = {analysis_raster_id: np.extract(mask, data)}
 
-        # extract the analysis raster data first since it'll be used as a reference
-        extracted_data = {analysis_raster_id: np.extract(mask, data)}
-
-        # extract data from contextual layers and aggregate layers and append to dict
-        extracted_data.update(
-            _extract_raster_data(
-                contextual_raster_ids + aggregate_raster_ids,
-                geom,
-                mask,
-                len(extracted_data[analysis_raster_id]),
-            )
+    # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
+    extracted_data.update(
+        _extract_raster_data(
+            contextual_raster_ids + aggregate_raster_ids,
+            geom,
+            mask,
+            len(extracted_data[analysis_raster_id]),
         )
+    )
 
-        extracted_df = pd.DataFrame(extracted_data)
-        reporting_raster_ids = [analysis_raster_id] + contextual_raster_ids
+    # combine all filters amd extract with geometry mask, put result in special filter field
+    total_filter = _get_total_filter(filters, geom, data.shape)
+    extracted_data[FILTER_FIELD] = np.extract(mask, total_filter)
 
-        analysis_result = _analysis(
-            analysis, extracted_df, reporting_raster_ids, mean_area
-        )
+    # convert to pandas DataFrame for analysis
+    extracted_df = pd.DataFrame(extracted_data)
+    logging.debug(
+        "[DEBUG][RasterAnalysis] Successfully converted extracted data to dataframe"
+    )
 
-        result["data"] = analysis_result.to_dict()
-        result["extent"] = mask.sum() * mean_area
+    # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
+    analysis_groupby_fields = (
+        [analysis_raster_id] + contextual_raster_ids + [FILTER_FIELD]
+    )
+    analysis_result = _analysis(
+        analyses, extracted_df, analysis_groupby_fields, aggregate_raster_ids, mean_area
+    )
+    logging.debug("[DEBUG][RasterAnalysis] Successfully ran analysis=" + str(analyses))
 
-        return result
-    else:
-        logging.debug(
-            "[DEBUG][RasterAnalysis] Skipping analysis because entire geometry is masked"
-        )
-        return dict()
+    # detailed table only includes rows that pass filter and where the analysis raster value isn't NoData
+    detailed_table = _get_detailed_table(analysis_result, no_data, analysis_raster_id)
+    logging.debug("[DEBUG][RasterAnalysis] Successfully created detailed table")
 
+    # summary table groups by contextual layers, providing total area, filtered area, and total area
+    # of analysis layer that isn't filtered or NoData for each combination
+    summary_table = _get_summary_table(
+        analyses, analysis_result, no_data, analysis_raster_id, contextual_raster_ids
+    )
+    logging.debug("[DEBUG][RasterAnalysis] Successfully created summary table")
 
-def _analysis(analysis, df, reporting_raster_ids, mean_area):
-    if analysis == "count":
-        return _count(df, reporting_raster_ids)
-    elif analysis == "area":
-        return _area(df, reporting_raster_ids, mean_area)
-    elif analysis == "sum":
-        return _sum(df, reporting_raster_ids)
-    else:
-        raise ValueError("Unknown analysis: " + analysis)
+    result["detailed_table"] = detailed_table.to_dict()
 
+    if summary_table is not None:
+        result["summary_table"] = summary_table.to_dict()
 
-def _count(df, raster_ids):
-    return df.groupby(raster_ids).size().reset_index(name="count")
-
-
-def _area(df, raster_ids, mean_area):
-    result = df.groupby(raster_ids).size().reset_index(name="area")
-    result.area = result.area.multiply(mean_area)
     return result
 
 
-def _sum(df, raster_ids):
-    return df.groupby(raster_ids).sum().reset_index()
+def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_area):
+    result = df
+
+    # area is just count * mean area, so always get count if analysis has count or area
+    if "count" or "area" in analyses:
+        # to get both count and sum, we have to do some wonky stuff with pandas to get both
+        # aggregations at the same time.
+        if "sum" in analyses and len(aggregate_raster_ids) > 0:
+            # During sum of the first agg layer, also get get the count
+            agg = {aggregate_raster_ids[0]: ["count", "sum"]}
+
+            # then explicitly ask for sum of all other agg layers
+            if len(aggregate_raster_ids) > 0:
+                for raster_id in aggregate_raster_ids[1:]:
+                    agg[raster_id] = "sum"
+
+            result = df.groupby(reporting_raster_ids).agg(agg).reset_index()
+
+            # now rename columns so that the count agg field is just called 'count'
+            result.columns = reporting_raster_ids + [COUNT_FIELD] + aggregate_raster_ids
+            logging.debug(
+                "[DEBUG][RasterAnalysis] Successfully calculated count and sum"
+            )
+        else:
+            # otherwise use pandas built-in count agg function
+            result = (
+                df.groupby(reporting_raster_ids).size().reset_index(name=COUNT_FIELD)
+            )
+            logging.debug("[DEBUG][RasterAnalysis] Successfully calculated count")
+
+    if "area" in analyses:
+        # use previously calculated count column to generate area column
+        result[AREA_FIELD] = result[COUNT_FIELD].multiply(mean_area)
+
+        # if count was just a temp column to calculate area, drop it
+        if "count" not in analyses:
+            result = result.drop(columns=[COUNT_FIELD])
+
+        logging.debug("[DEBUG][RasterAnalysis] Successfully calculated area")
+
+    # if we never needed to calculate sum and count at same time, just use for pandas built-in sum agg function
+    if "sum" in analyses and "count" not in analyses and "area" not in analyses:
+        result = df.groupby(reporting_raster_ids).sum().reset_index()
+        logging.debug("[DEBUG][RasterAnalysis] Successfully calculated sum")
+
+    return result
 
 
-def _generate_full_mask(data, geom_mask, no_data, geom, filters):
-    value_mask = _mask_by_nodata(data, no_data)
-    mask = geom_mask * value_mask
-    return _apply_filters(filters, mask, geom)
+def _get_detailed_table(analysis_result, no_data_value, analysis_raster_id):
+    no_data_filter = analysis_result[analysis_raster_id] != no_data_value
+    passes_filter = analysis_result[FILTER_FIELD]
+
+    # filter out rows that don't pass filter or where analysis layer is NoData, and remove the
+    # "filter" field from final result
+    return (
+        analysis_result[passes_filter & no_data_filter]
+        .drop(columns=[FILTER_FIELD])
+        .reset_index(drop=True)
+    )
+
+
+def _get_summary_table(
+    analyses, analysis_result, no_data_value, analysis_raster_id, contextual_raster_ids
+):
+    summary_table = analysis_result.copy()
+
+    if "area" in analyses:
+        # create new column that just copies area column, but sets any row with filter=false to 0
+        summary_table[FILTERED_AREA_FIELD] = (
+            summary_table[AREA_FIELD] * summary_table[FILTER_FIELD]
+        )
+
+        # create new column that copies filtered column, but sets any row where analysis layer is NoData to 0
+        layer_area_field = LAYER_AREA_FIELD.format(raster_id=analysis_raster_id)
+        summary_table[layer_area_field] = summary_table[FILTERED_AREA_FIELD] * (
+            summary_table[analysis_raster_id] != no_data_value
+        )
+
+        # aggregate by combos of contextual layer values, and drop fields we don't want in the final result
+        return (
+            summary_table.groupby(contextual_raster_ids)
+            .sum()
+            .reset_index()
+            .drop(columns=[analysis_raster_id, FILTER_FIELD])
+        )
+    else:
+        return None
 
 
 def _extract_raster_data(raster_ids, geom, mask, missing_length):
@@ -120,8 +220,12 @@ def _extract_raster_data(raster_ids, geom, mask, missing_length):
         data, _, _ = read_window_ignore_missing(raster, geom)
         if data.any():
             extracted_data[raster_id] = np.extract(mask, data)
+            logging.debug(
+                "[DEBUG][RasterAnalysis] Successfully masked geometry onto layer="
+                + raster_id
+            )
         else:
-            extracted_data[raster_id] = np.zeros(len(missing_length))
+            extracted_data[raster_id] = np.zeros(missing_length)
 
     return extracted_data
 
@@ -134,14 +238,23 @@ def _mask_by_nodata(raster, no_data):
     return raster != no_data
 
 
-def _apply_filters(filters, mask, geom):
+def _get_total_filter(filters, geom, shape):
+    total_filter = np.ones(shape, dtype=np.bool)
+
     if filters:
         for curr_filter in filters:
             curr_filter_url = get_raster_url(curr_filter.raster_id)
             curr_filter_mask = _mask_by_threshold(
                 read_window(curr_filter_url, geom)[0], curr_filter.threshold
             )
+            logging.debug(
+                "[DEBUG][RasterAnalysis] Successfully masked threshold="
+                + str(curr_filter.threshold)
+                + " onto filter layer="
+                + curr_filter.raster_id
+            )
 
-            mask *= curr_filter_mask
+            total_filter = curr_filter_mask * total_filter
 
-    return mask
+    logging.debug("[DEBUG][RasterAnalysis] Successfully created aggregate filter")
+    return total_filter
