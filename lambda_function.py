@@ -1,3 +1,6 @@
+import logging
+import sys
+
 from lambda_decorators import json_http_resp, json_schema_validator
 from shapely.geometry import shape
 
@@ -7,11 +10,17 @@ from raster_analysis.schemas import SCHEMA
 
 BASE_URL = "/vsis3/gfw-files/2018_update/{raster_id}/{tile_id}.tif"
 
+fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=fmt)
+logger = logging.getLogger(__name__)
+
 
 @json_schema_validator(request_schema=SCHEMA)
 @json_http_resp
 def lambda_handler(event, context):
 
+    logger.info("Test")
     analysis_raster_id = event["analysis_raster_id"]
     contextual_raster_ids = (
         event["contextual_raster_ids"] if "contextual_raster_ids" in event else []
