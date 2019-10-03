@@ -26,5 +26,3 @@ RUN cd /var/task; zip -r9q --symlinks /tmp/package.zip lib/*.so*
 RUN cd /var/task; zip -r9q /tmp/package.zip share
 
 CMD ["/bin/bash"]
-
-

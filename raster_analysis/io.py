@@ -1,8 +1,9 @@
-from rasterio import features
-import numpy as np
-import rasterio
 import logging
 import traceback
+
+import numpy as np
+import rasterio
+from rasterio import features
 
 
 def read_window(raster, geom, masked=False):
