@@ -1,10 +1,12 @@
+from unittest import mock
+
+import numpy as np
+import pandas as pd
+import pytest
+from shapely.geometry import Polygon
+
 from raster_analysis import geoprocessing
 from raster_analysis.geoprocessing import Filter
-from shapely.geometry import Polygon
-from unittest import mock
-import numpy as np
-import pytest
-import pandas as pd
 
 A = np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5]])
 B = np.array([[2, 3, 4], [3, 4, 5], [4, 5, 6]])
@@ -46,7 +48,7 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_data.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
     mock_data_ignore.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
 
-    result = geoprocessing.analysis(GEOMETRY, "ras0", ["ras1", "ras2"], analysis="area")
+    result = geoprocessing.analysis(GEOMETRY, "ras0", ["ras1", "ras2"], analyses="area")
     expected_data = pd.DataFrame(
         {
             "ras0": [3, 4, 5],
@@ -74,7 +76,7 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     ]
 
     result = geoprocessing.analysis(
-        GEOMETRY, "ras0", aggregate_raster_ids=["ras1", "ras2"], analysis="sum"
+        GEOMETRY, "ras0", aggregate_raster_ids=["ras1", "ras2"], analyses="sum"
     )
     expected_data = pd.DataFrame(
         {"ras0": [3, 4, 5], "ras1": [12.0, 10.0, 6.5], "ras2": [15.0, 12.0, 7.5]}
@@ -105,7 +107,7 @@ def test_count_with_filter(mock_data_ignore, mock_data, mock_masked_data):
         "ras0",
         ["ras1", "ras2"],
         filters=[Filter(FILTER, THRESHOLD)],
-        analysis="count",
+        analyses="count",
     )
 
     assert pd.read_json(result["data"]).equals(expected_data)
