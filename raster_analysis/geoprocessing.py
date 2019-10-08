@@ -1,14 +1,18 @@
+import logging
+from collections import namedtuple
+
+import numpy as np
+import pandas as pd
+
+from raster_analysis.geodesy import get_area
 from raster_analysis.grid import get_raster_url
 from raster_analysis.io import (
+    mask_geom_on_raster,
     read_window,
     read_window_ignore_missing,
-    mask_geom_on_raster,
 )
-from raster_analysis.geodesy import get_area
-from collections import namedtuple
-import pandas as pd
-import logging
-import numpy as np
+
+logger = logging.getLogger(__name__)
 
 AREA_FIELD = "area"
 COUNT_FIELD = "count"
@@ -40,8 +44,8 @@ def analysis(
     """
 
     # always log parameters so we can reproduce later
-    logging.info(
-        "[INFO][RasterAnalysis] Running analysis with parameters: "
+    logger.info(
+        "Running analysis with parameters: "
         + "analyses: "
         + str(analyses)
         + ", "
@@ -68,9 +72,7 @@ def analysis(
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
     raster = get_raster_url(analysis_raster_id)
     data, mask, _, no_data = mask_geom_on_raster(geom, raster)
-    logging.debug(
-        "[DEBUG][RasterAnalysis] Successfully masked geometry onto analysis layer."
-    )
+    logger.debug("Successfully masked geometry onto analysis layer.")
 
     # extract the analysis raster data first since it'll be used to get geometry mask
     extracted_data = {analysis_raster_id: np.extract(mask, data)}
@@ -91,9 +93,7 @@ def analysis(
 
     # convert to pandas DataFrame for analysis
     extracted_df = pd.DataFrame(extracted_data)
-    logging.debug(
-        "[DEBUG][RasterAnalysis] Successfully converted extracted data to dataframe"
-    )
+    logger.debug("Successfully converted extracted data to dataframe")
 
     # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
     analysis_groupby_fields = (
@@ -102,18 +102,18 @@ def analysis(
     analysis_result = _analysis(
         analyses, extracted_df, analysis_groupby_fields, aggregate_raster_ids, mean_area
     )
-    logging.debug("[DEBUG][RasterAnalysis] Successfully ran analysis=" + str(analyses))
+    logger.debug("Successfully ran analysis=" + str(analyses))
 
     # detailed table only includes rows that pass filter and where the analysis raster value isn't NoData
     detailed_table = _get_detailed_table(analysis_result, no_data, analysis_raster_id)
-    logging.debug("[DEBUG][RasterAnalysis] Successfully created detailed table")
+    logger.debug("Successfully created detailed table")
 
     # summary table groups by contextual layers, providing total area, filtered area, and total area
     # of analysis layer that isn't filtered or NoData for each combination
     summary_table = _get_summary_table(
         analyses, analysis_result, no_data, analysis_raster_id, contextual_raster_ids
     )
-    logging.debug("[DEBUG][RasterAnalysis] Successfully created summary table")
+    logger.debug("Successfully created summary table")
 
     result["detailed_table"] = detailed_table.to_dict()
 
@@ -143,15 +143,13 @@ def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_are
 
             # now rename columns so that the count agg field is just called 'count'
             result.columns = reporting_raster_ids + [COUNT_FIELD] + aggregate_raster_ids
-            logging.debug(
-                "[DEBUG][RasterAnalysis] Successfully calculated count and sum"
-            )
+            logger.debug("Successfully calculated count and sum")
         else:
             # otherwise use pandas built-in count agg function
             result = (
                 df.groupby(reporting_raster_ids).size().reset_index(name=COUNT_FIELD)
             )
-            logging.debug("[DEBUG][RasterAnalysis] Successfully calculated count")
+            logger.debug("Successfully calculated count")
 
     if "area" in analyses:
         # use previously calculated count column to generate area column
@@ -161,12 +159,12 @@ def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_are
         if "count" not in analyses:
             result = result.drop(columns=[COUNT_FIELD])
 
-        logging.debug("[DEBUG][RasterAnalysis] Successfully calculated area")
+        logger.debug("Successfully calculated area")
 
     # if we never needed to calculate sum and count at same time, just use for pandas built-in sum agg function
     if "sum" in analyses and "count" not in analyses and "area" not in analyses:
         result = df.groupby(reporting_raster_ids).sum().reset_index()
-        logging.debug("[DEBUG][RasterAnalysis] Successfully calculated sum")
+        logger.debug("Successfully calculated sum")
 
     return result
 
@@ -220,10 +218,7 @@ def _extract_raster_data(raster_ids, geom, mask, missing_length):
         data, _, _ = read_window_ignore_missing(raster, geom)
         if data.any():
             extracted_data[raster_id] = np.extract(mask, data)
-            logging.debug(
-                "[DEBUG][RasterAnalysis] Successfully masked geometry onto layer="
-                + raster_id
-            )
+            logger.debug("Successfully masked geometry onto layer=" + raster_id)
         else:
             extracted_data[raster_id] = np.zeros(missing_length)
 
@@ -247,8 +242,8 @@ def _get_total_filter(filters, geom, shape):
             curr_filter_mask = _mask_by_threshold(
                 read_window(curr_filter_url, geom)[0], curr_filter.threshold
             )
-            logging.debug(
-                "[DEBUG][RasterAnalysis] Successfully masked threshold="
+            logger.debug(
+                "Successfully masked threshold="
                 + str(curr_filter.threshold)
                 + " onto filter layer="
                 + curr_filter.raster_id
@@ -256,5 +251,5 @@ def _get_total_filter(filters, geom, shape):
 
             total_filter = curr_filter_mask * total_filter
 
-    logging.debug("[DEBUG][RasterAnalysis] Successfully created aggregate filter")
+    logger.debug("Successfully created aggregate filter")
     return total_filter

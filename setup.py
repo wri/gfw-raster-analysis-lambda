@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="gfw_raster-analysis-lambda",
-    version="0.1.0",
+    version="0.2.0",
     description="Lambda function to run serverless on the fly raster analysis",
     packages=["raster_analysis"],
     author="Thomas Maschler",
@@ -18,5 +18,6 @@ setup(
         # "click~=7.0",
         # "botocore<1.13.0,>=1.12.164",
         "pandas~=0.25.1",
+        "lambda-decorators~=0.3.0",
     ],
 )
