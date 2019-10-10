@@ -37,3 +37,4 @@ lambda/
 .mypy_cache/*
 venv*
 package.zip
+test/test_data/*
