@@ -48,7 +48,9 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
     mock_data.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
     mock_data_ignore.side_effect = [(np.copy(B), None, None), (np.copy(C), None, None)]
 
-    result = geoprocessing.analysis(GEOMETRY, "ras0", ["ras1", "ras2"], analyses="area")
+    result = geoprocessing.analysis(
+        GEOMETRY, "ras0", ["ras1", "ras2"], analyses=["area"]
+    )
     expected_data = pd.DataFrame(
         {
             "ras0": [3, 4, 5],
@@ -58,7 +60,7 @@ def test_area_analysis(mock_data_ignore, mock_data, mock_masked_data):
         }
     )
 
-    result_data = pd.read_json(result.pop("data"))
+    result_data = pd.DataFrame.from_dict(result["detailed_table"])
 
     for i, r in enumerate(result_data.area):
         assert r == pytest.approx(expected_data.area[i], 0.000001)
@@ -76,13 +78,13 @@ def test_sum_analysis(mock_data_ignore, mock_data, mock_masked_data):
     ]
 
     result = geoprocessing.analysis(
-        GEOMETRY, "ras0", aggregate_raster_ids=["ras1", "ras2"], analyses="sum"
+        GEOMETRY, "ras0", aggregate_raster_ids=["ras1", "ras2"], analyses=["sum"]
     )
     expected_data = pd.DataFrame(
         {"ras0": [3, 4, 5], "ras1": [12.0, 10.0, 6.5], "ras2": [15.0, 12.0, 7.5]}
     )
 
-    assert pd.read_json(result["data"]).equals(expected_data)
+    assert pd.DataFrame.from_dict(result["detailed_table"]).equals(expected_data)
 
 
 @mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
@@ -100,15 +102,13 @@ def test_count_with_filter(mock_data_ignore, mock_data, mock_masked_data):
     expected_data = pd.DataFrame(
         {"ras0": [3, 4, 5], "ras1": [4, 5, 6], "ras2": [5, 6, 7], "count": [2, 1, 1]}
     )
-    expected_extent = AREA * 4 / 10000
 
     result = geoprocessing.analysis(
         GEOMETRY,
         "ras0",
         ["ras1", "ras2"],
-        filters=[Filter(FILTER, THRESHOLD)],
-        analyses="count",
+        filters=[Filter("filter", THRESHOLD)],
+        analyses=["count"],
     )
 
-    assert pd.read_json(result["data"]).equals(expected_data)
-    assert result["extent"] == pytest.approx(expected_extent, 0.000001)
+    assert pd.DataFrame.from_dict(result["detailed_table"]).equals(expected_data)
