@@ -4,6 +4,7 @@ import traceback
 import numpy as np
 import rasterio
 from rasterio import features
+from aws_xray_sdk.core import xray_recorder
 
 logger = logging.getLogger(__name__)
 
@@ -17,18 +18,21 @@ def read_window(raster, geom, masked=False):
     can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
     """
 
-    with rasterio.Env():
-        with rasterio.open(raster) as src:
-            try:
-                window, shifted_affine = get_window_and_affine(geom, src)
-                data = src.read(1, masked=masked, window=window)
-                no_data_value = src.nodata
-            except MemoryError:
-                logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
-                raise Exception(
-                    "Out of memory- input polygon or input extent too large. "
-                    "Try splitting the polygon into multiple requests."
-                )
+    with xray_recorder.capture("Read Window") as segment:
+        segment.put_metadata("Raster URL", raster)
+
+        with rasterio.Env():
+            with rasterio.open(raster) as src:
+                try:
+                    window, shifted_affine = get_window_and_affine(geom, src)
+                    data = src.read(1, masked=masked, window=window)
+                    no_data_value = src.nodata
+                except MemoryError:
+                    logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
+                    raise Exception(
+                        "Out of memory- input polygon or input extent too large. "
+                        "Try splitting the polygon into multiple requests."
+                    )
     return data, shifted_affine, no_data_value
 
 
@@ -42,6 +46,7 @@ def read_window_ignore_missing(raster, geom, masked=False):
     return data
 
 
+@xray_recorder.capture("Mask Geometry")
 def mask_geom_on_raster(geom, raster_path, masked=False):
     """"
     For a given polygon, returns a numpy masked array with the intersecting

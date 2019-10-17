@@ -5,3 +5,4 @@ lambda-decorators~=0.3.0
 pandas~=0.25.1
 pytest
 pytest-mock
+aws-xray-sdk

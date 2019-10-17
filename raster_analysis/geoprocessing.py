@@ -12,6 +12,12 @@ from raster_analysis.io import (
     read_window_ignore_missing,
 )
 
+# TEMP: Uncomment these lines when running locally to disable xray
+# from aws_xray_sdk import global_sdk_config
+# global_sdk_config.set_sdk_enabled(False)
+
+from aws_xray_sdk.core import xray_recorder
+
 logger = logging.getLogger(__name__)
 
 AREA_FIELD = "area"
@@ -20,7 +26,6 @@ SUM_FIELD = "sum"
 FILTERED_AREA_FIELD = "filtered_area"
 LAYER_AREA_FIELD = "{raster_id}_area"
 FILTER_FIELD = "filter"
-
 
 Filter = namedtuple("Filter", "raster_id threshold")
 
@@ -75,7 +80,7 @@ def analysis(
     logger.debug("Successfully masked geometry onto analysis layer.")
 
     # extract the analysis raster data first since it'll be used to get geometry mask
-    extracted_data = {analysis_raster_id: np.extract(mask, data)}
+    extracted_data = {analysis_raster_id: _extract(mask, data)}
 
     # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
     extracted_data.update(
@@ -123,6 +128,7 @@ def analysis(
     return result
 
 
+@xray_recorder.capture("Pandas Analysis")
 def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_area):
     result = df
 
@@ -210,6 +216,7 @@ def _get_summary_table(
         return None
 
 
+@xray_recorder.capture("Read and Extract Raster Data")
 def _extract_raster_data(raster_ids, geom, mask, missing_length):
     extracted_data = dict()
 
@@ -217,7 +224,7 @@ def _extract_raster_data(raster_ids, geom, mask, missing_length):
         raster = get_raster_url(raster_id)
         data, _, _ = read_window_ignore_missing(raster, geom)
         if data.any():
-            extracted_data[raster_id] = np.extract(mask, data)
+            extracted_data[raster_id] = _extract(mask, data)
             logger.debug("Successfully masked geometry onto layer=" + raster_id)
         else:
             extracted_data[raster_id] = np.zeros(missing_length)
@@ -253,3 +260,8 @@ def _get_total_filter(filters, geom, shape):
 
     logger.debug("Successfully created aggregate filter")
     return total_filter
+
+
+@xray_recorder.capture("NumPy Extract")
+def _extract(mask, data):
+    return np.extract(mask, data)
