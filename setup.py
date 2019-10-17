@@ -19,5 +19,6 @@ setup(
         # "botocore<1.13.0,>=1.12.164",
         "pandas~=0.25.1",
         "lambda-decorators~=0.3.0",
+        "aws-xray-sdk",
     ],
 )
