@@ -7,9 +7,10 @@ from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_url
-from multiprocessing import Process, Queue
 from collections import namedtuple
-import time
+
+import threading
+import queue
 
 logger = logging.getLogger(__name__)
 RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
@@ -17,31 +18,25 @@ RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 def read_windows_parallel(raster_ids, geom, masked=False):
     read_window_processes = []
-    result_queue = Queue()
+    result_queue = queue.Queue()
 
     for raster_id in raster_ids:
-        read_window_process = Process(
+        read_window_process = threading.Thread(
             target=read_window_parallel_work,
             args=(raster_id, geom, masked, result_queue),
         )
         read_window_process.start()
         read_window_processes.append(read_window_process)
 
-    result_dict = {}
-    live_processes = list(read_window_processes)
-
-    while live_processes:
-        while not result_queue.empty():
-            result = result_queue.get()
-            result_dict[result[0]] = RasterWindow(
-                data=result[1], shifted_affine=result[2], no_data=result[3]
-            )
-
-        live_processes = [p for p in live_processes if p.is_alive()]
-        time.sleep(0.005)
-
     for read_window_process in read_window_processes:
         read_window_process.join()
+
+    result_dict = {}
+    while not result_queue.empty():
+        result = result_queue.get()
+        result_dict[result[0]] = RasterWindow(
+            data=result[1], shifted_affine=result[2], no_data=result[3]
+        )
 
     return result_dict
 

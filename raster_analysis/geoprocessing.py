@@ -3,6 +3,7 @@ from collections import namedtuple
 
 import numpy as np
 import pandas as pd
+import gc
 
 from raster_analysis.geodesy import get_area
 from raster_analysis.grid import get_raster_url
@@ -38,6 +39,7 @@ def analysis(
     aggregate_raster_ids=[],
     filters=[],
     analyses=["count", "area"],
+    get_summary_table=False,
 ):
     """
     Supported analysis:
@@ -86,56 +88,48 @@ def analysis(
     analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
 
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
-    mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
+    geom_mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
+    total_filter = _get_total_filter(raster_windows, filters, analysis_data.shape)
+    mask = geom_mask * total_filter * _mask_by_nodata(analysis_data, no_data)
+
     logger.debug("Successfully masked geometry onto analysis layer.")
 
     # extract the analysis raster data first since it'll be used to get geometry mask
     extracted_data = {analysis_raster_id: _extract(mask, analysis_data)}
 
     # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
-    # TODO missing data?
     for raster_id in contextual_raster_ids + aggregate_raster_ids:
         extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
 
-    # combine all filters amd extract with geometry mask, put result in special filter field
-    total_filter = _get_total_filter(raster_windows, filters, analysis_data.shape)
-    extracted_data[FILTER_FIELD] = np.extract(mask, total_filter)
+    del analysis_data
+    del raster_windows
+    del total_filter
+
+    gc.collect()
 
     # convert to pandas DataFrame for analysis
     extracted_df = pd.DataFrame(extracted_data)
     logger.debug("Successfully converted extracted data to dataframe")
 
     # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
-    analysis_groupby_fields = (
-        [analysis_raster_id] + contextual_raster_ids + [FILTER_FIELD]
-    )
+    analysis_groupby_fields = [analysis_raster_id] + contextual_raster_ids
     analysis_result = _analysis(
         analyses, extracted_df, analysis_groupby_fields, aggregate_raster_ids, mean_area
     )
     logger.debug("Successfully ran analysis=" + str(analyses))
 
-    # detailed table only includes rows that pass filter and where the analysis raster value isn't NoData
-    detailed_table = _get_detailed_table(analysis_result, no_data, analysis_raster_id)
-    logger.debug("Successfully created detailed table")
-
-    # summary table groups by contextual layers, providing total area, filtered area, and total area
-    # of analysis layer that isn't filtered or NoData for each combination
-    summary_table = _get_summary_table(
-        analyses, analysis_result, no_data, analysis_raster_id, contextual_raster_ids
-    )
-    logger.debug("Successfully created summary table")
-
-    result["detailed_table"] = detailed_table.to_dict()
-
-    if summary_table is not None:
-        result["summary_table"] = summary_table.to_dict()
+    if get_summary_table:
+        # TODO Figure out performant way to generate summary table
+        raise Exception("Not Implemented")
+    else:
+        result = analysis_result
 
     return result
 
 
 @xray_recorder.capture("Pandas Analysis")
 def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_area):
-    result = df
+    result = None
 
     # area is just count * mean area, so always get count if analysis has count or area
     if "count" or "area" in analyses:
