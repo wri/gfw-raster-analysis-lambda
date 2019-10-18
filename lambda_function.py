@@ -34,6 +34,8 @@ def lambda_handler(event, context):
 
     filters = [Filter(**f) for f in event["filters"]] if "filters" in event else []
 
+    get_summary_table = event["get_summary_table"]
+
     return geoprocessing.analysis(
         geometry,
         analysis_raster_id,
@@ -41,6 +43,7 @@ def lambda_handler(event, context):
         aggregate_raster_ids,
         filters,
         analyses,
+        get_summary_table,
     )
 
 
