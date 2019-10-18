@@ -10,6 +10,7 @@ from raster_analysis.io import (
     mask_geom_on_raster,
     read_window,
     read_window_ignore_missing,
+    read_windows_parallel,
 )
 
 # TEMP: Uncomment these lines when running locally to disable xray
@@ -72,28 +73,32 @@ def analysis(
 
     result = dict()
 
+    filter_raster_ids = [filt.raster_id for filt in filters]
+    raster_windows = read_windows_parallel(
+        [analysis_raster_id]
+        + contextual_raster_ids
+        + aggregate_raster_ids
+        + filter_raster_ids,
+        geom,
+    )
+
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
+    analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
 
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
-    raster = get_raster_url(analysis_raster_id)
-    data, mask, _, no_data = mask_geom_on_raster(geom, raster)
+    mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
     logger.debug("Successfully masked geometry onto analysis layer.")
 
     # extract the analysis raster data first since it'll be used to get geometry mask
-    extracted_data = {analysis_raster_id: _extract(mask, data)}
+    extracted_data = {analysis_raster_id: _extract(mask, analysis_data)}
 
     # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
-    extracted_data.update(
-        _extract_raster_data(
-            contextual_raster_ids + aggregate_raster_ids,
-            geom,
-            mask,
-            len(extracted_data[analysis_raster_id]),
-        )
-    )
+    # TODO missing data?
+    for raster_id in contextual_raster_ids + aggregate_raster_ids:
+        extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
 
     # combine all filters amd extract with geometry mask, put result in special filter field
-    total_filter = _get_total_filter(filters, geom, data.shape)
+    total_filter = _get_total_filter(raster_windows, filters, analysis_data.shape)
     extracted_data[FILTER_FIELD] = np.extract(mask, total_filter)
 
     # convert to pandas DataFrame for analysis
@@ -240,14 +245,13 @@ def _mask_by_nodata(raster, no_data):
     return raster != no_data
 
 
-def _get_total_filter(filters, geom, shape):
+def _get_total_filter(raster_windows, filters, shape):
     total_filter = np.ones(shape, dtype=np.bool)
 
     if filters:
         for curr_filter in filters:
-            curr_filter_url = get_raster_url(curr_filter.raster_id)
             curr_filter_mask = _mask_by_threshold(
-                read_window(curr_filter_url, geom)[0], curr_filter.threshold
+                raster_windows[curr_filter.raster_id].data, curr_filter.threshold
             )
             logger.debug(
                 "Successfully masked threshold="

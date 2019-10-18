@@ -6,7 +6,55 @@ import rasterio
 from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 
+from raster_analysis.grid import get_raster_url
+from multiprocessing import Process, Queue
+from collections import namedtuple
+import time
+
 logger = logging.getLogger(__name__)
+RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
+
+
+def read_windows_parallel(raster_ids, geom, masked=False):
+    read_window_processes = []
+    result_queue = Queue()
+
+    for raster_id in raster_ids:
+        read_window_process = Process(
+            target=read_window_parallel_work,
+            args=(raster_id, geom, masked, result_queue),
+        )
+        read_window_process.start()
+        read_window_processes.append(read_window_process)
+
+    result_dict = {}
+    live_processes = list(read_window_processes)
+
+    while live_processes:
+        while not result_queue.empty():
+            result = result_queue.get()
+            result_dict[result[0]] = RasterWindow(
+                data=result[1], shifted_affine=result[2], no_data=result[3]
+            )
+
+        live_processes = [p for p in live_processes if p.is_alive()]
+        time.sleep(0.005)
+
+    for read_window_process in read_window_processes:
+        read_window_process.join()
+
+    return result_dict
+
+
+def read_window_parallel_work(raster_id, geom, masked, result_queue):
+    raster_url = get_raster_url(raster_id)
+
+    data, shifted_affine, no_data_value = read_window_ignore_missing(
+        raster_url, geom, masked=masked
+    )
+
+    result_queue.put((raster_id, data, shifted_affine, no_data_value))
+    return
 
 
 def read_window(raster, geom, masked=False):
@@ -17,7 +65,6 @@ def read_window(raster, geom, masked=False):
     image mask below.
     can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
     """
-
     with xray_recorder.capture("Read Window") as segment:
         segment.put_metadata("Raster URL", raster)
 
@@ -33,6 +80,7 @@ def read_window(raster, geom, masked=False):
                         "Out of memory- input polygon or input extent too large. "
                         "Try splitting the polygon into multiple requests."
                     )
+
     return data, shifted_affine, no_data_value
 
 
@@ -47,7 +95,7 @@ def read_window_ignore_missing(raster, geom, masked=False):
 
 
 @xray_recorder.capture("Mask Geometry")
-def mask_geom_on_raster(geom, raster_path, masked=False):
+def mask_geom_on_raster(raster_data, shifted_affine, geom):
     """"
     For a given polygon, returns a numpy masked array with the intersecting
     values of the raster at `raster_path` unmasked, all non-intersecting
@@ -68,27 +116,20 @@ def mask_geom_on_raster(geom, raster_path, masked=False):
 
     """
 
-    data, shifted_affine, no_data_value = read_window_ignore_missing(
-        raster_path, geom, masked=masked
-    )
-
-    if data.any():
+    if raster_data.any():
 
         # Create a numpy array to mask cells which don't intersect with the
         # polygon. Cells that intersect will have value of 1 (unmasked), the
         # rest are filled with 0s (masked)
         geom_mask = features.geometry_mask(
-            [geom], out_shape=data.shape, transform=shifted_affine, invert=True
+            [geom], out_shape=raster_data.shape, transform=shifted_affine, invert=True
         )
 
-        # Include any NODATA mask
-        full_mask = geom_mask | data.mask if masked else geom_mask
-
         # Mask the data array, with modifications applied, by the query polygon
-        return data, full_mask, shifted_affine, no_data_value
+        return geom_mask
 
     else:
-        return np.array([]), np.array([]), None, None
+        return np.array([]), np.array([])
 
 
 def get_window_and_affine(geom, raster_src):
