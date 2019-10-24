@@ -70,15 +70,17 @@ def analysis(
         + str(geom.to_wkt())
     )
 
-    result = dict()
-
     filter_raster_ids = [filt.raster_id for filt in filters]
+
+    get_area_raster = "area" in analyses
+
     raster_windows = read_windows_parallel(
         [analysis_raster_id]
         + contextual_raster_ids
         + aggregate_raster_ids
         + filter_raster_ids,
         geom,
+        get_area_raster=True,
     )
 
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
@@ -97,6 +99,9 @@ def analysis(
     # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
     for raster_id in contextual_raster_ids + aggregate_raster_ids:
         extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
+
+    if get_area_raster:
+        extracted_data[AREA_FIELD] = _extract(mask, raster_windows[AREA_FIELD].data)
 
     del analysis_data
     del raster_windows
@@ -131,22 +136,33 @@ def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_are
     result = None
 
     # area is just count * mean area, so always get count if analysis has count or area
-    if "count" or "area" in analyses:
+    if "count" in analyses:
         # to get both count and sum, we have to do some wonky stuff with pandas to get both
         # aggregations at the same time.
-        if "sum" in analyses and len(aggregate_raster_ids) > 0:
-            # During sum of the first agg layer, also get get the count
-            agg = {aggregate_raster_ids[0]: ["count", "sum"]}
+
+        if "area" in analyses or "sum" in analyses:
+            if "sum" in analyses:
+                if len(aggregate_raster_ids) >= 0:
+                    raise Exception("No aggregate rasters specified for sum analysis")
+
+                agg_fields = aggregate_raster_ids
+
+                if "area" in analyses:
+                    agg_fields += [AREA_FIELD]
+            else:
+                agg_fields = [AREA_FIELD]
+
+            agg = {agg_fields[0]: ["count", "sum"]}
 
             # then explicitly ask for sum of all other agg layers
-            if len(aggregate_raster_ids) > 0:
-                for raster_id in aggregate_raster_ids[1:]:
-                    agg[raster_id] = "sum"
+            if len(agg_fields) > 0:
+                for agg_field_id in agg_fields[1:]:
+                    agg[agg_field_id] = "sum"
 
             result = df.groupby(reporting_raster_ids).agg(agg).reset_index()
 
             # now rename columns so that the count agg field is just called 'count'
-            result.columns = reporting_raster_ids + [COUNT_FIELD] + aggregate_raster_ids
+            result.columns = reporting_raster_ids + [COUNT_FIELD] + agg_fields
             logger.debug("Successfully calculated count and sum")
         else:
             # otherwise use pandas built-in count agg function
@@ -154,21 +170,10 @@ def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_are
                 df.groupby(reporting_raster_ids).size().reset_index(name=COUNT_FIELD)
             )
             logger.debug("Successfully calculated count")
-
-    if "area" in analyses:
-        # use previously calculated count column to generate area column
-        result[AREA_FIELD] = result[COUNT_FIELD].multiply(mean_area)
-
-        # if count was just a temp column to calculate area, drop it
-        if "count" not in analyses:
-            result = result.drop(columns=[COUNT_FIELD])
-
-        logger.debug("Successfully calculated area")
-
-    # if we never needed to calculate sum and count at same time, just use for pandas built-in sum agg function
-    if "sum" in analyses and "count" not in analyses and "area" not in analyses:
+    # if only sum or area needed, just use pandas built-in sum function
+    else:
         result = df.groupby(reporting_raster_ids).sum().reset_index()
-        logger.debug("Successfully calculated sum")
+        logger.debug("Successfully calculated " + str(analyses))
 
     return result
 

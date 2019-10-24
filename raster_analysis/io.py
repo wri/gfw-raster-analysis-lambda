@@ -7,30 +7,41 @@ from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_url
+from raster_analysis.geodesy import get_area
+
 from collections import namedtuple
 
 import threading
 import queue
+import math
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 
-def read_windows_parallel(raster_ids, geom, masked=False):
-    read_window_processes = []
+@xray_recorder.capture("Read All Windows")
+def read_windows_parallel(raster_ids, geom, masked=False, get_area_raster=False):
+    read_window_threads = []
     result_queue = queue.Queue()
 
     for raster_id in raster_ids:
-        read_window_process = threading.Thread(
+        read_window_thread = threading.Thread(
             target=read_window_parallel_work,
             args=(raster_id, geom, masked, result_queue),
         )
-        read_window_process.start()
-        read_window_processes.append(read_window_process)
+        read_window_thread.start()
+        read_window_threads.append(read_window_thread)
 
-    for read_window_process in read_window_processes:
-        read_window_process.join()
+    if get_area_raster:
+        get_area_thread = threading.Thread(
+            target=create_area_raster_work, args=(geom, raster_ids[0], result_queue)
+        )
+        get_area_thread.start()
+        read_window_threads.append(get_area_thread)
+
+    for read_window_thread in read_window_threads:
+        read_window_thread.join()
 
     result_dict = {}
     while not result_queue.empty():
@@ -40,6 +51,28 @@ def read_windows_parallel(raster_ids, geom, masked=False):
         )
 
     return result_dict
+
+
+@xray_recorder.capture("Calculate Pixel Areas")
+def create_area_raster_work(geom, dummy_raster, result_queue):
+    with rasterio.Env():
+        with rasterio.open(get_raster_url(dummy_raster)) as src:
+            window, affine = get_window_and_affine(geom, src)
+
+            height = int(math.ceil(window.height))
+            width = int(math.ceil(window.width))
+
+            base_matrix = np.ones((height, width), dtype=np.uint8)
+            y_indices = np.indices((height, 1))[0]
+            lat_coords = _get_lat_coords(y_indices, affine)
+            pixel_areas = get_area(lat_coords) / 10000
+            area_matrix = base_matrix * pixel_areas
+
+            result_queue.put(("area", area_matrix, affine, 0))
+
+
+def _get_lat_coords(y_indices, affine):
+    return y_indices * -0.00025 + affine[5] + (-0.00025 / 2)
 
 
 def read_window_parallel_work(raster_id, geom, masked, result_queue):
@@ -53,7 +86,7 @@ def read_window_parallel_work(raster_id, geom, masked, result_queue):
     return
 
 
-@xray_recorder.capture("Pandas Analysis")
+@xray_recorder.capture("Read Window")
 def read_window(raster, geom, masked=False):
     """
     Read a chunk of the raster that contains the bounding box of the
