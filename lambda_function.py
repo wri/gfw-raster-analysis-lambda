@@ -8,7 +8,7 @@ from raster_analysis.geoprocessing import Filter
 from raster_analysis.schemas import SCHEMA
 
 # TODO this causes issues on AWS currently
-# from lambda_decorators import , json_schema_validator
+# from lambda_decorators import, json_schema_validator
 
 fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
 datefmt = "%Y-%m-%d %H:%M:%S"
@@ -34,7 +34,9 @@ def lambda_handler(event, context):
 
     filters = [Filter(**f) for f in event["filters"]] if "filters" in event else []
 
-    get_summary_table = event["get_summary_table"]
+    get_area_summary = (
+        event["get_area_summary"] if "get_area_summary" in event else False
+    )
 
     return geoprocessing.analysis(
         geometry,
@@ -43,7 +45,7 @@ def lambda_handler(event, context):
         aggregate_raster_ids,
         filters,
         analyses,
-        get_summary_table,
+        get_area_summary,
     )
 
 

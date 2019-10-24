@@ -13,6 +13,7 @@ import threading
 import queue
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 
@@ -52,6 +53,7 @@ def read_window_parallel_work(raster_id, geom, masked, result_queue):
     return
 
 
+@xray_recorder.capture("Pandas Analysis")
 def read_window(raster, geom, masked=False):
     """
     Read a chunk of the raster that contains the bounding box of the
@@ -60,21 +62,19 @@ def read_window(raster, geom, masked=False):
     image mask below.
     can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
     """
-    with xray_recorder.capture("Read Window") as segment:
-        segment.put_metadata("Raster URL", raster)
 
-        with rasterio.Env():
-            with rasterio.open(raster) as src:
-                try:
-                    window, shifted_affine = get_window_and_affine(geom, src)
-                    data = src.read(1, masked=masked, window=window)
-                    no_data_value = src.nodata
-                except MemoryError:
-                    logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
-                    raise Exception(
-                        "Out of memory- input polygon or input extent too large. "
-                        "Try splitting the polygon into multiple requests."
-                    )
+    with rasterio.Env():
+        with rasterio.open(raster) as src:
+            try:
+                window, shifted_affine = get_window_and_affine(geom, src)
+                data = src.read(1, masked=masked, window=window)
+                no_data_value = src.nodata
+            except MemoryError:
+                logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
+                raise Exception(
+                    "Out of memory- input polygon or input extent too large. "
+                    "Try splitting the polygon into multiple requests."
+                )
 
     return data, shifted_affine, no_data_value
 
