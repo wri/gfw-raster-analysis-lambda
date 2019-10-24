@@ -3,24 +3,21 @@ from collections import namedtuple
 
 import numpy as np
 import pandas as pd
+import json
 import gc
 
 from raster_analysis.geodesy import get_area
 from raster_analysis.grid import get_raster_url
 from raster_analysis.io import (
     mask_geom_on_raster,
-    read_window,
     read_window_ignore_missing,
     read_windows_parallel,
 )
 
-# TEMP: Uncomment these lines when running locally to disable xray
-# from aws_xray_sdk import global_sdk_config
-# global_sdk_config.set_sdk_enabled(False)
-
 from aws_xray_sdk.core import xray_recorder
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 AREA_FIELD = "area"
 COUNT_FIELD = "count"
@@ -122,7 +119,9 @@ def analysis(
         # TODO Figure out performant way to generate summary table
         raise Exception("Not Implemented")
     else:
-        result = analysis_result
+        result = analysis_result.to_dict()
+
+    logger.info("Ran analysis with result: " + json.dumps(result))
 
     return result
 
