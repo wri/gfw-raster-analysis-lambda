@@ -59,8 +59,8 @@ def create_area_raster_work(geom, dummy_raster, result_queue):
         with rasterio.open(get_raster_url(dummy_raster)) as src:
             window, affine = get_window_and_affine(geom, src)
 
-            height = int(math.ceil(window.height))
-            width = int(math.ceil(window.width))
+            height = int(math.floor(window.height))
+            width = int(math.floor(window.width))
 
             base_matrix = np.ones((height, width), dtype=np.uint8)
             y_indices = np.indices((height, 1))[0]

@@ -36,7 +36,7 @@ def analysis(
     aggregate_raster_ids=[],
     filters=[],
     analyses=["count", "area"],
-    get_summary_table=False,
+    get_area_summary=False,
 ):
     """
     Supported analysis:
@@ -70,6 +70,8 @@ def analysis(
         + str(geom.to_wkt())
     )
 
+    result = dict()
+
     filter_raster_ids = [filt.raster_id for filt in filters]
 
     get_area_raster = "area" in analyses
@@ -80,7 +82,7 @@ def analysis(
         + aggregate_raster_ids
         + filter_raster_ids,
         geom,
-        get_area_raster=True,
+        get_area_raster=get_area_raster,
     )
 
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
@@ -89,9 +91,22 @@ def analysis(
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
     geom_mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
     total_filter = _get_total_filter(raster_windows, filters, analysis_data.shape)
-    mask = geom_mask * total_filter * _mask_by_nodata(analysis_data, no_data)
+    filtered_geom_mask = geom_mask * total_filter
+    mask = filtered_geom_mask * _mask_by_nodata(analysis_data, no_data)
 
     logger.debug("Successfully masked geometry onto analysis layer.")
+
+    if get_area_summary:
+        # get first column of area matrix to use as area vector
+        pixel_areas = raster_windows[AREA_FIELD].data[:, 0]
+
+        result["area_summary__ha"] = _get_area_summary(
+            geom_mask,
+            filtered_geom_mask,
+            contextual_raster_ids,
+            raster_windows,
+            pixel_areas,
+        )
 
     # extract the analysis raster data first since it'll be used to get geometry mask
     extracted_data = {analysis_raster_id: _extract(mask, analysis_data)}
@@ -103,9 +118,12 @@ def analysis(
     if get_area_raster:
         extracted_data[AREA_FIELD] = _extract(mask, raster_windows[AREA_FIELD].data)
 
+    # unbind/garbage collect all NumPy arrays we're done with to free up space
     del analysis_data
     del raster_windows
     del total_filter
+    del filtered_geom_mask
+    del mask
 
     gc.collect()
 
@@ -120,11 +138,7 @@ def analysis(
     )
     logger.debug("Successfully ran analysis=" + str(analyses))
 
-    if get_summary_table:
-        # TODO Figure out performant way to generate summary table
-        raise Exception("Not Implemented")
-    else:
-        result = analysis_result.to_dict()
+    result["results"] = analysis_result.to_dict()
 
     logger.info("Ran analysis with result: " + json.dumps(result))
 
@@ -178,45 +192,22 @@ def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_are
     return result
 
 
-def _get_detailed_table(analysis_result, no_data_value, analysis_raster_id):
-    no_data_filter = analysis_result[analysis_raster_id] != no_data_value
-    passes_filter = analysis_result[FILTER_FIELD]
-
-    # filter out rows that don't pass filter or where analysis layer is NoData, and remove the
-    # "filter" field from final result
-    return (
-        analysis_result[passes_filter & no_data_filter]
-        .drop(columns=[FILTER_FIELD])
-        .reset_index(drop=True)
-    )
-
-
-def _get_summary_table(
-    analyses, analysis_result, no_data_value, analysis_raster_id, contextual_raster_ids
+@xray_recorder.capture("Get Area Summary")
+def _get_area_summary(
+    geom_mask, filtered_geom_mask, contextual_layer_ids, raster_windows, area_vector
 ):
-    summary_table = analysis_result.copy()
+    area_summary = dict()
+    area_summary["total"] = (geom_mask.sum(axis=1) * area_vector).sum()
 
-    if "area" in analyses:
-        # create new column that just copies area column, but sets any row with filter=false to 0
-        summary_table[FILTERED_AREA_FIELD] = (
-            summary_table[AREA_FIELD] * summary_table[FILTER_FIELD]
-        )
+    area_summary["filtered"] = (filtered_geom_mask.sum(axis=1) * area_vector).sum()
 
-        # create new column that copies filtered column, but sets any row where analysis layer is NoData to 0
-        layer_area_field = LAYER_AREA_FIELD.format(raster_id=analysis_raster_id)
-        summary_table[layer_area_field] = summary_table[FILTERED_AREA_FIELD] * (
-            summary_table[analysis_raster_id] != no_data_value
-        )
+    for layer_id in contextual_layer_ids:
+        area_summary[layer_id] = (
+            (raster_windows[layer_id].data & filtered_geom_mask).sum(axis=1)
+            * area_vector
+        ).sum()
 
-        # aggregate by combos of contextual layer values, and drop fields we don't want in the final result
-        return (
-            summary_table.groupby(contextual_raster_ids)
-            .sum()
-            .reset_index()
-            .drop(columns=[analysis_raster_id, FILTER_FIELD])
-        )
-    else:
-        return None
+    return area_summary
 
 
 @xray_recorder.capture("Read and Extract Raster Data")
@@ -235,14 +226,7 @@ def _extract_raster_data(raster_ids, geom, mask, missing_length):
     return extracted_data
 
 
-def _mask_by_threshold(raster, threshold):
-    return raster > threshold
-
-
-def _mask_by_nodata(raster, no_data):
-    return raster != no_data
-
-
+@xray_recorder.capture("Create Filter")
 def _get_total_filter(raster_windows, filters, shape):
     total_filter = np.ones(shape, dtype=np.bool)
 
@@ -267,3 +251,11 @@ def _get_total_filter(raster_windows, filters, shape):
 @xray_recorder.capture("NumPy Extract")
 def _extract(mask, data):
     return np.extract(mask, data)
+
+
+def _mask_by_threshold(raster, threshold):
+    return raster > threshold
+
+
+def _mask_by_nodata(raster, no_data):
+    return raster != no_data
