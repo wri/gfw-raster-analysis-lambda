@@ -12,6 +12,7 @@ from raster_analysis.io import (
     mask_geom_on_raster,
     read_window_ignore_missing,
     read_windows_parallel,
+    RasterWindow,
 )
 
 from aws_xray_sdk.core import xray_recorder
@@ -35,6 +36,7 @@ def analysis(
     contextual_raster_ids=[],
     aggregate_raster_ids=[],
     filters=[],
+    density_raster_ids=[],
     analyses=["count", "area"],
     get_area_summary=False,
 ):
@@ -73,17 +75,32 @@ def analysis(
     result = dict()
 
     filter_raster_ids = [filt.raster_id for filt in filters]
+    unique_raster_sources = list(
+        set(
+            [analysis_raster_id]
+            + contextual_raster_ids
+            + aggregate_raster_ids
+            + filter_raster_ids
+        )
+    )
 
-    get_area_raster = "area" in analyses
+    get_area_raster = "area" in analyses or density_raster_ids
 
     raster_windows = read_windows_parallel(
-        [analysis_raster_id]
-        + contextual_raster_ids
-        + aggregate_raster_ids
-        + filter_raster_ids,
-        geom,
-        get_area_raster=get_area_raster,
+        unique_raster_sources, geom, get_area_raster=get_area_raster
     )
+
+    # use area raster to turn raster with density values into a full values
+    for raster_id in density_raster_ids:
+        undensified_data = (
+            raster_windows[raster_id].data * raster_windows[AREA_FIELD].data
+        )
+        raster_windows[raster_id] = RasterWindow(
+            undensified_data,
+            raster_windows[raster_id].shifted_affine,
+            raster_windows[raster_id].no_data,
+        )
+        gc.collect()  # immediately collect dereferenced density array
 
     mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
     analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
@@ -113,7 +130,12 @@ def analysis(
 
     # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
     for raster_id in contextual_raster_ids + aggregate_raster_ids:
-        extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
+        if raster_windows[raster_id].data.size != 0:
+            extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
+        else:
+            extracted_data[raster_id] = np.zero(
+                extracted_data[analysis_raster_id].shape
+            )
 
     if get_area_raster:
         extracted_data[AREA_FIELD] = _extract(mask, raster_windows[AREA_FIELD].data)
@@ -203,7 +225,7 @@ def _get_area_summary(
 
     for layer_id in contextual_layer_ids:
         area_summary[layer_id] = (
-            (raster_windows[layer_id].data & filtered_geom_mask).sum(axis=1)
+            (raster_windows[layer_id].data * filtered_geom_mask).sum(axis=1)
             * area_vector
         ).sum()
 
