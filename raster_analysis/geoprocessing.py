@@ -7,13 +7,8 @@ import json
 import gc
 
 from raster_analysis.geodesy import get_area
-from raster_analysis.grid import get_raster_url
-from raster_analysis.io import (
-    mask_geom_on_raster,
-    read_window_ignore_missing,
-    read_windows_parallel,
-    RasterWindow,
-)
+from raster_analysis.io import mask_geom_on_raster, read_windows_parallel, RasterWindow
+from raster_analysis.exceptions import RasterReadException
 
 from aws_xray_sdk.core import xray_recorder
 
@@ -27,15 +22,14 @@ FILTERED_AREA_FIELD = "filtered_area"
 LAYER_AREA_FIELD = "{raster_id}_area"
 FILTER_FIELD = "filter"
 
-Filter = namedtuple("Filter", "raster_id threshold")
-
 
 def analysis(
     geom,
     analysis_raster_id,
     contextual_raster_ids=[],
     aggregate_raster_ids=[],
-    filters=[],
+    filter_raster_id=None,
+    filter_intervals=None,
     density_raster_ids=[],
     analyses=["count", "area"],
     get_area_summary=False,
@@ -65,8 +59,11 @@ def analysis(
         + "aggregate_raster_ids: "
         + str(aggregate_raster_ids)
         + ", "
-        + "filters: "
-        + str(filters)
+        + "filter_raster_id: "
+        + str(filter_raster_id)
+        + ", "
+        + "filter_intervals: "
+        + str(filter_intervals)
         + ", "
         + "geom: "
         + str(geom.to_wkt())
@@ -74,21 +71,36 @@ def analysis(
 
     result = dict()
 
-    filter_raster_ids = [filt.raster_id for filt in filters]
-    unique_raster_sources = list(
-        set(
-            [analysis_raster_id]
-            + contextual_raster_ids
-            + aggregate_raster_ids
-            + filter_raster_ids
-        )
+    unique_raster_sources = get_raster_id_array(
+        analysis_raster_id,
+        contextual_raster_ids,
+        aggregate_raster_ids,
+        filter_raster_id,
+        unique=True,
     )
 
     get_area_raster = "area" in analyses or density_raster_ids
 
     raster_windows = read_windows_parallel(
-        unique_raster_sources, geom, get_area_raster=get_area_raster
+        unique_raster_sources, geom, analysis_raster_id, get_area_raster=get_area_raster
     )
+
+    # fail if analysis layer is empty
+    if raster_windows[analysis_raster_id].data.size == 0:
+        raise RasterReadException(
+            "Analysis raster `" + analysis_raster_id + "` returned empty array"
+        )
+
+    # other layers we'll just use raster with all values == 0
+    for raster_id in get_raster_id_array(
+        contextual_raster_ids, aggregate_raster_ids, filter_raster_id
+    ):
+        if raster_windows[raster_id].data.size == 0:
+            raster_windows[raster_id] = RasterWindow(
+                np.zeros(raster_windows[analysis_raster_id].data.shape, dtype=np.uint8),
+                raster_windows[analysis_raster_id].shifted_affine,
+                raster_windows[raster_id].no_data,
+            )
 
     # use area raster to turn raster with density values into a full values
     for raster_id in density_raster_ids:
@@ -107,11 +119,20 @@ def analysis(
 
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
     geom_mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
-    total_filter = _get_total_filter(raster_windows, filters, analysis_data.shape)
-    filtered_geom_mask = geom_mask * total_filter
-    mask = filtered_geom_mask * _mask_by_nodata(analysis_data, no_data)
 
-    logger.debug("Successfully masked geometry onto analysis layer.")
+    # save geom_mask * filter_mask calculation, since we may need it again for the area summary
+    filtered_geom_mask = None
+
+    if filter_raster_id:
+        filter_mask = _get_filter(
+            raster_windows[filter_raster_id].data, filter_intervals
+        )
+        filtered_geom_mask = geom_mask * filter_mask
+        mask = filtered_geom_mask * _mask_by_nodata(analysis_data, no_data)
+    else:
+        mask = geom_mask * _mask_by_nodata(analysis_data, no_data)
+
+    logger.debug("Successfully created full mask.")
 
     if get_area_summary:
         # get first column of area matrix to use as area vector
@@ -119,10 +140,10 @@ def analysis(
 
         result["area_summary__ha"] = _get_area_summary(
             geom_mask,
-            filtered_geom_mask,
             contextual_raster_ids,
             raster_windows,
             pixel_areas,
+            filtered_geom_mask,
         )
 
     # extract the analysis raster data first since it'll be used to get geometry mask
@@ -130,12 +151,7 @@ def analysis(
 
     # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
     for raster_id in contextual_raster_ids + aggregate_raster_ids:
-        if raster_windows[raster_id].data.size != 0:
-            extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
-        else:
-            extracted_data[raster_id] = np.zero(
-                extracted_data[analysis_raster_id].shape
-            )
+        extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
 
     if get_area_raster:
         extracted_data[AREA_FIELD] = _extract(mask, raster_windows[AREA_FIELD].data)
@@ -143,9 +159,11 @@ def analysis(
     # unbind/garbage collect all NumPy arrays we're done with to free up space
     del analysis_data
     del raster_windows
-    del total_filter
-    del filtered_geom_mask
     del mask
+
+    if filter_raster_id:
+        del filter_mask
+        del filtered_geom_mask
 
     gc.collect()
 
@@ -154,7 +172,9 @@ def analysis(
     logger.debug("Successfully converted extracted data to dataframe")
 
     # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
-    analysis_groupby_fields = [analysis_raster_id] + contextual_raster_ids
+    analysis_groupby_fields = get_raster_id_array(
+        analysis_raster_id, contextual_raster_ids
+    )
     analysis_result = _analysis(
         analyses, extracted_df, analysis_groupby_fields, aggregate_raster_ids, mean_area
     )
@@ -216,58 +236,36 @@ def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_are
 
 @xray_recorder.capture("Get Area Summary")
 def _get_area_summary(
-    geom_mask, filtered_geom_mask, contextual_layer_ids, raster_windows, area_vector
+    geom_mask,
+    contextual_layer_ids,
+    raster_windows,
+    area_vector,
+    filtered_geom_mask=None,
 ):
     area_summary = dict()
     area_summary["total"] = (geom_mask.sum(axis=1) * area_vector).sum()
 
-    area_summary["filtered"] = (filtered_geom_mask.sum(axis=1) * area_vector).sum()
+    if filtered_geom_mask.size != 0:
+        area_summary["filtered"] = (filtered_geom_mask.sum(axis=1) * area_vector).sum()
 
+    mask = filtered_geom_mask if filtered_geom_mask.size != 0 else geom_mask
     for layer_id in contextual_layer_ids:
         area_summary[layer_id] = (
-            (raster_windows[layer_id].data * filtered_geom_mask).sum(axis=1)
-            * area_vector
+            (raster_windows[layer_id].data * mask).sum(axis=1) * area_vector
         ).sum()
 
     return area_summary
 
 
-@xray_recorder.capture("Read and Extract Raster Data")
-def _extract_raster_data(raster_ids, geom, mask, missing_length):
-    extracted_data = dict()
-
-    for raster_id in raster_ids:
-        raster = get_raster_url(raster_id)
-        data, _, _ = read_window_ignore_missing(raster, geom)
-        if data.any():
-            extracted_data[raster_id] = _extract(mask, data)
-            logger.debug("Successfully masked geometry onto layer=" + raster_id)
-        else:
-            extracted_data[raster_id] = np.zeros(missing_length)
-
-    return extracted_data
-
-
 @xray_recorder.capture("Create Filter")
-def _get_total_filter(raster_windows, filters, shape):
-    total_filter = np.ones(shape, dtype=np.bool)
+def _get_filter(filter_raster, filter_intervals):
+    filter = np.zeros(filter_raster.shape, dtype=np.bool)
 
-    if filters:
-        for curr_filter in filters:
-            curr_filter_mask = _mask_by_threshold(
-                raster_windows[curr_filter.raster_id].data, curr_filter.threshold
-            )
-            logger.debug(
-                "Successfully masked threshold="
-                + str(curr_filter.threshold)
-                + " onto filter layer="
-                + curr_filter.raster_id
-            )
+    for interval in filter_intervals:
+        filter += (filter_raster >= interval[0]) * (filter_raster < interval[1])
 
-            total_filter = curr_filter_mask * total_filter
-
-    logger.debug("Successfully created aggregate filter")
-    return total_filter
+    logger.debug("Successfully create filter")
+    return filter
 
 
 @xray_recorder.capture("NumPy Extract")
@@ -281,3 +279,22 @@ def _mask_by_threshold(raster, threshold):
 
 def _mask_by_nodata(raster, no_data):
     return raster != no_data
+
+
+def get_raster_id_array(*raster_id_args, unique=False):
+    ids = []
+
+    for raster_id_arg in raster_id_args:
+        if raster_id_arg:
+            if isinstance(raster_id_arg, list):
+                ids += raster_id_arg
+            elif isinstance(raster_id_arg, str):
+                ids.append(raster_id_arg)
+            else:
+                raise ValueError(
+                    "Cannot add raster id of type"
+                    + str(type(raster_id_arg))
+                    + "to raster id array."
+                )
+
+    return list(set(ids)) if unique else ids
