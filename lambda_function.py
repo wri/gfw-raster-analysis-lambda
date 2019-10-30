@@ -4,22 +4,18 @@ import sys
 from shapely.geometry import shape
 
 from raster_analysis import geoprocessing
-from raster_analysis.geoprocessing import Filter
 from raster_analysis.schemas import SCHEMA
 
-# TODO this causes issues on AWS currently
-# from lambda_decorators import, json_schema_validator
+from lambda_decorators import json_http_resp, json_schema_validator
 
 fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
 datefmt = "%Y-%m-%d %H:%M:%S"
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=fmt)
 logger = logging.getLogger(__name__)
 
-# See above TODO
-# @json_schema_validator(request_schema=SCHEMA)
-# @json_http_resp
 
-
+@json_schema_validator(request_schema=SCHEMA)
+@json_http_resp
 def lambda_handler(event, context):
     logger.info("Test")
     analysis_raster_id = event["analysis_raster_id"]
@@ -66,75 +62,20 @@ if __name__ == "__main__":
         lambda_handler(
             {
                 "analysis_raster_id": "loss",
-                # "contextual_raster_ids": ["ifl", "plantations"],
-                "analyses": ["area", "sum"],
-                "aggregate_raster_ids": ["biomass"],
-                "density_raster_ids": ["biomass"],
+                "contextual_raster_ids": ["wdpa"],
+                "analyses": ["area", "count"],
+                # "aggregate_raster_ids": ["sdgdfgdf"],
+                # "density_raster_ids": ["biomass"],
                 "get_area_summary": True,
                 "geometry": {
                     "type": "Polygon",
                     "coordinates": [
-                        [
-                            [-55.380185333356344, -12.276001055451573],
-                            [-55.584550346447266, -12.613440960787752],
-                            [-55.522765575047686, -13.145740529768766],
-                            [-55.052250777466256, -13.293073446183152],
-                            [-54.595994004053956, -13.007912962800466],
-                            [-54.733821571022254, -12.242732332390261],
-                            [-55.380185333356344, -12.276001055451573],
-                        ]
+                        [[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]
                     ],
                 },
-                "filters": [{"raster_id": "tcd_2000", "threshold": 30}],
+                "filter_raster_id": "tcd_2000",
+                "filter_intervals": [[0, 30]],
             },
             None,
         )
     )
-    """
-
-    print(
-        lambda_handler(
-            {
-                "analysis_raster_id": "umd_landsat_alerts",
-                "analyses": ["count"],
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                        [
-                        [
-                          -55.380185333356344,
-                          -12.276001055451573
-                        ],
-                        [
-                          -55.584550346447266,
-                          -12.613440960787752
-                        ],
-                        [
-                          -55.522765575047686,
-                          -13.145740529768766
-                        ],
-                        [
-                          -55.052250777466256,
-                          -13.293073446183152
-                        ],
-                        [
-                          -54.595994004053956,
-                          -13.007912962800466
-                        ],
-                        [
-                          -54.733821571022254,
-                          -12.242732332390261
-                        ],
-                        [
-                          -55.380185333356344,
-                          -12.276001055451573
-                        ]
-                      ]
-                    ]
-                  },
-                #"filters": [{"raster_id": "umd_landsat_alerts", "threshold": 20000}],
-            },
-            None,
-        )
-    )
-    """

@@ -52,15 +52,17 @@ SCHEMA = {
         "geometry": {"oneOf": [POLYGON_SCHEMA, MUTLIPOLYGON_SCHEMA]},
         "contextual_raster_ids": {"type": "array", "items": {"type": "string"}},
         "aggregate_raster_ids": {"type": "array", "items": {"type": "string"}},
-        "filters": {
+        "filter_raster_id": {"type": "string"},
+        "filter_intervals": {
             "type": "array",
             "items": {
-                "anyOf": [
-                    {"type": "object", "properties": {"name": {"type": "string"}}},
-                    {"type": "object", "properties": {"price": {"type": "number"}}},
-                ]
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {"type": "number"},
             },
         },
+        "get_area_summary": {"type": "boolean"},
         "analyses": {
             "type": "array",
             "items": {"type": "string"},
@@ -82,5 +84,5 @@ SCHEMA = {
             # },
         },
     },
-    "required": ["analysis_raster_id", "geometry"],
+    "required": ["analysis_raster_id", "geometry", "analyses"],
 }

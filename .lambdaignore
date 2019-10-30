@@ -1,5 +1,4 @@
 .lambdaignore
-*-info/*
 affine/tests/*
 awscli/examples/*
 boto3/*

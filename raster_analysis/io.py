@@ -8,6 +8,7 @@ from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_url
 from raster_analysis.geodesy import get_area
+from raster_analysis.exceptions import RasterReadException
 
 from collections import namedtuple
 
@@ -21,27 +22,38 @@ RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 
 @xray_recorder.capture("Read All Windows")
-def read_windows_parallel(raster_ids, geom, masked=False, get_area_raster=False):
+def read_windows_parallel(
+    raster_ids, geom, analysis_raster_id, masked=False, get_area_raster=False
+):
     read_window_threads = []
     result_queue = queue.Queue()
+    error_queue = queue.Queue()
 
     for raster_id in raster_ids:
         read_window_thread = threading.Thread(
             target=read_window_parallel_work,
-            args=(raster_id, geom, masked, result_queue),
+            args=(raster_id, geom, masked, result_queue, error_queue),
         )
         read_window_thread.start()
         read_window_threads.append(read_window_thread)
 
     if get_area_raster:
         get_area_thread = threading.Thread(
-            target=create_area_raster_work, args=(geom, raster_ids[0], result_queue)
+            target=create_area_raster_work,
+            args=(geom, analysis_raster_id, result_queue, error_queue),
         )
         get_area_thread.start()
         read_window_threads.append(get_area_thread)
 
     for read_window_thread in read_window_threads:
         read_window_thread.join()
+
+    errors = []
+    while not error_queue.empty():
+        errors.append(error_queue.get())
+
+    if errors:
+        raise RasterReadException("\n".join([str(e) for e in errors]))
 
     result_dict = {}
     while not result_queue.empty():
@@ -54,36 +66,44 @@ def read_windows_parallel(raster_ids, geom, masked=False, get_area_raster=False)
 
 
 @xray_recorder.capture("Calculate Pixel Areas")
-def create_area_raster_work(geom, dummy_raster, result_queue):
-    with rasterio.Env():
-        with rasterio.open(get_raster_url(dummy_raster)) as src:
-            window, affine = get_window_and_affine(geom, src)
+def create_area_raster_work(geom, dummy_raster, result_queue, error_queue):
+    try:
+        with rasterio.Env():
+            with rasterio.open(get_raster_url(dummy_raster)) as src:
+                window, affine = get_window_and_affine(geom, src)
 
-            height = int(math.floor(window.height))
-            width = int(math.floor(window.width))
+                height = int(math.floor(window.height))
+                width = int(math.floor(window.width))
 
-            base_matrix = np.ones((height, width), dtype=np.uint8)
-            y_indices = np.indices((height, 1))[0]
-            lat_coords = _get_lat_coords(y_indices, affine)
-            pixel_areas = get_area(lat_coords) / 10000
-            area_matrix = base_matrix * pixel_areas
+                base_matrix = np.ones((height, width), dtype=np.uint8)
+                y_indices = np.indices((height, 1))[0]
+                lat_coords = _get_lat_coords(y_indices, affine)
+                pixel_areas = get_area(lat_coords) / 10000
+                area_matrix = base_matrix * pixel_areas
 
-            result_queue.put(("area", area_matrix, affine, 0))
+                result_queue.put(("area", area_matrix, affine, 0))
+    except rasterio.errors.RasterioIOError as e:
+        logging.warning(e)
+        result_queue.put(("area", np.array([]), None, None))
+    except Exception as e:
+        error_queue.put(e)
 
 
 def _get_lat_coords(y_indices, affine):
     return y_indices * -0.00025 + affine[5] + (-0.00025 / 2)
 
 
-def read_window_parallel_work(raster_id, geom, masked, result_queue):
-    raster_url = get_raster_url(raster_id)
+def read_window_parallel_work(raster_id, geom, masked, result_queue, error_queue):
+    try:
+        raster_url = get_raster_url(raster_id)
 
-    data, shifted_affine, no_data_value = read_window_ignore_missing(
-        raster_url, geom, masked=masked
-    )
+        data, shifted_affine, no_data_value = read_window_ignore_missing(
+            raster_url, geom, masked=masked
+        )
 
-    result_queue.put((raster_id, data, shifted_affine, no_data_value))
-    return
+        result_queue.put((raster_id, data, shifted_affine, no_data_value))
+    except Exception as e:
+        error_queue.put(e)
 
 
 @xray_recorder.capture("Read Window")
@@ -116,7 +136,7 @@ def read_window_ignore_missing(raster, geom, masked=False):
     try:
         data = read_window(raster, geom, masked=masked)
     except rasterio.errors.RasterioIOError as e:
-        logging.warning(e)
+        logging.warning("RasterIO error reading " + raster + ":\n" + str(e))
         data = np.array([]), None, None
 
     return data
