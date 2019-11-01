@@ -10,7 +10,7 @@ COPY raster_analysis "$WORKDIR/raster_analysis"
 RUN pip3 install . -t $WORKDIR -U
 
 # Copy initial source codes into container.
-COPY lambdas/raster_analysis/raster_analysis.py "$WORKDIR/lambda_function.py"
+COPY lambdas/raster_analysis/lambda_function.py "$WORKDIR/lambda_function.py"
 COPY lambdas/raster_analysis/.lambdaignore "$WORKDIR/.lambdaignore"
 
 RUN cd /tmp/python && \
