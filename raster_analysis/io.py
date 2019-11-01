@@ -164,8 +164,7 @@ def mask_geom_on_raster(raster_data, shifted_affine, geom):
 
     """
 
-    if raster_data.any():
-
+    if raster_data.size > 0:
         # Create a numpy array to mask cells which don't intersect with the
         # polygon. Cells that intersect will have value of 1 (unmasked), the
         # rest are filled with 0s (masked)
@@ -175,9 +174,8 @@ def mask_geom_on_raster(raster_data, shifted_affine, geom):
 
         # Mask the data array, with modifications applied, by the query polygon
         return geom_mask
-
     else:
-        return np.array([]), np.array([])
+        return np.array([])
 
 
 def get_window_and_affine(geom, raster_src):
