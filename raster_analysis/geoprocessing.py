@@ -1,5 +1,4 @@
 import logging
-from collections import namedtuple
 
 import numpy as np
 import pandas as pd
@@ -18,9 +17,6 @@ logger.setLevel(logging.INFO)
 AREA_FIELD = "area"
 COUNT_FIELD = "count"
 SUM_FIELD = "sum"
-FILTERED_AREA_FIELD = "filtered_area"
-LAYER_AREA_FIELD = "{raster_id}_area"
-FILTER_FIELD = "filter"
 
 
 def analysis(
@@ -138,7 +134,7 @@ def analysis(
         # get first column of area matrix to use as area vector
         pixel_areas = raster_windows[AREA_FIELD].data[:, 0]
 
-        result["area_summary__ha"] = _get_area_summary(
+        result["summary_table"] = _get_area_summary(
             geom_mask,
             contextual_raster_ids,
             raster_windows,
@@ -180,7 +176,7 @@ def analysis(
     )
     logger.debug("Successfully ran analysis=" + str(analyses))
 
-    result["results"] = analysis_result.to_dict()
+    result["change_table"] = analysis_result.to_dict()
 
     logger.info("Ran analysis with result: " + json.dumps(result))
 
