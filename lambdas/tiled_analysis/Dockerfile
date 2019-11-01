@@ -4,7 +4,7 @@ WORKDIR /tmp/python
 ENV WORKDIR /tmp/python
 
 # Copy initial source codes into container.
-COPY lambdas/tiled_analysis/tiled_analysis.py "$WORKDIR/lambda_function.py"
+COPY lambdas/tiled_analysis/lambda_function.py "$WORKDIR/lambda_function.py"
 COPY lambdas/tiled_analysis/.lambdaignore "$WORKDIR/.lambdaignore"
 
 RUN cd /tmp/python && \
