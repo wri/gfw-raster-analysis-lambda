@@ -16,15 +16,14 @@ import threading
 import queue
 import math
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 
 @xray_recorder.capture("Read All Windows")
-def read_windows_parallel(
-    raster_ids, geom, analysis_raster_id, masked=False, get_area_raster=False
-):
+def read_windows_parallel(raster_ids, geom, analysis_raster_id, masked=False):
     read_window_threads = []
     result_queue = queue.Queue()
     error_queue = queue.Queue()
@@ -36,14 +35,6 @@ def read_windows_parallel(
         )
         read_window_thread.start()
         read_window_threads.append(read_window_thread)
-
-    if get_area_raster:
-        get_area_thread = threading.Thread(
-            target=create_area_raster_work,
-            args=(geom, analysis_raster_id, result_queue, error_queue),
-        )
-        get_area_thread.start()
-        read_window_threads.append(get_area_thread)
 
     for read_window_thread in read_window_threads:
         read_window_thread.join()
@@ -63,30 +54,6 @@ def read_windows_parallel(
         )
 
     return result_dict
-
-
-@xray_recorder.capture("Calculate Pixel Areas")
-def create_area_raster_work(geom, dummy_raster, result_queue, error_queue):
-    try:
-        with rasterio.Env():
-            with rasterio.open(get_raster_url(dummy_raster)) as src:
-                window, affine = get_window_and_affine(geom, src)
-
-                height = int(math.floor(window.height))
-                width = int(math.floor(window.width))
-
-                base_matrix = np.ones((height, width), dtype=np.uint8)
-                y_indices = np.indices((height, 1))[0]
-                lat_coords = _get_lat_coords(y_indices, affine)
-                pixel_areas = get_area(lat_coords) / 10000
-                area_matrix = base_matrix * pixel_areas
-
-                result_queue.put(("area", area_matrix, affine, 0))
-    except rasterio.errors.RasterioIOError as e:
-        logging.warning(e)
-        result_queue.put(("area", np.array([]), None, None))
-    except Exception as e:
-        error_queue.put(e)
 
 
 def _get_lat_coords(y_indices, affine):

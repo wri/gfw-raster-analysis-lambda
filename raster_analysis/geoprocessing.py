@@ -1,15 +1,19 @@
 import logging
 
 import numpy as np
+import numpy.ma as ma
 import pandas as pd
 import json
 import gc
+import math
 
 from raster_analysis.geodesy import get_area
 from raster_analysis.io import mask_geom_on_raster, read_windows_parallel, RasterWindow
 from raster_analysis.exceptions import RasterReadException
 
 from aws_xray_sdk.core import xray_recorder
+
+import resource
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -75,10 +79,8 @@ def analysis(
         unique=True,
     )
 
-    get_area_raster = "area" in analyses or density_raster_ids
-
     raster_windows = read_windows_parallel(
-        unique_raster_sources, geom, analysis_raster_id, get_area_raster=get_area_raster
+        unique_raster_sources, geom, analysis_raster_id
     )
 
     # fail if analysis layer is empty
@@ -110,124 +112,86 @@ def analysis(
         )
         gc.collect()  # immediately collect dereferenced density array
 
-    mean_area = get_area((geom.bounds[3] - geom.bounds[1]) / 2) / 10000
+    mean_area = get_area(geom.centroid.y) / 10000
     analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
 
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
     geom_mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
 
-    # save geom_mask * filter_mask calculation, since we may need it again for the area summary
-    filtered_geom_mask = None
-
     if filter_raster_id:
         filter_mask = _get_filter(
             raster_windows[filter_raster_id].data, filter_intervals
         )
-        filtered_geom_mask = geom_mask * filter_mask
-        mask = filtered_geom_mask * _mask_by_nodata(analysis_data, no_data)
-    else:
-        mask = geom_mask * _mask_by_nodata(analysis_data, no_data)
 
-    logger.debug("Successfully created full mask.")
+    mask = geom_mask
+    raster_windows["filter"] = RasterWindow(filter_mask, None, None)
 
-    if get_area_summary:
-        # get first column of area matrix to use as area vector
-        pixel_areas = raster_windows[AREA_FIELD].data[:, 0]
-
-        result["summary_table"] = _get_area_summary(
-            geom_mask,
-            contextual_raster_ids,
-            raster_windows,
-            pixel_areas,
-            filtered_geom_mask,
-        )
-
-    # extract the analysis raster data first since it'll be used to get geometry mask
-    extracted_data = {analysis_raster_id: _extract(mask, analysis_data)}
-
-    # extract data from aggregate and contextual layers, applying geometry mask and appending to dict
-    for raster_id in contextual_raster_ids + aggregate_raster_ids:
-        extracted_data[raster_id] = _extract(mask, raster_windows[raster_id].data)
-
-    if get_area_raster:
-        extracted_data[AREA_FIELD] = _extract(mask, raster_windows[AREA_FIELD].data)
-
-    # unbind/garbage collect all NumPy arrays we're done with to free up space
-    del analysis_data
-    del raster_windows
-    del mask
-
-    if filter_raster_id:
-        del filter_mask
-        del filtered_geom_mask
-
-    gc.collect()
-
-    # convert to pandas DataFrame for analysis
-    extracted_df = pd.DataFrame(extracted_data)
     logger.debug("Successfully converted extracted data to dataframe")
 
     # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
     analysis_groupby_fields = get_raster_id_array(
-        analysis_raster_id, contextual_raster_ids
+        analysis_raster_id, contextual_raster_ids, "filter"
     )
     analysis_result = _analysis(
-        analyses, extracted_df, analysis_groupby_fields, aggregate_raster_ids, mean_area
+        analyses,
+        raster_windows,
+        analysis_groupby_fields,
+        aggregate_raster_ids,
+        mean_area,
+        mask,
     )
+
     logger.debug("Successfully ran analysis=" + str(analyses))
-
-    result["change_table"] = analysis_result.to_dict()
-
     logger.info("Ran analysis with result: " + json.dumps(result))
 
-    return result
+    return analysis_result.to_dict()
 
 
-@xray_recorder.capture("Pandas Analysis")
-def _analysis(analyses, df, reporting_raster_ids, aggregate_raster_ids, mean_area):
-    result = None
+@xray_recorder.capture("Analysis")
+def _analysis(
+    analyses,
+    raster_windows,
+    reporting_raster_ids,
+    aggregate_raster_ids,
+    mean_area,
+    mask,
+):
+    reporting_columns = [
+        np.ravel(raster_windows[raster_id].data) for raster_id in reporting_raster_ids
+    ]
+    column_maxes = [col.max() + 1 for col in reporting_columns]
+    linear_indices = np.compress(
+        np.ravel(mask),
+        np.ravel_multi_index(reporting_columns, column_maxes).astype(np.uint32),
+    )
 
-    # area is just count * mean area, so always get count if analysis has count or area
+    unique_values, counts = np.unique(linear_indices, return_counts=True)
+    unique_value_combinations = np.unravel_index(unique_values, column_maxes)
+
+    result_dict = dict(zip(reporting_raster_ids, unique_value_combinations))
+
     if "count" in analyses:
-        # to get both count and sum, we have to do some wonky stuff with pandas to get both
-        # aggregations at the same time.
+        result_dict[COUNT_FIELD] = counts
 
-        if "area" in analyses or "sum" in analyses:
-            if "sum" in analyses:
-                if len(aggregate_raster_ids) >= 0:
-                    raise Exception("No aggregate rasters specified for sum analysis")
+    if "area" in analyses:
+        result_dict[AREA_FIELD] = counts * mean_area
 
-                agg_fields = aggregate_raster_ids
+    if aggregate_raster_ids:
+        linear_indices = get_inverse(linear_indices, unique_values)
 
-                if "area" in analyses:
-                    agg_fields += [AREA_FIELD]
-            else:
-                agg_fields = [AREA_FIELD]
-
-            agg = {agg_fields[0]: ["count", "sum"]}
-
-            # then explicitly ask for sum of all other agg layers
-            if len(agg_fields) > 0:
-                for agg_field_id in agg_fields[1:]:
-                    agg[agg_field_id] = "sum"
-
-            result = df.groupby(reporting_raster_ids).agg(agg).reset_index()
-
-            # now rename columns so that the count agg field is just called 'count'
-            result.columns = reporting_raster_ids + [COUNT_FIELD] + agg_fields
-            logger.debug("Successfully calculated count and sum")
-        else:
-            # otherwise use pandas built-in count agg function
-            result = (
-                df.groupby(reporting_raster_ids).size().reset_index(name=COUNT_FIELD)
+        for raster_id in aggregate_raster_ids:
+            result_dict[raster_id] = np.bincount(
+                linear_indices,
+                weights=np.extract(mask, raster_windows[raster_id].data),
+                minlength=counts.size,
             )
-            logger.debug("Successfully calculated count")
-    # if only sum or area needed, just use pandas built-in sum function
-    else:
-        result = df.groupby(reporting_raster_ids).sum().reset_index()
-        logger.debug("Successfully calculated " + str(analyses))
 
-    return result
+    return pd.DataFrame(result_dict)
+
+
+@xray_recorder.capture("Get Inverse")
+def get_inverse(linear_indices, unique_values):
+    return np.digitize(linear_indices, unique_values, right=True)
 
 
 @xray_recorder.capture("Get Area Summary")
