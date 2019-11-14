@@ -65,35 +65,36 @@ def lambda_handler(event, context):
     summary_tables = [result[1] for result in results]
 
     result = dict()
-    result["change_table"] = merge_change_tables(
-        nonempty_change_tables, event
+
+    contextual_raster_ids = (
+        event["contextual_raster_ids"] if "contextual_raster_ids" in event else []
+    )
+
+    change_groupby_columns = [event["analysis_raster_id"]] + contextual_raster_ids
+    result["detailed_table"] = merge_tables(
+        nonempty_change_tables, change_groupby_columns
     ).to_dict()
 
-    if "get_area_summary" in event and event["get_area_summary"] is True:
-        result["summary_table"] = merge_summary_tables(summary_tables)
+    if "area" in event["analyses"]:
+        nonempty_summary_tables = filter(
+            lambda summary_table: not summary_table.empty, summary_tables
+        )
+        result["summary_table"] = merge_summary_tables(
+            nonempty_summary_tables, contextual_raster_ids
+        ).to_dict()
 
     return {"statusCode": 200, "body": json.dumps(result)}
 
 
-def merge_change_tables(change_tables, event):
-    groupby_columns = [event["analysis_raster_id"]]
-    if "contextual_raster_ids" in event:
-        groupby_columns += event["contextual_raster_ids"]
-
-    return pd.concat(change_tables).groupby(groupby_columns).sum().reset_index()
+def merge_tables(tables, groupby_columns):
+    return pd.concat(tables).groupby(groupby_columns).sum().reset_index()
 
 
-def merge_summary_tables(summary_tables):
-    merged_summary_table = dict()
-
-    for summary_table in summary_tables:
-        for col, result in summary_table.items():
-            if col in merged_summary_table:
-                merged_summary_table[col] += result
-            else:
-                merged_summary_table[col] = result
-
-    return merged_summary_table
+def merge_summary_tables(tables, contextual_raster_ids):
+    if contextual_raster_ids:
+        return merge_tables(tables, contextual_raster_ids)
+    else:
+        return pd.DataFrame(pd.concat(tables).sum()).transpose()
 
 
 def execute_raster_analysis_lambda(payload, result_queue, error_queue):
@@ -110,9 +111,11 @@ def execute_raster_analysis_lambda(payload, result_queue, error_queue):
         result = json.loads(response["body"])
 
         if response["statusCode"] == 200:
-            change_table = pd.DataFrame.from_dict(result["change_table"])
+            change_table = pd.DataFrame.from_dict(result["detailed_table"])
             summary_table = (
-                result["summary_table"] if "summary_table" in result else None
+                pd.DataFrame.from_dict(result["summary_table"])
+                if "summary_table" in result
+                else None
             )
             result_queue.put((change_table, summary_table))
         else:
@@ -154,22 +157,25 @@ if __name__ == "__main__":
         lambda_handler(
             {
                 "analysis_raster_id": "loss",
-                "contextual_raster_ids": ["wdpa"],
+                "contextual_raster_ids": ["wdpa", "ifl"],
                 "analyses": ["count", "area"],
+                "aggregate_raster_ids": ["biomass"],
+                "density_raster_ids": ["biomass"],
                 "geometry": {
                     "type": "Polygon",
                     "coordinates": [
                         [
-                            [20.4374999999624, 2.30604814085596],
-                            [19.2949218749763, 0.1972956024577],
-                            [20.9648437499629, -1.73603206689361],
-                            [25.0078124999669, -1.38460047301014],
-                            [24.8320312499668, 1.95472918639642],
-                            [20.4374999999624, 2.30604814085596],
+                            [-56.9291420118343, -10.461390532544382],
+                            [-54.29482248520708, -10.287426035502962],
+                            [-52.39363905325442, -10.759615384615389],
+                            [-52.045710059171576, -13.55547337278107],
+                            [-54.26997041420116, -15.630621301775152],
+                            [-57.00369822485205, -14.673816568047341],
+                            [-57.84866863905324, -12.350147928994087],
+                            [-56.9291420118343, -10.461390532544382],
                         ]
                     ],
                 },
-                "get_area_summary": True,
                 "filter_raster_id": "tcd_2000",
                 "filter_intervals": [[0, 30]],
             },

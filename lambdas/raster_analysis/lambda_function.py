@@ -1,5 +1,6 @@
 import logging
 import sys
+import traceback
 
 from shapely.geometry import shape
 
@@ -54,8 +55,8 @@ def lambda_handler(event, context):
             analyses,
             get_area_summary,
         )
-    except Exception as e:
-        logging.error(e)
+    except Exception:
+        logging.error(traceback.format_exc())
         raise Exception("Internal Server Error <" + context.aws_request_id + ">")
 
 
@@ -66,24 +67,24 @@ if __name__ == "__main__":
         lambda_handler(
             {
                 "analysis_raster_id": "loss",
-                "contextual_raster_ids": ["wdpa"],
-                "analyses": ["area", "count"],
-                "aggregate_raster_ids": [],
-                # "density_raster_ids": ["biomass"],
+                "contextual_raster_ids": ["wdpa", "ifl"],
+                "analyses": ["count", "area"],
+                "aggregate_raster_ids": ["biomass"],
+                "density_raster_ids": ["biomass"],
                 "geometry": {
                     "type": "Polygon",
                     "coordinates": [
                         [
-                            [25.000727173925586, -1.25],
-                            [25.0, -1.25],
-                            [25.0, -1.2361858221098587],
-                            [25.000727173925586, -1.25],
+                            [-55.0, -12.5],
+                            [-56.25, -12.5],
+                            [-56.25, -11.25],
+                            [-55.0, -11.25],
+                            [-55.0, -12.5],
                         ]
                     ],
                 },
                 "filter_raster_id": "tcd_2000",
                 "filter_intervals": [[0, 30]],
-                "get_area_summary": True,
             },
             None,
         )

@@ -11,6 +11,7 @@ from raster_analysis.geodesy import get_area
 from raster_analysis.io import mask_geom_on_raster, read_windows_parallel, RasterWindow
 from raster_analysis.exceptions import RasterReadException
 
+from shapely.geometry import mapping
 from aws_xray_sdk.core import xray_recorder
 
 import resource
@@ -21,6 +22,9 @@ logger.setLevel(logging.INFO)
 AREA_FIELD = "area"
 COUNT_FIELD = "count"
 SUM_FIELD = "sum"
+FILTERED_AREA_FIELD = "filtered_area"
+LAYER_AREA_FIELD = "{raster_id}_area"
+FILTER_FIELD = "filter"
 
 
 def analysis(
@@ -66,7 +70,7 @@ def analysis(
         + str(filter_intervals)
         + ", "
         + "geom: "
-        + str(geom.to_wkt())
+        + str(json.dumps(mapping(geom)))
     )
 
     result = dict()
@@ -89,6 +93,8 @@ def analysis(
             "Analysis raster `" + analysis_raster_id + "` returned empty array"
         )
 
+    mean_area = get_area(geom.centroid.y) / 10000
+
     # other layers we'll just use raster with all values == 0
     for raster_id in get_raster_id_array(
         contextual_raster_ids, aggregate_raster_ids, filter_raster_id
@@ -102,9 +108,7 @@ def analysis(
 
     # use area raster to turn raster with density values into a full values
     for raster_id in density_raster_ids:
-        undensified_data = (
-            raster_windows[raster_id].data * raster_windows[AREA_FIELD].data
-        )
+        undensified_data = raster_windows[raster_id].data * mean_area
         raster_windows[raster_id] = RasterWindow(
             undensified_data,
             raster_windows[raster_id].shifted_affine,
@@ -112,7 +116,6 @@ def analysis(
         )
         gc.collect()  # immediately collect dereferenced density array
 
-    mean_area = get_area(geom.centroid.y) / 10000
     analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
 
     # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
@@ -122,9 +125,9 @@ def analysis(
         filter_mask = _get_filter(
             raster_windows[filter_raster_id].data, filter_intervals
         )
+        raster_windows["filter"] = RasterWindow(filter_mask, None, None)
 
     mask = geom_mask
-    raster_windows["filter"] = RasterWindow(filter_mask, None, None)
 
     logger.debug("Successfully converted extracted data to dataframe")
 
@@ -141,10 +144,76 @@ def analysis(
         mask,
     )
 
+    detailed_table = _get_detailed_table(analysis_result, no_data, analysis_raster_id)
+    summary_table = _get_summary_table(
+        analyses,
+        analysis_result,
+        no_data,
+        analysis_raster_id,
+        contextual_raster_ids,
+        aggregate_raster_ids,
+    )
+
+    result["detailed_table"] = detailed_table.to_dict()
+    result["summary_table"] = summary_table.to_dict()
+
     logger.debug("Successfully ran analysis=" + str(analyses))
     logger.info("Ran analysis with result: " + json.dumps(result))
 
-    return analysis_result.to_dict()
+    return result
+
+
+def _get_detailed_table(analysis_result, no_data_value, analysis_raster_id):
+    no_data_filter = analysis_result[analysis_raster_id] != no_data_value
+    passes_filter = analysis_result[FILTER_FIELD]
+
+    # filter out rows that don't pass filter or where analysis layer is NoData, and remove the
+    # "filter" field from final result
+    return (
+        analysis_result[passes_filter & no_data_filter]
+        .drop(columns=[FILTER_FIELD])
+        .reset_index(drop=True)
+    )
+
+
+def _get_summary_table(
+    analyses,
+    analysis_result,
+    no_data_value,
+    analysis_raster_id,
+    contextual_raster_ids,
+    aggregate_raster_ids,
+):
+    summary_table = analysis_result.copy()
+
+    if "area" in analyses:
+        # create new column that just copies area column, but sets any row with filter=false to 0
+        summary_table[FILTERED_AREA_FIELD] = (
+            summary_table[AREA_FIELD] * summary_table[FILTER_FIELD]
+        )
+
+        # create new column that copies filtered column, but sets any row where analysis layer is NoData to 0
+        layer_area_field = LAYER_AREA_FIELD.format(raster_id=analysis_raster_id)
+        summary_table[layer_area_field] = summary_table[FILTERED_AREA_FIELD] * (
+            summary_table[analysis_raster_id] != no_data_value
+        )
+
+        drop_columns = [analysis_raster_id, FILTER_FIELD] + aggregate_raster_ids
+        if contextual_raster_ids:
+            # aggregate by combos of contextual layer values, and drop fields we don't want in the final result
+            return (
+                summary_table.groupby(contextual_raster_ids)
+                .sum()
+                .reset_index()
+                .drop(columns=drop_columns)
+            )
+        else:
+            # sum and then transpose because Pandas flattens to a series if sum without a groupby
+            return (
+                pd.DataFrame(summary_table.sum()).transpose().drop(columns=drop_columns)
+            )
+    else:
+        return None
 
 
 @xray_recorder.capture("Analysis")
@@ -160,12 +229,10 @@ def _analysis(
         np.ravel(raster_windows[raster_id].data) for raster_id in reporting_raster_ids
     ]
     column_maxes = [col.max() + 1 for col in reporting_columns]
-    linear_indices = np.compress(
-        np.ravel(mask),
-        np.ravel_multi_index(reporting_columns, column_maxes).astype(np.uint32),
-    )
 
-    unique_values, counts = np.unique(linear_indices, return_counts=True)
+    linear_indices = _get_linear_indices(reporting_columns, column_maxes, mask)
+
+    unique_values, counts = _unique(linear_indices)
     unique_value_combinations = np.unravel_index(unique_values, column_maxes)
 
     result_dict = dict(zip(reporting_raster_ids, unique_value_combinations))
@@ -180,13 +247,28 @@ def _analysis(
         linear_indices = get_inverse(linear_indices, unique_values)
 
         for raster_id in aggregate_raster_ids:
-            result_dict[raster_id] = np.bincount(
-                linear_indices,
-                weights=np.extract(mask, raster_windows[raster_id].data),
-                minlength=counts.size,
+            result_dict[raster_id] = _get_sum(
+                linear_indices, mask, raster_windows[raster_id].data, counts.size
             )
 
     return pd.DataFrame(result_dict)
+
+
+@xray_recorder.capture("Get Linear Indicies")
+def _get_linear_indices(columns, dims, mask):
+    return np.compress(
+        np.ravel(mask), np.ravel_multi_index(columns, dims).astype(np.uint32)
+    )
+
+
+@xray_recorder.capture("Get Sum")
+def _get_sum(linear_indices, mask, data, bins):
+    return np.bincount(linear_indices, weights=np.extract(mask, data), minlength=bins)
+
+
+@xray_recorder.capture("Unique")
+def _unique(array):
+    return np.unique(array, return_counts=True)
 
 
 @xray_recorder.capture("Get Inverse")
