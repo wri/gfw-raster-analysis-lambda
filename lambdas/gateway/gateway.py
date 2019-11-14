@@ -55,7 +55,7 @@ def lambda_handler(event, context):
             "body": "Bad parameters: need analysis_raster_id",
         }
 
-    if "analyses" in query_params:
+    if "analysis_type" in multi_val_query_params:
         payload["analyses"] = multi_val_query_params["analysis_type"]
     else:
         return {
@@ -94,9 +94,13 @@ def lambda_handler(event, context):
         else:
             payload["filter_intervals"] = [[]]
 
+    get_emissions = False
     if "aggregate_raster_id" in query_params:
-        payload["aggregate_raster_ids"] = query_params["aggregate_raster_id"]
-        if "biomass" in query_params["aggregate_raster_id"]:
+        payload["aggregate_raster_ids"] = [query_params["aggregate_raster_id"]]
+
+        if "emissions" in query_params["aggregate_raster_id"]:
+            get_emissions = True
+            payload["aggregate_raster_ids"] = ["biomass"]
             payload["density_raster_ids"] = ["biomass"]
 
     logger.info("Running raster analysis with params: " + json.dumps(payload))
@@ -125,21 +129,16 @@ def lambda_handler(event, context):
         }
 
     body = json.loads(response["body"])
-    results = body["change_table"]
-    result_cols = list(results.keys())
-    result_row_length = len(results[result_cols[0]])
-    rows = []
 
-    for i in range(0, result_row_length):
-        row = dict()
-        for col in result_cols:
-            row[col] = results[col][str(i)]
-        rows.append(row)
+    # temp hook for emissions
+    if get_emissions:
+        body["detailed_table"]["emissions"] = body["detailed_table"]["biomass"]
+        del body["detailed_table"]["biomass"]
 
-    final_result = {"change_table": rows}
+    final_result = {"detailed_table": convert_to_csv_style(body["detailed_table"])}
 
     if "summary_table" in body:
-        final_result["summary_table"] = body["summary_table"]
+        final_result["summary_table"] = convert_to_csv_style(body["summary_table"])
 
     return {
         "isBase64Encoded": False,
@@ -147,6 +146,22 @@ def lambda_handler(event, context):
         "headers": {"Content-Type": "application/json"},
         "body": json.dumps(final_result),
     }
+
+
+def convert_to_csv_style(pandas_results):
+    result_cols = list(pandas_results.keys())
+    result_row_length = len(pandas_results[result_cols[0]])
+    rows = []
+
+    for i in range(0, result_row_length):
+        row = dict()
+        for col in result_cols:
+            row[col] = pandas_results[col][str(i)]
+            if col == "emissions":
+                row[col] *= 0.5 * 44 / 12
+        rows.append(row)
+
+    return rows
 
 
 if __name__ == "__main__":
@@ -158,7 +173,7 @@ if __name__ == "__main__":
                     "geometry_id": "9e46feafae7e133b7fdf1a036eefeee6",
                     "filter_raster_id": "tcd_2000",
                     "filter_threshold": 30,
-                    "get_area_summary": "true",
+                    "aggregate_raster_id": "emissions",
                 },
                 "multiValueQueryStringParameters": {
                     "contextual_raster_id": ["wdpa"],
