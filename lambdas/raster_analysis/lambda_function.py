@@ -40,10 +40,6 @@ def lambda_handler(event, context):
             event["filter_intervals"] if "filter_intervals" in event else None
         )
 
-        get_area_summary = (
-            event["get_area_summary"] if "get_area_summary" in event else False
-        )
-
         return geoprocessing.analysis(
             geometry,
             analysis_raster_id,
@@ -53,7 +49,6 @@ def lambda_handler(event, context):
             filter_intervals,
             density_raster_ids,
             analyses,
-            get_area_summary,
         )
     except Exception:
         logging.error(traceback.format_exc())
@@ -75,11 +70,13 @@ if __name__ == "__main__":
                     "type": "Polygon",
                     "coordinates": [
                         [
-                            [-55.0, -12.5],
-                            [-56.25, -12.5],
-                            [-56.25, -11.25],
-                            [-55.0, -11.25],
-                            [-55.0, -12.5],
+                            [-55.380185333356344, -12.276001055451573],
+                            [-55.584550346447266, -12.613440960787752],
+                            [-55.522765575047686, -13.145740529768766],
+                            [-55.052250777466256, -13.293073446183152],
+                            [-54.595994004053956, -13.007912962800466],
+                            [-54.733821571022254, -12.242732332390261],
+                            [-55.380185333356344, -12.276001055451573],
                         ]
                     ],
                 },
@@ -89,3 +86,15 @@ if __name__ == "__main__":
             None,
         )
     )
+
+
+"""
+repro weird issue:
+
+[-55.0, -12.5],
+[-56.25, -12.5],
+[-56.25, -11.25],
+[-55.0, -11.25],
+[-55.0, -12.5],
+
+"""
