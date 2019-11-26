@@ -36,7 +36,6 @@ def analysis(
     filter_intervals=None,
     density_raster_ids=[],
     analyses=["count", "area"],
-    get_area_summary=False,
 ):
     """
     Supported analysis:
@@ -106,20 +105,7 @@ def analysis(
                 raster_windows[raster_id].no_data,
             )
 
-    # use area raster to turn raster with density values into a full values
-    for raster_id in density_raster_ids:
-        undensified_data = raster_windows[raster_id].data * mean_area
-        raster_windows[raster_id] = RasterWindow(
-            undensified_data,
-            raster_windows[raster_id].shifted_affine,
-            raster_windows[raster_id].no_data,
-        )
-        gc.collect()  # immediately collect dereferenced density array
-
     analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
-
-    # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
-    geom_mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
 
     if filter_raster_id:
         filter_mask = _get_filter(
@@ -127,7 +113,8 @@ def analysis(
         )
         raster_windows["filter"] = RasterWindow(filter_mask, None, None)
 
-    mask = geom_mask
+    # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
+    mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
 
     logger.debug("Successfully converted extracted data to dataframe")
 
@@ -143,7 +130,7 @@ def analysis(
         mean_area,
         mask,
     )
-
+    # select=[loss, wdpa, ifl, sum(biomass) as total_biomass, (tcd_2000 > 30) as tree_cover]
     detailed_table = _get_detailed_table(analysis_result, no_data, analysis_raster_id)
     summary_table = _get_summary_table(
         analyses,
@@ -276,35 +263,12 @@ def get_inverse(linear_indices, unique_values):
     return np.digitize(linear_indices, unique_values, right=True)
 
 
-@xray_recorder.capture("Get Area Summary")
-def _get_area_summary(
-    geom_mask,
-    contextual_layer_ids,
-    raster_windows,
-    area_vector,
-    filtered_geom_mask=None,
-):
-    area_summary = dict()
-    area_summary["total"] = (geom_mask.sum(axis=1) * area_vector).sum()
-
-    if filtered_geom_mask.size != 0:
-        area_summary["filtered"] = (filtered_geom_mask.sum(axis=1) * area_vector).sum()
-
-    mask = filtered_geom_mask if filtered_geom_mask.size != 0 else geom_mask
-    for layer_id in contextual_layer_ids:
-        area_summary[layer_id] = (
-            (raster_windows[layer_id].data * mask).sum(axis=1) * area_vector
-        ).sum()
-
-    return area_summary
-
-
 @xray_recorder.capture("Create Filter")
 def _get_filter(filter_raster, filter_intervals):
     filter = np.zeros(filter_raster.shape, dtype=np.bool)
 
     for interval in filter_intervals:
-        filter += (filter_raster >= interval[0]) * (filter_raster < interval[1])
+        filter += (filter_raster > interval[0]) * (filter_raster <= interval[1])
 
     logger.debug("Successfully create filter")
     return filter

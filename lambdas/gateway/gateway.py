@@ -81,7 +81,7 @@ def lambda_handler(event, context):
             payload["filter_intervals"] = [[0, int(query_params["filter_threshold"])]]
         elif (
             "filter_date" in query_params
-            and query_params["filter_raster_id"] == "umd_landsat_alerts"
+            and query_params["filter_raster_id"] == "glad_alerts"
         ):
             filter_date = datetime.strptime(
                 query_params["filter_date"], "%Y-%m-%d"

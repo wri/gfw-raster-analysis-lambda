@@ -7,14 +7,11 @@ from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_url
-from raster_analysis.geodesy import get_area
 from raster_analysis.exceptions import RasterReadException
-
 from collections import namedtuple
 
 import threading
 import queue
-import math
 
 
 logger = logging.getLogger(__name__)
@@ -169,6 +166,7 @@ def get_window_and_affine(geom, raster_src):
 
     # Create a window range from the bounds
     window = raster_src.window(*geom.bounds)
+
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)
 
