@@ -1,11 +1,8 @@
 import logging
 
 import numpy as np
-import numpy.ma as ma
 import pandas as pd
 import json
-import gc
-import math
 
 from raster_analysis.geodesy import get_area
 from raster_analysis.io import mask_geom_on_raster, read_windows_parallel, RasterWindow
@@ -13,8 +10,6 @@ from raster_analysis.exceptions import RasterReadException
 
 from shapely.geometry import mapping
 from aws_xray_sdk.core import xray_recorder
-
-import resource
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -29,13 +24,14 @@ FILTER_FIELD = "filter"
 
 def analysis(
     geom,
-    analysis_raster_id,
+    analyses,
+    analysis_raster_id=None,
     contextual_raster_ids=[],
     aggregate_raster_ids=[],
-    filter_raster_id=None,
-    filter_intervals=None,
-    density_raster_ids=[],
-    analyses=["count", "area"],
+    start=None,
+    end=None,
+    extent_year=None,
+    threshold=None,
 ):
     """
     Supported analysis:
@@ -48,80 +44,39 @@ def analysis(
     """
 
     # always log parameters so we can reproduce later
-    logger.info(
-        "Running analysis with parameters: "
-        + "analyses: "
-        + str(analyses)
-        + ", "
-        + "analysis_raster_id: "
-        + analysis_raster_id
-        + ", "
-        + "contextual_raster_ids: "
-        + str(contextual_raster_ids)
-        + ", "
-        + "aggregate_raster_ids: "
-        + str(aggregate_raster_ids)
-        + ", "
-        + "filter_raster_id: "
-        + str(filter_raster_id)
-        + ", "
-        + "filter_intervals: "
-        + str(filter_intervals)
-        + ", "
-        + "geom: "
-        + str(json.dumps(mapping(geom)))
-    )
-
-    result = dict()
-
-    unique_raster_sources = get_raster_id_array(
+    _log_request(
+        geom,
+        analyses,
         analysis_raster_id,
         contextual_raster_ids,
         aggregate_raster_ids,
-        filter_raster_id,
-        unique=True,
+        extent_year,
+        threshold,
+        start,
+        end,
     )
-
-    raster_windows = read_windows_parallel(
-        unique_raster_sources, geom, analysis_raster_id
-    )
-
-    # fail if analysis layer is empty
-    if raster_windows[analysis_raster_id].data.size == 0:
-        raise RasterReadException(
-            "Analysis raster `" + analysis_raster_id + "` returned empty array"
-        )
 
     mean_area = get_area(geom.centroid.y) / 10000
+    extent_layer_id = f"tcd_{extent_year}" if extent_year and threshold else None
 
-    # other layers we'll just use raster with all values == 0
-    for raster_id in get_raster_id_array(
-        contextual_raster_ids, aggregate_raster_ids, filter_raster_id
-    ):
-        if raster_windows[raster_id].data.size == 0:
-            raster_windows[raster_id] = RasterWindow(
-                np.zeros(raster_windows[analysis_raster_id].data.shape, dtype=np.uint8),
-                raster_windows[analysis_raster_id].shifted_affine,
-                raster_windows[raster_id].no_data,
-            )
+    raster_windows = _get_raster_windows(
+        geom,
+        analysis_raster_id,
+        contextual_raster_ids,
+        aggregate_raster_ids,
+        extent_layer_id,
+        threshold,
+    )
 
-    analysis_data, shifted_affine, no_data = raster_windows[analysis_raster_id]
-
-    if filter_raster_id:
-        filter_mask = _get_filter(
-            raster_windows[filter_raster_id].data, filter_intervals
-        )
-        raster_windows["filter"] = RasterWindow(filter_mask, None, None)
-
-    # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
-    mask = mask_geom_on_raster(analysis_data, shifted_affine, geom)
-
-    logger.debug("Successfully converted extracted data to dataframe")
+    mask = _get_mask(
+        geom, raster_windows, analysis_raster_id, extent_layer_id, start, end
+    )
 
     # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
     analysis_groupby_fields = get_raster_id_array(
-        analysis_raster_id, contextual_raster_ids, "filter"
+        analysis_raster_id, contextual_raster_ids
     )
+
     analysis_result = _analysis(
         analyses,
         raster_windows,
@@ -130,37 +85,29 @@ def analysis(
         mean_area,
         mask,
     )
-    # select=[loss, wdpa, ifl, sum(biomass) as total_biomass, (tcd_2000 > 30) as tree_cover]
-    detailed_table = _get_detailed_table(analysis_result, no_data, analysis_raster_id)
-    summary_table = _get_summary_table(
-        analyses,
-        analysis_result,
-        no_data,
-        analysis_raster_id,
-        contextual_raster_ids,
-        aggregate_raster_ids,
-    )
 
-    result["detailed_table"] = detailed_table.to_dict()
-    result["summary_table"] = summary_table.to_dict()
-
+    result = analysis_result.to_dict()
     logger.debug("Successfully ran analysis=" + str(analyses))
     logger.info("Ran analysis with result: " + json.dumps(result))
 
     return result
 
 
-def _get_detailed_table(analysis_result, no_data_value, analysis_raster_id):
-    no_data_filter = analysis_result[analysis_raster_id] != no_data_value
-    passes_filter = analysis_result[FILTER_FIELD]
+def _get_detailed_table(
+    analysis_result, no_data_value, analysis_raster_id, extent_layer_id
+):
+    # filter out rows that don't pass filter or where analysis layer is NoData
+    filtered_result = analysis_result[
+        analysis_result[analysis_raster_id] != no_data_value
+    ]
 
-    # filter out rows that don't pass filter or where analysis layer is NoData, and remove the
-    # "filter" field from final result
-    return (
-        analysis_result[passes_filter & no_data_filter]
-        .drop(columns=[FILTER_FIELD])
-        .reset_index(drop=True)
-    )
+    # if filtering with extent layer, filtered out rows outside the extent
+    if extent_layer_id:
+        filtered_result = filtered_result[extent_layer_id].drop(
+            columns=[extent_layer_id]
+        )
+
+    return filtered_result.reset_index(drop=True)
 
 
 def _get_summary_table(
@@ -170,37 +117,102 @@ def _get_summary_table(
     analysis_raster_id,
     contextual_raster_ids,
     aggregate_raster_ids,
+    extent_layer_id,
+    extent_year,
 ):
     summary_table = analysis_result.copy()
 
     if "area" in analyses:
-        # create new column that just copies area column, but sets any row with filter=false to 0
-        summary_table[FILTERED_AREA_FIELD] = (
-            summary_table[AREA_FIELD] * summary_table[FILTER_FIELD]
-        )
-
-        # create new column that copies filtered column, but sets any row where analysis layer is NoData to 0
-        layer_area_field = LAYER_AREA_FIELD.format(raster_id=analysis_raster_id)
-        summary_table[layer_area_field] = summary_table[FILTERED_AREA_FIELD] * (
-            summary_table[analysis_raster_id] != no_data_value
-        )
-
-        drop_columns = [analysis_raster_id, FILTER_FIELD] + aggregate_raster_ids
-        if contextual_raster_ids:
-            # aggregate by combos of contextual layer values, and drop fields we don't want in the final result
-            return (
-                summary_table.groupby(contextual_raster_ids)
-                .sum()
-                .reset_index()
-                .drop(columns=drop_columns)
+        if extent_layer_id:
+            extent_area_name = f"extent_{extent_year}__ha"
+            # create new column that just copies area column, but sets any row with filter=false to 0
+            summary_table[extent_area_name] = (
+                summary_table[AREA_FIELD] * summary_table[extent_layer_id]
             )
-        else:
-            # sum and then transpose because Pandas flattens to a series if sum without a groupby
-            return (
-                pd.DataFrame(summary_table.sum()).transpose().drop(columns=drop_columns)
+
+            # create new column that copies filtered column, but sets any row where analysis layer is NoData to 0
+            layer_area_field = f"{analysis_raster_id}_area__ha"
+            summary_table[layer_area_field] = summary_table[extent_area_name] * (
+                summary_table[analysis_raster_id] != no_data_value
             )
+
+    drop_columns = [analysis_raster_id]
+    if contextual_raster_ids:
+        # aggregate by combos of contextual layer values, and drop fields we don't want in the final result
+        return (
+            summary_table.groupby(contextual_raster_ids)
+            .sum()
+            .reset_index()
+            .drop(columns=drop_columns)
+        )
     else:
-        return None
+        # sum and then transpose because Pandas flattens to a series if sum without a groupby
+        return pd.DataFrame(summary_table.sum()).transpose().drop(columns=drop_columns)
+
+
+@xray_recorder.capture("Get Mask")
+def _get_mask(geom, raster_windows, analysis_raster_id, extent_layer_id, start, end):
+    sample_layer, shifted_affine, no_data = list(raster_windows.values())[0]
+
+    # start by masking geometry onto analysis layer (where mask=True indicates the geom intersects)
+    mask = mask_geom_on_raster(sample_layer, shifted_affine, geom)
+    # then mask the time interval
+    # TODO: is this actually worth the perf bump vs memory allocation? can also just filter at the end
+    if analysis_raster_id:
+        mask *= _mask_by_nodata(
+            raster_windows[analysis_raster_id].data,
+            raster_windows[analysis_raster_id].no_data,
+        )
+        if start or end:
+            mask *= _mask_interval(raster_windows[analysis_raster_id].data, start, end)
+
+    if extent_layer_id:
+        mask *= raster_windows[extent_layer_id].data
+
+    return mask
+
+
+def _get_raster_windows(
+    geom,
+    analysis_raster_id,
+    contextual_raster_ids,
+    aggregate_raster_ids,
+    extent_layer_id,
+    threshold,
+):
+    unique_raster_sources = get_raster_id_array(
+        analysis_raster_id,
+        contextual_raster_ids,
+        aggregate_raster_ids,
+        extent_layer_id,
+        unique=True,
+    )
+
+    raster_windows = read_windows_parallel(unique_raster_sources, geom)
+
+    # fail if analysis layer is empty
+    if analysis_raster_id and raster_windows[analysis_raster_id].data.size == 0:
+        raise RasterReadException(
+            "Analysis raster `" + analysis_raster_id + "` returned empty array"
+        )
+
+    # other layers we'll just use raster with all values == 0
+    for raster_id in get_raster_id_array(
+        contextual_raster_ids, aggregate_raster_ids, extent_layer_id
+    ):
+        if raster_windows[raster_id].data.size == 0:
+            raster_windows[raster_id] = RasterWindow(
+                np.zeros(raster_windows[analysis_raster_id].data.shape, dtype=np.uint8),
+                raster_windows[analysis_raster_id].shifted_affine,
+                raster_windows[raster_id].no_data,
+            )
+
+    if extent_layer_id:
+        raster_windows[extent_layer_id] = _mask_by_threshold(
+            raster_windows[extent_layer_id].data, threshold
+        )
+
+    return raster_windows
 
 
 @xray_recorder.capture("Analysis")
@@ -250,7 +262,7 @@ def _get_linear_indices(columns, dims, mask):
 
 @xray_recorder.capture("Get Sum")
 def _get_sum(linear_indices, mask, data, bins):
-    return np.bincount(linear_indices, weights=np.extract(mask, data), minlength=bins)
+    return np.bincount(linear_indices, weights=_extract(mask, data), minlength=bins)
 
 
 @xray_recorder.capture("Unique")
@@ -279,12 +291,24 @@ def _extract(mask, data):
     return np.extract(mask, data)
 
 
+@xray_recorder.capture("Mask by Threshold")
 def _mask_by_threshold(raster, threshold):
     return raster > threshold
 
 
+@xray_recorder.capture("Mask by NoData")
 def _mask_by_nodata(raster, no_data):
     return raster != no_data
+
+
+@xray_recorder.capture("Mask Interval")
+def _mask_interval(raster, start, end):
+    if start and end:
+        return (raster >= start) * (raster <= end)
+    elif start:
+        return raster >= start
+    elif end:
+        return raster <= end
 
 
 def get_raster_id_array(*raster_id_args, unique=False):
@@ -304,3 +328,28 @@ def get_raster_id_array(*raster_id_args, unique=False):
                 )
 
     return list(set(ids)) if unique else ids
+
+
+def _log_request(
+    geom,
+    analyses,
+    analysis_raster_id,
+    contextual_raster_ids,
+    aggregate_raster_ids,
+    extent_year,
+    threshold,
+    start,
+    end,
+):
+    logger.info(
+        f"Running analysis with parameters: "
+        + f"\nanalyses: {analyses}"
+        + f"\nanalysis_raster_id: {analysis_raster_id}"
+        + f"\ncontextual_raster_ids: {contextual_raster_ids}"
+        + f"\naggregate_raster_ids: {aggregate_raster_ids}"
+        + f"\nextent_year: {extent_year}"
+        + f"\nthreshold: {threshold}"
+        + f"\nstart: {start}"
+        + f"\nend: {end}"
+        + f"\ngeom: {json.dumps(mapping(geom))}"
+    )

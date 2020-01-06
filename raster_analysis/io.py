@@ -20,7 +20,7 @@ RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 
 @xray_recorder.capture("Read All Windows")
-def read_windows_parallel(raster_ids, geom, analysis_raster_id, masked=False):
+def read_windows_parallel(raster_ids, geom, masked=False):
     read_window_threads = []
     result_queue = queue.Queue()
     error_queue = queue.Queue()
@@ -51,10 +51,6 @@ def read_windows_parallel(raster_ids, geom, analysis_raster_id, masked=False):
         )
 
     return result_dict
-
-
-def _get_lat_coords(y_indices, affine):
-    return y_indices * -0.00025 + affine[5] + (-0.00025 / 2)
 
 
 def read_window_parallel_work(raster_id, geom, masked, result_queue, error_queue):
