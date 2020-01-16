@@ -1,0 +1,40 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Effect": "Allow",
+          "Action": [
+              "secretsmanager:GetRandomPassword",
+              "lambda:InvokeFunction",
+              "secretsmanager:GetResourcePolicy",
+              "secretsmanager:GetSecretValue",
+              "secretsmanager:DescribeSecret",
+              "secretsmanager:ListSecretVersionIds",
+              "cloudformation:DescribeChangeSet",
+              "cloudformation:DescribeStackResources",
+              "cloudformation:DescribeStacks",
+              "cloudformation:GetTemplate",
+              "cloudformation:ListStackResources",
+              "cloudwatch:*",
+              "events:*",
+              "iam:GetPolicy",
+              "iam:GetPolicyVersion",
+              "iam:GetRole",
+              "iam:GetRolePolicy",
+              "iam:ListAttachedRolePolicies",
+              "iam:ListRolePolicies",
+              "iam:ListRoles",
+              "iam:PassRole",
+              "lambda:*",
+              "logs:*",
+              "s3:*",
+              "xray:PutTraceSegments",
+              "xray:PutTelemetryRecords",
+              "xray:GetSamplingRules",
+              "xray:GetSamplingTargets",
+              "xray:GetSamplingStatisticSummaries"
+          ],
+          "Resource": "*"
+      }
+  ]
+}
