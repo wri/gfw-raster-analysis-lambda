@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+docker-compose -f docker/terraform/docker-compose.yml build
+docker-compose -f docker/terraform/docker-compose.yml run --rm terraform "${1}" "${2}"

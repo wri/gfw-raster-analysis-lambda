@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -e
+
+pytest --cov-report term --cov-report xml --cov=lambdas --cov=raster_analysis tests/
