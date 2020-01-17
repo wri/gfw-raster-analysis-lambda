@@ -76,7 +76,7 @@ def test_get_raster_analysis_payload():
     )
 
     assert payload["geometry"] == {"feature": "fake"}
-    assert payload["analysis_raster_id"] == "umd_landsat_alerts"
+    assert payload["analysis_raster_id"] == "glad_alerts"
     assert payload["contextual_raster_id"] == "wdpa"
     assert payload["analysis_type"] == "count"
     assert payload["start"] == 31461
