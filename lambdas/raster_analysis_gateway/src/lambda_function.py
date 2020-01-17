@@ -57,8 +57,8 @@ def get_raster_analysis_payload(geom, query_params, multi_val_query_params, path
     payload = dict()
 
     payload["geometry"] = geom
-    payload.update(multi_val_query_params)
     payload.update(query_params)
+    payload.update(multi_val_query_params)
 
     if path == "/analysis/treecoverloss":
         update_treecoverloss_payload(payload)
@@ -85,7 +85,7 @@ def update_treecoverloss_payload(payload):
 
 
 def update_gladalerts_payload(payload):
-    payload["analysis_raster_id"] = "umd_landsat_alerts"
+    payload["analysis_raster_id"] = "glad_alerts"
 
     if "start" in payload:
         payload["start"] = get_gladalerts_date(payload["start"])
@@ -158,24 +158,3 @@ def convert_to_csv_json_style(results):
         rows.append(row)
 
     return rows
-
-
-if __name__ == "__main__":
-    print(
-        handler(
-            {
-                "queryStringParameters": {
-                    "analysis_raster_id": "loss",
-                    "geometry_id": "9e46feafae7e133b7fdf1a036eefeee6",
-                    "filter_raster_id": "tcd_2000",
-                    "filter_threshold": 30,
-                    "aggregate_raster_id": "emissions",
-                },
-                "multiValueQueryStringParameters": {
-                    "contextual_raster_id": ["wdpa"],
-                    "analysis_type": ["count", "area"],
-                },
-            },
-            None,
-        )
-    )
