@@ -24,21 +24,14 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Install CodeClimate Coverage Reporter
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
     - name: Test with pytest
       env:
         ENV: test
         AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_dev }}
         AWS_DEFAULT_REGION: ${{ secrets.aws_region_dev }}
-        CC_TEST_REPORTER_ID: ${{ secrets.test_report_id }}
       run: |
-        ./cc-test-reporter before-build
         ./scripts/test
-        ./cc-test-reporter after-build -t coverage.py -p ${PWD} --exit-code $?
     - name: Build Lambda layers
       if: success()
       run: ./scripts/cibuild
