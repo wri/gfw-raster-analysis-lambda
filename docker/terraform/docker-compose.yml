@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  terraform:
+    build:
+      context: .
+    volumes:
+      - ../../:/usr/local/src
+      - $HOME/.aws:/root/.aws:ro
+    environment:
+      - ENV
+      - GFW_AWS_CORE_INFRASTUCTURE_DEBUG=1
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_DEFAULT_REGION
+    working_dir: /usr/local/src
+    entrypoint: infra

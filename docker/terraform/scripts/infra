@@ -1,0 +1,77 @@
+#!/bin/bash
+
+
+function usage {
+  echo -n \
+    "Usage: $(basename "$0") COMMAND OPTION[S]
+Execute Terraform subcommands.
+"
+}
+
+set -e
+
+if [[ -n "${GFW_AWS_CORE_INFRASTRUCTURE_DEBUG}" ]]; then
+  set -x
+fi
+
+if [ -z "${ENV}" ]; then
+  ENV=dev
+fi
+
+if [ -f "/root/.aws/credentials" ]; then
+    export AWS_PROFILE=gfw-${ENV}
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_DEFAULT_REGION
+
+    echo "Using enviroment ${ENV} and AWS_PROFILE ${AWS_PROFILE}"
+else
+  echo "Using enviroment ${ENV} and AWS_ACCESS_KEY_ID"
+fi
+
+
+
+## select or create the current workspace
+#./docker/terraform/workspace
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+  if [ "${1:-}" = "--help" ]; then
+    usage
+  else
+
+    TERRAFORM_DIR="/usr/local/src/terraform"
+    pushd "${TERRAFORM_DIR}"
+
+    case "${1}" in
+    fmt)
+      terraform fmt -recursive .
+      ;;
+    plan)
+      # Clear stale modules, then re-initialize
+      rm -rf .terraform
+      # select or create the current workspace
+      terraform init \
+        -backend-config=vars/backend-${ENV}.tfvars
+      select_workspace "${2}"
+      terraform plan \
+        -var-file="vars/raster-analysis-${ENV}.tfvars" \
+        -out="raster-analysis.tfplan"
+      ;;
+    apply)
+      terraform apply \
+        "raster-analysis.tfplan"
+      ;;
+    destroy)
+      terraform destroy \
+        -var-file="vars/raster-analysis-${ENV}.tfvars" \
+        -auto-approve
+      ;;
+    *)
+      echo "ERROR: I don't have support for that Terraform subcommand!"
+      exit 1
+      ;;
+    esac
+
+    popd
+  fi
+fi

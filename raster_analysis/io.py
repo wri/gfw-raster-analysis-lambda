@@ -7,14 +7,11 @@ from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_url
-from raster_analysis.geodesy import get_area
 from raster_analysis.exceptions import RasterReadException
-
 from collections import namedtuple
 
 import threading
 import queue
-import math
 
 
 logger = logging.getLogger(__name__)
@@ -23,7 +20,7 @@ RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
 
 
 @xray_recorder.capture("Read All Windows")
-def read_windows_parallel(raster_ids, geom, analysis_raster_id, masked=False):
+def read_windows_parallel(raster_ids, geom, masked=False):
     read_window_threads = []
     result_queue = queue.Queue()
     error_queue = queue.Queue()
@@ -54,10 +51,6 @@ def read_windows_parallel(raster_ids, geom, analysis_raster_id, masked=False):
         )
 
     return result_dict
-
-
-def _get_lat_coords(y_indices, affine):
-    return y_indices * -0.00025 + affine[5] + (-0.00025 / 2)
 
 
 def read_window_parallel_work(raster_id, geom, masked, result_queue, error_queue):
@@ -169,6 +162,7 @@ def get_window_and_affine(geom, raster_src):
 
     # Create a window range from the bounds
     window = raster_src.window(*geom.bounds)
+
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)
 
