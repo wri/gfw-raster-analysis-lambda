@@ -45,10 +45,27 @@ MUTLIPOLYGON_SCHEMA = {
     },
 }
 
-SCHEMA = {
+RASTER_ANALYSIS_SCHEMA = {
     "type": "object",
     "properties": {
         "analysis_raster_id": {"type": "string"},
+        "geometry": {"oneOf": [POLYGON_SCHEMA, MUTLIPOLYGON_SCHEMA]},
+        "contextual_raster_ids": {"type": "array", "items": {"type": "string"}},
+        "aggregate_raster_ids": {"type": "array", "items": {"type": "string"}},
+        "extent_year": {"type": "number"},
+        "threshold": {"type": "number"},
+        "start": {"type": "string"},
+        "end": {"type": "string"},
+        "analyses": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["geometry", "analyses"],
+}
+
+
+GATEWAY_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "queryParams": {"type": "string"},
         "geometry": {"oneOf": [POLYGON_SCHEMA, MUTLIPOLYGON_SCHEMA]},
         "contextual_raster_ids": {"type": "array", "items": {"type": "string"}},
         "aggregate_raster_ids": {"type": "array", "items": {"type": "string"}},
@@ -63,26 +80,7 @@ SCHEMA = {
             },
         },
         "get_area_summary": {"type": "boolean"},
-        "analyses": {
-            "type": "array",
-            "items": {"type": "string"},
-            # {
-            #     "anyOf": [
-            #         {
-            #             "type": "object",
-            #             "properties": {"type": {"type": "string", "enum": ["count"]}},
-            #         },
-            #         {
-            #             "type": "object",
-            #             "properties": {"type": {"type": "string", "enum": ["area"]}},
-            #         },
-            #         {
-            #             "type": "object",
-            #             "properties": {"type": {"type": "string", "enum": ["sum"]}},
-            #         },
-            #     ]
-            # },
-        },
+        "analyses": {"type": "array", "items": {"type": "string"}},
     },
     "required": ["analysis_raster_id", "geometry", "analyses"],
 }

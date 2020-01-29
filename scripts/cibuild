@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+
+GIT_SHA="$(git rev-parse HEAD | cut -c 1-8)"
+
+function build_lambda_layer {
+  IMAGE="gfw/${1}_layer"
+
+  echo "BUILD image ${IMAGE}"
+  docker build --no-cache -t "${IMAGE}":"${GIT_SHA}" -f docker/"${1}"/Dockerfile .
+
+  echo "CREATE container"
+  docker run --name lambda_layer -itd "${IMAGE}":"${GIT_SHA}" /bin/bash
+
+  echo "COPY ZIP package to host"
+  docker cp lambda_layer:/var/task/layer.zip docker/"${1}"/layer.zip
+
+  echo "REMOVE container"
+  docker rm -f lambda_layer
+}
+
+lambda_layers=( raster_analysis )
+
+
+for l in "${lambda_layers[@]}"
+do
+    echo "Build lambda layer ${l}"
+    build_lambda_layer "${l}"
+done
