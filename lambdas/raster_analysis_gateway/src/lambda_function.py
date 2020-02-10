@@ -64,13 +64,18 @@ def get_raster_analysis_payload(geom, query_params, multi_val_query_params, path
         update_treecoverloss_payload(payload)
     elif path == "/analysis/gladalerts":
         update_gladalerts_payload(payload)
+    else:
+        payload["analysis_type"] = ["area"]
 
     if "threshold" in payload:
         payload["threshold"] = int(
             payload["threshold"]
         )  # number query params are all passed in as strings
+
     if "extent_year" in payload:
         payload["extent_year"] = int(payload["extent_year"])
+    else:
+        payload["extent_year"] = 2000
 
     return payload
 
@@ -83,6 +88,8 @@ def update_treecoverloss_payload(payload):
     if "end" in payload:
         payload["end"] = int(payload["end"][2:])
 
+    payload["analysis_type"] = ["area"]
+
 
 def update_gladalerts_payload(payload):
     payload["analysis_raster_id"] = "glad_alerts"
@@ -91,6 +98,8 @@ def update_gladalerts_payload(payload):
         payload["start"] = get_gladalerts_date(payload["start"])
     if "end" in payload:
         payload["end"] = get_gladalerts_date(payload["end"])
+
+    payload["analysis_type"] = ["count"]
 
 
 def get_gladalerts_date(date_str):
