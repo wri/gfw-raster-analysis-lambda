@@ -48,7 +48,7 @@ def test_get_raster_analysis_payload():
             "start": "2005",
             "end": "2018",
         },
-        {"contextual_raster_id": ["wdpa", "ifl"], "analysis_type": ["count", "area"]},
+        {"contextual_raster_id": ["wdpa", "ifl"]},
         "/analysis/treecoverloss",
     )
 
@@ -58,7 +58,7 @@ def test_get_raster_analysis_payload():
     assert payload["extent_year"] == 2000
     assert payload["aggregate_raster_id"] == "emissions"
     assert payload["contextual_raster_id"] == ["wdpa", "ifl"]
-    assert payload["analysis_type"] == ["count", "area"]
+    assert payload["analysis_type"] == ["area"]
     assert payload["start"] == 5
     assert payload["end"] == 18
 
@@ -67,7 +67,6 @@ def test_get_raster_analysis_payload():
         {
             "geostore_id": "test_geostore_id",
             "contextual_raster_id": "wdpa",
-            "analysis_type": "count",
             "start": "2019-01-01",
             "end": "2019-12-10",
         },
@@ -78,24 +77,20 @@ def test_get_raster_analysis_payload():
     assert payload["geometry"] == {"feature": "fake"}
     assert payload["analysis_raster_id"] == "glad_alerts"
     assert payload["contextual_raster_id"] == "wdpa"
-    assert payload["analysis_type"] == "count"
+    assert payload["analysis_type"] == ["count"]
     assert payload["start"] == 31461
     assert payload["end"] == 31804
 
     payload = get_raster_analysis_payload(
         {"feature": "fake"},
-        {
-            "geostore_id": "test_geostore_id",
-            "contextual_raster_id": "wdpa",
-            "analysis_type": "area",
-        },
+        {"geostore_id": "test_geostore_id", "contextual_raster_id": "wdpa"},
         {},
         "/analysis/summary",
     )
 
     assert "analysis_raster_id" not in payload
     assert payload["contextual_raster_id"] == "wdpa"
-    assert payload["analysis_type"] == "area"
+    assert payload["analysis_type"] == ["area"]
 
 
 @patch("lambdas.raster_analysis_gateway.src.lambda_function.run_raster_analysis")

@@ -1,6 +1,9 @@
 import numpy as np
 from unittest import mock
 from shapely.geometry import Polygon
+import os
+
+os.environ["S3_BUCKET_DATA_LAKE"] = "test-dake-lake"
 
 from raster_analysis.geoprocessing import analysis
 from raster_analysis.io import RasterWindow
