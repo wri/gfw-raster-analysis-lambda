@@ -1,5 +1,6 @@
 import numpy as np
 from unittest import mock
+import pytest
 from shapely.geometry import Polygon
 import os
 
@@ -312,3 +313,75 @@ def test_no_data(mock_get_area, mock_geom_on_raster, mock_read_windows):
     )
 
     assert results == {"ras0": [], "ras1": [], "count": [], "area": []}
+
+
+@mock.patch("raster_analysis.geoprocessing.CO2_FACTOR", 3)
+@mock.patch("raster_analysis.geoprocessing.read_windows_parallel")
+@mock.patch("raster_analysis.geoprocessing.mask_geom_on_raster")
+@mock.patch("raster_analysis.geoprocessing.get_area")
+def test_biomass_emissions(mock_get_area, mock_geom_on_raster, mock_read_windows):
+    mock_read_windows.return_value = {
+        "ras0": RasterWindow(
+            np.array(
+                [
+                    [0, 1, 2, 1, 0],
+                    [0, 1, 2, 1, 0],
+                    [0, 1, 2, 1, 0],
+                    [0, 1, 2, 1, 0],
+                    [0, 1, 2, 1, 0],
+                ]
+            ),
+            None,
+            0,
+        ),
+        "biomass": RasterWindow(
+            np.array(
+                [
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                ]
+            ),
+            None,
+            0,
+        ),
+        "emissions": RasterWindow(
+            np.array(
+                [
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                    [0, 1.2, 2.2, 3.2, 2.2],
+                ]
+            ),
+            None,
+            0,
+        ),
+    }
+
+    mock_geom_on_raster.return_value = np.array(
+        [
+            [1, 1, 1, 1, 1],
+            [0, 1, 1, 1, 1],
+            [0, 0, 1, 1, 1],
+            [0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 1],
+        ]
+    )
+
+    mock_get_area.return_value = 20000
+
+    results = analysis(
+        GEOM, ["count"], "ras0", aggregate_raster_ids=["biomass", "emissions"]
+    )
+
+    assert len(results["count"]) == 2
+    assert results["count"][0] == 6
+    assert results["biomass"][0] == pytest.approx(30.4, 0.0001)
+    assert results["emissions"][0] == pytest.approx(91.2, 0.0001)
+    assert results["count"][1] == 3
+    assert results["biomass"][1] == pytest.approx(13.2, 0.0001)
+    assert results["emissions"][1] == pytest.approx(39.6, 0.0001)
