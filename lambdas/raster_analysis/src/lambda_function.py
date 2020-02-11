@@ -56,7 +56,7 @@ def handler(event, context):
             )
         except Exception:
             logging.error(traceback.format_exc())
-            raise Exception("Internal Server Error <" + context.aws_request_id + ">")
+            raise Exception(f"Internal Server Error <{context.aws_request_id}>")
 
 
 if __name__ == "__main__":

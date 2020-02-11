@@ -5,7 +5,10 @@ import os
 import requests
 from datetime import datetime, date, timedelta
 
-from raster_analysis.exceptions import GeostoreNotFoundException
+from raster_analysis.exceptions import (
+    GeostoreNotFoundException,
+    RasterAnalysisException,
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -34,7 +37,7 @@ def handler(event, context):
 
     try:
         geom, area_ha = get_geostore(geom_id)
-    except GeostoreNotFoundException as e:
+    except GeostoreNotFoundException:
         return {"isBase64Encoded": False, "statusCode": 404, "body": str(e)}
 
     payload = get_raster_analysis_payload(
@@ -42,15 +45,23 @@ def handler(event, context):
     )
     logger.info("Running raster analysis with params: " + json.dumps(payload))
 
-    result = run_raster_analysis(payload, area_ha)
-    csv_result = convert_to_csv_json_style(result)
+    try:
+        result = run_raster_analysis(payload, area_ha)
+        csv_result = convert_to_csv_json_style(result)
 
-    return {
-        "isBase64Encoded": False,
-        "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(csv_result),
-    }
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": json.dumps(csv_result),
+        }
+    except RasterAnalysisException as e:
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 500,
+            "headers": {"Content-Type": "text/plain"},
+            "body": f"Internal Server Error <{context.aws_request_id}>",
+        }
 
 
 def get_raster_analysis_payload(geom, query_params, multi_val_query_params, path):
@@ -132,12 +143,8 @@ def run_raster_analysis(payload, area_ha):
     response = json.loads(lambda_response["Payload"].read())
 
     if response["statusCode"] != 200:
-        return {
-            "isBase64Encoded": False,
-            "statusCode": response["statusCode"],
-            "headers": {"Content-Type": "application/json"},
-            "body": response["body"],
-        }
+        logger.error(f"Raster analysis returned status code f{response['statusCode']})")
+        raise RasterAnalysisException()
 
     body = json.loads(response["body"])
     return body

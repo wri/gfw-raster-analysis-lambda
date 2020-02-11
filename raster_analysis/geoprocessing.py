@@ -139,7 +139,9 @@ def _get_raster_windows(
     # TODO for now, just hardcoded here
     if "emissions" in unique_raster_sources:
         unique_raster_sources.remove("emissions")
-        unique_raster_sources.append("biomass")
+
+        if "biomass" not in unique_raster_sources:
+            unique_raster_sources.append("biomass")
 
     raster_windows = read_windows_parallel(unique_raster_sources, geom)
 
@@ -254,6 +256,9 @@ def _analysis(
                 result[raster_id] = _get_sum(
                     linear_indices, mask, raster_windows[raster_id].data, counts.size
                 )
+
+                if raster_id == "biomass":
+                    result[raster_id] *= mean_area
 
     return result
 
