@@ -3,7 +3,7 @@ import boto3
 import logging
 import os
 import requests
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from raster_analysis.exceptions import GeostoreNotFoundException
 
@@ -168,7 +168,15 @@ def convert_to_csv_json_style(results):
     for i in range(0, result_row_length):
         row = dict()
         for col in result_cols:
-            row[col] = results[col][i]
+            if col == "loss":
+                row[col] = results[col][i] + 2000
+            elif col == "gladalerts":
+                days_since_2015 = results[col][i] - GLAD_CONFIRMED_CONST
+                raw_date = date(2015, 1, 1) + timedelta(days=days_since_2015)
+                row[col] = raw_date.strftime("%Y-%m-%d")
+            else:
+                row[col] = results[col][i]
+
         rows.append(row)
 
     return rows
