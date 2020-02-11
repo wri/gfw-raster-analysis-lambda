@@ -10,13 +10,13 @@ Currently supports three endpoints:
 3) /analysis/summary - get statistics on hectare areas of arbitrary combinations of layers. This can be used to get total forest extent area or total area of contextual layers intersecting the geometry (i.e. for percents of tree cover loss).
 
 *Date lake is not yet complete, so currently only these layers are supported:
-wdpa
-primary_forest
-plantations
-ifl
-drivers
-biomass
-emissions
+* wdpa
+* primary_forest
+* plantations
+* ifl
+* drivers
+* biomass
+* emissions
 
 
 ### Query Parameters
@@ -28,12 +28,12 @@ emissions
 |aggregate_rasters_ids| [String] | List of value rasters to aggregate. These layers will have their pixel values summed unique combinations of contextual layers. | biomass,emissions |
 |threshold| Integer | A percent threshold of tree cover density, using either 2000 or 2010 TCD layers. | 30 |
 |extent_year| Year | The year to use for tree cover density. Must be either 2000 or 2010. Default is 2000. | 2000 |
-|start| Date | This should be a year for tree cover loss, or a date in YYYY-MM-DD format for GLAD alerts (ignored for summary). | 2015, 215-02-04 |
+|start| Date | This should be a year for tree cover loss, or a date in YYYY-MM-DD format for GLAD alerts (ignored for summary). | 2015, 2015-02-04 |
 |end| Date | Same format as 'start'. Must come after start. | 2016 , 2016-02-10 |
 #### Examples
 
 Request:
-```HTTP
+```http request
 https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/treecoverloss?analyses=area&geostore_id=cb64960710fd11925df3fda6a2005ca9&contextual_raster_ids=wdpa&contextual_raster_ids=primary_forest&threshold=30
 ```
 
@@ -345,11 +345,11 @@ Response:
 
 
 ### Endpoints
-
+```http request
 https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/treecoverloss
 https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/gladalerts
 https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/summary
-
+```
 
 
 ### Assumptions and limitations
@@ -361,8 +361,10 @@ They are saved as Cloud Optimized TIFFs with 400 x 400 pixels blocks.
 
 Use terraform:
 
+```
 ./scripts/infra plan
 ./scripts/infra apply
+```
 
 ```
 Runtime: Python 3.6
