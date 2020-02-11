@@ -58,7 +58,12 @@ def get_raster_analysis_payload(geom, query_params, multi_val_query_params, path
 
     payload["geometry"] = geom
     payload.update(query_params)
-    payload.update(multi_val_query_params)
+
+    for key, val_list in multi_val_query_params.items():
+        if len(val_list) > 1:
+            payload[
+                key
+            ] = val_list  # override single value params if they have multiple values
 
     if path == "/analysis/treecoverloss":
         update_treecoverloss_payload(payload)

@@ -58,7 +58,7 @@ def test_get_raster_analysis_payload():
     assert payload["extent_year"] == 2000
     assert payload["aggregate_raster_id"] == "emissions"
     assert payload["contextual_raster_id"] == ["wdpa", "ifl"]
-    assert payload["analysis_type"] == ["area"]
+    assert payload["analyses"] == ["area"]
     assert payload["start"] == 5
     assert payload["end"] == 18
 
@@ -77,7 +77,7 @@ def test_get_raster_analysis_payload():
     assert payload["geometry"] == {"feature": "fake"}
     assert payload["analysis_raster_id"] == "glad_alerts"
     assert payload["contextual_raster_id"] == "wdpa"
-    assert payload["analysis_type"] == ["count"]
+    assert payload["analyses"] == ["count"]
     assert payload["start"] == 31461
     assert payload["end"] == 31804
 
@@ -90,7 +90,7 @@ def test_get_raster_analysis_payload():
 
     assert "analysis_raster_id" not in payload
     assert payload["contextual_raster_id"] == "wdpa"
-    assert payload["analysis_type"] == ["area"]
+    assert payload["analyses"] == ["area"]
 
 
 @patch("lambdas.raster_analysis_gateway.src.lambda_function.run_raster_analysis")
@@ -113,10 +113,11 @@ def test_handler(mock_run_analysis, requests_mock):
                 "extent_year": "2000",
                 "threshold": "30",
                 "aggregate_raster_id": "emissions",
+                "contextual_raster_id": "wdpa",
             },
             "multiValueQueryStringParameters": {
                 "contextual_raster_id": ["wdpa"],
-                "analysis_type": ["count", "area"],
+                "threshold": ["30"],
             },
             "path": "/analysis/treecoverloss",
         },
