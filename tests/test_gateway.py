@@ -103,7 +103,7 @@ def test_handler(mock_run_analysis, requests_mock):
     mock_run_analysis.return_value = {
         "loss": [1, 1, 2, 2, 3, 3],
         "wdpa": [0, 1, 0, 1, 0, 1],
-        "count": [4, 6, 1, 5, 2, 5],
+        "area": [4, 6, 1, 5, 2, 5],
     }
 
     result = handler(
@@ -126,12 +126,46 @@ def test_handler(mock_run_analysis, requests_mock):
 
     assert result["statusCode"] == 200
     assert json.loads(result["body"]) == [
-        {"loss": 1, "wdpa": 0, "count": 4},
-        {"loss": 1, "wdpa": 1, "count": 6},
-        {"loss": 2, "wdpa": 0, "count": 1},
-        {"loss": 2, "wdpa": 1, "count": 5},
-        {"loss": 3, "wdpa": 0, "count": 2},
-        {"loss": 3, "wdpa": 1, "count": 5},
+        {"loss": 2001, "wdpa": 0, "area": 4},
+        {"loss": 2001, "wdpa": 1, "area": 6},
+        {"loss": 2002, "wdpa": 0, "area": 1},
+        {"loss": 2002, "wdpa": 1, "area": 5},
+        {"loss": 2003, "wdpa": 0, "area": 2},
+        {"loss": 2003, "wdpa": 1, "area": 5},
+    ]
+
+    mock_run_analysis.return_value = {
+        "gladalerts": [31001, 31001, 31002, 31002, 31003, 31003],
+        "wdpa": [0, 1, 0, 1, 0, 1],
+        "count": [4, 6, 1, 5, 2, 5],
+    }
+
+    result = handler(
+        {
+            "queryStringParameters": {
+                "geostore_id": "test_geostore_id",
+                "extent_year": "2000",
+                "threshold": "30",
+                "aggregate_raster_id": "emissions",
+                "contextual_raster_id": "wdpa",
+            },
+            "multiValueQueryStringParameters": {
+                "contextual_raster_id": ["wdpa"],
+                "threshold": ["30"],
+            },
+            "path": "/analysis/gladalerts",
+        },
+        None,
+    )
+
+    assert result["statusCode"] == 200
+    assert json.loads(result["body"]) == [
+        {"gladalerts": "2017-09-28", "wdpa": 0, "count": 4},
+        {"gladalerts": "2017-09-28", "wdpa": 1, "count": 6},
+        {"gladalerts": "2017-09-29", "wdpa": 0, "count": 1},
+        {"gladalerts": "2017-09-29", "wdpa": 1, "count": 5},
+        {"gladalerts": "2017-09-30", "wdpa": 0, "count": 2},
+        {"gladalerts": "2017-09-30", "wdpa": 1, "count": 5},
     ]
 
 
