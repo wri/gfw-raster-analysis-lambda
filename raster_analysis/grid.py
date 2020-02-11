@@ -1,10 +1,9 @@
 import logging
-import os
 
 logger = logging.getLogger(__name__)
-DATA_LAKE_BUCKET = os.environ["S3_BUCKET_DATA_LAKE"]
-BASE_URL = f"/vsis3/DATA_LAKE_BUCKET"
+
+BASE_URL = "/vsis3/test-analysis-data/{raster_id}.vrt"
 
 
 def get_raster_url(raster_id):
-    return f"{BASE_URL}/{raster_id}.vrt"
+    return BASE_URL.format(raster_id=raster_id)
