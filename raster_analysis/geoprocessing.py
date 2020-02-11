@@ -41,6 +41,17 @@ def analysis(
     If threshold is > 0, the 2nd and 3rd raster need to be tcd2000 and tcd2010.
         It will use tcd2000 layer as additional mask and add
     """
+    _log_request(
+        geom,
+        analyses,
+        analysis_raster_id,
+        contextual_raster_ids,
+        aggregate_raster_ids,
+        extent_year,
+        threshold,
+        start,
+        end,
+    )
 
     mean_area = get_area(geom.centroid.y) / 10000
     extent_layer_id = f"tcd_{extent_year}" if extent_year and threshold else None
