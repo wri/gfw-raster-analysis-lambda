@@ -2,283 +2,367 @@
 
 ### Functionality
 
-Run zonal statistics on any given combination of rasters for a given geometry, returning two serialized pandas DataFrames:
+Run zonal statistics on tree cover loss, GLAD alerts, or arbitrary contextual layers defined in our data lake.*
 
-(1) A summary table providing the analysis aggregated across the entire geometry
-(2) A detailed table broken down by year and only include only NoData results masked by the filter
+Currently supports three endpoints:
+1) /analysis/treecoverloss - get statistics on hectares of tree cover loss per year in a geometry. This can be thresholded by a given tree cover density from either the 2000 or 2010 tree cover density baseline.
+2) /analysis/gladalerts - get statistics on number of glad alerts per day in geometry.
+3) /analysis/summary - get statistics on hectare areas of arbitrary combinations of layers. This can be used to get total forest extent area or total area of contextual layers intersecting the geometry (i.e. for percents of tree cover loss).
 
-This function produces the following statistics:
-
-#### Count pixels
-Counts number of pixels for unique value combinations of the given input bands inside the given geometry.
-
-#### Calculate area
-Calculates the geodesic area for unique value combinations of the given input bands inside the given geometry.
-Precision is best for smaller geometries. The function currently calculates the mean area for the input geometry
-and multiplies this area with the pixel count for unique value combinations.
-Use the Sum function together with an area raster for more precise results.
-
-#### Sum values
-Calculates the sum of pixel values for any given raster layer with `Float` datatype for unique value combinations
-of the given input bands with `Integer` datatype inside the given geometry.
+*Date lake is not yet complete, so currently only these layers are supported:
+wdpa
+primary_forest
+plantations
+ifl
+drivers
+biomass
+emissions
 
 
-### Input Parameters
+### Query Parameters
 
 |Parameter|Type|Description|Example|
 |---------|----|-----------|-------|
-|analysis_raster_id| String | Primary raster to base analysis off of. Any NoData pixels in this raster will be ignored.| "loss" |
-|contextual_raster_ids| [String] | List of rasters to contextualize analysis. Analysis results will be aggregated by unique combinations of contextual and analysis raster values. | ["wdpa"] |
-|analyses| [String] | Analyses to be performed | One or more of: `area`, `sum`, `count` |
-|geometry| Object | A valid GeoJSON geometry (see further specification in `Limitations and assumtions` | `"geometry": {"type": "Polygon", "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],}`|
-|filters| [Object] | A list of rasters to use a mask on the geometry during analysis. Includes the raster id and a threshold value. | `[{"raster_id": "tcd_2000", "threshold": 30}]`|
-|aggregate_rasters_ids| [String] | List of value rasters to aggregate. Certain analyses (currently only `sum`) will aggregate the pixel values of these rasters across unique combinations of contextual layers. | ["tcd_2000", "tcd_2010"] |
-
+|geostore_id (required)| String | A valid geostore ID containing the GeoJSON for the geometry of interest (see further specification in `Limitations and assumtions` | cb64960710fd11925df3fda6a2005ca9 |
+|contextual_raster_ids| [String] | List of rasters to contextualize analysis. Analysis results will be aggregated by unique combinations of contextual and analysis raster values. | plantations,wdpa |
+|aggregate_rasters_ids| [String] | List of value rasters to aggregate. These layers will have their pixel values summed unique combinations of contextual layers. | biomass,emissions |
+|threshold| Integer | A percent threshold of tree cover density, using either 2000 or 2010 TCD layers. | 30 |
+|extent_year| Year | The year to use for tree cover density. Must be either 2000 or 2010. Default is 2000. | 2000 |
+|start| Date | This should be a year for tree cover loss, or a date in YYYY-MM-DD format for GLAD alerts (ignored for summary). | 2015, 215-02-04 |
+|end| Date | Same format as 'start'. Must come after start. | 2016 , 2016-02-10 |
 #### Examples
 
 Request:
-```python
-import requests
-import json
-
-url = "https://hjebg1jly1.execute-api.us-east-1.amazonaws.com/default/gfw-raster-analysis"
-
-payload = {
-        "analysis_raster_id": "loss",
-        "contextual_raster_ids": ["wdpa"],
-        "analyses": ["count", "area"],
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
-        },
-        "filters": [
-            {
-                "raster_id": "tcd_2000",
-                "threshold": 30
-            }
-        ]
-    }
-
-headers = {
-    "Content-Type": "application/json",
-    }
-
-response = requests.request("POST", url, data=json.dumps(payload), headers=headers)
-
+```HTTP
+https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/treecoverloss?analyses=area&geostore_id=cb64960710fd11925df3fda6a2005ca9&contextual_raster_ids=wdpa&contextual_raster_ids=primary_forest&threshold=30
 ```
 
 Response:
 ```JSON
-{
-  "statusCode": 200,
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": {
-    "detailed_table": {
-      "loss": {
-        "0": 1,
-        "1": 1,
-        "2": 2,
-        "3": 2,
-        "4": 3,
-        "5": 3,
-        "6": 5,
-        "7": 5,
-        "8": 6,
-        "9": 6,
-        "10": 7,
-        "11": 8,
-        "12": 8,
-        "13": 9,
-        "14": 10,
-        "15": 10,
-        "16": 11,
-        "17": 11,
-        "18": 12,
-        "19": 13,
-        "20": 13,
-        "21": 14,
-        "22": 14,
-        "23": 15,
-        "24": 15,
-        "25": 16,
-        "26": 17,
-        "27": 17,
-        "28": 18,
-        "29": 18
-      },
-      "wdpa": {
-        "0": 0,
-        "1": 1,
-        "2": 0,
-        "3": 1,
-        "4": 0,
-        "5": 1,
-        "6": 0,
-        "7": 1,
-        "8": 0,
-        "9": 1,
-        "10": 1,
-        "11": 0,
-        "12": 1,
-        "13": 1,
-        "14": 0,
-        "15": 1,
-        "16": 0,
-        "17": 1,
-        "18": 0,
-        "19": 0,
-        "20": 1,
-        "21": 0,
-        "22": 1,
-        "23": 0,
-        "24": 1,
-        "25": 0,
-        "26": 0,
-        "27": 1,
-        "28": 0,
-        "29": 1
-      },
-      "count": {
-        "0": 137,
-        "1": 72,
-        "2": 997,
-        "3": 9,
-        "4": 84,
-        "5": 56,
-        "6": 55,
-        "7": 5,
-        "8": 877,
-        "9": 58,
-        "10": 3,
-        "11": 23,
-        "12": 65,
-        "13": 12,
-        "14": 2008,
-        "15": 427,
-        "16": 425,
-        "17": 39,
-        "18": 2,
-        "19": 168,
-        "20": 36,
-        "21": 288,
-        "22": 957,
-        "23": 7,
-        "24": 15,
-        "25": 115,
-        "26": 628,
-        "27": 66,
-        "28": 597,
-        "29": 29
-      },
-      "area": {
-        "0": 10.539639042600312,
-        "1": 5.539080372753449,
-        "2": 76.7008768282665,
-        "3": 0.6923850465941811,
-        "4": 6.462260434879024,
-        "5": 4.308173623252682,
-        "6": 4.231241951408885,
-        "7": 0.3846583592189895,
-        "8": 67.46907620701076,
-        "9": 4.462036966940278,
-        "10": 0.2307950155313937,
-        "11": 1.7694284524073516,
-        "12": 5.000558669846863,
-        "13": 0.9231800621255748,
-        "14": 154.4787970623462,
-        "15": 32.8498238773017,
-        "16": 32.695960533614105,
-        "17": 3.000335201908118,
-        "18": 0.1538633436875958,
-        "19": 12.924520869758048,
-        "20": 2.7695401863767244,
-        "21": 22.156321491013795,
-        "22": 73.62360995451459,
-        "23": 0.5385217029065853,
-        "24": 1.1539750776569684,
-        "25": 8.847142262036758,
-        "26": 48.31308991790508,
-        "27": 5.077490341690662,
-        "28": 45.92820809074735,
-        "29": 2.231018483470139
-      }
-    },
-    "summary_table": {
-      "wdpa": {
-        "0": 0,
-        "1": 1
-      },
-      "count": {
-        "0": 33860,
-        "1": 126140
-      },
-      "area": {
-        "0": 2604.9064086309972,
-        "1": 9704.16108637667
-      },
-      "filtered_area": {
-        "0": 2594.1359745728655,
-        "1": 9180.717991151465
-      },
-      "loss_area": {
-        "0": 493.2089481905882,
-        "1": 142.24666123918232
-      }
-    }
-  }
-}
-
+[
+   {
+      "loss":2001,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":804.1504851401617
+   },
+   {
+      "loss":2001,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":342.39460212739095
+   },
+   {
+      "loss":2001,
+      "wdpa":1,
+      "primary_forest":0,
+      "area":0.23072412542277018
+   },
+   {
+      "loss":2002,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":12.84364298186754
+   },
+   {
+      "loss":2002,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":403.921035573463
+   },
+   {
+      "loss":2003,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":30.071044346767714
+   },
+   {
+      "loss":2003,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":362.69832516459473
+   },
+   {
+      "loss":2004,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":25.84110204735026
+   },
+   {
+      "loss":2004,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":320.09127000318983
+   },
+   {
+      "loss":2005,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":11.99765452198405
+   },
+   {
+      "loss":2005,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":148.81706089768676
+   },
+   {
+      "loss":2005,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.07690804180759006
+   },
+   {
+      "loss":2006,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":45.99100900093886
+   },
+   {
+      "loss":2006,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":441.6828841009897
+   },
+   {
+      "loss":2006,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.30763216723036024
+   },
+   {
+      "loss":2007,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":32.76282581003336
+   },
+   {
+      "loss":2007,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":275.10006554574966
+   },
+   {
+      "loss":2007,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.15381608361518012
+   },
+   {
+      "loss":2008,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":30.455584555805665
+   },
+   {
+      "loss":2008,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":366.4668192131666
+   },
+   {
+      "loss":2008,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.6921723762683105
+   },
+   {
+      "loss":2009,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":19.688458702743056
+   },
+   {
+      "loss":2009,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":366.6975433385894
+   },
+   {
+      "loss":2010,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":19.765366744550647
+   },
+   {
+      "loss":2010,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":220.4953558623607
+   },
+   {
+      "loss":2010,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.5383562926531305
+   },
+   {
+      "loss":2011,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":87.29062745161472
+   },
+   {
+      "loss":2011,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":716.7829496467393
+   },
+   {
+      "loss":2011,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":3.383953839533963
+   },
+   {
+      "loss":2012,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":71.98592713190429
+   },
+   {
+      "loss":2012,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":627.4927131081273
+   },
+   {
+      "loss":2012,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":2.3841492960352917
+   },
+   {
+      "loss":2013,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":50.06713521674113
+   },
+   {
+      "loss":2013,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":248.56679112213106
+   },
+   {
+      "loss":2013,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":1.076712585306261
+   },
+   {
+      "loss":2014,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":91.90510996007012
+   },
+   {
+      "loss":2014,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":663.2549525486567
+   },
+   {
+      "loss":2014,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.07690804180759006
+   },
+   {
+      "loss":2015,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":122.36069451587579
+   },
+   {
+      "loss":2015,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":1131.1634789060347
+   },
+   {
+      "loss":2015,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":1.8457930033821615
+   },
+   {
+      "loss":2016,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":336.39577486639894
+   },
+   {
+      "loss":2016,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":3808.255506186437
+   },
+   {
+      "loss":2016,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.5383562926531305
+   },
+   {
+      "loss":2017,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":328.4742465602171
+   },
+   {
+      "loss":2017,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":3306.8919816427574
+   },
+   {
+      "loss":2017,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.3845402090379503
+   },
+   {
+      "loss":2018,
+      "wdpa":0,
+      "primary_forest":0,
+      "area":652.7954588628245
+   },
+   {
+      "loss":2018,
+      "wdpa":0,
+      "primary_forest":1,
+      "area":5202.598304158045
+   },
+   {
+      "loss":2018,
+      "wdpa":1,
+      "primary_forest":1,
+      "area":0.9998045434986708
+   }
+]
 ```
 
 
 ### Endpoints
 
-https://hjebg1jly1.execute-api.us-east-1.amazonaws.com/default/gfw-raster-analysis
+https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/treecoverloss
+https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/gladalerts
+https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/summary
 
-Max memory: 3GB
 
 
 ### Assumptions and limitations
 
-This function works best with smaller geometries and lower number of input rasters.
-Maximum number of rasters you will be able to process at oncedepends on available memory of Lambda function (up to 3GB),
-data type of rasters and size of your geometry.
-
-To speed up requests, break down your geometry into smaller blocks and send them as multiple requests,
-allowing AWS Lambda to process them in parallel.
-
 GFW raster tiles are organized in 10 x 10 Degree grids and have a pixel size of 0.00025 x 0.00025 degree.
 They are saved as Cloud Optimized TIFFs with 400 x 400 pixels blocks.
-Ideally, input geometries width and height should be a multiple of 400 pixel and align with 0.1 x 0.1 degree grid
-to minimize read requests to S3. Geometries must always be inside a 10 x 10 degree grid cell.
-
-The current function does not try to correct geometries or optimize requests.
-This efforts will still need to be done on the client side.
 
 ## Deployment
 
-We need to package our lambda function together with its dependencies. We can do this inside Docker:
+Use terraform:
 
-Build Docker image
-
-`docker build -t gfw/raster-analysis-lambda .`
-
-Copy lambda package from Docker file
-
-```
-docker run --name lambda -itd gfw/raster-analysis-lambda /bin/bash
-docker cp lambda:/tmp/package.zip package.zip
-docker stop lambda
-docker rm lambda
-```
-
-
-Deploy lambda function by uploading ZIP archive to AWS using cli, console or any other deployment method.
-To enable HTTP requests, you will need to add the lambda function to an API Gateway.
-
-When deploying the function use the following settings:
+./scripts/infra plan
+./scripts/infra apply
 
 ```
 Runtime: Python 3.6
