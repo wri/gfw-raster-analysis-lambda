@@ -169,11 +169,11 @@ def convert_to_csv_json_style(results):
         row = dict()
         for col in result_cols:
             if col == "loss":
-                row[col] = results[col][i] + 2000
-            elif col == "gladalerts":
+                row["loss__year"] = results[col][i] + 2000
+            elif col == "glad_alerts":
                 days_since_2015 = results[col][i] - GLAD_CONFIRMED_CONST
                 raw_date = date(2015, 1, 1) + timedelta(days=days_since_2015)
-                row[col] = raw_date.strftime("%Y-%m-%d")
+                row["alert__date"] = raw_date.strftime("%Y-%m-%d")
             else:
                 row[col] = results[col][i]
 
