@@ -5,6 +5,7 @@ import logging
 from lambda_decorators import json_http_resp
 
 from aws_xray_sdk.core import patch
+from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.tiling import (
     get_tiles,
@@ -23,6 +24,7 @@ logger.setLevel(logging.INFO)
 
 
 @json_http_resp
+@xray_recorder.capture("Tiled Analysis")
 def handler(event, context):
     geom = shape(event["geometry"])
     contextual_raster_ids = (
