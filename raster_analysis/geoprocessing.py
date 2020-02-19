@@ -21,6 +21,7 @@ FILTER_FIELD = "filter"
 CO2_FACTOR = 0.5 * 44 / 12  # used to calculate emissions from biomass layer
 
 
+@xray_recorder.capture("Geoprocessing Analysis")
 def analysis(
     geom,
     analyses,
