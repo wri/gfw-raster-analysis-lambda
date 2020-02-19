@@ -38,7 +38,11 @@ def handler(event, context):
     try:
         geom, area_ha = get_geostore(geom_id)
     except GeostoreNotFoundException:
-        return {"isBase64Encoded": False, "statusCode": 404, "body": str(e)}
+        return {
+            "isBase64Encoded": False,
+            "statusCode": 404,
+            "body": f"Geostore {geom_id} not found",
+        }
 
     payload = get_raster_analysis_payload(
         geom, query_params, multi_val_query_params, path
@@ -55,7 +59,7 @@ def handler(event, context):
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps(csv_result),
         }
-    except RasterAnalysisException as e:
+    except RasterAnalysisException:
         return {
             "isBase64Encoded": False,
             "statusCode": 500,
