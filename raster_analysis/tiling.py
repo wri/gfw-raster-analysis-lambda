@@ -106,18 +106,20 @@ def run_raster_analysis(payload):
 
     lambda_response = lambda_client.invoke(
         FunctionName=RASTER_ANALYSIS_LAMBDA_NAME,
-        InvocationType="RequestResponse",
+        InvocationType="Event",
         Payload=bytes(json.dumps(payload), "utf-8"),
     )
 
-    response = json.loads(lambda_response["Payload"].read())
-    result = json.loads(response["body"])
+    return lambda_response
 
-    if response["statusCode"] == 200:
-        return result
-    else:
-        logger.error(f"Status code: {response['status_code']}\nContent: {result}")
-        raise Exception(f"Status code: {response['status_code']}")
+    # response = json.loads(lambda_response["Payload"].read())
+    # result = json.loads(response["body"])
+
+    # if response["statusCode"] == 200:
+    #    return result
+    # else:
+    #    logger.error(f"Status code: {response['status_code']}\nContent: {result}")
+    #    raise Exception(f"Status code: {response['status_code']}")
 
 
 @xray_recorder.capture("Get Tiles")
