@@ -13,6 +13,7 @@ from copy import deepcopy
 import numpy as np
 
 from raster_analysis.exceptions import RasterAnalysisException
+from aws_xray_sdk.core import xray_recorder
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,6 +21,7 @@ logger.setLevel(logging.INFO)
 RASTER_ANALYSIS_LAMBDA_NAME = os.environ["RASTER_ANALYSIS_LAMBDA_NAME"]
 
 
+@xray_recorder.capture("Merge Tiled Geometry Results")
 def merge_tile_results(tile_results, groupby_columns):
     concatted_tile_results = concat_tile_results(tile_results)
 
@@ -57,6 +59,7 @@ def concat_tile_results(tile_results):
     return result
 
 
+@xray_recorder.capture("Process Tiled Geometries")
 def process_tiled_geoms(tiled_geoms, geoprocessing_params):
     execution_threads = []
     result_queue = queue.Queue()
@@ -117,6 +120,7 @@ def run_raster_analysis(payload):
         raise Exception(f"Status code: {response['status_code']}")
 
 
+@xray_recorder.capture("Get Tiles")
 def get_tiles(geom, width):
     """
     Get width x width tile geometries over the extent of the gseometry
@@ -138,6 +142,7 @@ def get_tiles(geom, width):
     return tiles
 
 
+@xray_recorder.capture("Get Intersecting Geometries")
 def get_intersecting_geoms(geom, tiles):
     """
     Divide geom into geoms intersected with the tiles
