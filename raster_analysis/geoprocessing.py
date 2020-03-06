@@ -153,10 +153,8 @@ def _get_raster_windows(
     sample_layer, shifted_affine, no_data = list(raster_windows.values())[0]
 
     # other layers we'll just use raster with all values == 0
-    for raster_id in get_raster_id_array(
-        contextual_raster_ids, aggregate_raster_ids, extent_layer_id
-    ):
-        if raster_windows[raster_id].data.size == 0:
+    for raster_id in unique_raster_sources:
+        if raster_id != analysis_raster_id and raster_windows[raster_id].data.size == 0:
             raster_windows[raster_id] = RasterWindow(
                 np.zeros(raster_windows[analysis_raster_id].data.shape, dtype=np.uint8),
                 shifted_affine,
