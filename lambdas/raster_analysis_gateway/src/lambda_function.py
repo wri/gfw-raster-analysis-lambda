@@ -75,7 +75,7 @@ def get_raster_analysis_payload(geom, query_params, multi_val_query_params, path
     payload.update(query_params)
 
     for key, val_list in multi_val_query_params.items():
-        if len(val_list) > 1:
+        if len(val_list) > 1 or "ids" in key:
             payload[
                 key
             ] = val_list  # override single value params if they have multiple values
