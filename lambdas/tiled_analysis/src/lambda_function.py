@@ -10,7 +10,7 @@ from aws_xray_sdk.core import xray_recorder
 from raster_analysis.tiling import (
     get_tiles,
     get_intersecting_geoms,
-    process_tiled_geoms,
+    process_tiled_geoms_async,
     merge_tile_results,
 )
 from raster_analysis.exceptions import RasterAnalysisException
@@ -45,7 +45,9 @@ def handler(event, context):
     )
 
     try:
-        tile_results = process_tiled_geoms(tiled_geoms, event)
+        tile_results = process_tiled_geoms_async(
+            tiled_geoms, event, context.aws_request_id
+        )
     except RasterAnalysisException:
         return {
             "statusCode": 500,
@@ -62,3 +64,42 @@ def handler(event, context):
     )
 
     return result
+
+
+if __name__ == "__main__":
+    """
+    import random
+
+    class Context(object):
+        pass
+
+    context = Context()
+    context.aws_request_id = f"test_id_{random.randint(0, 1000)}"
+    context.log_stream_name = "test_log_stream"
+    """
+
+    print(
+        handler(
+            {
+                "analyses": ["count", "area"],
+                "analysis_raster_id": "loss",
+                "contextual_raster_ids": ["wdpa"],
+                # "aggregate_raster_ids": ["biomass"],
+                "extent_year": 2000,
+                "threshold": 30,
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [-64.6929931640625, -11.770570195625227],
+                            [-62.4078369140625, -11.770570195625227],
+                            [-62.4078369140625, -10.260870794748941],
+                            [-64.6929931640625, -10.260870794748941],
+                            [-64.6929931640625, -11.770570195625227],
+                        ]
+                    ],
+                },
+            },
+            None,
+        )
+    )

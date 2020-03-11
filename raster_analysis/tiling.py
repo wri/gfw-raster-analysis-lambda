@@ -7,6 +7,7 @@ import os
 
 import threading
 import queue
+from time import sleep
 
 from copy import deepcopy
 
@@ -59,6 +60,59 @@ def concat_tile_results(tile_results):
     return result
 
 
+def process_tiled_geoms_async(tiled_geoms, geoprocessing_params, request_id):
+    geom_count = len(tiled_geoms)
+    geoprocessing_params["write_to_dynamo"] = True
+    geoprocessing_params["dynamo_id"] = request_id
+    logger.info(f"Processing {geom_count} geoms")
+
+    for geom in tiled_geoms:
+        payload = geoprocessing_params.copy()
+        payload["geometry"] = mapping(geom)
+
+        run_raster_analysis(payload)
+
+    curr_count = 0
+    dynamo = boto3.resource("dynamodb")
+    table = dynamo.Table("tiled-raster-analysis")
+    tries = 0
+
+    while curr_count < geom_count and tries < 60:
+        sleep(0.5)
+        tries += 1
+
+        response = table.query(
+            ExpressionAttributeValues={":id": request_id},
+            KeyConditionExpression=f"AnalysisId = :id",
+            TableName="tiled-raster-analysis",
+        )
+
+        curr_count = response["Count"]
+
+    results = [convert_from_decimal(item["Result"]) for item in response["Items"]]
+    return results
+
+
+@xray_recorder.capture("Convert DynamoDB results")
+def convert_from_decimal(raster_analysis_result):
+    """
+    DynamoDB API returns Decimal objects for all numbers, so this is a util to
+    convert the result back to ints and floats
+
+    :param result: resulting dict from a call to raster analysis
+    :return: result with int and float values instead of Decimal
+    """
+    result = deepcopy(raster_analysis_result)
+
+    for layer, col in result.items():
+        if all([val % 1 == 0 for val in col]):
+            result[layer] = [int(val) for val in col]
+        else:
+            result[layer] = [float(val) for val in col]
+
+    return result
+
+
 @xray_recorder.capture("Process Tiled Geometries")
 def process_tiled_geoms(tiled_geoms, geoprocessing_params):
     execution_threads = []
@@ -106,18 +160,33 @@ def run_raster_analysis(payload):
 
     lambda_response = lambda_client.invoke(
         FunctionName=RASTER_ANALYSIS_LAMBDA_NAME,
-        InvocationType="RequestResponse",
+        InvocationType="Event",
         Payload=bytes(json.dumps(payload), "utf-8"),
     )
 
     response = json.loads(lambda_response["Payload"].read())
     result = json.loads(response["body"])
 
-    if response["statusCode"] == 200:
+    if response["statusCode"] == 202:
         return result
     else:
         logger.error(f"Status code: {response['status_code']}\nContent: {result}")
         raise Exception(f"Status code: {response['status_code']}")
+
+
+"""
+from lambdas.raster_analysis.src.lambda_function import handler
+import random
+
+class Context(object):
+    pass
+
+context = Context()
+context.aws_request_id = f"test_id_{random.randint(0, 1000)}"
+context.log_stream_name = "test_log_stream"
+
+handler(payload, context)
+"""
 
 
 @xray_recorder.capture("Get Tiles")
