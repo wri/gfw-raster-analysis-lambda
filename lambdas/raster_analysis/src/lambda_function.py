@@ -1,13 +1,16 @@
 import logging
 import sys
 import traceback
+import boto3
 
 from shapely.geometry import shape
 
 from raster_analysis import geoprocessing
 
 from lambda_decorators import json_http_resp
+from copy import deepcopy
 from aws_xray_sdk.core import xray_recorder
+from decimal import *
 
 fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
 datefmt = "%Y-%m-%d %H:%M:%S"
@@ -43,7 +46,7 @@ def handler(event, context):
             start = event["start"] if "start" in event else None
             end = event["end"] if "end" in event else None
 
-            return geoprocessing.analysis(
+            result = geoprocessing.analysis(
                 geometry,
                 analyses,
                 analysis_raster_id,
@@ -54,19 +57,49 @@ def handler(event, context):
                 extent_year,
                 threshold,
             )
+
+            dynamo_result = deepcopy(result)
+
+            for layer, col in dynamo_result.items():
+                if len(col) > 0 and isinstance(col[0], float):
+                    dynamo_result[layer] = [Decimal(str(val)) for val in col]
+
+            if event.get("write_to_dynamo", False):
+                dynamo = boto3.resource("dynamodb")
+                table = dynamo.Table("tiled-raster-analysis")
+
+                table.put_item(
+                    Item={
+                        "AnalysisId": event["dynamo_id"],
+                        "TileId": context.aws_request_id,
+                        "Result": dynamo_result,
+                    }
+                )
+
+            return result
         except Exception:
             logging.error(traceback.format_exc())
             raise Exception(f"Internal Server Error <{context.aws_request_id}>")
 
 
 if __name__ == "__main__":
+    """
+    class Context(object):
+        pass
+
+    context = Context()
+    context.aws_request_id = "test_id_1"
+    context.log_stream_name = "test_log_stream"
+    """
     print(
         handler(
             {
+                "write_to_dynamo": True,
+                "dynamo_id": "test_tiled_1",
                 "analyses": ["count", "area"],
                 "analysis_raster_id": "loss",
                 "contextual_raster_ids": ["wdpa"],
-                "aggregate_raster_ids": ["biomass"],
+                # "aggregate_raster_ids": ["biomass"],
                 "extent_year": 2000,
                 "threshold": 30,
                 "geometry": {
@@ -82,7 +115,7 @@ if __name__ == "__main__":
                     ],
                 },
             },
-            {"log_stream_name": "test_log_stream", "aws_request_id": "test_id"},
+            None,
         )
     )
 
