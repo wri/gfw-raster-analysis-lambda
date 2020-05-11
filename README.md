@@ -357,6 +357,8 @@ https://gad5b4taw3.execute-api.us-east-1.amazonaws.com/default/analysis/summary
 GFW raster tiles are organized in 10 x 10 Degree grids and have a pixel size of 0.00025 x 0.00025 degree.
 They are saved as Cloud Optimized TIFFs with 400 x 400 pixels blocks.
 
+Because we can scale up parallel processing with lambda, size of the geometry shouldn't be an issue unless getting to massive scales (> 1 billion ha). But each lambda has in-memory cap of 3 GB, so currently only so many rasters can be loaded into memory at once. The limit depends on the size of the raster values (e.g. binary is way less memory than float), but generally max 4 or 5 raster layers is a good rule of thumb.
+
 ## Deployment
 
 Use terraform:
@@ -371,3 +373,130 @@ Runtime: Python 3.6
 Handler: lambda_function.lambda_handler
 ```
 
+## Future Development
+
+### Data Lake
+
+The GFW data lake is now in production, so this service will soon point to that instead of just test layers. Once it does, all data lake layers should be available for analysis. This currently includes:
+
+* aqueduct_baseline_water_stress
+* aqueduct_erosion_risk
+* birdlife_alliance_for_zero_extinction_site
+* birdlife_endemic_bird_areas
+* birdlife_key_biodiversity_area
+* bra_biomes
+* esa_land_cover_2015
+* gfw_aboveground_carbon_stock_2000
+* gfw_aboveground_carbon_stock_in_emissions_year
+* gfw_aboveground_carbon_stock_in_emissions_year__biomass_swap
+* gfw_aboveground_carbon_stock_in_emissions_year__legal_amazon_loss
+* gfw_aboveground_carbon_stock_in_emissions_year__no_primary_gain
+* gfw_aboveground_carbon_stock_in_emissions_year__us_removals
+* gfw_belowground_carbon_stock_2000
+* gfw_belowground_carbon_stock_in_emissions_year
+* gfw_deadwood_carbon_stock_2000
+* gfw_deadwood_carbon_stock_in_emissions_year
+* gfw_forest_age_category
+* gfw_gross_annual_removals_biomass
+* gfw_gross_cumul_removals_co2
+* gfw_gross_cumul_removals_co2__biomass_swap
+* gfw_gross_cumul_removals_co2__legal_amazon_loss
+* gfw_gross_cumul_removals_co2__maxgain
+* gfw_gross_cumul_removals_co2__no_primary_gain
+* gfw_gross_cumul_removals_co2__us_removals
+* gfw_gross_emissions_co2e_co2_only
+* gfw_gross_emissions_co2e_co2_only__biomass_swap
+* gfw_gross_emissions_co2e_co2_only__convert_to_grassland
+* gfw_gross_emissions_co2e_co2_only__legal_amazon_loss
+* gfw_gross_emissions_co2e_co2_only__no_primary_gain
+* gfw_gross_emissions_co2e_co2_only__no_shifting_ag
+* gfw_gross_emissions_co2e_co2_only__soil_only
+* gfw_gross_emissions_co2e_co2_only__us_removals
+* gfw_gross_emissions_co2e_non_co2
+* gfw_gross_emissions_co2e_non_co2__biomass_swap
+* gfw_gross_emissions_co2e_non_co2__convert_to_grassland
+* gfw_gross_emissions_co2e_non_co2__legal_amazon_loss
+* gfw_gross_emissions_co2e_non_co2__no_primary_gain
+* gfw_gross_emissions_co2e_non_co2__no_shifting_ag
+* gfw_gross_emissions_co2e_non_co2__soil_only
+* gfw_gross_emissions_co2e_non_co2__us_removals
+* gfw_intact_or_primary_forest_2000
+* gfw_land_rights
+* gfw_litter_carbon_stock_2000
+* gfw_litter_carbon_stock_in_emissions_year
+* gfw_managed_forests
+* gfw_mining
+* gfw_net_flux_co2e
+* gfw_net_flux_co2e__biomass_swap
+* gfw_net_flux_co2e__convert_to_grassland
+* gfw_net_flux_co2e__legal_amazon_loss
+* gfw_net_flux_co2e__maxgain
+* gfw_net_flux_co2e__no_primary_gain
+* gfw_net_flux_co2e__no_shifting_ag
+* gfw_net_flux_co2e__us_removals
+* gfw_oil_gas
+* gfw_oil_palm
+* gfw_peatlands
+* gfw_peatlands__flux
+* gfw_pixel_area
+* gfw_plantations
+* gfw_resource_rights
+* gfw_soil_carbon_stock_2000
+* gfw_soil_carbon_stock_in_emissions_year
+* gfw_soil_carbon_stock_in_emissions_year__biomass_swap
+* gfw_soil_carbon_stock_in_emissions_year__legal_amazon_loss
+* gfw_soil_carbon_stock_in_emissions_year__no_primary_gain
+* gfw_soil_carbon_stock_in_emissions_year__us_removals
+* gfw_tiger_landscapes
+* gfw_total_carbon_stock_2000
+* gfw_total_carbon_stock_in_emissions_year
+* gfw_wood_fiber
+* gmw_mangroves_1996
+* gmw_mangroves_2016
+* idn_forest_area
+* idn_forest_moratorium
+* idn_land_cover_2017
+* idn_primary_forest_2000
+* ifl_intact_forest_landscapes
+* jpl_mangrove_aboveground_biomass_stock_2000
+* jpl_tropics_abovegroundbiomass_2000
+* landmark_land_rights
+* mapbox_river_basins
+* mex_forest_zoning
+* mex_payment_ecosystem_services
+* mex_protected_areas
+* per_forest_concessions
+* per_permanent_production_forests
+* per_protected_areas
+* rspo_oil_palm
+* tnc_urban_water_intake
+* tsc_tree_cover_loss_drivers
+* umd_regional_primary_forest_2001
+* umd_tree_cover_density_2000
+* umd_tree_cover_density_2010
+* umd_tree_cover_gain
+* umd_tree_cover_loss
+* usfs_fia_regions
+* wdpa_protected_areas
+* whrc_aboveground_biomass_stock_2000
+* wwf_eco_regions
+
+### VIIRS/MODIS Alerts
+
+These alerts are currently unsupported because we don't rasterize these layers. Instead, we store all enriched points in an document dataset. You can do on-the-fly analysis for these via SQL. (TBD: do we want to just forward that through here so there's only one endpoint?)
+
+### Aggregation
+
+There will be a new `String` parameter called `agg` that will accept one of `day | week | month | year` and return results aggregated by that timeline.
+
+### Whitelist
+
+There will be a new endpoint that will return a whitelist of whether layers intersect the input geometry. Details TBD.
+
+### Misc Layers
+
+Need to decide if/how we will support miscellanious layers on GFW but not maintained in the data lake, like PRODES and Terra-i. TBD.
+
+### Lat/Lon Coordinates
+
+A new analysis will be added to retrieve lat/lon coordinates of points (e.g. for GLAD alerts).
