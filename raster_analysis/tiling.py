@@ -12,6 +12,7 @@ from time import sleep
 from copy import deepcopy
 
 import numpy as np
+import asyncio
 
 from raster_analysis.exceptions import RasterAnalysisException
 from aws_xray_sdk.core import xray_recorder
@@ -60,17 +61,32 @@ def concat_tile_results(tile_results):
     return result
 
 
-def process_tiled_geoms_async(tiled_geoms, geoprocessing_params, request_id):
+def process_tiled_geoms_async(
+    tiled_geoms, geoprocessing_params, request_id, fanout_num
+):
     geom_count = len(tiled_geoms)
     geoprocessing_params["write_to_dynamo"] = True
     geoprocessing_params["dynamo_id"] = request_id
     logger.info(f"Processing {geom_count} geoms")
 
-    for geom in tiled_geoms:
-        payload = geoprocessing_params.copy()
-        payload["geometry"] = mapping(geom)
+    geojson_geoms = [mapping(geom) for geom in tiled_geoms]
+    geom_chunks = [
+        geojson_geoms[x : x + fanout_num]
+        for x in range(0, len(geojson_geoms), fanout_num)
+    ]
+    lambda_client = boto3.Session().client("lambda")
 
-        run_raster_analysis(payload)
+    for chunk in geom_chunks:
+        event = {"payload": geoprocessing_params, "geometries": chunk}
+
+        # payload = deepcopy(geoprocessing_params)
+        # payload["geometry"] = mapping(geom)
+
+        run_raster_analysis(event, lambda_client)
+        # worker = threading.Thread(
+        #    target=run_raster_analysis, args=(payload)
+        # )
+        # worker.start()
 
     curr_count = 0
     dynamo = boto3.resource("dynamodb")
@@ -155,22 +171,15 @@ def raster_analysis_worker(payload, result_queue, error_queue):
         error_queue.put(True)
 
 
-def run_raster_analysis(payload):
-    lambda_client = boto3.Session().client("lambda")
-
-    lambda_response = lambda_client.invoke(
-        FunctionName=RASTER_ANALYSIS_LAMBDA_NAME,
+def run_raster_analysis(payload, lambda_client):
+    response = lambda_client.invoke(
+        FunctionName="raster-analysis-fanout",
         InvocationType="Event",
         Payload=bytes(json.dumps(payload), "utf-8"),
     )
 
-    response = json.loads(lambda_response["Payload"].read())
-    result = json.loads(response["body"])
-
-    if response["statusCode"] == 202:
-        return result
-    else:
-        logger.error(f"Status code: {response['status_code']}\nContent: {result}")
+    if response["StatusCode"] != 202:
+        logger.error(f"Status code: {response['status_code']}")
         raise Exception(f"Status code: {response['status_code']}")
 
 

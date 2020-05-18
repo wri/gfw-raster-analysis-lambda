@@ -9,8 +9,6 @@ from lambdas.tiled_analysis.src.lambda_function import handler
 
 @patch("raster_analysis.tiling.run_raster_analysis")
 def test_tiled_analysis_lambda(mock_run_raster_analysis):
-    return
-
     class Context(object):
         pass
 
