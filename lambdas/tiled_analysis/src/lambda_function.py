@@ -46,7 +46,7 @@ def handler(event, context):
 
     try:
         tile_results = process_tiled_geoms_async(
-            tiled_geoms, event, context.aws_request_id
+            tiled_geoms, event, context.aws_request_id, 20
         )
     except RasterAnalysisException:
         return {

@@ -4,6 +4,7 @@
       {
           "Effect": "Allow",
           "Action": [
+              "dynamodb:*",
               "secretsmanager:GetRandomPassword",
               "lambda:InvokeFunction",
               "secretsmanager:GetResourcePolicy",
