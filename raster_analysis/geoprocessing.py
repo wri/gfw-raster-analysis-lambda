@@ -25,11 +25,13 @@ CO2_FACTOR = 0.5 * 44 / 12  # used to calculate emissions from biomass layer
 def analysis(
     geom,
     analyses,
-    analysis_raster_id=None,
-    contextual_raster_ids=[],
-    aggregate_raster_ids=[],
+    analysis_raster_id,
+    layers=[],
+    sum_layers=[],
+    filter_layers=[],
     start=None,
     end=None,
+    agg=None,
     extent_year=None,
     threshold=None,
 ):
@@ -46,8 +48,8 @@ def analysis(
         geom,
         analyses,
         analysis_raster_id,
-        contextual_raster_ids,
-        aggregate_raster_ids,
+        layers,
+        sum_layers,
         extent_year,
         threshold,
         start,
@@ -58,35 +60,21 @@ def analysis(
     extent_layer_id = f"tcd_{extent_year}" if extent_year and threshold else None
 
     raster_windows = _get_raster_windows(
-        geom,
-        analysis_raster_id,
-        contextual_raster_ids,
-        aggregate_raster_ids,
-        extent_layer_id,
-        threshold,
+        geom, analysis_raster_id, layers, sum_layers, extent_layer_id, threshold
     )
 
     if not raster_windows:
-        return _get_empty_result(
-            analyses, analysis_raster_id, contextual_raster_ids, aggregate_raster_ids
-        )
+        return _get_empty_result(analyses, analysis_raster_id, layers, sum_layers)
 
     mask = _get_mask(
         geom, raster_windows, analysis_raster_id, extent_layer_id, start, end
     )
 
     # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
-    analysis_groupby_fields = get_raster_id_array(
-        analysis_raster_id, contextual_raster_ids
-    )
+    analysis_groupby_fields = get_raster_id_array(analysis_raster_id, layers)
 
     result = _analysis(
-        analyses,
-        raster_windows,
-        analysis_groupby_fields,
-        aggregate_raster_ids,
-        mean_area,
-        mask,
+        analyses, raster_windows, analysis_groupby_fields, sum_layers, mean_area, mask
     )
 
     for col, arr in result.items():

@@ -25,6 +25,13 @@ GFW_API_URI = f"https://{'production' if ENV == 'production' else 'staging'}-api
 GLAD_UNCONFIRMED_CONST = 20000
 GLAD_CONFIRMED_CONST = 30000
 
+# TODO For summary, get extent without contextual layer
+# TODO MVP, gain/loss/emissions/biomass/extent
+# TODO Check for glad extent
+# TODO agg glad alerts by week
+# TODO read agg and contextual layers as list
+# TODO get URL and authentication token
+
 
 # TODO add lambda validate decorator
 def handler(event, context):

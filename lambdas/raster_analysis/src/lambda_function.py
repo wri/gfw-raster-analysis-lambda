@@ -2,6 +2,7 @@ import logging
 import sys
 import traceback
 import boto3
+import os
 
 from shapely.geometry import shape
 
@@ -30,6 +31,11 @@ def handler(event, context):
 
             analyses = event["analyses"] if "analyses" in event else ["count", "area"]
             geometry = shape(event["geometry"])
+
+            if "tile" in event:
+                tile = shape(event["tile"])
+                geometry = geometry.intersection(tile)
+
             analysis_raster_id = (
                 event["analysis_raster_id"] if "analysis_raster_id" in event else []
             )
@@ -66,13 +72,13 @@ def handler(event, context):
 
             if event.get("write_to_dynamo", False):
                 dynamo = boto3.resource("dynamodb")
-                table = dynamo.Table("tiled-raster-analysis")
+                table = dynamo.Table(os.environ["TILED_RESULTS_TABLE_NAME"])
 
                 table.put_item(
                     Item={
-                        "AnalysisId": event["dynamo_id"],
-                        "TileId": context.aws_request_id,
-                        "Result": dynamo_result,
+                        "analysis_id": event["dynamo_id"],
+                        "tile_id": context.aws_request_id,
+                        "result": dynamo_result,
                     }
                 )
 
@@ -80,44 +86,6 @@ def handler(event, context):
         except Exception:
             logging.error(traceback.format_exc())
             raise Exception(f"Internal Server Error <{context.aws_request_id}>")
-
-
-if __name__ == "__main__":
-    """
-    class Context(object):
-        pass
-
-    context = Context()
-    context.aws_request_id = "test_id_1"
-    context.log_stream_name = "test_log_stream"
-    """
-    print(
-        handler(
-            {
-                "write_to_dynamo": True,
-                "dynamo_id": "test_tiled_1",
-                "analyses": ["count", "area"],
-                "analysis_raster_id": "loss",
-                "contextual_raster_ids": ["wdpa"],
-                # "aggregate_raster_ids": ["biomass"],
-                "extent_year": 2000,
-                "threshold": 30,
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                        [
-                            [-52.17705785667322, -12.5],
-                            [-52.5, -12.5],
-                            [-52.5, -11.25],
-                            [-52.332613412228774, -11.25],
-                            [-52.17705785667322, -12.5],
-                        ]
-                    ],
-                },
-            },
-            None,
-        )
-    )
 
 
 """
