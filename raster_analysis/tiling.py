@@ -61,36 +61,26 @@ def concat_tile_results(tile_results):
     return result
 
 
-def process_tiled_geoms_async(
-    tiled_geoms, geoprocessing_params, request_id, fanout_num
-):
-    geom_count = len(tiled_geoms)
+def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
+    geom_count = len(tiles)
     geoprocessing_params["write_to_dynamo"] = True
     geoprocessing_params["dynamo_id"] = request_id
-    logger.info(f"Processing {geom_count} geoms")
+    logger.info(f"Processing {geom_count} tiles")
 
-    geojson_geoms = [mapping(geom) for geom in tiled_geoms]
-    geom_chunks = [
-        geojson_geoms[x : x + fanout_num]
-        for x in range(0, len(geojson_geoms), fanout_num)
+    tile_geojsons = [mapping(geom) for geom in tiles]
+    tile_chunks = [
+        tile_geojsons[x : x + fanout_num]
+        for x in range(0, len(tile_geojsons), fanout_num)
     ]
     lambda_client = boto3.Session().client("lambda")
 
-    for chunk in geom_chunks:
-        event = {"payload": geoprocessing_params, "geometries": chunk}
-
-        # payload = deepcopy(geoprocessing_params)
-        # payload["geometry"] = mapping(geom)
-
+    for chunk in tile_chunks:
+        event = {"payload": geoprocessing_params, "tiles": chunk}
         run_raster_analysis(event, lambda_client)
-        # worker = threading.Thread(
-        #    target=run_raster_analysis, args=(payload)
-        # )
-        # worker.start()
 
     curr_count = 0
     dynamo = boto3.resource("dynamodb")
-    table = dynamo.Table("tiled-raster-analysis")
+    table = dynamo.Table(os.environ["TILED_RESULTS_TABLE_NAME"])
     tries = 0
 
     while curr_count < geom_count and tries < 60:
@@ -99,13 +89,13 @@ def process_tiled_geoms_async(
 
         response = table.query(
             ExpressionAttributeValues={":id": request_id},
-            KeyConditionExpression=f"AnalysisId = :id",
-            TableName="tiled-raster-analysis",
+            KeyConditionExpression=f"analysis_id = :id",
+            TableName=os.environ["TILED_RESULTS_TABLE_NAME"],
         )
 
         curr_count = response["Count"]
 
-    results = [convert_from_decimal(item["Result"]) for item in response["Items"]]
+    results = [convert_from_decimal(item["result"]) for item in response["Items"]]
     return results
 
 
@@ -129,39 +119,6 @@ def convert_from_decimal(raster_analysis_result):
     return result
 
 
-@xray_recorder.capture("Process Tiled Geometries")
-def process_tiled_geoms(tiled_geoms, geoprocessing_params):
-    execution_threads = []
-    result_queue = queue.Queue()
-    error_queue = queue.Queue()
-
-    for geom in tiled_geoms:
-        payload = geoprocessing_params.copy()
-        payload["geometry"] = mapping(geom)
-
-        execution_thread = threading.Thread(
-            target=raster_analysis_worker, args=(payload, result_queue, error_queue)
-        )
-        execution_thread.start()
-        execution_threads.append(execution_thread)
-
-    for execution_thread in execution_threads:
-        execution_thread.join()
-
-    errors = [error_queue.get() for _ in range(error_queue.qsize())]
-    if errors:
-        logger.error("Error in raster analyses lambda. Check logs.")
-        raise RasterAnalysisException("Error in raster analyses lambda. Check logs.")
-
-    results = [result_queue.get() for _ in range(result_queue.qsize())]
-
-    # get key to check if result has no rows
-    result_random_key = list(results[0].keys())[0]
-    nonempty_results = list(filter(lambda result: result[result_random_key], results))
-
-    return nonempty_results
-
-
 def raster_analysis_worker(payload, result_queue, error_queue):
     try:
         result_table = run_raster_analysis(payload)
@@ -181,21 +138,6 @@ def run_raster_analysis(payload, lambda_client):
     if response["StatusCode"] != 202:
         logger.error(f"Status code: {response['status_code']}")
         raise Exception(f"Status code: {response['status_code']}")
-
-
-"""
-from lambdas.raster_analysis.src.lambda_function import handler
-import random
-
-class Context(object):
-    pass
-
-context = Context()
-context.aws_request_id = f"test_id_{random.randint(0, 1000)}"
-context.log_stream_name = "test_log_stream"
-
-handler(payload, context)
-"""
 
 
 @xray_recorder.capture("Get Tiles")

@@ -11,7 +11,7 @@ resource "aws_lambda_function" "raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.core.outputs.lambda_layer_rasterio_arn
+    data.terraform_remote_state.lambda-layers.outputs.lambda_layer_rasterio_arn
   ]
 
   tracing_config {
@@ -20,8 +20,9 @@ resource "aws_lambda_function" "raster_analysis" {
 
   environment {
     variables = {
-      ENV                 = var.environment
-      S3_BUCKET_DATA_LAKE = data.terraform_remote_state.core.outputs.data-lake_bucket
+      ENV                         = var.environment
+      S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
+      TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
     }
   }
 }
@@ -39,7 +40,7 @@ resource "aws_lambda_function" "tiled_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.core.outputs.lambda_layer_rasterio_arn,
+    data.terraform_remote_state.lambda-layers.outputs.lambda_layer_rasterio_arn,
   ]
 
   tracing_config {
@@ -51,6 +52,7 @@ resource "aws_lambda_function" "tiled_analysis" {
       ENV                         = var.environment
       S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       RASTER_ANALYSIS_LAMBDA_NAME = aws_lambda_function.raster_analysis.function_name
+      TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
     }
   }
 }

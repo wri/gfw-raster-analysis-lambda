@@ -104,12 +104,7 @@ def test_analysis_with_extent_filter_and_sum(mock_geom_on_raster, mock_read_wind
     )
 
     results = analysis(
-        GEOM,
-        ["count"],
-        "ras0",
-        extent_year=2000,
-        threshold=30,
-        aggregate_raster_ids=["ras_sum"],
+        GEOM, ["count"], "ras0", extent_year=2000, threshold=30, sum_layers=["ras_sum"]
     )
 
     assert len(results["count"]) == 2
@@ -182,12 +177,7 @@ def test_analysis_with_context_and_time_filters_and_area(
     mock_get_area.return_value = 20000
 
     results = analysis(
-        GEOM,
-        ["count", "area"],
-        "ras0",
-        contextual_raster_ids=["ras1", "ras2"],
-        start=2,
-        end=4,
+        GEOM, ["count", "area"], "ras0", layers=["ras1", "ras2"], start=2, end=4
     )
 
     assert len(results["count"]) == 4
@@ -202,7 +192,7 @@ def test_analysis_with_context_and_time_filters_and_area(
     mock_geom_on_raster.return_value = np.copy(geom_on_raster)
 
     results = analysis(
-        GEOM, ["count", "area"], "ras0", contextual_raster_ids=["ras1", "ras2"], start=4
+        GEOM, ["count", "area"], "ras0", layers=["ras1", "ras2"], start=4
     )
 
     assert len(results["count"]) == 4
@@ -216,9 +206,7 @@ def test_analysis_with_context_and_time_filters_and_area(
     # reset mock mask
     mock_geom_on_raster.return_value = np.copy(geom_on_raster)
 
-    results = analysis(
-        GEOM, ["count", "area"], "ras0", contextual_raster_ids=["ras1", "ras2"], end=2
-    )
+    results = analysis(GEOM, ["count", "area"], "ras0", layers=["ras1", "ras2"], end=2)
 
     assert results["ras0"] == [1, 2]
     assert results["ras1"] == [3, 1]
@@ -274,7 +262,7 @@ def test_summary(mock_get_area, mock_geom_on_raster, mock_read_windows):
     mock_geom_on_raster.return_value = np.copy(geom_on_raster)
     mock_get_area.return_value = 20000
 
-    results = analysis(GEOM, ["area"], contextual_raster_ids=["ras1", "ras2"])
+    results = analysis(GEOM, ["area"], layers=["ras1", "ras2"])
 
     assert len(results["area"]) == 7
 
@@ -306,10 +294,7 @@ def test_no_data(mock_get_area, mock_geom_on_raster, mock_read_windows):
     mock_get_area.return_value = 20000
 
     results = analysis(
-        GEOM,
-        ["count", "area"],
-        analysis_raster_id="ras0",
-        contextual_raster_ids=["ras1"],
+        GEOM, ["count", "area"], analysis_raster_id="ras0", layers=["ras1"]
     )
 
     assert results == {"ras0": [], "ras1": [], "count": [], "area": []}
@@ -374,9 +359,7 @@ def test_biomass_emissions(mock_get_area, mock_geom_on_raster, mock_read_windows
 
     mock_get_area.return_value = 20000
 
-    results = analysis(
-        GEOM, ["count"], "ras0", aggregate_raster_ids=["biomass", "emissions"]
-    )
+    results = analysis(GEOM, ["count"], "ras0", sum_layers=["biomass", "emissions"])
 
     assert len(results["count"]) == 2
     assert results["count"][0] == 6

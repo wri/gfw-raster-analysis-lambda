@@ -14,22 +14,20 @@ patch(["boto3"])
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-RASTER_ANALYSIS_LAMBDA_NAME = os.environ["RASTER_ANALYSIS_LAMBDA_NAME"]
-
 
 @json_http_resp
 @xray_recorder.capture("Tiled Analysis")
 def handler(event, context):
-    geoms = event.get("geometries", [])
+    tiles = event.get("tiles", [])
     payload_base = event["payload"]
 
     lambda_client = boto3.Session().client("lambda")
-    for geom in geoms:
+    for tile in tiles:
         payload = deepcopy(payload_base)
-        payload["geometry"] = geom
+        payload["tile"] = tile
 
         lambda_response = lambda_client.invoke(
-            FunctionName=RASTER_ANALYSIS_LAMBDA_NAME,
+            FunctionName=os.environ["RASTER_ANALYSIS_LAMBDA_NAME"],
             InvocationType="Event",
             Payload=bytes(json.dumps(payload), "utf-8"),
         )
