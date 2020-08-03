@@ -6,64 +6,8 @@ import rasterio
 from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 
-from raster_analysis.grid import get_raster_url
-from raster_analysis.exceptions import RasterReadException
-from collections import namedtuple
-
-import threading
-import queue
-
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
-
-
-@xray_recorder.capture("Read All Windows")
-def read_windows_parallel(raster_ids, geom, masked=False):
-    read_window_threads = []
-    result_queue = queue.Queue()
-    error_queue = queue.Queue()
-
-    for raster_id in raster_ids:
-        read_window_thread = threading.Thread(
-            target=read_window_parallel_work,
-            args=(raster_id, geom, masked, result_queue, error_queue),
-        )
-        read_window_thread.start()
-        read_window_threads.append(read_window_thread)
-
-    for read_window_thread in read_window_threads:
-        read_window_thread.join()
-
-    errors = []
-    while not error_queue.empty():
-        errors.append(error_queue.get())
-
-    if errors:
-        raise RasterReadException("\n".join([str(e) for e in errors]))
-
-    result_dict = {}
-    while not result_queue.empty():
-        result = result_queue.get()
-        result_dict[result[0]] = RasterWindow(
-            data=result[1], shifted_affine=result[2], no_data=result[3]
-        )
-
-    return result_dict
-
-
-def read_window_parallel_work(raster_id, geom, masked, result_queue, error_queue):
-    try:
-        raster_url = get_raster_url(raster_id)
-
-        data, shifted_affine, no_data_value = read_window_ignore_missing(
-            raster_url, geom, masked=masked
-        )
-
-        result_queue.put((raster_id, data, shifted_affine, no_data_value))
-    except Exception as e:
-        error_queue.put(e)
 
 
 @xray_recorder.capture("Read Window")

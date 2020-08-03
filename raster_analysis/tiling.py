@@ -4,32 +4,34 @@ import boto3
 import json
 import logging
 import os
+from datetime import date
 
-import threading
-import queue
 from time import sleep
 
 from copy import deepcopy
 
 import numpy as np
-import asyncio
-
-from raster_analysis.exceptions import RasterAnalysisException
 from aws_xray_sdk.core import xray_recorder
+
+from raster_analysis.boto import dynamodb_resource
+import pandas
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-RASTER_ANALYSIS_LAMBDA_NAME = os.environ["RASTER_ANALYSIS_LAMBDA_NAME"]
 
 
 @xray_recorder.capture("Merge Tiled Geometry Results")
 def merge_tile_results(tile_results, groupby_columns):
     concatted_tile_results = concat_tile_results(tile_results)
 
-    groupby_results = np.array([concatted_tile_results[col] for col in groupby_columns])
-    column_maxes = [col.max() + 1 for col in groupby_results]
-    linear_indices = np.ravel_multi_index(groupby_results, column_maxes).astype(
+    if not groupby_columns:
+        return concatted_tile_results
+
+    group_by_results = np.array(
+        [concatted_tile_results[col] for col in groupby_columns]
+    )
+    column_maxes = [col.max() + 1 for col in group_by_results]
+    linear_indices = np.ravel_multi_index(group_by_results, column_maxes).astype(
         np.uint32
     )
 
@@ -44,6 +46,22 @@ def merge_tile_results(tile_results, groupby_columns):
             merged_tile_results[col_name] = np.bincount(inv, weights=col_data).astype(
                 arr.dtype
             )
+
+    # convert ordinal dates to readable dates
+    for col in groupby_columns:
+        if "__date" in col:
+            merge_tile_results[col] = [
+                date.fromordinal(val).strftime("%Y-%m-%d")
+                for val in merge_tile_results[col]
+            ]
+        elif "__isoweek" in col:
+            iso_dates = [
+                date.fromordinal(val).isocalendar() for val in merge_tile_results[col]
+            ]
+            merge_tile_results[groupby_columns] = [d[1] for d in iso_dates]
+            merge_tile_results[groupby_columns.replace("__isoweek", "__year")] = [
+                d[0] for d in iso_dates
+            ]
 
     for col, arr in merged_tile_results.items():
         merged_tile_results[col] = arr.tolist()
@@ -64,36 +82,42 @@ def concat_tile_results(tile_results):
 def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
     geom_count = len(tiles)
     geoprocessing_params["write_to_dynamo"] = True
-    geoprocessing_params["dynamo_id"] = request_id
+    geoprocessing_params["analysis_id"] = request_id
     logger.info(f"Processing {geom_count} tiles")
 
-    tile_geojsons = [mapping(geom) for geom in tiles]
+    tile_geojsons = [mapping(tile) for tile in tiles]
     tile_chunks = [
         tile_geojsons[x : x + fanout_num]
         for x in range(0, len(tile_geojsons), fanout_num)
     ]
     lambda_client = boto3.Session().client("lambda")
+    fanout_lambda = os.environ["FANOUT_LAMBDA"]
 
     for chunk in tile_chunks:
         event = {"payload": geoprocessing_params, "tiles": chunk}
-        run_raster_analysis(event, lambda_client)
+        invoke_lambda(event, fanout_lambda, lambda_client)
 
     curr_count = 0
-    dynamo = boto3.resource("dynamodb")
-    table = dynamo.Table(os.environ["TILED_RESULTS_TABLE_NAME"])
     tries = 0
 
-    while curr_count < geom_count and tries < 60:
+    tiled_table = dynamodb_resource().Table(os.environ["TILED_RESULTS_TABLE_NAME"])
+    logger.info(f"Geom count: {geom_count}")
+    while curr_count < geom_count and tries < 6000:
         sleep(0.5)
         tries += 1
 
-        response = table.query(
+        response = tiled_table.query(
             ExpressionAttributeValues={":id": request_id},
             KeyConditionExpression=f"analysis_id = :id",
             TableName=os.environ["TILED_RESULTS_TABLE_NAME"],
         )
 
         curr_count = response["Count"]
+
+    if curr_count != geom_count:
+        raise TimeoutError(
+            f"Timeout occurred before all lambdas completed. Tile count: {geom_count}; tiles completed: {curr_count}"
+        )
 
     results = [convert_from_decimal(item["result"]) for item in response["Items"]]
     return results
@@ -111,53 +135,52 @@ def convert_from_decimal(raster_analysis_result):
     result = deepcopy(raster_analysis_result)
 
     for layer, col in result.items():
-        if all([val % 1 == 0 for val in col]):
-            result[layer] = [int(val) for val in col]
+        if isinstance(col, list):
+            if all([val % 1 == 0 for val in col]):
+                result[layer] = [int(val) for val in col]
+            else:
+                result[layer] = [float(val) for val in col]
         else:
-            result[layer] = [float(val) for val in col]
+            result[layer] = int(col) if col % 1 == 0 else float(col)
 
     return result
 
 
-def raster_analysis_worker(payload, result_queue, error_queue):
-    try:
-        result_table = run_raster_analysis(payload)
-        result_queue.put(result_table)
-    except Exception as e:
-        logger.error(e)
-        error_queue.put(True)
-
-
-def run_raster_analysis(payload, lambda_client):
+def invoke_lambda(payload, lambda_name, lambda_client):
     response = lambda_client.invoke(
-        FunctionName="raster-analysis-fanout",
+        FunctionName=lambda_name,
         InvocationType="Event",
         Payload=bytes(json.dumps(payload), "utf-8"),
     )
 
     if response["StatusCode"] != 202:
         logger.error(f"Status code: {response['status_code']}")
-        raise Exception(f"Status code: {response['status_code']}")
+        raise AssertionError(f"Status code: {response['status_code']}")
 
 
 @xray_recorder.capture("Get Tiles")
 def get_tiles(geom, width):
     """
-    Get width x width tile geometries over the extent of the gseometry
+    Get width x width tile geometries over the extent of the geometry
+    TODO if there's a multipolygon (e.g. from shapefile) where polygons are dotted across the world,
+    TODO will this take forever to check intersections? Seems uncommon, but can probably just
+    TODO look at each individual polygon (but then what if there's a multipolygon with a ridiculous
+    TODO number of small polygons?
     """
     min_x, min_y, max_x, max_y = _get_rounded_bounding_box(geom, width)
     tiles = []
 
     for i in range(0, int((max_x - min_x) / width)):
         for j in range(0, int((max_y - min_y) / width)):
-            tiles.append(
-                box(
-                    (i * width) + min_x,
-                    (j * width) + min_y,
-                    ((i + 1) * width) + min_x,
-                    ((j + 1) * width) + min_y,
-                )
+            tile = box(
+                (i * width) + min_x,
+                (j * width) + min_y,
+                ((i + 1) * width) + min_x,
+                ((j + 1) * width) + min_y,
             )
+
+            if geom.intersects(tile):
+                tiles.append(tile)
 
     return tiles
 
