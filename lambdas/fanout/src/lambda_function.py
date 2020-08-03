@@ -7,7 +7,6 @@ from aws_xray_sdk.core import xray_recorder
 from copy import deepcopy
 import boto3
 import os
-import json
 
 patch(["boto3"])
 
@@ -22,20 +21,17 @@ def handler(event, context):
     payload_base = event["payload"]
 
     lambda_client = boto3.Session().client("lambda")
+    raster_analysis_lambda = os.environ["RASTER_ANALYSIS_LAMBDA_NAME"]
     for tile in tiles:
         payload = deepcopy(payload_base)
         payload["tile"] = tile
 
-        lambda_response = lambda_client.invoke(
-            FunctionName=os.environ["RASTER_ANALYSIS_LAMBDA_NAME"],
-            InvocationType="Event",
-            Payload=bytes(json.dumps(payload), "utf-8"),
-        )
+        try:
+            from raster_analysis.tiling import invoke_lambda
 
-        if lambda_response["statusCode"] != 202:
+            invoke_lambda(payload, raster_analysis_lambda, lambda_client)
+        except Exception as e:
             logger.error(
-                f"Lambda invoke returned status {lambda_response['statusCode']}, aws request id: {context.aws_request_id}, geom: {geom}"
+                f"Invoke raster analysis lambda failed for aws request id: {context.aws_request_id}, tile: {tile}"
             )
-            raise Exception(
-                "Lambda invoke returned status {lambda_response['statusCode']}"
-            )
+            raise e

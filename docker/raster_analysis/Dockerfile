@@ -24,3 +24,5 @@ RUN find python/ -type f -a -name '*.py' -print0 | xargs -0 rm -f
 RUN cat .lambdaignore | xargs zip -9qyr layer.zip python -x
 
 CMD ["/bin/bash"]
+
+

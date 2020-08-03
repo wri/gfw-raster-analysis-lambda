@@ -4,10 +4,12 @@ import numpy as np
 import json
 
 from raster_analysis.geodesy import get_area
-from raster_analysis.io import mask_geom_on_raster, read_windows_parallel, RasterWindow
+from raster_analysis.grid import get_tile_id
+from raster_analysis.layer.data_cube import DataCube
 
 from shapely.geometry import mapping
 from aws_xray_sdk.core import xray_recorder
+import asyncio
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -21,70 +23,39 @@ FILTER_FIELD = "filter"
 CO2_FACTOR = 0.5 * 44 / 12  # used to calculate emissions from biomass layer
 
 
+###
+# TODO test Downloads/borneo_orangutan.zip and see what happens (prod geostore=fe14a1ec856d2a4888a7099b1a09e9aa)
+###
+
+
 @xray_recorder.capture("Geoprocessing Analysis")
-def analysis(
-    geom,
-    analyses,
-    analysis_raster_id,
-    layers=[],
-    sum_layers=[],
-    filter_layers=[],
-    start=None,
-    end=None,
-    agg=None,
-    extent_year=None,
-    threshold=None,
+def zonal_sql(
+    geom, tile, groups=[], sums=[], filters=[], start_date=None, end_date=None
 ):
     """
-    Supported analysis:
-        area: calculates geodesic area for unique pixel combinations across all input rasters
-        sum: Sums values for all floating point rasters for unique pixel combintions of non-floating point rasters
-        count: Counts occurrences of unique pixel combinations across all input rasters
+    Get zonal statistics across many raster layers at once using basic SQL-like parameters.
 
-    If threshold is > 0, the 2nd and 3rd raster need to be tcd2000 and tcd2010.
-        It will use tcd2000 layer as additional mask and add
+    :param geom: shapely geometry you want zonal statistics
+    :param groups: layers whose values you want to group results by. Layer must be int, datetime or string. Equivalent to
+            `select **groups from table group by **groups`
+    :param sums: sum values of these layers based on group layers. Equivalent to sum aggregate function in SQL.
+    :param filters: layers to mask input geometry with, where all no-data values are considered to be masked values.
+    :param start_date: start date to filter datetime layers by
+    :param end_date: end date to filter datetime layers by
+    :return: a table of results in # TODO describe structure and give example
     """
-    _log_request(
-        geom,
-        analyses,
-        analysis_raster_id,
-        layers,
-        sum_layers,
-        extent_year,
-        threshold,
-        start,
-        end,
-    )
+    data_cube = DataCube(geom, tile, groups, sums, filters)
+    result = data_cube.calculate()
 
-    mean_area = get_area(geom.centroid.y) / 10000
-    extent_layer_id = f"tcd_{extent_year}" if extent_year and threshold else None
+    # for col, arr in result.items():
+    #    result[col] = arr.tolist()
 
-    raster_windows = _get_raster_windows(
-        geom, analysis_raster_id, layers, sum_layers, extent_layer_id, threshold
-    )
-
-    if not raster_windows:
-        return _get_empty_result(analyses, analysis_raster_id, layers, sum_layers)
-
-    mask = _get_mask(
-        geom, raster_windows, analysis_raster_id, extent_layer_id, start, end
-    )
-
-    # apply initial analysis, grouping by all but aggregate fields (these may be later further grouped)
-    analysis_groupby_fields = get_raster_id_array(analysis_raster_id, layers)
-
-    result = _analysis(
-        analyses, raster_windows, analysis_groupby_fields, sum_layers, mean_area, mask
-    )
-
-    for col, arr in result.items():
-        result[col] = arr.tolist()
-
-    logger.debug(f"Successfully ran analysis={analyses}")
     logger.info(f"Ran analysis with result: {result}")
 
     return result
 
+
+""""
 
 @xray_recorder.capture("Get Mask")
 def _get_mask(geom, raster_windows, analysis_raster_id, extent_layer_id, start, end):
@@ -161,14 +132,12 @@ def _get_raster_windows(
 
 @xray_recorder.capture("Analysis")
 def _analysis(
-    analyses,
-    raster_windows,
-    reporting_raster_ids,
-    aggregate_raster_ids,
+    group_cube,
+    sum_cube,
+    filter_cube,
     mean_area,
-    mask,
 ):
-    """
+    ""
     The analysis algorithm ended up using some obscure NumPy functions to optimize speed and memory usage,
     so an explanation of what's going on here:
 
@@ -205,15 +174,14 @@ def _analysis(
     temporary arrays that exploded the memory usage (e.g. with 2 GB of layer data, it would allocate an
     additional 2.5 GB during processing). I made the choice here to very sparingly allocate new arrays
     and re-use existing ones as much as possible to keep us under lambda limits and increase speed.
-    """
-    reporting_columns = [
-        np.ravel(raster_windows[raster_id].data) for raster_id in reporting_raster_ids
+    ""
+    group_cols = [
+        np.ravel(window.data) for window in group_cube.windows
     ]
-    column_maxes = [col.max() + 1 for col in reporting_columns]
+    column_maxes = [col.max() + 1 for col in group_cols]
+    linear_index = _get_linear_indices(group_cols, column_maxes, filter_cube.filter)
 
-    linear_indices = _get_linear_indices(reporting_columns, column_maxes, mask)
-
-    unique_values, counts = _unique(linear_indices)
+    unique_values, counts = _unique(linear_index)
     unique_value_combinations = np.unravel_index(unique_values, column_maxes)
 
     result = dict(zip(reporting_raster_ids, unique_value_combinations))
@@ -250,21 +218,9 @@ def _analysis(
     return result
 
 
-@xray_recorder.capture("Get Linear Indicies")
-def _get_linear_indices(columns, dims, mask):
-    return np.compress(
-        np.ravel(mask), np.ravel_multi_index(columns, dims).astype(np.uint32)
-    )
-
-
 @xray_recorder.capture("Get Sum")
 def _get_sum(linear_indices, mask, data, bins):
     return np.bincount(linear_indices, weights=_extract(mask, data), minlength=bins)
-
-
-@xray_recorder.capture("Unique")
-def _unique(array):
-    return np.unique(array, return_counts=True)
 
 
 @xray_recorder.capture("Get Inverse")
@@ -281,11 +237,6 @@ def _get_filter(filter_raster, filter_intervals):
 
     logger.debug("Successfully create filter")
     return filter
-
-
-@xray_recorder.capture("NumPy Extract")
-def _extract(mask, data):
-    return np.extract(mask, data)
 
 
 @xray_recorder.capture("Mask by Threshold")
@@ -308,50 +259,6 @@ def _mask_interval(raster, start, end):
         return raster <= end
 
 
-def get_raster_id_array(*raster_id_args, unique=False):
-    ids = []
-
-    for raster_id_arg in raster_id_args:
-        if raster_id_arg:
-            if isinstance(raster_id_arg, list):
-                ids += raster_id_arg
-            elif isinstance(raster_id_arg, str):
-                ids.append(raster_id_arg)
-            else:
-                raise ValueError(
-                    "Cannot add raster id of type"
-                    + str(type(raster_id_arg))
-                    + "to raster id array."
-                )
-
-    return list(set(ids)) if unique else ids
-
-
-def _log_request(
-    geom,
-    analyses,
-    analysis_raster_id,
-    contextual_raster_ids,
-    aggregate_raster_ids,
-    extent_year,
-    threshold,
-    start,
-    end,
-):
-    logger.info(
-        f"Running analysis with parameters: "
-        + f"\nanalyses: {analyses}"
-        + f"\nanalysis_raster_id: {analysis_raster_id}"
-        + f"\ncontextual_raster_ids: {contextual_raster_ids}"
-        + f"\naggregate_raster_ids: {aggregate_raster_ids}"
-        + f"\nextent_year: {extent_year}"
-        + f"\nthreshold: {threshold}"
-        + f"\nstart: {start}"
-        + f"\nend: {end}"
-        + f"\ngeom: {json.dumps(mapping(geom))}"
-    )
-
-
 def _get_empty_result(
     analyses, analysis_raster_id, contextual_raster_ids, aggregate_raster_ids
 ):
@@ -371,3 +278,4 @@ def _get_empty_result(
 def _result_to_json(result):
     for name, arr in enumerate(result):
         result[name] = arr.tolist()
+"""

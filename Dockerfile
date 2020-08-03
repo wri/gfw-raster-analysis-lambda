@@ -13,3 +13,5 @@ RUN python -m compileall .
 RUN find -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-36//'); cp $f $n; done;
 RUN find -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
 RUN find -type f -a -name '*.py' -print0 | xargs -0 rm -f
+
+
