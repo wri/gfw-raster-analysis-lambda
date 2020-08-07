@@ -30,6 +30,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_dev }}
         AWS_DEFAULT_REGION: ${{ secrets.aws_region_dev }}
+        AWS_XRAY_SDK_ENABLED: false
+        AWS_REQUEST_PAYER: requester
       run: |
         ./scripts/test
     - name: Build Lambda layers
