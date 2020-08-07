@@ -12,6 +12,7 @@ from lambda_decorators import json_http_resp
 from copy import deepcopy
 from aws_xray_sdk.core import xray_recorder
 from decimal import Decimal
+from datetime import datetime
 
 fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
 datefmt = "%Y-%m-%d %H:%M:%S"
@@ -34,14 +35,17 @@ def handler(event, context):
             tile = shape(event["tile"])
             geometry = geometry.intersection(tile)
 
+        start_date = try_parsing_date(event.get("start_date", None))
+        end_date = try_parsing_date(event.get("end_date", None))
+
         result = geoprocessing.zonal_sql(
             geometry,
             tile,
             event.get("group_by", []),
             event.get("sum", []),
             event.get("filters", []),
-            event.get("start_date", None),
-            event.get("end_date", None),
+            start_date,
+            end_date,
         )
 
         write_result(event, context, result)
@@ -72,6 +76,16 @@ def write_result(event, context, result):
                 "result": dynamo_result,
             }
         )
+
+
+def try_parsing_date(text):
+    if text:
+        for fmt in ("%Y-%m-%d", "%Y"):
+            try:
+                return datetime.strptime(text, fmt)
+            except ValueError:
+                pass
+        raise ValueError("no valid date format found")
 
 
 """

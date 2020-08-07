@@ -5,6 +5,7 @@ import numpy as np
 import rasterio
 from rasterio import features
 from aws_xray_sdk.core import xray_recorder
+from rasterio.windows import Window
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -105,7 +106,9 @@ def get_window_and_affine(geom, raster_src):
     """
 
     # Create a window range from the bounds
-    window = raster_src.window(*geom.bounds)
+    window: Window = raster_src.window(*geom.bounds).round_lengths(
+        pixel_precision=5
+    ).round_offsets(pixel_precision=5)
 
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)

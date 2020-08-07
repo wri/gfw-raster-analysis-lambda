@@ -13,7 +13,7 @@ variable "lambda_tiled_analysis_runtime" {
   description = "Runtime version for AWS Lambda"
 }
 
-variable "lambda_raster_analysis_gateway_runtime" {
+variable "lambda_fanout_runtime" {
   type        = string
   description = "Runtime version for AWS Lambda"
 }
@@ -28,7 +28,7 @@ variable "lambda_tiled_analysis_memory_size" {
   description = "Memory size version for AWS Lambda"
 }
 
-variable "lambda_raster_analysis_gateway_memory_size" {
+variable "lambda_fanout_memory_size" {
   type        = string
   description = "Memory size version for AWS Lambda"
 }
@@ -43,7 +43,7 @@ variable "lambda_tiled_analysis_timeout" {
   description = "Timeout version for AWS Lambda"
 }
 
-variable "lambda_raster_analysis_gateway_timeout" {
+variable "lambda_fanout_timeout" {
   type        = string
   description = "Timeout version for AWS Lambda"
 }
