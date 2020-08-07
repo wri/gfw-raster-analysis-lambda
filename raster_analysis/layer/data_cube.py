@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 import numpy as np
 import concurrent.futures
@@ -5,8 +6,7 @@ import traceback
 
 from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
-from raster_analysis.grid import get_tile_id
-from raster_analysis.numpy_utils import get_linear_index, group_by
+from raster_analysis.numpy_utils import get_linear_index
 from .window import get_window, WINDOW_SIZE
 
 
@@ -22,6 +22,8 @@ class DataCube:
         group_layers: List[str],
         sum_layers: List[str],
         filter_layers: List[str],
+        start_date: datetime,
+        end_date: datetime,
     ):
         self.geom = geom
         self.mean_area = get_area(tile.centroid.y) / 10000
@@ -29,14 +31,15 @@ class DataCube:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
             group_futures = {
-                executor.submit(get_window, layer, tile): layer
+                executor.submit(get_window, layer, tile, start_date, end_date): layer
                 for layer in group_layers
             }
             sum_futures = {
-                executor.submit(get_window, layer, tile): layer for layer in sum_layers
+                executor.submit(get_window, layer, tile, start_date, end_date): layer
+                for layer in sum_layers
             }
             filter_futures = {
-                executor.submit(get_window, layer, tile): layer
+                executor.submit(get_window, layer, tile, start_date, end_date): layer
                 for layer in filter_layers
             }
 
@@ -79,7 +82,10 @@ class DataCube:
 
         # we only care about areas where the group has data, so also add those to the filter
         for window in self.group_windows:
-            self.filter *= window.data.astype(np.bool)
+            try:
+                self.filter *= window.data.astype(np.bool)
+            except ValueError as e:
+                raise e
 
         # generate linear index and then clear group rasters to save data
         if self.group_windows:

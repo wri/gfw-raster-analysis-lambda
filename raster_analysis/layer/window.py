@@ -7,7 +7,7 @@ from math import floor
 from raster_analysis.grid import get_raster_uri
 from raster_analysis.io import read_window
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from typing import Union, Tuple
 
 Numeric = Union[int, float]
@@ -28,6 +28,7 @@ class Window:
 
     def read(self, tile: Polygon) -> Tuple[np.ndarray, Affine, Numeric]:
         data, shifted_affine, no_data_value = read_window(self.get_raster_uri(), tile)
+        print(f"MAX for {tile.bounds}: {data.max()}")
 
         if data.size == 0:
             data = np.zeros((WINDOW_SIZE, WINDOW_SIZE), dtype=np.uint8)
@@ -57,15 +58,19 @@ class Window:
         return get_raster_uri(self.layer.layer, self.layer.data_type, self.tile)
 
 
-def get_window(layer: str, tile: Polygon) -> Window:
+def get_window(
+    layer: str, tile: Polygon, start_date: datetime, end_date: datetime
+) -> Window:
     if layer == "area__ha":
         return AreaWindow(layer, tile)
     elif layer == "alert__count":
         return CountWindow(layer, tile)
+    elif layer == "tsc_tree_cover_loss_drivers__type":
+        return LossDriversWindow(layer, tile)
     elif layer.startswith("umd_glad_alerts"):
-        return GladAlertsWindow(layer, tile)
+        return GladAlertsWindow(layer, tile, start_date, end_date)
     elif layer.endswith("__year"):
-        return YearWindow(layer, tile)
+        return YearWindow(layer, tile, start_date, end_date)
     elif layer.startswith("umd_tree_cover_density"):
         return TcdWindow(layer, tile)
     elif "__ha-1" in layer:
@@ -81,13 +86,56 @@ class YearWindow(Window):
     Class representing year layers, which is always encoded as (year - 2000)
     """
 
+    def __init__(
+        self, layer: str, tile: Polygon, start_date: datetime, end_date: datetime
+    ):
+        self.start_date = start_date
+        self.end_date = end_date
+
+        super().__init__(layer, tile)
+
+        if self.start_date:
+            start_year = self.start_date.year - 2000
+            self.data[self.data < start_year] = self.no_data_value
+
+        if self.end_date:
+            end_year = self.end_date.year - 2000
+            self.data[self.data > end_year] = self.no_data_value
+
     @property
     def result(self):
-        return super().value
+        return super().result
 
     @result.setter
     def result(self, value):
         self._result = value + 2000
+
+
+class LossDriversWindow(Window):
+    """
+    Class representing year layers, which is always encoded as (year - 2000)
+    """
+
+    LOSS_DRIVER_MAP = {
+        2: "Commodity driven deforestation",
+        3: "Shifting agriculture",
+        4: "Forestry",
+        5: "Wildfire",
+        6: "Urbanization",
+    }
+
+    @property
+    def result(self):
+        return super().result
+
+    @result.setter
+    def result(self, value):
+        self._result = np.array(
+            [
+                self.LOSS_DRIVER_MAP[val] if val in self.LOSS_DRIVER_MAP else "Unknown"
+                for val in value
+            ]
+        )
 
 
 class TcdWindow(Window):
@@ -110,9 +158,14 @@ class TcdWindow(Window):
 
 
 class GladAlertsWindow(Window):
-    def __init__(self, layer: str, tile: Polygon):
+    def __init__(
+        self, layer: str, tile: Polygon, start_date: datetime, end_date: datetime
+    ):
         name, self.agg = layer.split("__")
         self.confirmed = "confirmed" in name
+
+        self.start_date = start_date
+        self.end_date = end_date
 
         super().__init__(layer, tile)
 
@@ -123,9 +176,18 @@ class GladAlertsWindow(Window):
         # remove conf and set to ordinal date since 2015
         self.data %= 10000
 
+        if self.start_date:
+            start_ordinal = self.start_date.toordinal() - date(2014, 12, 31).toordinal()
+            self.data[self.data < start_ordinal] = self.no_data_value
+
+        if self.end_date:
+            end_ordinal = self.end_date.toordinal() - date(2014, 12, 31).toordinal()
+            self.data[self.data > end_ordinal] = self.no_data_value
+
     def get_raster_uri(self):
         # return hardcoded URL
         tile_id = self.get_tile_id()
+        print(f"TILE ID: {tile_id}")
         return f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
 
     def get_tile_id(self):
@@ -171,28 +233,21 @@ class GladAlertsWindow(Window):
     @property
     def result(self):
         # return ("iso_week", self._result)
-        return super().value
+        return super().result
 
     @result.setter
     def result(self, value):
         # value is already ordinal date sine 2015, so just need to add 2015 ordinal date to get iso date
-        value += date(2015, 1, 1).toordinal()
-        value = [date.fromordinal(ordinal) for ordinal in value]
+        value += date(2014, 12, 31).toordinal()
 
         if self.agg == "isoweek":
             # change to ordinal date of beginning of iso week
+            value = [date.fromordinal(ordinal) for ordinal in value]
             value = [
                 (d - timedelta(days=d.isoweekday() - 1)).toordinal() for d in value
             ]
 
         self._result = np.array(value)
-
-        # results = {}
-        # days_since_2015 =results[col][i] - GLAD_CONFIRMED_CONST
-        # raw_date = date(2015, 1, 1) + timedelta(days=days_since_2015)
-        # row["alert__date"] = raw_date.strftime("%Y-%m-%d")
-        # ORDINAL_2015 = 16436
-        # date_values = (value + ORDINAL_2015).astype('datetime64[D]')
 
     def _decode_date(self, date):
         return date

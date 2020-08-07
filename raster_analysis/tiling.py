@@ -1,20 +1,14 @@
+from decimal import Decimal
 from shapely.geometry import mapping, box
-
-import boto3
-import json
 import logging
 import os
 from datetime import date
-
 from time import sleep
-
 from copy import deepcopy
-
-import numpy as np
-from aws_xray_sdk.core import xray_recorder
-
 from raster_analysis.boto import dynamodb_resource
-import pandas
+import pandas as pd
+from aws_xray_sdk.core import xray_recorder
+from raster_analysis.boto import lambda_client
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -22,61 +16,32 @@ logger.setLevel(logging.INFO)
 
 @xray_recorder.capture("Merge Tiled Geometry Results")
 def merge_tile_results(tile_results, groupby_columns):
-    concatted_tile_results = concat_tile_results(tile_results)
-
     if not groupby_columns:
-        return concatted_tile_results
+        dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
+        merged_df: pd.DataFrame = pd.concat(dataframes)
+        return merged_df.sum().to_dict()
 
-    group_by_results = np.array(
-        [concatted_tile_results[col] for col in groupby_columns]
-    )
-    column_maxes = [col.max() + 1 for col in group_by_results]
-    linear_indices = np.ravel_multi_index(group_by_results, column_maxes).astype(
-        np.uint32
-    )
+    dataframes = [pd.DataFrame(result) for result in tile_results]
+    merged_df: pd.DataFrame = pd.concat(dataframes)
 
-    unique_values, inv = np.unique(linear_indices, return_inverse=True)
-    unique_value_combinations = np.unravel_index(unique_values, column_maxes)
-
-    merged_tile_results = dict(zip(groupby_columns, unique_value_combinations))
-
-    for col_name, col_data in concatted_tile_results.items():
-        if col_name not in groupby_columns:
-            arr = np.array(col_data)
-            merged_tile_results[col_name] = np.bincount(inv, weights=col_data).astype(
-                arr.dtype
-            )
+    grouped_df: pd.DataFrame = merged_df.groupby(groupby_columns).sum()
+    result_df: pd.DataFrame = grouped_df.sort_values(groupby_columns).reset_index()
 
     # convert ordinal dates to readable dates
     for col in groupby_columns:
         if "__date" in col:
-            merge_tile_results[col] = [
-                date.fromordinal(val).strftime("%Y-%m-%d")
-                for val in merge_tile_results[col]
-            ]
+            result_df[col] = result_df[col].apply(
+                lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
+            )
         elif "__isoweek" in col:
-            iso_dates = [
-                date.fromordinal(val).isocalendar() for val in merge_tile_results[col]
-            ]
-            merge_tile_results[groupby_columns] = [d[1] for d in iso_dates]
-            merge_tile_results[groupby_columns.replace("__isoweek", "__year")] = [
-                d[0] for d in iso_dates
-            ]
+            result_df[col.replace("__isoweek", "__year")] = result_df[col].apply(
+                lambda val: date.fromordinal(val).isocalendar()[0]
+            )
+            result_df[col] = result_df[col].apply(
+                lambda val: date.fromordinal(val).isocalendar()[1]
+            )
 
-    for col, arr in merged_tile_results.items():
-        merged_tile_results[col] = arr.tolist()
-
-    return merged_tile_results
-
-
-def concat_tile_results(tile_results):
-    result = deepcopy(tile_results[0])
-
-    for col in result.keys():
-        for table in tile_results[1:]:
-            result[col] += table[col]
-
-    return result
+    return result_df.to_dict(orient="records")
 
 
 def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
@@ -90,19 +55,20 @@ def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
         tile_geojsons[x : x + fanout_num]
         for x in range(0, len(tile_geojsons), fanout_num)
     ]
-    lambda_client = boto3.Session().client("lambda")
     fanout_lambda = os.environ["FANOUT_LAMBDA"]
+
+    from raster_analysis.boto import invoke_lambda
 
     for chunk in tile_chunks:
         event = {"payload": geoprocessing_params, "tiles": chunk}
-        invoke_lambda(event, fanout_lambda, lambda_client)
+        invoke_lambda(event, fanout_lambda, lambda_client())
 
     curr_count = 0
     tries = 0
 
     tiled_table = dynamodb_resource().Table(os.environ["TILED_RESULTS_TABLE_NAME"])
     logger.info(f"Geom count: {geom_count}")
-    while curr_count < geom_count and tries < 6000:
+    while curr_count < geom_count and tries < 60:
         sleep(0.5)
         tries += 1
 
@@ -136,26 +102,16 @@ def convert_from_decimal(raster_analysis_result):
 
     for layer, col in result.items():
         if isinstance(col, list):
-            if all([val % 1 == 0 for val in col]):
-                result[layer] = [int(val) for val in col]
-            else:
-                result[layer] = [float(val) for val in col]
+            if any(isinstance(val, Decimal) for val in col):
+                if all([val % 1 == 0 for val in col]):
+                    result[layer] = [int(val) for val in col]
+                else:
+                    result[layer] = [float(val) for val in col]
         else:
-            result[layer] = int(col) if col % 1 == 0 else float(col)
+            if isinstance(col, Decimal):
+                result[layer] = int(col) if col % 1 == 0 else float(col)
 
     return result
-
-
-def invoke_lambda(payload, lambda_name, lambda_client):
-    response = lambda_client.invoke(
-        FunctionName=lambda_name,
-        InvocationType="Event",
-        Payload=bytes(json.dumps(payload), "utf-8"),
-    )
-
-    if response["StatusCode"] != 202:
-        logger.error(f"Status code: {response['status_code']}")
-        raise AssertionError(f"Status code: {response['status_code']}")
 
 
 @xray_recorder.capture("Get Tiles")

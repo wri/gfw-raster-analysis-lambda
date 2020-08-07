@@ -1,20 +1,12 @@
-#  everything runs in batch container
-#  batch container uses actual data lake
-#  but somehow writes to fake dynamodb?
-
-from moto import mock_iam
-import uuid
+import raster_analysis.boto as boto
 
 from lambdas.fanout.src.lambda_function import handler as fanout_handler
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
 
-import raster_analysis.tiling as tiling
-from botocore.exceptions import ClientError
 import threading
+import uuid
 import pytest
-import boto3
-from raster_analysis.boto import dynamodb_client, dynamodb_resource
 import subprocess
 import os
 
@@ -28,14 +20,14 @@ class Context(object):
 @pytest.fixture
 def context():
     # monkey patch to just run on thread instead of actually invoking lambda
-    def mock_lambda(payload, lambda_name, lambda_client):
+    def mock_lambda(payload, lambda_name, client):
         uid = str(uuid.uuid1())
         context = Context(uid, f"log_stream_{uid}")
         f = fanout_handler if lambda_name == "fanout" else analysis_handler
         thread = threading.Thread(target=f, args=(payload, context))
         thread.start()
 
-    tiling.invoke_lambda = mock_lambda
+    boto.invoke_lambda = mock_lambda
 
     os.environ["FANOUT_LAMBDA"] = "fanout"
     os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"
@@ -46,8 +38,8 @@ def context():
 
     moto_server = subprocess.Popen(["moto_server", "dynamodb2", "-p3000"])
     try:
-        dyn_conn = dynamodb_client(proxy_endpoint="http://127.0.0.1:3000")
-        dynamodb_resource(proxy_endpoint="http://127.0.0.1:3000")
+        dyn_conn = boto.dynamodb_client(proxy_endpoint="http://127.0.0.1:3000")
+        boto.dynamodb_resource(proxy_endpoint="http://127.0.0.1:3000")
 
         dyn_conn.create_table(
             AttributeDefinitions=[
@@ -134,70 +126,22 @@ def test_tree_cover_loss_by_driver(context):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
 
 
-def test_weird_multipolygon(mock_environment):
-    result = tiled_handler(
-        {
-            "group_by": ["umd_tree_cover_loss__year"],
-            "filters": ["umd_tree_cover_density_2000__30"],
-            "sum": ["area__ha"],
-        }
-    )
-
-    assert result
-
-
 def test_glad_alerts(context):
     result = tiled_handler(
         {
             "geometry": IDN_24_9_GEOM,
             "group_by": ["umd_glad_alerts__isoweek"],
-            "filters": ["umd_tree_cover_density_2000__30"],
+            "start_date": "2019-01-01",
+            "end_date": "2019-12-31",
             "sum": ["alert__count"],
         },
         context,
     )
 
     print(result)
-
-
-# @mock_lambda
-# def test_e2e():
-#     conn = boto3.client("lambda", "us-east-1")
-#     zip = open("/Users/justin.terry/dev/gfw-raster-analysis-lambda/combined/Archive.zip", "rb")
-#     conn.create_function(
-#         FunctionName="raster-analysis",
-#         Runtime="python3.6",
-#         Role=get_role_name(),
-#         Handler="lambda_function.handler",
-#         Code={"ZipFile": zip.read()},
-#         Description="raster analysis",
-#         Timeout=30,
-#         MemorySize=3048,
-#         Publish=True,
-#     )
-#
-#     result = conn.invoke(
-#         FunctionName="raster-analysis",
-#         InvocationType="RequestResponse",
-#         Payload=json.dumps({}),
-#         LogType="Tail",
-#     )
-#
-#     print(result["Payload"].read().decode("utf-8"))
-#     assert result
-
-
-def get_role_name():
-    with mock_iam():
-        iam = boto3.client("iam", region_name="us-east-1")
-        try:
-            return iam.get_role(RoleName="my-role")["Role"]["Arn"]
-        except ClientError:
-            return iam.create_role(
-                RoleName="my-role",
-                AssumeRolePolicyDocument="some policy",
-                Path="/my-path/",
-            )["Role"]["Arn"]
+    print(IDN_24_9_GLAD_ALERTS)
+    for row_actual, row_expected in zip(result, IDN_24_9_GLAD_ALERTS):
+        assert row_actual["alert__count"] == row_expected["alert__count"]
 
 
 IDN_24_9_GEOM = {
@@ -3820,4 +3764,48 @@ IDN_24_9_LOSS_BY_DRIVER = [
         "area__ha": 8.846854382707045,
         "umd_tree_cover_loss__year": 2019,
     },
+]
+
+IDN_24_9_GLAD_ALERTS = [
+    {"alert__week": 1, "alert__count": 108, "alert__year": 2019},
+    {"alert__week": 5, "alert__count": 85, "alert__year": 2019},
+    {"alert__week": 6, "alert__count": 80, "alert__year": 2019},
+    {"alert__week": 7, "alert__count": 525, "alert__year": 2019},
+    {"alert__week": 8, "alert__count": 139, "alert__year": 2019},
+    {"alert__week": 9, "alert__count": 115, "alert__year": 2019},
+    {"alert__week": 10, "alert__count": 57, "alert__year": 2019},
+    {"alert__week": 11, "alert__count": 24007, "alert__year": 2019},
+    {"alert__week": 12, "alert__count": 1888, "alert__year": 2019},
+    {"alert__week": 13, "alert__count": 159, "alert__year": 2019},
+    {"alert__week": 14, "alert__count": 480, "alert__year": 2019},
+    {"alert__week": 15, "alert__count": 22, "alert__year": 2019},
+    {"alert__week": 16, "alert__count": 894, "alert__year": 2019},
+    {"alert__week": 17, "alert__count": 1003, "alert__year": 2019},
+    {"alert__week": 18, "alert__count": 26631, "alert__year": 2019},
+    {"alert__week": 19, "alert__count": 20060, "alert__year": 2019},
+    {"alert__week": 20, "alert__count": 38508, "alert__year": 2019},
+    {"alert__week": 21, "alert__count": 31787, "alert__year": 2019},
+    {"alert__week": 22, "alert__count": 1702, "alert__year": 2019},
+    {"alert__week": 23, "alert__count": 1, "alert__year": 2019},
+    {"alert__week": 24, "alert__count": 62, "alert__year": 2019},
+    {"alert__week": 26, "alert__count": 12841, "alert__year": 2019},
+    {"alert__week": 27, "alert__count": 22063, "alert__year": 2019},
+    {"alert__week": 28, "alert__count": 9319, "alert__year": 2019},
+    {"alert__week": 29, "alert__count": 38, "alert__year": 2019},
+    {"alert__week": 30, "alert__count": 4, "alert__year": 2019},
+    {"alert__week": 31, "alert__count": 13035, "alert__year": 2019},
+    {"alert__week": 32, "alert__count": 73, "alert__year": 2019},
+    {"alert__week": 33, "alert__count": 31, "alert__year": 2019},
+    {"alert__week": 34, "alert__count": 101, "alert__year": 2019},
+    {"alert__week": 35, "alert__count": 248, "alert__year": 2019},
+    {"alert__week": 36, "alert__count": 21783, "alert__year": 2019},
+    {"alert__week": 39, "alert__count": 210, "alert__year": 2019},
+    {"alert__week": 41, "alert__count": 31563, "alert__year": 2019},
+    {"alert__week": 43, "alert__count": 65, "alert__year": 2019},
+    {"alert__week": 44, "alert__count": 36547, "alert__year": 2019},
+    {"alert__week": 45, "alert__count": 3184, "alert__year": 2019},
+    {"alert__week": 47, "alert__count": 128, "alert__year": 2019},
+    {"alert__week": 48, "alert__count": 787, "alert__year": 2019},
+    {"alert__week": 50, "alert__count": 875, "alert__year": 2019},
+    {"alert__week": 52, "alert__count": 436, "alert__year": 2019},
 ]

@@ -1,15 +1,7 @@
 import logging
-
-import numpy as np
-import json
-
-from raster_analysis.geodesy import get_area
-from raster_analysis.grid import get_tile_id
 from raster_analysis.layer.data_cube import DataCube
 
-from shapely.geometry import mapping
 from aws_xray_sdk.core import xray_recorder
-import asyncio
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -44,11 +36,8 @@ def zonal_sql(
     :param end_date: end date to filter datetime layers by
     :return: a table of results in # TODO describe structure and give example
     """
-    data_cube = DataCube(geom, tile, groups, sums, filters)
+    data_cube = DataCube(geom, tile, groups, sums, filters, start_date, end_date)
     result = data_cube.calculate()
-
-    # for col, arr in result.items():
-    #    result[col] = arr.tolist()
 
     logger.info(f"Ran analysis with result: {result}")
 
