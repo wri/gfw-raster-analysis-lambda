@@ -3,7 +3,7 @@ resource "aws_lambda_function" "raster_analysis" {
   filename         = data.archive_file.lambda_fanout.output_path
   source_code_hash = data.archive_file.lambda_fanout.output_base64sha256
   role             = aws_iam_role.raster_analysis_lambda.arn
-  runtime          = var,
+  runtime          = var.lambda_raster_analysis_runtime
   handler          = "lambda_function.handler"
   memory_size      = var.lambda_raster_analysis_memory_size
   timeout          = var.lambda_raster_analysis_timeout
@@ -28,7 +28,7 @@ resource "aws_lambda_function" "raster_analysis" {
 }
 
 resource "aws_lambda_function" "tiled_raster_analysis" {
-  function_name    = substr("${local.project}-tiled_analysis${local.name_suffix}", 0, 64)
+  function_name    = substr("${local.project}-tiled_raster_analysis${local.name_suffix}", 0, 64)
   filename         = data.archive_file.lambda_tiled_analysis.output_path
   source_code_hash = data.archive_file.lambda_tiled_analysis.output_base64sha256
   role             = aws_iam_role.raster_analysis_lambda.arn
@@ -59,14 +59,14 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
 }
 
 resource "aws_lambda_function" "raster_analysis_fanout" {
-  function_name    = substr("${local.project}-tiled_analysis${local.name_suffix}", 0, 64)
-  filename         = data.archive_file.lambda_tiled_analysis.output_path
-  source_code_hash = data.archive_file.lambda_tiled_analysis.output_base64sha256
+  function_name    = substr("${local.project}-raster_analysis_fanout${local.name_suffix}", 0, 64)
+  filename         = data.archive_file.lambda_fanout.output_path
+  source_code_hash = data.archive_file.lambda_fanout.output_base64sha256
   role             = aws_iam_role.raster_analysis_lambda.arn
-  runtime          = var.lambda_tiled_analysis_runtime
+  runtime          = var.lambda_fanout_runtime
   handler          = "lambda_function.handler"
-  memory_size      = var.lambda_tiled_analysis_memory_size
-  timeout          = var.lambda_tiled_analysis_timeout
+  memory_size      = var.lambda_fanout_memory_size
+  timeout          = var.lambda_fanout_timeout
   publish          = true
   tags             = local.tags
   layers           = [
