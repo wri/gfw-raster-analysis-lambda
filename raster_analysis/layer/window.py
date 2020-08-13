@@ -28,7 +28,6 @@ class Window:
 
     def read(self, tile: Polygon) -> Tuple[np.ndarray, Affine, Numeric]:
         data, shifted_affine, no_data_value = read_window(self.get_raster_uri(), tile)
-        print(f"MAX for {tile.bounds}: {data.max()}")
 
         if data.size == 0:
             data = np.zeros((WINDOW_SIZE, WINDOW_SIZE), dtype=np.uint8)
