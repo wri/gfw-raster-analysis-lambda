@@ -9,6 +9,7 @@ from raster_analysis.boto import dynamodb_resource
 import pandas as pd
 from aws_xray_sdk.core import xray_recorder
 from raster_analysis.boto import lambda_client
+from raster_analysis.results_store import AnalysisResultsStore
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -46,7 +47,6 @@ def merge_tile_results(tile_results, groupby_columns):
 
 def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
     geom_count = len(tiles)
-    geoprocessing_params["write_to_dynamo"] = True
     geoprocessing_params["analysis_id"] = request_id
     logger.info(f"Processing {geom_count} tiles")
 
@@ -63,55 +63,11 @@ def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
         event = {"payload": geoprocessing_params, "tiles": chunk}
         invoke_lambda(event, fanout_lambda, lambda_client())
 
-    curr_count = 0
-    tries = 0
-
-    tiled_table = dynamodb_resource().Table(os.environ["TILED_RESULTS_TABLE_NAME"])
     logger.info(f"Geom count: {geom_count}")
-    while curr_count < geom_count and tries < 60:
-        sleep(0.5)
-        tries += 1
+    results_store = AnalysisResultsStore(request_id)
+    results = results_store.wait_for_results(geom_count)
 
-        response = tiled_table.query(
-            ExpressionAttributeValues={":id": request_id},
-            KeyConditionExpression=f"analysis_id = :id",
-            TableName=os.environ["TILED_RESULTS_TABLE_NAME"],
-        )
-
-        curr_count = response["Count"]
-
-    if curr_count != geom_count:
-        raise TimeoutError(
-            f"Timeout occurred before all lambdas completed. Tile count: {geom_count}; tiles completed: {curr_count}"
-        )
-
-    results = [convert_from_decimal(item["result"]) for item in response["Items"]]
     return results
-
-
-@xray_recorder.capture("Convert DynamoDB results")
-def convert_from_decimal(raster_analysis_result):
-    """
-    DynamoDB API returns Decimal objects for all numbers, so this is a util to
-    convert the result back to ints and floats
-
-    :param result: resulting dict from a call to raster analysis
-    :return: result with int and float values instead of Decimal
-    """
-    result = deepcopy(raster_analysis_result)
-
-    for layer, col in result.items():
-        if isinstance(col, list):
-            if any(isinstance(val, Decimal) for val in col):
-                if all([val % 1 == 0 for val in col]):
-                    result[layer] = [int(val) for val in col]
-                else:
-                    result[layer] = [float(val) for val in col]
-        else:
-            if isinstance(col, Decimal):
-                result[layer] = int(col) if col % 1 == 0 else float(col)
-
-    return result
 
 
 @xray_recorder.capture("Get Tiles")

@@ -1,17 +1,13 @@
 import logging
 import sys
 import traceback
-import os
 
 from shapely.geometry import shape
-
 from raster_analysis import geoprocessing
-from raster_analysis.boto import dynamodb_resource
+from raster_analysis.results_store import AnalysisResultsStore
 
 from lambda_decorators import json_http_resp
-from copy import deepcopy
 from aws_xray_sdk.core import xray_recorder
-from decimal import Decimal
 from datetime import datetime
 
 fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
@@ -48,34 +44,13 @@ def handler(event, context):
             end_date,
         )
 
-        write_result(event, context, result)
+        results_store = AnalysisResultsStore(event["analysis_id"])
+        results_store.save_result(result, context.aws_request_id)
 
         return result
     except Exception as e:
-        logger.error(e)
-        logger.error(traceback.format_exc())
+        logger.exception(e)
         raise Exception(f"Internal Server Error <{context.aws_request_id}>")
-
-
-def write_result(event, context, result):
-    if event.get("write_to_dynamo", False):
-        dynamo_result = deepcopy(result)
-
-        for layer, col in dynamo_result.items():
-            if isinstance(col, float):
-                dynamo_result[layer] = Decimal(str(col))
-            elif isinstance(col, list) and len(col) > 0 and isinstance(col[0], float):
-                dynamo_result[layer] = [Decimal(str(val)) for val in col]
-
-        table = dynamodb_resource().Table(os.environ["TILED_RESULTS_TABLE_NAME"])
-
-        table.put_item(
-            Item={
-                "analysis_id": event["analysis_id"],
-                "tile_id": context.aws_request_id,
-                "result": dynamo_result,
-            }
-        )
 
 
 def try_parsing_date(text):
