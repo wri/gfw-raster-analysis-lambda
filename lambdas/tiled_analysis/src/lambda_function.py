@@ -8,13 +8,9 @@ import logging
 
 from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.tiling import get_tiles, process_tiled_geoms, merge_tile_results
+from raster_analysis.globals import LOGGER, TILE_WIDTH
 
 patch(["boto3"])
-
-TILE_WIDTH = 1
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 @xray_recorder.capture("Tiled Analysis")
@@ -22,12 +18,12 @@ def handler(event, context):
     geom = shape(event["geometry"])
     group_by = event.get("group_by", [])
 
-    logger.info(
+    LOGGER.info(
         f"Tiling input geometry with width={TILE_WIDTH}: {shapely.wkt.dumps(geom)}"
     )
     tiles = get_tiles(geom, TILE_WIDTH)
 
-    logger.info(
+    LOGGER.info(
         f"Running tiled analysis on the following tiles: {[shapely.wkt.dumps(g) for g in tiles]}"
     )
 
@@ -39,10 +35,10 @@ def handler(event, context):
             "body": "Internal Server Error <" + context.aws_request_id + ">",
         }
 
-    logger.info(f"Successfully ran tiled analysis with results: {tile_results}")
+    LOGGER.info(f"Successfully ran tiled analysis with results: {tile_results}")
 
     result = merge_tile_results(tile_results, group_by)
 
-    logger.info(f"Successfully merged tiled results to produce final result: {result}")
+    LOGGER.info(f"Successfully merged tiled results to produce final result: {result}")
 
     return result

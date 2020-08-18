@@ -1,22 +1,12 @@
-import logging
-import sys
-import traceback
-
 from shapely.geometry import shape
 from raster_analysis import geoprocessing
 from raster_analysis.results_store import AnalysisResultsStore
 
-from lambda_decorators import json_http_resp
 from aws_xray_sdk.core import xray_recorder
 from datetime import datetime
-
-fmt = "%(asctime)s %(levelname)-4s - %(name)s - %(message)s"
-datefmt = "%Y-%m-%d %H:%M:%S"
-logging.basicConfig(stream=sys.stdout, level=logging.INFO, format=fmt)
-logger = logging.getLogger(__name__)
+from raster_analysis.globals import LOGGER
 
 
-@json_http_resp
 @xray_recorder.capture("Raster Analysis Lambda")
 def handler(event, context):
     # subsegment.put_annotation("RequestID", context.aws_request_id)
@@ -24,7 +14,7 @@ def handler(event, context):
     # subsegment.put_metadata("RequestParams", event)
 
     try:
-        logger.info(f"Running analysis with parameters: {event}")
+        LOGGER.info(f"Running analysis with parameters: {event}")
         geometry = shape(event["geometry"])
 
         if "tile" in event:
@@ -49,7 +39,7 @@ def handler(event, context):
 
         return result
     except Exception as e:
-        logger.exception(e)
+        LOGGER.exception(e)
         raise Exception(f"Internal Server Error <{context.aws_request_id}>")
 
 

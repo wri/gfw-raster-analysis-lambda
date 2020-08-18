@@ -2,9 +2,7 @@ import logging
 from raster_analysis.layer.data_cube import DataCube
 
 from aws_xray_sdk.core import xray_recorder
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from raster_analysis.globals import LOGGER
 
 AREA_FIELD = "area"
 COUNT_FIELD = "count"
@@ -39,7 +37,7 @@ def zonal_sql(
     data_cube = DataCube(geom, tile, groups, sums, filters, start_date, end_date)
     result = data_cube.calculate()
 
-    logger.info(f"Ran analysis with result: {result}")
+    LOGGER.info(f"Ran analysis with result: {result}")
 
     return result
 

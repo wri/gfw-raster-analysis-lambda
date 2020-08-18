@@ -6,9 +6,7 @@ import pandas as pd
 from aws_xray_sdk.core import xray_recorder
 from raster_analysis.boto import lambda_client
 from raster_analysis.results_store import AnalysisResultsStore
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from raster_analysis.globals import LOGGER
 
 
 @xray_recorder.capture("Merge Tiled Geometry Results")
@@ -44,7 +42,7 @@ def merge_tile_results(tile_results, groupby_columns):
 def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
     geom_count = len(tiles)
     geoprocessing_params["analysis_id"] = request_id
-    logger.info(f"Processing {geom_count} tiles")
+    LOGGER.info(f"Processing {geom_count} tiles")
 
     tile_geojsons = [mapping(tile) for tile in tiles]
     tile_chunks = [
@@ -59,7 +57,7 @@ def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
         event = {"payload": geoprocessing_params, "tiles": chunk}
         invoke_lambda(event, fanout_lambda, lambda_client())
 
-    logger.info(f"Geom count: {geom_count}")
+    LOGGER.info(f"Geom count: {geom_count}")
     results_store = AnalysisResultsStore(request_id)
     results = results_store.wait_for_results(geom_count)
 
