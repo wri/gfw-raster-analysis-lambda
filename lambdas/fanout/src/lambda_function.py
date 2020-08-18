@@ -1,5 +1,3 @@
-import logging
-
 from aws_xray_sdk.core import patch
 from aws_xray_sdk.core import xray_recorder
 
@@ -7,11 +5,9 @@ from copy import deepcopy
 import os
 
 from raster_analysis.boto import lambda_client
+from raster_analysis.globals import LOGGER
 
 patch(["boto3"])
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 @xray_recorder.capture("Fanout")
@@ -29,7 +25,7 @@ def handler(event, context):
 
             invoke_lambda(payload, raster_analysis_lambda, lambda_client())
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 f"Invoke raster analysis lambda failed for aws request id: {context.aws_request_id}, tile: {tile}"
             )
             raise e

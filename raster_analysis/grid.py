@@ -1,9 +1,5 @@
-import logging
-import os
 import math
 from shapely.geometry import Point, Polygon
-
-logger = logging.getLogger(__name__)
 
 
 def get_grid_id(point: Point, grid_size=10) -> str:

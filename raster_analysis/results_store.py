@@ -6,7 +6,7 @@ from time import sleep
 from typing import List, Dict, Any
 from boto3.dynamodb.table import TableResource
 
-from raster_analysis.globals import RESULTS_CHECK_INTERVAL, RESULTS_CHECK_TRIES
+from raster_analysis.globals import RESULTS_CHECK_INTERVAL, RESULTS_CHECK_TRIES, LOGGER
 
 
 class AnalysisResultsStore:

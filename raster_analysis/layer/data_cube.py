@@ -2,15 +2,12 @@ from datetime import datetime
 from typing import List
 import numpy as np
 import concurrent.futures
-import logging
 
 from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
 from raster_analysis.numpy_utils import get_linear_index
+from raster_analysis.globals import LOGGER
 from .window import get_window, WINDOW_SIZE
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class DataCube:
@@ -54,7 +51,7 @@ class DataCube:
                     try:
                         windows.append(future.result())
                     except Exception:
-                        logger.exception(
+                        LOGGER.exception(
                             f"Exception while reading window for layer {layer}"
                         )
 

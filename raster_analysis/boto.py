@@ -1,47 +1,41 @@
 import boto3
 import json
-import logging
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-S3_CLIENT = None
-LAMBDA_CLIENT = None
-DYN_CLIENT = None
-DYN_RESOURCE = None
-LAMBDA_CLIENT = None
+from raster_analysis.globals import (
+    LOGGER,
+    AWS_REGION,
+    S3_ENDPOINT_URL,
+    LAMBDA_ENDPOINT_URL,
+    DYNAMODB_ENDPOINT_URL,
+)
 
 
-def s3_client(proxy_endpoint=None):
-    global S3_CLIENT
-    if not S3_CLIENT:
-        S3_CLIENT = boto3.client("s3", endpoint_url=proxy_endpoint)
+def client_constructor(service: str, entrypoint_url=None, type: str = "client"):
+    """Using closure design for a client constructor This way we only need to
+    create the client once in central location and it will be easier to
+    mock."""
+    service_client = None
 
-    return S3_CLIENT
+    def client():
+        nonlocal service_client
+        if service_client is None:
+            if type == "resource":
+                service_client = boto3.resource(
+                    service, region_name=AWS_REGION, endpoint_url=entrypoint_url
+                )
+            else:
+                service_client = boto3.client(
+                    service, region_name=AWS_REGION, endpoint_url=entrypoint_url
+                )
+
+        return service_client
+
+    return client
 
 
-def dynamodb_client(proxy_endpoint=None):
-    global DYN_CLIENT
-    if not DYN_CLIENT:
-        DYN_CLIENT = boto3.client("dynamodb", endpoint_url=proxy_endpoint)
-
-    return DYN_CLIENT
-
-
-def dynamodb_resource(proxy_endpoint=None):
-    global DYN_RESOURCE
-    if not DYN_RESOURCE:
-        DYN_RESOURCE = boto3.resource("dynamodb", endpoint_url=proxy_endpoint)
-
-    return DYN_RESOURCE
-
-
-def lambda_client(proxy_endpoint=None):
-    global S3_CLIENT
-    if not S3_CLIENT:
-        S3_CLIENT = boto3.client("lambda", endpoint_url=proxy_endpoint)
-
-    return S3_CLIENT
+s3_client = client_constructor("s3", S3_ENDPOINT_URL)
+lambda_client = client_constructor("lambda", LAMBDA_ENDPOINT_URL)
+dynamodb_client = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL)
+dynamodb_resource = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL, "resource")
 
 
 def invoke_lambda(payload, lambda_name, client):
@@ -52,5 +46,5 @@ def invoke_lambda(payload, lambda_name, client):
     )
 
     if response["StatusCode"] != 202:
-        logger.error(f"Status code: {response['status_code']}")
+        LOGGER.error(f"Status code: {response['status_code']}")
         raise AssertionError(f"Status code: {response['status_code']}")

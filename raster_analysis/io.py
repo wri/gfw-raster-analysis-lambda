@@ -6,9 +6,7 @@ import rasterio
 from rasterio import features
 from aws_xray_sdk.core import xray_recorder
 from rasterio.windows import Window
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from raster_analysis.globals import LOGGER
 
 
 @xray_recorder.capture("Read Window")
@@ -22,6 +20,8 @@ def read_window(raster, geom, masked=False):
     """
 
     with rasterio.Env():
+        LOGGER.info(f"Reading raster source {raster}")
+
         with rasterio.open(raster) as src:
             try:
                 window, shifted_affine = get_window_and_affine(geom, src)
