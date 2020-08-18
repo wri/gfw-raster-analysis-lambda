@@ -1,11 +1,7 @@
-from decimal import Decimal
 from shapely.geometry import mapping, box
 import logging
 import os
 from datetime import date
-from time import sleep
-from copy import deepcopy
-from raster_analysis.boto import dynamodb_resource
 import pandas as pd
 from aws_xray_sdk.core import xray_recorder
 from raster_analysis.boto import lambda_client
@@ -55,7 +51,7 @@ def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
         tile_geojsons[x : x + fanout_num]
         for x in range(0, len(tile_geojsons), fanout_num)
     ]
-    fanout_lambda = os.environ["FANOUT_LAMBDA"]
+    fanout_lambda = os.environ["FANOUT_LAMBDA_NAME"]
 
     from raster_analysis.boto import invoke_lambda
 

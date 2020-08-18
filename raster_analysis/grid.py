@@ -51,7 +51,7 @@ def get_raster_uri(layer: str, data_type: str, tile: Polygon) -> str:
 
     tile_id = get_tile_id(tile)
     version = LATEST_VERSIONS[layer]
-    return f"/vsis3/{os.environ['S3_BUCKET_DATA_LAKE']}/{layer}/{version}/raster/epsg-4326/10/40000/{data_type}/gdal-geotiff/{tile_id}.tif"
+    return f"/vsis3/gfw-data-lake/{layer}/{version}/raster/epsg-4326/10/40000/{data_type}/gdal-geotiff/{tile_id}.tif"
 
 
 LATEST_VERSIONS = {
