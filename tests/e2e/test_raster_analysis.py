@@ -29,7 +29,7 @@ def context():
 
     boto.invoke_lambda = mock_lambda
 
-    os.environ["FANOUT_LAMBDA"] = "fanout"
+    os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
     os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"
     os.environ["TILED_RESULTS_TABLE_NAME"] = "tiled-raster-analysis"
     os.environ[
