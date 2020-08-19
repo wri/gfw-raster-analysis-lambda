@@ -6,8 +6,8 @@ import concurrent.futures
 from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
 from raster_analysis.numpy_utils import get_linear_index
-from raster_analysis.globals import LOGGER
-from .window import get_window, WINDOW_SIZE
+from raster_analysis.globals import LOGGER, WINDOW_SIZE
+from .window import get_window
 
 
 class DataCube:
@@ -81,11 +81,10 @@ class DataCube:
             window.clear()
 
         # we only care about areas where the group has data, so also add those to the filter
+        # unless the window has a default value we care about
         for window in self.group_windows:
-            try:
+            if not window.has_default_value():
                 self.filter *= window.data.astype(np.bool)
-            except ValueError as e:
-                raise e
 
         # generate linear index and then clear group rasters to save data
         if self.group_windows:

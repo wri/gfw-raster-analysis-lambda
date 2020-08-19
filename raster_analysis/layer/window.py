@@ -8,10 +8,10 @@ from raster_analysis.grid import get_raster_uri
 from raster_analysis.io import read_window
 
 from datetime import date, timedelta, datetime
-from typing import Union, Tuple
+from typing import Tuple, Optional
 
-Numeric = Union[int, float]
-WINDOW_SIZE = 4000
+from raster_analysis.globals import Numeric, WINDOW_SIZE, DATA_LAKE_LAYER_MANAGER
+from .layer import LayerInfo
 
 
 class Window:
@@ -24,7 +24,7 @@ class Window:
         self.no_data_value: Numeric = 0
 
         self.data, self.shifted_affine, self.no_data_value = self.read(tile)
-        self._result: ndarray = None
+        self._result: Optional[ndarray] = None
 
     def read(self, tile: Polygon) -> Tuple[np.ndarray, Affine, Numeric]:
         data, shifted_affine, no_data_value = read_window(self.get_raster_uri(), tile)
@@ -47,14 +47,17 @@ class Window:
 
     @property
     def result(self):
-        return self.layer.name, self._result.tolist()
+        return self.layer.name_type, self._result.tolist()
 
     @result.setter
     def result(self, value):
         self._result = value
 
     def get_raster_uri(self):
-        return get_raster_uri(self.layer.layer, self.layer.data_type, self.tile)
+        return get_raster_uri(self.layer.name, self.layer.data_type, self.tile)
+
+    def has_default_value(self):
+        return False
 
 
 def get_window(
@@ -64,8 +67,6 @@ def get_window(
         return AreaWindow(layer, tile)
     elif layer == "alert__count":
         return CountWindow(layer, tile)
-    elif layer == "tsc_tree_cover_loss_drivers__type":
-        return LossDriversWindow(layer, tile)
     elif layer.startswith("umd_glad_alerts"):
         return GladAlertsWindow(layer, tile, start_date, end_date)
     elif layer.endswith("__year"):
@@ -77,7 +78,7 @@ def get_window(
     elif "whrc_aboveground_co2_emissions" in layer:
         return CarbonEmissionsWindow(layer, tile)
     else:
-        return Window(layer, tile)
+        return DataLakeWindow(layer, tile)
 
 
 class YearWindow(Window):
@@ -110,19 +111,7 @@ class YearWindow(Window):
         self._result = value + 2000
 
 
-class LossDriversWindow(Window):
-    """
-    Class representing year layers, which is always encoded as (year - 2000)
-    """
-
-    LOSS_DRIVER_MAP = {
-        2: "Commodity driven deforestation",
-        3: "Shifting agriculture",
-        4: "Forestry",
-        5: "Wildfire",
-        6: "Urbanization",
-    }
-
+class DataLakeWindow(Window):
     @property
     def result(self):
         return super().result
@@ -131,29 +120,27 @@ class LossDriversWindow(Window):
     def result(self, value):
         self._result = np.array(
             [
-                self.LOSS_DRIVER_MAP[val] if val in self.LOSS_DRIVER_MAP else "Unknown"
+                DATA_LAKE_LAYER_MANAGER.get_layer_value(self.layer.name, val)
                 for val in value
             ]
         )
 
+    def has_default_value(self):
+        return DATA_LAKE_LAYER_MANAGER.has_default_value(
+            self.layer.name, self.no_data_value
+        )
 
-class TcdWindow(Window):
-    COMPRESSED_THRESHOLD_MAP = {
-        "10": 1,
-        "15": 2,
-        "20": 3,
-        "25": 4,
-        "30": 5,
-        "50": 6,
-        "75": 7,
-    }
 
+class TcdWindow(DataLakeWindow):
     def __init__(self, layer: str, tile: Polygon):
         name, self.threshold = layer.split("__")
 
         super().__init__(f"{name}__threshold", tile)
+        threshold_pixel_value = DATA_LAKE_LAYER_MANAGER.get_pixel_value(
+            name, self.threshold
+        )
 
-        self.data = self.data >= self.COMPRESSED_THRESHOLD_MAP[self.threshold]
+        self.data = self.data >= threshold_pixel_value
 
 
 class GladAlertsWindow(Window):
@@ -290,19 +277,3 @@ class CarbonEmissionsWindow(Window):
 
     def get_raster_uri(self):
         return get_raster_uri(self.BIOMASS_LAYER, self.BIOMASS_TYPE, self.tile)
-
-
-class LayerInfo:
-    def __init__(self, name: str):
-        self.name = name
-        parts = name.split("__")
-
-        if len(parts) != 2:
-            raise ValueError(
-                f"Layer name `{name}` is invalid, should consist of layer name and unit separated by `__`"
-            )
-
-        if parts[0] == "is":
-            self.data_type, self.layer = parts
-        else:
-            self.layer, self.data_type = parts

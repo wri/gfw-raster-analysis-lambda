@@ -3332,45 +3332,46 @@ IDN_24_9_PRIMARY_LOSS = [
     },
 ]
 
+# select umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type, sum(umd_tree_cover_loss__ha) as area__ha, from table where iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 30 GROUP BY umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type ORDER BY umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type ASC
 IDN_24_9_LOSS_BY_DRIVER = [
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 41004.21958338309,
+        "area__ha": 41103.07375159758,
         "umd_tree_cover_loss__year": 2001,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 114.85522458856242,
+        "area__ha": 16.001056374074132,
         "umd_tree_cover_loss__year": 2001,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 27.309775197145,
+        "area__ha": 27.309775197145004,
         "umd_tree_cover_loss__year": 2001,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 31424.492581115177,
+        "area__ha": 31449.648474593792,
         "umd_tree_cover_loss__year": 2002,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 33.771843911767405,
+        "area__ha": 8.615950433145585,
         "umd_tree_cover_loss__year": 2002,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 5.615813380329545,
+        "area__ha": 5.615813380329544,
         "umd_tree_cover_loss__year": 2002,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 2943.7517791187593,
+        "area__ha": 2978.2930256339923,
         "umd_tree_cover_loss__year": 2003,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 37.84914806542198,
+        "area__ha": 3.3079015501890674,
         "umd_tree_cover_loss__year": 2003,
     },
     {
@@ -3380,12 +3381,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 72569.83859313172,
+        "area__ha": 72735.85198191882,
         "umd_tree_cover_loss__year": 2004,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 181.93736596184428,
+        "area__ha": 15.92397717472073,
         "umd_tree_cover_loss__year": 2004,
     },
     {
@@ -3395,12 +3396,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 54613.16743132858,
+        "area__ha": 54828.18437267583,
         "umd_tree_cover_loss__year": 2005,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 284.0982202164223,
+        "area__ha": 69.08127886915085,
         "umd_tree_cover_loss__year": 2005,
     },
     {
@@ -3410,42 +3411,42 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 5377.729731496769,
+        "area__ha": 5417.040577948187,
         "umd_tree_cover_loss__year": 2006,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 79.2366486694134,
+        "area__ha": 39.92580221799587,
         "umd_tree_cover_loss__year": 2006,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 9.308307881915153,
+        "area__ha": 9.308307881915152,
         "umd_tree_cover_loss__year": 2006,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 33492.74594514858,
+        "area__ha": 33556.44331068466,
         "umd_tree_cover_loss__year": 2007,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 77.31361941710614,
+        "area__ha": 13.61625388100618,
         "umd_tree_cover_loss__year": 2007,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 1.538586547838366,
+        "area__ha": 1.5385865478383662,
         "umd_tree_cover_loss__year": 2007,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 37419.230461624626,
+        "area__ha": 37488.466727203195,
         "umd_tree_cover_loss__year": 2008,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 89.62216896696381,
+        "area__ha": 20.38590338837649,
         "umd_tree_cover_loss__year": 2008,
     },
     {
@@ -3455,27 +3456,27 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 20469.097457422577,
+        "area__ha": 20532.179376932934,
         "umd_tree_cover_loss__year": 2009,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 67.69759446690517,
+        "area__ha": 4.615674956551374,
         "umd_tree_cover_loss__year": 2009,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 0.7692886346063017,
+        "area__ha": 0.7692886346063018,
         "umd_tree_cover_loss__year": 2009,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 71926.30913664008,
+        "area__ha": 72016.16242498384,
         "umd_tree_cover_loss__year": 2010,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 103.7003301023681,
+        "area__ha": 13.847041758586304,
         "umd_tree_cover_loss__year": 2010,
     },
     {
@@ -3485,12 +3486,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 79618.00071544971,
+        "area__ha": 79641.54104525512,
         "umd_tree_cover_loss__year": 2011,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 32.69470783123403,
+        "area__ha": 9.154378025937485,
         "umd_tree_cover_loss__year": 2011,
     },
     {
@@ -3500,27 +3501,27 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 58909.21521845751,
+        "area__ha": 58941.448585856895,
         "umd_tree_cover_loss__year": 2012,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 76.62056796047622,
+        "area__ha": 44.38720056124032,
         "umd_tree_cover_loss__year": 2012,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 5.6158078017542685,
+        "area__ha": 5.615807801754269,
         "umd_tree_cover_loss__year": 2012,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 34602.59958115902,
+        "area__ha": 34637.833222116176,
         "umd_tree_cover_loss__year": 2013,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 146.77796341472742,
+        "area__ha": 111.54432245759502,
         "umd_tree_cover_loss__year": 2013,
     },
     {
@@ -3530,12 +3531,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 37380.89876298052,
+        "area__ha": 37401.82352895476,
         "umd_tree_cover_loss__year": 2014,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 223.32077675547916,
+        "area__ha": 202.396010781237,
         "umd_tree_cover_loss__year": 2014,
     },
     {
@@ -3545,27 +3546,27 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 8047.734018971245,
+        "area__ha": 8068.735707907891,
         "umd_tree_cover_loss__year": 2015,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 38.771963591223,
+        "area__ha": 17.770274654578106,
         "umd_tree_cover_loss__year": 2015,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Unknown",
-        "area__ha": 3.6156425785560167,
+        "area__ha": 3.6156425785560162,
         "umd_tree_cover_loss__year": 2015,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 21718.213480125996,
+        "area__ha": 21744.907912636183,
         "umd_tree_cover_loss__year": 2016,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 119.77690394420063,
+        "area__ha": 93.08247143400465,
         "umd_tree_cover_loss__year": 2016,
     },
     {
@@ -3575,12 +3576,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 11653.932116398402,
+        "area__ha": 11727.399697864526,
         "umd_tree_cover_loss__year": 2017,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 146.471397375336,
+        "area__ha": 73.00381590920603,
         "umd_tree_cover_loss__year": 2017,
     },
     {
@@ -3590,12 +3591,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 10188.321425317845,
+        "area__ha": 10264.019839377066,
         "umd_tree_cover_loss__year": 2018,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 121.47020284548748,
+        "area__ha": 45.77178878626102,
         "umd_tree_cover_loss__year": 2018,
     },
     {
@@ -3605,12 +3606,12 @@ IDN_24_9_LOSS_BY_DRIVER = [
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Commodity driven deforestation",
-        "area__ha": 14230.652459481089,
+        "area__ha": 14291.965103377732,
         "umd_tree_cover_loss__year": 2019,
     },
     {
         "tsc_tree_cover_loss_drivers__type": "Forestry",
-        "area__ha": 284.94017077726596,
+        "area__ha": 223.62752688062602,
         "umd_tree_cover_loss__year": 2019,
     },
     {

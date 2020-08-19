@@ -1,8 +1,9 @@
 import math
 from shapely.geometry import Point, Polygon
+from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER
 
 
-def get_grid_id(point: Point, grid_size=10) -> str:
+def _get_tile_id(point: Point, grid_size=10) -> str:
     """
     Get name of tile in data lake
 
@@ -31,14 +32,14 @@ def get_tile_id(geometry: Polygon) -> str:
     """
     Get name of tile in data lake centroid of geometry falls in
 
-    :param 5point: Shapely geometry
-    :return:
+    :param: Shapely Polygon
+    :return: tile id
     """
     centroid = geometry.centroid
-    return get_grid_id(centroid)
+    return _get_tile_id(centroid)
 
 
-def get_raster_uri(layer: str, data_type: str, tile: Polygon) -> str:
+def get_raster_uri(layer_name: str, data_type: str, tile: Polygon) -> str:
     """
     Maps layer name input to a raster URI in the data lake
     :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
@@ -46,16 +47,5 @@ def get_raster_uri(layer: str, data_type: str, tile: Polygon) -> str:
     """
 
     tile_id = get_tile_id(tile)
-    version = LATEST_VERSIONS[layer]
-    return f"/vsis3/gfw-data-lake/{layer}/{version}/raster/epsg-4326/10/40000/{data_type}/gdal-geotiff/{tile_id}.tif"
-
-
-LATEST_VERSIONS = {
-    "umd_tree_cover_loss": "v1.7",
-    "umd_regional_primary_forest_2001": "v201901",
-    "umd_tree_cover_density_2000": "v1.6",
-    "umd_tree_cover_density_2010": "v1.6",
-    "umd_tree_cover_gain": "v1.6",
-    "whrc_aboveground_biomass_stock_2000": "v4",
-    "tsc_tree_cover_loss_drivers": "v2019",
-}
+    version = DATA_LAKE_LAYER_MANAGER.get_latest_version(layer_name)
+    return f"/vsis3/gfw-data-lake/{layer_name}/{version}/raster/epsg-4326/10/40000/{data_type}/gdal-geotiff/{tile_id}.tif"
