@@ -9,10 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.6
+    - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
-        python-version: 3.6
+        python-version: 3.7
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -33,11 +33,7 @@ jobs:
         AWS_XRAY_SDK_ENABLED: false
         AWS_REQUEST_PAYER: requester
       run: |
-        apt update -y && apt install -y python3-pip libpq-dev ca-certificates
-        update-ca-certificates
-        mkdir -p /etc/pki/tls/certs
-        cp /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
-        ./scripts/test
+        ./scripts/test -b ${{github.ref}} -k ${{ secrets.aws_key_dev }} -s ${{ secrets.aws_secret_dev }}
     - name: Build Lambda layers
       if: success()
       run: ./scripts/cibuild
