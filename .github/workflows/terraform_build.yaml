@@ -33,6 +33,10 @@ jobs:
         AWS_XRAY_SDK_ENABLED: false
         AWS_REQUEST_PAYER: requester
       run: |
+        apt update -y && apt install -y python3-pip libpq-dev ca-certificates
+        update-ca-certificates
+        mkdir -p /etc/pki/tls/certs
+        cp /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
         ./scripts/test
     - name: Build Lambda layers
       if: success()
