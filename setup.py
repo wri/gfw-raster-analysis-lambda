@@ -4,7 +4,7 @@ setup(
     name="gfw_raster-analysis-lambda",
     version="1.0.0",
     description="Lambda function to run serverless on the fly raster analysis",
-    packages=["raster_analysis", "raster_analysis.layer", "lambdas"],
+    packages=["raster_analysis", "raster_analysis.layer"],
     author="Justin Terry/Thomas Maschler",
     license="MIT",
     install_requires=["aws-xray-sdk", "requests"],
