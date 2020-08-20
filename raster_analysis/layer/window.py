@@ -19,11 +19,11 @@ class Window:
         self.layer: LayerInfo = LayerInfo(layer)
         self.tile: Polygon = tile
 
-        self.data: ndarray = None
-        self.shifted_affine: Affine = None
-        self.no_data_value: Numeric = 0
+        data, shifted_affine, no_data_value = self.read(tile)
+        self.data: ndarray = data
+        self.shifted_affine: Affine = shifted_affine
+        self.no_data_value: Numeric = no_data_value
 
-        self.data, self.shifted_affine, self.no_data_value = self.read(tile)
         self._result: Optional[ndarray] = None
 
     def read(self, tile: Polygon) -> Tuple[np.ndarray, Affine, Numeric]:
@@ -47,11 +47,15 @@ class Window:
 
     @property
     def result(self):
-        return self.layer.name_type, self._result.tolist()
+        return self._result.tolist()
 
     @result.setter
     def result(self, value):
         self._result = value
+
+    @property
+    def result_col_name(self):
+        return self.layer.name_type
 
     def get_raster_uri(self):
         return get_raster_uri(self.layer.name, self.layer.data_type, self.tile)
@@ -133,7 +137,8 @@ class DataLakeWindow(Window):
 
 class TcdWindow(DataLakeWindow):
     def __init__(self, layer: str, tile: Polygon):
-        name, self.threshold = layer.split("__")
+        name, threshold = layer.split("__")
+        self.threshold = int(threshold)
 
         super().__init__(f"{name}__threshold", tile)
         threshold_pixel_value = DATA_LAKE_LAYER_MANAGER.get_pixel_value(
@@ -218,7 +223,6 @@ class GladAlertsWindow(Window):
 
     @property
     def result(self):
-        # return ("iso_week", self._result)
         return super().result
 
     @result.setter
@@ -234,9 +238,6 @@ class GladAlertsWindow(Window):
             ]
 
         self._result = np.array(value)
-
-    def _decode_date(self, date):
-        return date
 
 
 class CountWindow(Window):

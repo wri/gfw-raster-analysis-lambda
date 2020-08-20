@@ -5,7 +5,7 @@ setup(
     version="1.0.0",
     description="Lambda function to run serverless on the fly raster analysis",
     packages=["raster_analysis", "raster_analysis.layer"],
-    author="Thomas Maschler",
+    author="Justin Terry/Thomas Maschler",
     license="MIT",
-    install_requires=["lambda-decorators~=0.3.0", "aws-xray-sdk", "requests"],
+    install_requires=["aws-xray-sdk", "requests"],
 )

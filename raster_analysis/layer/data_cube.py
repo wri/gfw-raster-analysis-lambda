@@ -114,4 +114,7 @@ class DataCube:
                 self.mean_area, self.filter, inverse_index, counts
             )
 
-        return dict([window.result for window in self.group_windows + self.sum_windows])
+        return {
+            window.result_col_name: window.result
+            for window in self.group_windows + self.sum_windows
+        }

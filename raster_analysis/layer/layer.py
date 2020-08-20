@@ -72,15 +72,7 @@ class DataLakeLayerInfoManager:
             },
             "umd_tree_cover_density_2010": {
                 "latest": "v1.6",
-                "value_map": {
-                    1: "10",
-                    2: "15",
-                    3: "20",
-                    4: "25",
-                    5: "30",
-                    6: "50",
-                    7: "75",
-                },
+                "value_map": {1: 10, 2: 15, 3: 20, 4: 25, 5: 30, 6: 50, 7: 75},
             },
             "umd_tree_cover_gain": {"latest": "v1.6"},
             "whrc_aboveground_biomass_stock_2000": {"latest": "v4"},

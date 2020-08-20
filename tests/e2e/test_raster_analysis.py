@@ -1,6 +1,5 @@
 import raster_analysis.boto as boto
 
-from lambdas.fanout.src.lambda_function import handler as fanout_handler
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
 from tests.fixtures.idn_24_9 import (
@@ -31,6 +30,10 @@ def context():
     def mock_lambda(payload, lambda_name, client):
         uid = str(uuid.uuid1())
         context = Context(uid, f"log_stream_{uid}")
+
+        # don't import until here to makes sure monkey patch works
+        from lambdas.fanout.src.lambda_function import handler as fanout_handler
+
         f = fanout_handler if lambda_name == "fanout" else analysis_handler
         thread = threading.Thread(target=f, args=(payload, context))
         thread.start()
@@ -78,9 +81,10 @@ def test_primary_tree_cover_loss(context):
             "sum": ["area__ha", "whrc_aboveground_co2_emissions__Mg"],
         },
         context,
-    )
+    )["body"]
 
-    for row_actual, row_expected in zip(result, IDN_24_9_PRIMARY_LOSS):
+    assert result["status"] == "success"
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_PRIMARY_LOSS):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
         assert row_actual["whrc_aboveground_co2_emissions__Mg"] == pytest.approx(
             row_expected["whrc_aboveground_co2_emissions__Mg"], 0.001
@@ -95,9 +99,12 @@ def test_extent_2010(context):
             "sum": ["area__ha"],
         },
         context,
-    )
+    )["body"]
 
-    assert result["area__ha"] == pytest.approx(IDN_24_9_2010_EXTENT["area__ha"], 0.001)
+    assert result["status"] == "success"
+    assert result["data"]["area__ha"] == pytest.approx(
+        IDN_24_9_2010_EXTENT["area__ha"], 0.001
+    )
 
 
 def test_tree_cover_gain(context):
@@ -108,9 +115,10 @@ def test_tree_cover_gain(context):
             "sum": ["area__ha"],
         },
         context,
-    )
+    )["body"]
 
-    assert result["area__ha"] == pytest.approx(IDN_24_9_GAIN["area__ha"], 0.001)
+    assert result["status"] == "success"
+    assert result["data"]["area__ha"] == pytest.approx(IDN_24_9_GAIN["area__ha"], 0.001)
 
 
 def test_tree_cover_loss_by_driver(context):
@@ -125,9 +133,10 @@ def test_tree_cover_loss_by_driver(context):
             "sum": ["area__ha"],
         },
         context,
-    )
+    )["body"]
 
-    for row_actual, row_expected in zip(result, IDN_24_9_LOSS_BY_DRIVER):
+    assert result["status"] == "success"
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_LOSS_BY_DRIVER):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
 
 
@@ -141,9 +150,8 @@ def test_glad_alerts(context):
             "sum": ["alert__count"],
         },
         context,
-    )
+    )["body"]
 
-    print(result)
-    print(IDN_24_9_GLAD_ALERTS)
-    for row_actual, row_expected in zip(result, IDN_24_9_GLAD_ALERTS):
+    assert result["status"] == "success"
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
         assert row_actual["alert__count"] == row_expected["alert__count"]
