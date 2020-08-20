@@ -6,6 +6,7 @@ import os
 
 from raster_analysis.boto import lambda_client
 from raster_analysis.globals import LOGGER
+from raster_analysis.boto import invoke_lambda
 
 patch(["boto3"])
 
@@ -21,8 +22,6 @@ def handler(event, context):
         payload["tile"] = tile
 
         try:
-            from raster_analysis.boto import invoke_lambda
-
             invoke_lambda(payload, raster_analysis_lambda, lambda_client())
         except Exception as e:
             LOGGER.error(

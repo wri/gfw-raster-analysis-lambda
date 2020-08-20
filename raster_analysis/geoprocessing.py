@@ -4,15 +4,6 @@ from raster_analysis.layer.data_cube import DataCube
 from aws_xray_sdk.core import xray_recorder
 from raster_analysis.globals import LOGGER
 
-AREA_FIELD = "area"
-COUNT_FIELD = "count"
-SUM_FIELD = "sum"
-FILTERED_AREA_FIELD = "filtered_area"
-LAYER_AREA_FIELD = "{raster_id}_area"
-FILTER_FIELD = "filter"
-CO2_FACTOR = 0.5 * 44 / 12  # used to calculate emissions from biomass layer
-
-
 ###
 # TODO test Downloads/borneo_orangutan.zip and see what happens (prod geostore=fe14a1ec856d2a4888a7099b1a09e9aa)
 ###

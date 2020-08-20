@@ -15,30 +15,28 @@ patch(["boto3"])
 
 @xray_recorder.capture("Tiled Analysis")
 def handler(event, context):
-    geom = shape(event["geometry"])
-    group_by = event.get("group_by", [])
-
-    LOGGER.info(
-        f"Tiling input geometry with width={TILE_WIDTH}: {shapely.wkt.dumps(geom)}"
-    )
-    tiles = get_tiles(geom, TILE_WIDTH)
-
-    LOGGER.info(
-        f"Running tiled analysis on the following tiles: {[shapely.wkt.dumps(g) for g in tiles]}"
-    )
-
     try:
+        geom = shape(event["geometry"])
+        group_by = event.get("group_by", [])
+
+        LOGGER.info(
+            f"Tiling input geometry with width={TILE_WIDTH}: {shapely.wkt.dumps(geom)}"
+        )
+        tiles = get_tiles(geom, TILE_WIDTH)
+
+        LOGGER.info(
+            f"Running tiled analysis on the following tiles: {[shapely.wkt.dumps(g) for g in tiles]}"
+        )
+
         tile_results = process_tiled_geoms(tiles, event, context.aws_request_id, 20)
-    except RasterAnalysisException:
-        return {
-            "statusCode": 500,
-            "body": "Internal Server Error <" + context.aws_request_id + ">",
-        }
+        LOGGER.info(f"Successfully ran tiled analysis with results: {tile_results}")
 
-    LOGGER.info(f"Successfully ran tiled analysis with results: {tile_results}")
+        result = merge_tile_results(tile_results, group_by)
+        LOGGER.info(
+            f"Successfully merged tiled results to produce final result: {result}"
+        )
 
-    result = merge_tile_results(tile_results, group_by)
-
-    LOGGER.info(f"Successfully merged tiled results to produce final result: {result}")
-
-    return result
+        return {"statusCode": 200, "body": {"status": "success", "data": result}}
+    except Exception as e:
+        LOGGER.exception(e)
+        return {"statusCode": 500, "body": {"status": "failed", "message": str(e)}}
