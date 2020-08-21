@@ -163,12 +163,12 @@ class DataLakeWindow(Window):
             value = cast(ndarray, value)
             self._result = np.array(
                 [
-                    DATA_LAKE_LAYER_MANAGER.get_layer_value(self.layer.name, val)
+                    DATA_LAKE_LAYER_MANAGER.get_layer_value(self.layer.name, str(val))
                     for val in value
                 ]
             )
         else:
-            DATA_LAKE_LAYER_MANAGER.get_layer_value(self.layer.name, value)
+            DATA_LAKE_LAYER_MANAGER.get_layer_value(self.layer.name, str(value))
 
     def has_default_value(self) -> bool:
         """
@@ -188,12 +188,11 @@ class TcdWindow(DataLakeWindow):
 
     @xray_recorder.capture("Initialize TCD Window")
     def __init__(self, layer: str, tile: Polygon):
-        name, threshold = layer.split("__")
-        self.threshold: int = int(threshold)
+        name, self.threshold = layer.split("__")
 
         super().__init__(f"{name}__threshold", tile)
-        threshold_pixel_value = DATA_LAKE_LAYER_MANAGER.get_pixel_value(
-            name, self.threshold
+        threshold_pixel_value = int(
+            DATA_LAKE_LAYER_MANAGER.get_pixel_value(name, self.threshold)
         )
 
         self.data = self.data >= threshold_pixel_value

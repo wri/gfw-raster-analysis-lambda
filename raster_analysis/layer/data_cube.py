@@ -128,7 +128,8 @@ class DataCube:
 
             try:
                 windows.append(future.result())
-            except Exception:
+            except Exception as e:
                 LOGGER.exception(f"Exception while reading window for layer {layer}")
+                raise e
 
         return windows
