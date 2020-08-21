@@ -1,10 +1,15 @@
 from typing import Union
 import logging
 import os
+from shapely.geometry import Polygon, MultiPolygon
+from numpy import ndarray
 
 from raster_analysis.layer.layer import DataLakeLayerInfoManager
 
 Numeric = Union[int, float]
+BasePolygon = Union[Polygon, MultiPolygon]
+ResultValue = Union[int, float, str]
+ResultValues = Union[ndarray, ResultValue]
 
 LOGGING_LEVEL = logging.INFO
 LOGGER = logging.getLogger(__name__)

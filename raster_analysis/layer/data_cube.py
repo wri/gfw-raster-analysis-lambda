@@ -1,13 +1,16 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional, Dict, Any
 import numpy as np
+from rasterio.transform import Affine
 import concurrent.futures
+from shapely.geometry import Polygon
+from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
 from raster_analysis.numpy_utils import get_linear_index
-from raster_analysis.globals import LOGGER, WINDOW_SIZE
-from .window import get_window
+from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon, ResultValues
+from .window import get_window, Window
 
 
 class DataCube:
@@ -17,16 +20,27 @@ class DataCube:
 
     def __init__(
         self,
-        geom,
-        tile,
+        geom: BasePolygon,
+        tile: Polygon,
         group_layers: List[str],
         sum_layers: List[str],
         filter_layers: List[str],
-        start_date: datetime,
-        end_date: datetime,
+        start_date: Optional[datetime],
+        end_date: Optional[datetime],
     ):
-        self.geom = geom
-        self.mean_area = get_area(tile.centroid.y) / 10000
+        """
+       Create a datacube of many raster layers at once, and compute basic SQL-like operations across them.
+
+       :param geom: shapely geometry you want zonal statistics
+       :param groups: layers whose values you want to group results by. Layer must be int, datetime or string. Equivalent to
+               `select **groups from table group by **groups`
+       :param sums: sum values of these layers based on group layers. Equivalent to sum aggregate function in SQL.
+       :param filters: layers to mask input geometry with, where all no-data values are considered to be masked values.
+       :param start_date: start date to filter datetime layers by
+       :param end_date: end date to filter datetime layers by
+       """
+        self.geom: BasePolygon = geom
+        self.mean_area: float = get_area(tile.centroid.y) / 10000
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
@@ -57,11 +71,11 @@ class DataCube:
 
                 return windows
 
-            self.group_windows = get_window_results(group_futures)
-            self.sum_windows = get_window_results(sum_futures)
-            self.filter_windows = get_window_results(filter_futures)
+            self.group_windows: List[Window] = get_window_results(group_futures)
+            self.sum_windows: List[Window] = get_window_results(sum_futures)
+            self.filter_windows: List[Window] = get_window_results(filter_futures)
 
-        self.data_windows = [
+        self.data_windows: List[Window] = [
             w
             for w in self.group_windows + self.filter_windows + self.sum_windows
             if w.data is not None
@@ -70,10 +84,10 @@ class DataCube:
             raise ValueError("No windows with data could be found")
 
         # TODO since I'm always getting a tile now, should I just precalc affine?
-        self.shifted_affine = self.data_windows[0].shifted_affine
+        self.shifted_affine: Affine = self.data_windows[0].shifted_affine
 
         # generate filter and then clear those rasters to save memory
-        self.filter = mask_geom_on_raster(
+        self.filter: np.ndarray = mask_geom_on_raster(
             np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, self.geom
         )
         for window in self.filter_windows:
@@ -89,15 +103,16 @@ class DataCube:
         # generate linear index and then clear group rasters to save data
         if self.group_windows:
             group_cols = [np.ravel(window.data) for window in self.group_windows]
-            self.index_dims = [col.max() + 1 for col in group_cols]
-            self.linear_index = get_linear_index(
+            self.index_dims: List[int] = [col.max() + 1 for col in group_cols]
+            self.linear_index: np.ndarray = get_linear_index(
                 group_cols, self.index_dims, self.filter
             )
 
             for window in self.group_windows:
                 window.clear()
 
-    def calculate(self):
+    @xray_recorder.capture("Calculate")
+    def calculate(self) -> Dict[str, ResultValues]:
         inverse_index = None
         counts = None
 
