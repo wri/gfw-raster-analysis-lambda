@@ -308,6 +308,7 @@ class CountWindow(Window):
     def __init__(self, layer: str, tile: Polygon):
         self.layer: LayerInfo = LayerInfo(layer)
         self.tile: Polygon = tile
+        self.data = None
 
     @xray_recorder.capture("Sum Counts")
     def sum(
