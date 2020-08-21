@@ -10,6 +10,7 @@ from tests.fixtures.idn_24_9 import (
     IDN_24_9_2010_EXTENT,
     IDN_24_9_LOSS_BY_DRIVER,
     IDN_24_9_PRIMARY_LOSS,
+    IDN_24_9_ESA_LAND_COVER,
 )
 
 import threading
@@ -164,3 +165,21 @@ def test_glad_alerts(context):
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
         assert row_actual["alert__count"] == row_expected["alert__count"]
+
+
+def test_land_cover_area(context):
+    result = tiled_handler(
+        {
+            "geometry": IDN_24_9_GEOM,
+            "group_by": ["esa_land_cover_2015__class"],
+            "sum": ["area__ha"],
+        },
+        context,
+    )["body"]
+
+    assert result["status"] == "success"
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_ESA_LAND_COVER):
+        print(
+            f"{row_actual['esa_land_cover_2015__class']}, {row_expected['esa_land_cover_2015__class']}"
+        )
+        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)

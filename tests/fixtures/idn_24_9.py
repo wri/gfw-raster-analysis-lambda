@@ -3664,3 +3664,13 @@ IDN_24_9_GLAD_ALERTS = [
     {"alert__week": 50, "alert__count": 875, "alert__year": 2019},
     {"alert__week": 52, "alert__count": 436, "alert__year": 2019},
 ]
+
+# select sum(area__ha) as area__ha from table group by esa_land_cover_2015__class where iso = 'IDN' and adm1 = 24 and adm2 = 9 and umd_tree_cover_density__threshold = 30 order by esa_land_cover_2015__class asc
+IDN_24_9_ESA_LAND_COVER = [
+    {"esa_land_cover_2015__class": "Agriculture", "area__ha": 718963.448093273},
+    {"esa_land_cover_2015__class": "Forest", "area__ha": 443010.7041389673},
+    {"esa_land_cover_2015__class": "Grassland", "area__ha": 27300.452254818054},
+    {"esa_land_cover_2015__class": "Settlement", "area__ha": 13.923968222321573},
+    {"esa_land_cover_2015__class": "Unknown", "area__ha": 94951.97940876547},
+    {"esa_land_cover_2015__class": "Water", "area__ha": 22434.337695237078},
+]
