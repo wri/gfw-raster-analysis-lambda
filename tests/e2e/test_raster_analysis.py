@@ -1,4 +1,6 @@
 import raster_analysis.boto as boto
+import raster_analysis
+import lambdas.fanout.src.lambda_function
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
 from tests.fixtures.idn_24_9 import (
@@ -15,6 +17,7 @@ import uuid
 import pytest
 import subprocess
 import os
+from mock import patch
 
 ###
 # TODO test Downloads/borneo_orangutan.zip and see what happens (prod geostore=fe14a1ec856d2a4888a7099b1a09e9aa)
@@ -27,9 +30,8 @@ class Context(object):
         self.log_stream_name = log_stream_name
 
 
-@pytest.fixture
-def context():
-    # monkey patch to just run on thread instead of actually invoking lambda
+@pytest.fixture(autouse=True)
+def context(monkeypatch):
     def mock_lambda(payload, lambda_name, client):
         uid = str(uuid.uuid1())
         context = Context(uid, f"log_stream_{uid}")
@@ -41,7 +43,11 @@ def context():
         thread = threading.Thread(target=f, args=(payload, context))
         thread.start()
 
-    boto.invoke_lambda = mock_lambda
+    # monkey patch to just run on thread instead of actually invoking lambda
+    monkeypatch.setattr(raster_analysis.tiling, "invoke_lambda", mock_lambda)
+    monkeypatch.setattr(
+        lambdas.fanout.src.lambda_function, "invoke_lambda", mock_lambda
+    )
 
     os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
     os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"

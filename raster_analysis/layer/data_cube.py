@@ -57,23 +57,9 @@ class DataCube:
                 for layer in filter_layers
             }
 
-            def get_window_results(futures):
-                windows = []
-                for future in concurrent.futures.as_completed(futures):
-                    layer = futures[future]
-
-                    try:
-                        windows.append(future.result())
-                    except Exception:
-                        LOGGER.exception(
-                            f"Exception while reading window for layer {layer}"
-                        )
-
-                return windows
-
-            self.group_windows: List[Window] = get_window_results(group_futures)
-            self.sum_windows: List[Window] = get_window_results(sum_futures)
-            self.filter_windows: List[Window] = get_window_results(filter_futures)
+            self.group_windows: List[Window] = self._get_window_results(group_futures)
+            self.sum_windows: List[Window] = self._get_window_results(sum_futures)
+            self.filter_windows: List[Window] = self._get_window_results(filter_futures)
 
         self.data_windows: List[Window] = [
             w
@@ -133,3 +119,16 @@ class DataCube:
             window.result_col_name: window.result
             for window in self.group_windows + self.sum_windows
         }
+
+    @staticmethod
+    def _get_window_results(futures):
+        windows = []
+        for future in concurrent.futures.as_completed(futures):
+            layer = futures[future]
+
+            try:
+                windows.append(future.result())
+            except Exception:
+                LOGGER.exception(f"Exception while reading window for layer {layer}")
+
+        return windows

@@ -1,14 +1,19 @@
 from shapely.geometry import mapping, box
-import os
 from datetime import date
 import pandas as pd
 from shapely.geometry import Polygon
 from typing import Dict, List, Any
 
 from aws_xray_sdk.core import xray_recorder
-from raster_analysis.boto import lambda_client
+from raster_analysis.boto import lambda_client, invoke_lambda
 from raster_analysis.results_store import AnalysisResultsStore
-from raster_analysis.globals import LOGGER, ResultValue, BasePolygon, Numeric
+from raster_analysis.globals import (
+    LOGGER,
+    FANOUT_LAMBDA_NAME,
+    ResultValue,
+    BasePolygon,
+    Numeric,
+)
 
 
 @xray_recorder.capture("Merge Tiled Geometry Results")
@@ -59,13 +64,10 @@ def process_tiled_geoms(
         tile_geojsons[x : x + fanout_num]
         for x in range(0, len(tile_geojsons), fanout_num)
     ]
-    fanout_lambda = os.environ["FANOUT_LAMBDA_NAME"]
-
-    from raster_analysis.boto import invoke_lambda
 
     for chunk in tile_chunks:
         event = {"payload": geoprocessing_params, "tiles": chunk}
-        invoke_lambda(event, fanout_lambda, lambda_client())
+        invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
     LOGGER.info(f"Geom count: {geom_count}")
     results_store = AnalysisResultsStore(request_id)

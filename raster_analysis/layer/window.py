@@ -100,19 +100,21 @@ def get_window(
     start_date: Optional[datetime],
     end_date: Optional[datetime],
 ) -> Window:
-    if layer == "area__ha":
+    layer_info = LayerInfo(layer)
+
+    if layer_info.name_type == "area__ha":
         return AreaWindow(layer, tile)
-    elif layer == "alert__count":
+    elif layer_info.name_type == "alert__count":
         return CountWindow(layer, tile)
-    elif layer.startswith("umd_glad_alerts"):
+    elif layer_info.name == "umd_glad_alerts":
         return GladAlertsWindow(layer, tile, start_date, end_date)
-    elif layer.endswith("__year"):
+    elif layer_info.data_type == "year":
         return YearWindow(layer, tile, start_date, end_date)
-    elif layer.startswith("umd_tree_cover_density"):
+    elif "umd_tree_cover_density" in layer_info.name:
         return TcdWindow(layer, tile)
-    elif "__ha-1" in layer:
+    elif layer_info.data_type == "ha-1":
         return AreaDensityWindow(layer, tile)
-    elif "whrc_aboveground_co2_emissions" in layer:
+    elif layer_info.name == "whrc_aboveground_co2_emissions":
         return CarbonEmissionsWindow(layer, tile)
     else:
         return DataLakeWindow(layer, tile)
