@@ -4,9 +4,6 @@ import shapely.wkt
 from aws_xray_sdk.core import patch
 from aws_xray_sdk.core import xray_recorder
 
-import logging
-
-from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.tiling import get_tiles, process_tiled_geoms, merge_tile_results
 from raster_analysis.globals import LOGGER, TILE_WIDTH
 

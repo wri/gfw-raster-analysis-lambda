@@ -1,16 +1,20 @@
 import logging
 import traceback
+from typing import Tuple
 
 import numpy as np
 import rasterio
-from rasterio import features
+from rasterio import features, DatasetReader
+from rasterio.transform import Affine
 from aws_xray_sdk.core import xray_recorder
 from rasterio.windows import Window
-from raster_analysis.globals import LOGGER
+from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 
 
 @xray_recorder.capture("Read Window")
-def read_window(raster, geom, masked=False):
+def read_window(
+    raster: str, geom: BasePolygon, masked: bool = False
+) -> Tuple[np.ndarray, Affine, Numeric]:
     """
     Read a chunk of the raster that contains the bounding box of the
     input geometry.  This has memory implications if that rectangle
@@ -37,7 +41,9 @@ def read_window(raster, geom, masked=False):
     return data, shifted_affine, no_data_value
 
 
-def read_window_ignore_missing(raster, geom, masked=False):
+def read_window_ignore_missing(
+    raster: str, geom: BasePolygon, masked: bool = False
+) -> Tuple[np.ndarray, Affine, Numeric]:
     try:
         data = read_window(raster, geom, masked=masked)
     except rasterio.errors.RasterioIOError as e:
@@ -48,7 +54,9 @@ def read_window_ignore_missing(raster, geom, masked=False):
 
 
 @xray_recorder.capture("Mask Geometry")
-def mask_geom_on_raster(raster_data, shifted_affine, geom):
+def mask_geom_on_raster(
+    raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
+) -> np.ndarray:
     """"
     For a given polygon, returns a numpy masked array with the intersecting
     values of the raster at `raster_path` unmasked, all non-intersecting
@@ -83,7 +91,9 @@ def mask_geom_on_raster(raster_data, shifted_affine, geom):
         return np.array([])
 
 
-def get_window_and_affine(geom, raster_src):
+def get_window_and_affine(
+    geom: BasePolygon, raster_src: DatasetReader
+) -> Tuple[Window, Affine]:
     """
     Get a rasterio window block from the bounding box of a vector feature and
     calculates the affine transformation needed to map the coordinates of the

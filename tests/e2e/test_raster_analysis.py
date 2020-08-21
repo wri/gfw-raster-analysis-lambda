@@ -1,5 +1,4 @@
 import raster_analysis.boto as boto
-
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
 from tests.fixtures.idn_24_9 import (
@@ -16,6 +15,10 @@ import uuid
 import pytest
 import subprocess
 import os
+
+###
+# TODO test Downloads/borneo_orangutan.zip and see what happens (prod geostore=fe14a1ec856d2a4888a7099b1a09e9aa)
+###
 
 
 class Context(object):

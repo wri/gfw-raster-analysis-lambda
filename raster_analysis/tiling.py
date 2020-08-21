@@ -1,23 +1,27 @@
 from shapely.geometry import mapping, box
-import logging
 import os
 from datetime import date
 import pandas as pd
+from shapely.geometry import Polygon
+from typing import Dict, List, Any
+
 from aws_xray_sdk.core import xray_recorder
 from raster_analysis.boto import lambda_client
 from raster_analysis.results_store import AnalysisResultsStore
-from raster_analysis.globals import LOGGER
+from raster_analysis.globals import LOGGER, ResultValue, BasePolygon, Numeric
 
 
 @xray_recorder.capture("Merge Tiled Geometry Results")
-def merge_tile_results(tile_results, groupby_columns):
+def merge_tile_results(
+    tile_results: Dict[Any, List[Any]], groupby_columns: List[str]
+) -> List[Dict[str, ResultValue]]:
     if not groupby_columns:
         dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
         merged_df: pd.DataFrame = pd.concat(dataframes)
         return merged_df.sum().to_dict()
 
     dataframes = [pd.DataFrame(result) for result in tile_results]
-    merged_df: pd.DataFrame = pd.concat(dataframes)
+    merged_df = pd.concat(dataframes)
 
     grouped_df: pd.DataFrame = merged_df.groupby(groupby_columns).sum()
     result_df: pd.DataFrame = grouped_df.sort_values(groupby_columns).reset_index()
@@ -39,7 +43,13 @@ def merge_tile_results(tile_results, groupby_columns):
     return result_df.to_dict(orient="records")
 
 
-def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
+@xray_recorder.capture("Process Tiles")
+def process_tiled_geoms(
+    tiles: List[Polygon],
+    geoprocessing_params: Dict[str, Any],
+    request_id: str,
+    fanout_num: int,
+):
     geom_count = len(tiles)
     geoprocessing_params["analysis_id"] = request_id
     LOGGER.info(f"Processing {geom_count} tiles")
@@ -65,13 +75,9 @@ def process_tiled_geoms(tiles, geoprocessing_params, request_id, fanout_num):
 
 
 @xray_recorder.capture("Get Tiles")
-def get_tiles(geom, width):
+def get_tiles(geom: BasePolygon, width: Numeric) -> List[Polygon]:
     """
     Get width x width tile geometries over the extent of the geometry
-    TODO if there's a multipolygon (e.g. from shapefile) where polygons are dotted across the world,
-    TODO will this take forever to check intersections? Seems uncommon, but can probably just
-    TODO look at each individual polygon (but then what if there's a multipolygon with a ridiculous
-    TODO number of small polygons?
     """
     min_x, min_y, max_x, max_y = _get_rounded_bounding_box(geom, width)
     tiles = []
@@ -91,22 +97,7 @@ def get_tiles(geom, width):
     return tiles
 
 
-@xray_recorder.capture("Get Intersecting Geometries")
-def get_intersecting_geoms(geom, tiles):
-    """
-    Divide geom into geoms intersected with the tiles
-    """
-    intersecting_geoms = []
-    for tile in tiles:
-        inter_geom = tile.intersection(geom)
-
-        if not inter_geom.is_empty:
-            intersecting_geoms.append(tile.intersection(geom))
-
-    return intersecting_geoms
-
-
-def _get_rounded_bounding_box(geom, width):
+def _get_rounded_bounding_box(geom: BasePolygon, width: Numeric):
     """
     Round bounding box to divide evenly into width x width tiles from plane origin
     """

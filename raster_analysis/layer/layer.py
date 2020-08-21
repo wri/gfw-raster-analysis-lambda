@@ -3,7 +3,7 @@ from typing import Any, Dict
 
 class LayerInfo:
     def __init__(self, name_type: str):
-        self.name_type = name_type
+        self.name_type: str = name_type
         parts = name_type.split("__")
 
         if len(parts) != 2:
@@ -19,7 +19,7 @@ class LayerInfo:
 
 class DataLakeLayerInfoManager:
     def __init__(self):
-        self._data_lake_info = self._populate_data()
+        self._data_lake_info: Dict[str, Dict[str, Any]] = self._populate_data()
 
     def get_latest_version(self, layer_name: str) -> str:
         self._check_layer(layer_name)

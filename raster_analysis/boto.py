@@ -1,5 +1,6 @@
 import boto3
 import json
+from typing import Callable, Dict, Any
 from raster_analysis.globals import (
     LOGGER,
     AWS_REGION,
@@ -9,7 +10,9 @@ from raster_analysis.globals import (
 )
 
 
-def client_constructor(service: str, entrypoint_url=None, type: str = "client"):
+def client_constructor(
+    service: str, entrypoint_url: str = None, type: str = "client"
+) -> Callable:
     """Using closure design for a client constructor This way we only need to
     create the client once in central location and it will be easier to
     mock."""
@@ -38,7 +41,7 @@ dynamodb_client = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL)
 dynamodb_resource = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL, "resource")
 
 
-def invoke_lambda(payload, lambda_name, client):
+def invoke_lambda(payload: Dict[str, Any], lambda_name: str, client) -> None:
     response = client.invoke(
         FunctionName=lambda_name,
         InvocationType="Event",
