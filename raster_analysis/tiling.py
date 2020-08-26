@@ -66,7 +66,7 @@ def process_tiled_geoms(
     if geom_count <= fanout_num:
         for tile in tiles:
             tile_params = deepcopy(geoprocessing_params)
-            tile_params["tile"] = tile
+            tile_params["tile"] = mapping(tile)
             invoke_lambda(tile_params, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
     else:
         tile_geojsons = [mapping(tile) for tile in tiles]
