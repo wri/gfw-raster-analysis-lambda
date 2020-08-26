@@ -39,8 +39,10 @@ def handler(event, context):
 
         return result
     except Exception as e:
+        results_store = AnalysisResultsStore(event["analysis_id"])
+        results_store.save_error(context.aws_request_id)
+
         LOGGER.exception(e)
-        results_store.save_result()
         raise Exception(f"Internal Server Error <{context.aws_request_id}>")
 
 
