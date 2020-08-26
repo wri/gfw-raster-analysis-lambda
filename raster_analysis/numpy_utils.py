@@ -1,8 +1,8 @@
 import numpy as np
+from numpy import ndarray
 from aws_xray_sdk.core import xray_recorder
 
 from typing import Dict, List
-from numpy import ndarray
 
 DataFrame = Dict[str, ndarray]
 

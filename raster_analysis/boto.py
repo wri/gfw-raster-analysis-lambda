@@ -1,6 +1,7 @@
 import boto3
 import json
 from typing import Callable, Dict, Any
+
 from raster_analysis.globals import (
     LOGGER,
     AWS_REGION,

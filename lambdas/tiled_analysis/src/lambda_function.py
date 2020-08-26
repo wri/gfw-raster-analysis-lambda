@@ -1,8 +1,7 @@
 from shapely.geometry import shape
-import shapely.wkt
-
 from aws_xray_sdk.core import patch
 from aws_xray_sdk.core import xray_recorder
+import shapely.wkt
 
 from raster_analysis.tiling import get_tiles, process_tiled_geoms, merge_tile_results
 from raster_analysis.globals import LOGGER, TILE_WIDTH

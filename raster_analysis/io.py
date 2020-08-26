@@ -8,6 +8,7 @@ from rasterio import features, DatasetReader
 from rasterio.transform import Affine
 from aws_xray_sdk.core import xray_recorder
 from rasterio.windows import Window
+
 from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 
 
