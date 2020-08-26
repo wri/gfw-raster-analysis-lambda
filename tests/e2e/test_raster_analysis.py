@@ -1,3 +1,10 @@
+import threading
+import uuid
+import pytest
+import subprocess
+import os
+from datetime import datetime, timedelta
+
 import raster_analysis.boto as boto
 import raster_analysis
 import lambdas.fanout.src.lambda_function
@@ -12,13 +19,6 @@ from tests.fixtures.idn_24_9 import (
     IDN_24_9_PRIMARY_LOSS,
     IDN_24_9_ESA_LAND_COVER,
 )
-
-import threading
-import uuid
-import pytest
-import subprocess
-import os
-from mock import patch
 
 ###
 # TODO test Downloads/borneo_orangutan.zip and see what happens (prod geostore=fe14a1ec856d2a4888a7099b1a09e9aa)
@@ -183,3 +183,15 @@ def test_land_cover_area(context):
             f"{row_actual['esa_land_cover_2015__class']}, {row_expected['esa_land_cover_2015__class']}"
         )
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
+
+
+def test_error(context):
+    start = datetime.now()
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "group_by": ["not_real"]}, context
+    )["body"]
+    end = datetime.now()
+
+    timeout = timedelta(seconds=29)
+    assert result["status"] == "failed"
+    assert (end - start) < timeout

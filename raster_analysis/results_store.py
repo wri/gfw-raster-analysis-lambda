@@ -7,6 +7,7 @@ from typing import List, Dict, Any
 from boto3.dynamodb.table import TableResource
 
 from raster_analysis.boto import dynamodb_resource
+from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.globals import RESULTS_CHECK_INTERVAL, RESULTS_CHECK_TRIES, LOGGER
 
 
@@ -23,6 +24,17 @@ class AnalysisResultsStore:
                 "analysis_id": self.analysis_id,
                 "tile_id": result_id,
                 "result": store_result,
+                "error": False,
+            }
+        )
+
+    def save_error(self, result_id: str) -> None:
+        self._client.put_item(
+            Item={
+                "analysis_id": self.analysis_id,
+                "tile_id": result_id,
+                "result": [],
+                "error": True,
             }
         )
 
@@ -42,6 +54,13 @@ class AnalysisResultsStore:
             tries += 1
 
             results_response = self.get_results()
+
+            for item in results_response["Items"]:
+                if item["error"]:
+                    raise RasterAnalysisException(
+                        f"Tile {item['tile_id']} encountered an error, check logs."
+                    )
+
             curr_count = results_response["Count"]
 
         if curr_count != num_results:
