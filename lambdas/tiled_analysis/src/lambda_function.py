@@ -15,12 +15,12 @@ def handler(event, context):
         geom = shape(event["geometry"])
         group_by = event.get("group_by", [])
 
-        LOGGER.info(
+        LOGGER.debug(
             f"Tiling input geometry with width={TILE_WIDTH}: {shapely.wkt.dumps(geom)}"
         )
         tiles = get_tiles(geom, TILE_WIDTH)
 
-        LOGGER.info(
+        LOGGER.debug(
             f"Running tiled analysis on the following tiles: {[shapely.wkt.dumps(g) for g in tiles]}"
         )
 
