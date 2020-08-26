@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
+
 import numpy as np
 from rasterio.transform import Affine
 import concurrent.futures
@@ -9,8 +10,8 @@ from aws_xray_sdk.core import xray_recorder
 from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
 from raster_analysis.numpy_utils import get_linear_index
-from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon, ResultValues
-from .window import get_window, Window
+from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
+from .window import get_window, Window, ResultValues
 
 
 class DataCube:

@@ -1,5 +1,7 @@
 import math
+
 from shapely.geometry import Point, Polygon
+
 from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER, GRID_SIZE, GRID_COLS
 
 

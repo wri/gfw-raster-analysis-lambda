@@ -1,12 +1,10 @@
+from copy import deepcopy
+
 from aws_xray_sdk.core import patch
 from aws_xray_sdk.core import xray_recorder
 
-from copy import deepcopy
-import os
-
-from raster_analysis.boto import lambda_client
+from raster_analysis.boto import lambda_client, invoke_lambda
 from raster_analysis.globals import LOGGER, RASTER_ANALYSIS_LAMBDA_NAME
-from raster_analysis.boto import invoke_lambda
 
 patch(["boto3"])
 

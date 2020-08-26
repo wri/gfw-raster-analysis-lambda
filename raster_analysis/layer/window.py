@@ -1,24 +1,24 @@
+from datetime import date, timedelta, datetime
+from typing import Tuple, Optional, List, Any, Union, cast
+from math import floor
+
 import numpy as np
 from rasterio import Affine
 from shapely.geometry import Polygon
 from numpy import ndarray
-from math import floor
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_uri
 from raster_analysis.io import read_window
-
-from datetime import date, timedelta, datetime
-from typing import Tuple, Optional, List, Any, Union, cast
-
 from raster_analysis.globals import (
     Numeric,
     ResultValue,
-    ResultValues,
     WINDOW_SIZE,
     DATA_LAKE_LAYER_MANAGER,
 )
 from .layer import LayerInfo
+
+ResultValues = Union[ndarray, ResultValue]
 
 
 class Window:

@@ -1,7 +1,8 @@
-from shapely.geometry import shape
 from typing import Optional
-from aws_xray_sdk.core import xray_recorder
 from datetime import datetime
+
+from shapely.geometry import shape
+from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import LOGGER
@@ -39,6 +40,7 @@ def handler(event, context):
         return result
     except Exception as e:
         LOGGER.exception(e)
+        results_store.save_result()
         raise Exception(f"Internal Server Error <{context.aws_request_id}>")
 
 

@@ -1,11 +1,12 @@
 from decimal import Decimal
 import os
-from raster_analysis.boto import dynamodb_resource
 from copy import deepcopy
 from time import sleep
 from typing import List, Dict, Any
+
 from boto3.dynamodb.table import TableResource
 
+from raster_analysis.boto import dynamodb_resource
 from raster_analysis.globals import RESULTS_CHECK_INTERVAL, RESULTS_CHECK_TRIES, LOGGER
 
 
@@ -28,7 +29,7 @@ class AnalysisResultsStore:
     def get_results(self) -> Dict[str, Any]:
         return self._client.query(
             ExpressionAttributeValues={":id": self.analysis_id},
-            KeyConditionExpression=f"analysis_id = :id",
+            KeyConditionExpression="analysis_id = :id",
             TableName=self._table_name,
         )
 
