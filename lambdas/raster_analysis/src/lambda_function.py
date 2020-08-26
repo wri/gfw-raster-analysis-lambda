@@ -53,15 +53,3 @@ def try_parsing_date(text: str) -> Optional[datetime]:
                 pass
         raise ValueError("no valid date format found")
     return None
-
-
-"""
-repro weird issue:
-
-[-55.0, -12.5],
-[-56.25, -12.5],
-[-56.25, -11.25],
-[-55.0, -11.25],
-[-55.0, -12.5],
-
-"""

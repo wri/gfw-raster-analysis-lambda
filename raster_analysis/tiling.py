@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Dict, List, Any
+from copy import deepcopy
 
 from shapely.geometry import mapping, box
 import pandas as pd
@@ -11,6 +12,7 @@ from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import (
     LOGGER,
     FANOUT_LAMBDA_NAME,
+    RASTER_ANALYSIS_LAMBDA_NAME,
     ResultValue,
     BasePolygon,
     Numeric,
@@ -60,15 +62,22 @@ def process_tiled_geoms(
     geoprocessing_params["analysis_id"] = request_id
     LOGGER.info(f"Processing {geom_count} tiles")
 
-    tile_geojsons = [mapping(tile) for tile in tiles]
-    tile_chunks = [
-        tile_geojsons[x : x + fanout_num]
-        for x in range(0, len(tile_geojsons), fanout_num)
-    ]
+    # if
+    if geom_count <= fanout_num:
+        for tile in tiles:
+            tile_params = deepcopy(geoprocessing_params)
+            tile_params["tile"] = tile
+            invoke_lambda(tile_params, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
+    else:
+        tile_geojsons = [mapping(tile) for tile in tiles]
+        tile_chunks = [
+            tile_geojsons[x : x + fanout_num]
+            for x in range(0, len(tile_geojsons), fanout_num)
+        ]
 
-    for chunk in tile_chunks:
-        event = {"payload": geoprocessing_params, "tiles": chunk}
-        invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
+        for chunk in tile_chunks:
+            event = {"payload": geoprocessing_params, "tiles": chunk}
+            invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
     LOGGER.info(f"Geom count: {geom_count}")
     results_store = AnalysisResultsStore(request_id)
