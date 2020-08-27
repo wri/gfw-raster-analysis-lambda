@@ -2,5 +2,5 @@
 
 set -e
 
-docker-compose -f docker/terraform/docker-compose.yml build
-docker-compose -f docker/terraform/docker-compose.yml run --rm terraform "${1}" "${2}"
+docker-compose -f terraform/docker/docker-compose.yml build
+docker-compose -f terraform/docker/docker-compose.yml run --rm terraform "$@"

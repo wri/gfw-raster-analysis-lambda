@@ -22,9 +22,10 @@ function build_lambda_layer {
 
 lambda_layers=( raster_analysis )
 
-
 for l in "${lambda_layers[@]}"
 do
     echo "Build lambda layer ${l}"
     build_lambda_layer "${l}"
 done
+
+docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .

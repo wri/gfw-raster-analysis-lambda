@@ -1,73 +1,21 @@
 import logging
 import traceback
+from typing import Tuple
 
 import numpy as np
 import rasterio
-from rasterio import features
+from rasterio import features, DatasetReader
+from rasterio.transform import Affine
 from aws_xray_sdk.core import xray_recorder
 
-from raster_analysis.grid import get_raster_url
-from raster_analysis.exceptions import RasterReadException
-from collections import namedtuple
-
-import threading
-import queue
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-RasterWindow = namedtuple("RasterWindow", "data shifted_affine no_data")
-
-
-@xray_recorder.capture("Read All Windows")
-def read_windows_parallel(raster_ids, geom, masked=False):
-    read_window_threads = []
-    result_queue = queue.Queue()
-    error_queue = queue.Queue()
-
-    for raster_id in raster_ids:
-        read_window_thread = threading.Thread(
-            target=read_window_parallel_work,
-            args=(raster_id, geom, masked, result_queue, error_queue),
-        )
-        read_window_thread.start()
-        read_window_threads.append(read_window_thread)
-
-    for read_window_thread in read_window_threads:
-        read_window_thread.join()
-
-    errors = []
-    while not error_queue.empty():
-        errors.append(error_queue.get())
-
-    if errors:
-        raise RasterReadException("\n".join([str(e) for e in errors]))
-
-    result_dict = {}
-    while not result_queue.empty():
-        result = result_queue.get()
-        result_dict[result[0]] = RasterWindow(
-            data=result[1], shifted_affine=result[2], no_data=result[3]
-        )
-
-    return result_dict
-
-
-def read_window_parallel_work(raster_id, geom, masked, result_queue, error_queue):
-    try:
-        raster_url = get_raster_url(raster_id)
-
-        data, shifted_affine, no_data_value = read_window_ignore_missing(
-            raster_url, geom, masked=masked
-        )
-
-        result_queue.put((raster_id, data, shifted_affine, no_data_value))
-    except Exception as e:
-        error_queue.put(e)
+from rasterio.windows import Window
+from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 
 
 @xray_recorder.capture("Read Window")
-def read_window(raster, geom, masked=False):
+def read_window(
+    raster: str, geom: BasePolygon, masked: bool = False
+) -> Tuple[np.ndarray, Affine, Numeric]:
     """
     Read a chunk of the raster that contains the bounding box of the
     input geometry.  This has memory implications if that rectangle
@@ -77,6 +25,8 @@ def read_window(raster, geom, masked=False):
     """
 
     with rasterio.Env():
+        LOGGER.info(f"Reading raster source {raster}")
+
         with rasterio.open(raster) as src:
             try:
                 window, shifted_affine = get_window_and_affine(geom, src)
@@ -92,7 +42,9 @@ def read_window(raster, geom, masked=False):
     return data, shifted_affine, no_data_value
 
 
-def read_window_ignore_missing(raster, geom, masked=False):
+def read_window_ignore_missing(
+    raster: str, geom: BasePolygon, masked: bool = False
+) -> Tuple[np.ndarray, Affine, Numeric]:
     try:
         data = read_window(raster, geom, masked=masked)
     except rasterio.errors.RasterioIOError as e:
@@ -103,7 +55,9 @@ def read_window_ignore_missing(raster, geom, masked=False):
 
 
 @xray_recorder.capture("Mask Geometry")
-def mask_geom_on_raster(raster_data, shifted_affine, geom):
+def mask_geom_on_raster(
+    raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
+) -> np.ndarray:
     """"
     For a given polygon, returns a numpy masked array with the intersecting
     values of the raster at `raster_path` unmasked, all non-intersecting
@@ -138,7 +92,9 @@ def mask_geom_on_raster(raster_data, shifted_affine, geom):
         return np.array([])
 
 
-def get_window_and_affine(geom, raster_src):
+def get_window_and_affine(
+    geom: BasePolygon, raster_src: DatasetReader
+) -> Tuple[Window, Affine]:
     """
     Get a rasterio window block from the bounding box of a vector feature and
     calculates the affine transformation needed to map the coordinates of the
@@ -161,7 +117,9 @@ def get_window_and_affine(geom, raster_src):
     """
 
     # Create a window range from the bounds
-    window = raster_src.window(*geom.bounds)
+    window: Window = raster_src.window(*geom.bounds).round_lengths(
+        pixel_precision=5
+    ).round_offsets(pixel_precision=5)
 
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)

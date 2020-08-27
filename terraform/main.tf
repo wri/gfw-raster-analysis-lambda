@@ -1,7 +1,7 @@
 terraform {
   required_version = ">=0.12.13"
   backend "s3" {
-    key     = "raster-analysis.tfstate"
+    key     = "wri__gfw-raster-analysis-lambda.tfstate"
     region  = "us-east-1"
     encrypt = true
   }

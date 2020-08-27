@@ -10,8 +10,8 @@ data "archive_file" "lambda_tiled_analysis" {
   output_path = "../lambdas/tiled_analysis/lambda.zip"
 }
 
-data "archive_file" "lambda_raster_analysis_gateway" {
+data "archive_file" "lambda_fanout" {
   type        = "zip"
-  source_dir  = "../lambdas/raster_analysis_gateway/src"
-  output_path = "../lambdas/raster_analysis_gateway/lambda.zip"
+  source_dir  = "../lambdas/fanout/src"
+  output_path = "../lambdas/fanout/lambda.zip"
 }

@@ -1,4 +1,4 @@
-FROM remotepixel/amazonlinux-gdal:2.4.0-light
+FROM remotepixel/amazonlinux-gdal:3.0.1
 
 WORKDIR /var/task
 ENV WORKDIR /var/task
@@ -12,11 +12,11 @@ COPY setup.py .
 COPY docker/raster_analysis/.lambdaignore .
 
 # installing dependencies to build package
-RUN pip install . -t python
+RUN pip3 install . -t python
 
 #Precompile all python packages and remove .py files
 RUN python -m compileall .
-RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-36//'); cp $f $n; done;
+RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-37//'); cp $f $n; done;
 RUN find python/ -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
 RUN find python/ -type f -a -name '*.py' -print0 | xargs -0 rm -f
 
@@ -24,3 +24,5 @@ RUN find python/ -type f -a -name '*.py' -print0 | xargs -0 rm -f
 RUN cat .lambdaignore | xargs zip -9qyr layer.zip python -x
 
 CMD ["/bin/bash"]
+
+
