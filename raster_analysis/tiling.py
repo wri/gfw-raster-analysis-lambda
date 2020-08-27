@@ -1,163 +1,118 @@
-from shapely.geometry import mapping, box
-
-import boto3
-import json
-import logging
-import os
-
-import threading
-import queue
-
+from datetime import date
+from typing import Dict, List, Any
 from copy import deepcopy
 
-import numpy as np
-
-from raster_analysis.exceptions import RasterAnalysisException
+import pandas as pd
+from shapely.geometry import Polygon, mapping, box
 from aws_xray_sdk.core import xray_recorder
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-RASTER_ANALYSIS_LAMBDA_NAME = os.environ["RASTER_ANALYSIS_LAMBDA_NAME"]
+from raster_analysis.boto import lambda_client, invoke_lambda
+from raster_analysis.results_store import AnalysisResultsStore
+from raster_analysis.globals import (
+    LOGGER,
+    FANOUT_LAMBDA_NAME,
+    RASTER_ANALYSIS_LAMBDA_NAME,
+    ResultValue,
+    BasePolygon,
+    Numeric,
+)
 
 
 @xray_recorder.capture("Merge Tiled Geometry Results")
-def merge_tile_results(tile_results, groupby_columns):
-    concatted_tile_results = concat_tile_results(tile_results)
+def merge_tile_results(
+    tile_results: Dict[Any, List[Any]], groupby_columns: List[str]
+) -> List[Dict[str, ResultValue]]:
+    if not groupby_columns:
+        dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
+        merged_df: pd.DataFrame = pd.concat(dataframes)
+        return merged_df.sum().to_dict()
 
-    groupby_results = np.array([concatted_tile_results[col] for col in groupby_columns])
-    column_maxes = [col.max() + 1 for col in groupby_results]
-    linear_indices = np.ravel_multi_index(groupby_results, column_maxes).astype(
-        np.uint32
-    )
+    dataframes = [pd.DataFrame(result) for result in tile_results]
+    merged_df = pd.concat(dataframes)
 
-    unique_values, inv = np.unique(linear_indices, return_inverse=True)
-    unique_value_combinations = np.unravel_index(unique_values, column_maxes)
+    grouped_df: pd.DataFrame = merged_df.groupby(groupby_columns).sum()
+    result_df: pd.DataFrame = grouped_df.sort_values(groupby_columns).reset_index()
 
-    merged_tile_results = dict(zip(groupby_columns, unique_value_combinations))
-
-    for col_name, col_data in concatted_tile_results.items():
-        if col_name not in groupby_columns:
-            arr = np.array(col_data)
-            merged_tile_results[col_name] = np.bincount(inv, weights=col_data).astype(
-                arr.dtype
+    # convert ordinal dates to readable dates
+    for col in groupby_columns:
+        if "__date" in col:
+            result_df[col] = result_df[col].apply(
+                lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
+            )
+        elif "__isoweek" in col:
+            result_df[col.replace("__isoweek", "__year")] = result_df[col].apply(
+                lambda val: date.fromordinal(val).isocalendar()[0]
+            )
+            result_df[col] = result_df[col].apply(
+                lambda val: date.fromordinal(val).isocalendar()[1]
             )
 
-    for col, arr in merged_tile_results.items():
-        merged_tile_results[col] = arr.tolist()
+        # sometimes pandas makes int fields into floats - a group by field should never be a float
+        if result_df[col].dtype == "float64":
+            result_df[col] = result_df[col].astype("int64")
 
-    return merged_tile_results
-
-
-def concat_tile_results(tile_results):
-    result = deepcopy(tile_results[0])
-
-    for col in result.keys():
-        for table in tile_results[1:]:
-            result[col] += table[col]
-
-    return result
+    return result_df.to_dict(orient="records")
 
 
-@xray_recorder.capture("Process Tiled Geometries")
-def process_tiled_geoms(tiled_geoms, geoprocessing_params):
-    execution_threads = []
-    result_queue = queue.Queue()
-    error_queue = queue.Queue()
+@xray_recorder.capture("Process Tiles")
+def process_tiled_geoms(
+    tiles: List[Polygon],
+    geoprocessing_params: Dict[str, Any],
+    request_id: str,
+    fanout_num: int,
+):
+    geom_count = len(tiles)
+    geoprocessing_params["analysis_id"] = request_id
+    LOGGER.info(f"Processing {geom_count} tiles")
 
-    for geom in tiled_geoms:
-        payload = geoprocessing_params.copy()
-        payload["geometry"] = mapping(geom)
-
-        execution_thread = threading.Thread(
-            target=raster_analysis_worker, args=(payload, result_queue, error_queue)
-        )
-        execution_thread.start()
-        execution_threads.append(execution_thread)
-
-    for execution_thread in execution_threads:
-        execution_thread.join()
-
-    errors = [error_queue.get() for _ in range(error_queue.qsize())]
-    if errors:
-        logger.error("Error in raster analyses lambda. Check logs.")
-        raise RasterAnalysisException("Error in raster analyses lambda. Check logs.")
-
-    results = [result_queue.get() for _ in range(result_queue.qsize())]
-
-    # get key to check if result has no rows
-    result_random_key = list(results[0].keys())[0]
-    nonempty_results = list(filter(lambda result: result[result_random_key], results))
-
-    return nonempty_results
-
-
-def raster_analysis_worker(payload, result_queue, error_queue):
-    try:
-        result_table = run_raster_analysis(payload)
-        result_queue.put(result_table)
-    except Exception as e:
-        logger.error(e)
-        error_queue.put(True)
-
-
-def run_raster_analysis(payload):
-    lambda_client = boto3.Session().client("lambda")
-
-    lambda_response = lambda_client.invoke(
-        FunctionName=RASTER_ANALYSIS_LAMBDA_NAME,
-        InvocationType="RequestResponse",
-        Payload=bytes(json.dumps(payload), "utf-8"),
-    )
-
-    response = json.loads(lambda_response["Payload"].read())
-    result = json.loads(response["body"])
-
-    if response["statusCode"] == 200:
-        return result
+    # if
+    if geom_count <= fanout_num:
+        for tile in tiles:
+            tile_params = deepcopy(geoprocessing_params)
+            tile_params["tile"] = mapping(tile)
+            invoke_lambda(tile_params, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
     else:
-        logger.error(f"Status code: {response['status_code']}\nContent: {result}")
-        raise Exception(f"Status code: {response['status_code']}")
+        tile_geojsons = [mapping(tile) for tile in tiles]
+        tile_chunks = [
+            tile_geojsons[x : x + fanout_num]
+            for x in range(0, len(tile_geojsons), fanout_num)
+        ]
+
+        for chunk in tile_chunks:
+            event = {"payload": geoprocessing_params, "tiles": chunk}
+            invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
+
+    LOGGER.info(f"Geom count: {geom_count}")
+    results_store = AnalysisResultsStore(request_id)
+    results = results_store.wait_for_results(geom_count)
+
+    return results
 
 
 @xray_recorder.capture("Get Tiles")
-def get_tiles(geom, width):
+def get_tiles(geom: BasePolygon, width: Numeric) -> List[Polygon]:
     """
-    Get width x width tile geometries over the extent of the gseometry
+    Get width x width tile geometries over the extent of the geometry
     """
     min_x, min_y, max_x, max_y = _get_rounded_bounding_box(geom, width)
     tiles = []
 
     for i in range(0, int((max_x - min_x) / width)):
         for j in range(0, int((max_y - min_y) / width)):
-            tiles.append(
-                box(
-                    (i * width) + min_x,
-                    (j * width) + min_y,
-                    ((i + 1) * width) + min_x,
-                    ((j + 1) * width) + min_y,
-                )
+            tile = box(
+                (i * width) + min_x,
+                (j * width) + min_y,
+                ((i + 1) * width) + min_x,
+                ((j + 1) * width) + min_y,
             )
+
+            if geom.intersects(tile):
+                tiles.append(tile)
 
     return tiles
 
 
-@xray_recorder.capture("Get Intersecting Geometries")
-def get_intersecting_geoms(geom, tiles):
-    """
-    Divide geom into geoms intersected with the tiles
-    """
-    intersecting_geoms = []
-    for tile in tiles:
-        inter_geom = tile.intersection(geom)
-
-        if not inter_geom.is_empty:
-            intersecting_geoms.append(tile.intersection(geom))
-
-    return intersecting_geoms
-
-
-def _get_rounded_bounding_box(geom, width):
+def _get_rounded_bounding_box(geom: BasePolygon, width: Numeric):
     """
     Round bounding box to divide evenly into width x width tiles from plane origin
     """
