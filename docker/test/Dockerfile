@@ -8,6 +8,6 @@ COPY requirements-dev.txt .
 
 # installing dependencies to build package
 RUN pip3 install -r requirements-dev.txt
-RUN pip3 install . -t python
+RUN pip3 install .
 
 CMD ["/bin/bash"]
