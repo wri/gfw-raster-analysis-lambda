@@ -13,4 +13,9 @@ resource "aws_dynamodb_table" "tiled_results_table" {
     name = "tile_id"
     type = "S"
   }
+
+  ttl {
+    attribute_name = "time_to_live"
+    enabled        = true
+  }
 }

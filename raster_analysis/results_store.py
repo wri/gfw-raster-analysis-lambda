@@ -3,12 +3,17 @@ import os
 from copy import deepcopy
 from time import sleep
 from typing import List, Dict, Any
+from datetime import datetime, timedelta
 
 from boto3.dynamodb.table import TableResource
 
 from raster_analysis.boto import dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
-from raster_analysis.globals import RESULTS_CHECK_INTERVAL, RESULTS_CHECK_TRIES, LOGGER
+from raster_analysis.globals import (
+    RESULTS_CHECK_INTERVAL,
+    RESULTS_CHECK_TRIES,
+    DYMANODB_TTL_SECONDS,
+)
 
 
 class AnalysisResultsStore:
@@ -24,6 +29,7 @@ class AnalysisResultsStore:
                 "analysis_id": self.analysis_id,
                 "tile_id": result_id,
                 "result": store_result,
+                "time_to_live": self._get_ttl(),
                 "error": False,
             }
         )
@@ -34,6 +40,7 @@ class AnalysisResultsStore:
                 "analysis_id": self.analysis_id,
                 "tile_id": result_id,
                 "result": [],
+                "time_to_live": self._get_ttl(),
                 "error": True,
             }
         )
@@ -109,3 +116,9 @@ class AnalysisResultsStore:
                 store_result[layer] = [Decimal(str(val)) for val in col]
 
         return store_result
+
+    @staticmethod
+    def _get_ttl():
+        return int(
+            (datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()
+        )

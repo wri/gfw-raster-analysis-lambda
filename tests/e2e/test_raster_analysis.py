@@ -5,11 +5,14 @@ import subprocess
 import os
 from datetime import datetime, timedelta
 
+from shapely.geometry import box, mapping
+
 import raster_analysis.boto as boto
 import raster_analysis
 import lambdas.fanout.src.lambda_function
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
+import lambdas.tiled_analysis.src.lambda_function
 from tests.fixtures.idn_24_9 import (
     IDN_24_9_GLAD_ALERTS,
     IDN_24_9_GEOM,
@@ -117,7 +120,14 @@ def test_extent_2010(context):
     )
 
 
-def test_tree_cover_gain(context):
+def test_tree_cover_gain(context, monkeypatch):
+    # let's also test encoded geometries
+    monkeypatch.setattr(
+        lambdas.tiled_analysis.src.lambda_function,
+        "LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES",
+        80000,
+    )
+
     result = tiled_handler(
         {
             "geometry": IDN_24_9_GEOM,
@@ -195,3 +205,22 @@ def test_error(context):
     timeout = timedelta(seconds=29)
     assert result["status"] == "failed"
     assert (end - start) < timeout
+
+
+def test_beyond_extent(context):
+    """
+    Test a geometry outside the extent of is__umd_regional_primary_forest_2001
+    """
+    geometry = mapping(box(0, 40, 1, 41))
+    result = tiled_handler(
+        {
+            "geometry": geometry,
+            "group_by": ["umd_tree_cover_loss__year"],
+            "filters": ["is__umd_regional_primary_forest_2001"],
+            "sum": ["area__ha"],
+        },
+        context,
+    )["body"]
+
+    assert result["status"] == "success"
+    assert not result["data"]

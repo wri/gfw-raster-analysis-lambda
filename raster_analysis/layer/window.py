@@ -9,7 +9,7 @@ from numpy import ndarray
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.grid import get_raster_uri
-from raster_analysis.io import read_window
+from raster_analysis.io import read_window_ignore_missing
 from raster_analysis.globals import (
     Numeric,
     ResultValue,
@@ -34,7 +34,9 @@ class Window:
         self._result: ResultValues = np.array([])
 
     def read(self, tile: Polygon) -> Tuple[np.ndarray, Affine, Numeric]:
-        data, shifted_affine, no_data_value = read_window(self.get_raster_uri(), tile)
+        data, shifted_affine, no_data_value = read_window_ignore_missing(
+            self.get_raster_uri(), tile
+        )
 
         if data.size == 0:
             data = np.zeros((WINDOW_SIZE, WINDOW_SIZE), dtype=np.uint8)

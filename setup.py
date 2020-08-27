@@ -7,5 +7,5 @@ setup(
     packages=["raster_analysis", "raster_analysis.layer"],
     author="Justin Terry/Thomas Maschler",
     license="MIT",
-    install_requires=["aws-xray-sdk", "requests"],
+    install_requires=["aws-xray-sdk", "requests", "geobuf"],
 )
