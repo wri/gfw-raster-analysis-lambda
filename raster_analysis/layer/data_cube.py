@@ -3,13 +3,14 @@ from typing import List, Optional, Dict
 
 import numpy as np
 from rasterio.transform import Affine
+from rasterio.transform import from_bounds
 import concurrent.futures
 from shapely.geometry import Polygon
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
-from raster_analysis.numpy_utils import get_linear_index
+from raster_analysis.utils import get_linear_index
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
 from .window import get_window, Window, ResultValues
 
@@ -65,13 +66,16 @@ class DataCube:
         self.data_windows: List[Window] = [
             w
             for w in self.group_windows + self.filter_windows + self.sum_windows
-            if w.data is not None
+            if w.data is not None and w.data.size != 0
         ]
         if len(self.data_windows) < 1:
             raise ValueError("No windows with data could be found")
 
+        LOGGER.info(f"Windows with data: {[w.layer.name for w in self.data_windows]}")
         # TODO since I'm always getting a tile now, should I just precalc affine?
-        self.shifted_affine: Affine = self.data_windows[0].shifted_affine
+        self.shifted_affine: Affine = from_bounds(
+            *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
+        )
 
         # generate filter and then clear those rasters to save memory
         self.filter: np.ndarray = mask_geom_on_raster(

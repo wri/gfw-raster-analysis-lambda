@@ -7,13 +7,19 @@ from aws_xray_sdk.core import xray_recorder
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import LOGGER
 from raster_analysis.layer.data_cube import DataCube
+from raster_analysis.utils import decode_geometry
 
 
 @xray_recorder.capture("Raster Analysis Lambda")
 def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")
-        geometry = shape(event["geometry"])
+
+        geojson = event.get("geometry", None)
+        if geojson:
+            geometry = shape(geojson)
+        else:
+            geometry = decode_geometry(event["encoded_geometry"])
 
         if "tile" in event:
             tile = shape(event["tile"])

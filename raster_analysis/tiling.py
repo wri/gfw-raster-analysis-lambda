@@ -2,9 +2,8 @@ from datetime import date
 from typing import Dict, List, Any
 from copy import deepcopy
 
-from shapely.geometry import mapping, box
 import pandas as pd
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, mapping, box
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.boto import lambda_client, invoke_lambda
@@ -47,6 +46,10 @@ def merge_tile_results(
             result_df[col] = result_df[col].apply(
                 lambda val: date.fromordinal(val).isocalendar()[1]
             )
+
+        # sometimes pandas makes int fields into floats - a group by field should never be a float
+        if result_df[col].dtype == "float64":
+            result_df[col] = result_df[col].astype("int64")
 
     return result_df.to_dict(orient="records")
 
