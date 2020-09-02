@@ -5,6 +5,7 @@ terraform {
     }
     aws = {
       source = "hashicorp/aws"
+      version = ">3, <4"
     }
     template = {
       source = "hashicorp/template"
