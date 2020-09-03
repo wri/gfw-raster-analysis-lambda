@@ -63,16 +63,6 @@ class DataCube:
             self.sum_windows: List[Window] = self._get_window_results(sum_futures)
             self.filter_windows: List[Window] = self._get_window_results(filter_futures)
 
-        self.data_windows: List[Window] = [
-            w
-            for w in self.group_windows + self.filter_windows + self.sum_windows
-            if w.data is not None and w.data.size != 0
-        ]
-        if len(self.data_windows) < 1:
-            raise ValueError("No windows with data could be found")
-
-        LOGGER.info(f"Windows with data: {[w.layer.name for w in self.data_windows]}")
-        # TODO since I'm always getting a tile now, should I just precalc affine?
         self.shifted_affine: Affine = from_bounds(
             *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
         )
