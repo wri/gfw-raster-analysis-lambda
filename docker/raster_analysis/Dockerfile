@@ -12,6 +12,7 @@ COPY setup.py .
 COPY docker/raster_analysis/.lambdaignore .
 
 # installing dependencies to build package
+ENV SETUPTOOLS_USE_DISTUTILS stdlib
 RUN pip3 install . -t python
 
 #Precompile all python packages and remove .py files

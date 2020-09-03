@@ -7,6 +7,7 @@ COPY setup.py .
 COPY requirements-dev.txt .
 
 # installing dependencies to build package
+ENV SETUPTOOLS_USE_DISTUTILS stdlib
 RUN pip3 install -r requirements-dev.txt
 RUN pip3 install .
 
