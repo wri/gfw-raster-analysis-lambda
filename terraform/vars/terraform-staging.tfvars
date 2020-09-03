@@ -1,6 +1,6 @@
 environment = "staging"
 
-lambda_raster_analysis_runtime     = "python3.6"
+lambda_raster_analysis_runtime     = "python3.7"
 lambda_raster_analysis_memory_size = 3008
 lambda_raster_analysis_timeout     = 60
 
