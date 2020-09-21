@@ -8,3 +8,7 @@ class GeostoreNotFoundException(Exception):
 
 class RasterAnalysisException(Exception):
     pass
+
+
+class InvalidGeometryException(Exception):
+    pass

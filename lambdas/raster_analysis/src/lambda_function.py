@@ -4,6 +4,7 @@ from datetime import datetime
 from shapely.geometry import shape
 from aws_xray_sdk.core import xray_recorder
 
+from raster_analysis.exceptions import InvalidGeometryException
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import LOGGER
 from raster_analysis.layer.data_cube import DataCube
@@ -24,6 +25,18 @@ def handler(event, context):
         if "tile" in event:
             tile = shape(event["tile"])
             geometry = geometry.intersection(tile)
+
+            if not geometry.is_valid:
+                geometry = geometry.buffer(0)
+
+                if not geometry.is_valid:
+                    raise InvalidGeometryException(
+                        f"Geometry {geometry.wkt} is invalid"
+                    )
+
+            if geometry.is_empty:
+                LOGGER.info(f"Geometry for tile {context.aws_request_id} is empty.")
+                return {}
 
         start_date = try_parsing_date(event.get("start_date", None))
         end_date = try_parsing_date(event.get("end_date", None))
