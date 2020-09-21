@@ -172,6 +172,7 @@ def test_tree_cover_loss_by_driver(context):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
 
 
+@pytest.mark.skip(reason="Need to get new fixture once GLAD tables are up")
 def test_glad_alerts(context):
     result = tiled_handler(
         {

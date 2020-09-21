@@ -40,11 +40,15 @@ def merge_tile_results(
                 lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
             )
         elif "__isoweek" in col:
-            result_df[col.replace("__isoweek", "__year")] = result_df[col].apply(
-                lambda val: date.fromordinal(val).isocalendar()[0]
+            result_df[col.replace("__isoweek", "__year")] = (
+                result_df[col]
+                .astype(int)
+                .apply(lambda val: date.fromordinal(val).isocalendar()[0])
             )
-            result_df[col] = result_df[col].apply(
-                lambda val: date.fromordinal(val).isocalendar()[1]
+            result_df[col] = (
+                result_df[col]
+                .astype(int)
+                .apply(lambda val: date.fromordinal(val).isocalendar()[1])
             )
 
         # sometimes pandas makes int fields into floats - a group by field should never be a float
