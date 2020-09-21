@@ -28,10 +28,15 @@ def encode_geometry(geom: BasePolygon) -> str:
     """
     encoded_geom = geobuf.encode(mapping(geom)).hex()
 
-    # unlikely, but if the geometry is so complex is still goes over the limit, just simplify it
+    # if the geometry is so complex is still goes over the limit, incrementally attempting to simplify it
     if sys.getsizeof(encoded_geom) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
         encoded_geom = geobuf.encode(
             mapping(geom.simplify(0.005, preserve_topology=False))
+        ).hex()
+
+    if sys.getsizeof(encoded_geom) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
+        encoded_geom = geobuf.encode(
+            mapping(geom.simplify(0.01, preserve_topology=False))
         ).hex()
 
     return encoded_geom

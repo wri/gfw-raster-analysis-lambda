@@ -21,6 +21,7 @@ from tests.fixtures.idn_24_9 import (
     IDN_24_9_LOSS_BY_DRIVER,
     IDN_24_9_PRIMARY_LOSS,
     IDN_24_9_ESA_LAND_COVER,
+    IDN_24_9_2010_RAW_AREA,
 )
 
 ###
@@ -117,6 +118,17 @@ def test_extent_2010(context):
     assert result["status"] == "success"
     assert result["data"]["area__ha"] == pytest.approx(
         IDN_24_9_2010_EXTENT["area__ha"], 0.001
+    )
+
+
+def test_raw_area(context):
+    result = tiled_handler({"geometry": IDN_24_9_GEOM, "sum": ["area__ha"]}, context)[
+        "body"
+    ]
+
+    assert result["status"] == "success"
+    assert result["data"]["area__ha"] == pytest.approx(
+        IDN_24_9_2010_RAW_AREA["area__ha"], 0.001
     )
 
 

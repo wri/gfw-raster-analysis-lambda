@@ -62,7 +62,7 @@ class DataLakeLayerInfoManager:
             elif self.DEFAULT_KEY in value_map:
                 return value_map[self.DEFAULT_KEY]
             else:
-                raise KeyError(f"Value '{value}' not defined for layer '{layer_name}'")
+                return None
 
     @staticmethod
     def _populate_data() -> Dict[str, Dict[str, Any]]:

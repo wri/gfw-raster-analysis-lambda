@@ -3230,6 +3230,9 @@ IDN_24_9_GEOM = {
 # select sum(umd_tree_cover_extent_2010__ha) as area__ha from table where iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 15
 IDN_24_9_2010_EXTENT = {"area__ha": 1174810.186906901}
 
+# select sum(area__ha) as area__ha from table where iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 15
+IDN_24_9_2010_RAW_AREA = {"area__ha": 1306674.845559304}
+
 # select sum(umd_tree_cover_gain_2000-2012__ha) as area__ha from table where iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 30
 IDN_24_9_GAIN = {"area__ha": 319412.7145255103}
 
