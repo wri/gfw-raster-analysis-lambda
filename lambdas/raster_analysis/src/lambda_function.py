@@ -15,6 +15,7 @@ from raster_analysis.utils import decode_geometry
 def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")
+        results_store = AnalysisResultsStore(event["analysis_id"])
 
         geojson = event.get("geometry", None)
         if geojson:
@@ -36,6 +37,7 @@ def handler(event, context):
 
             if geometry.is_empty:
                 LOGGER.info(f"Geometry for tile {context.aws_request_id} is empty.")
+                results_store.save_result({}, context.aws_request_id)
                 return {}
 
         start_date = try_parsing_date(event.get("start_date", None))
@@ -53,7 +55,6 @@ def handler(event, context):
         result = data_cube.calculate()
         LOGGER.info(f"Ran analysis with result: {result}")
 
-        results_store = AnalysisResultsStore(event["analysis_id"])
         results_store.save_result(result, context.aws_request_id)
 
         return result
