@@ -27,6 +27,13 @@ class Window:
         self.tile: Polygon = tile
 
         data, shifted_affine, no_data_value = self.read(tile)
+
+        if data.size == 0:
+            self.empty = True
+            data = np.zeros((WINDOW_SIZE, WINDOW_SIZE), dtype=np.uint8)
+        else:
+            self.empty = False
+
         self.data: ndarray = data
         self.shifted_affine: Affine = shifted_affine
         self.no_data_value: Numeric = no_data_value
@@ -37,9 +44,6 @@ class Window:
         data, shifted_affine, no_data_value = read_window_ignore_missing(
             self.get_raster_uri(), tile
         )
-
-        if data.size == 0:
-            data = np.zeros((WINDOW_SIZE, WINDOW_SIZE), dtype=np.uint8)
 
         return data, shifted_affine, no_data_value
 
@@ -136,13 +140,14 @@ class YearWindow(Window):
 
         super().__init__(layer, tile)
 
-        if self.start_date:
-            start_year = self.start_date.year - 2000
-            self.data[self.data < start_year] = self.no_data_value
+        if not self.empty:
+            if self.start_date:
+                start_year = self.start_date.year - 2000
+                self.data[self.data < start_year] = self.no_data_value
 
-        if self.end_date:
-            end_year = self.end_date.year - 2000
-            self.data[self.data > end_year] = self.no_data_value
+            if self.end_date:
+                end_year = self.end_date.year - 2000
+                self.data[self.data > end_year] = self.no_data_value
 
     @property
     def result(self) -> Union[ResultValue, List[ResultValue]]:
@@ -193,11 +198,13 @@ class TcdWindow(DataLakeWindow):
         name, self.threshold = layer.split("__")
 
         super().__init__(f"{name}__threshold", tile)
-        threshold_pixel_value = int(
-            DATA_LAKE_LAYER_MANAGER.get_pixel_value(name, self.threshold)
-        )
 
-        self.data = self.data >= threshold_pixel_value
+        if not self.empty:
+            threshold_pixel_value = int(
+                DATA_LAKE_LAYER_MANAGER.get_pixel_value(name, self.threshold)
+            )
+
+            self.data = self.data >= threshold_pixel_value
 
 
 class GladAlertsWindow(Window):
@@ -224,19 +231,22 @@ class GladAlertsWindow(Window):
         super().__init__(layer, tile)
 
         # if only confirmed, remove any value beneath 30000 (which is unconfirmed)
-        if self.confirmed:
-            self.data[self.data < 30000] = 0
+        if not self.empty:
+            if self.confirmed:
+                self.data[self.data < 30000] = 0
 
-        # remove conf and set to ordinal date since 2015
-        self.data %= 10000
+            # remove conf and set to ordinal date since 2015
+            self.data %= 10000
 
-        if self.start_date:
-            start_ordinal = self.start_date.toordinal() - date(2014, 12, 31).toordinal()
-            self.data[self.data < start_ordinal] = self.no_data_value
+            if self.start_date:
+                start_ordinal = (
+                    self.start_date.toordinal() - date(2014, 12, 31).toordinal()
+                )
+                self.data[self.data < start_ordinal] = self.no_data_value
 
-        if self.end_date:
-            end_ordinal = self.end_date.toordinal() - date(2014, 12, 31).toordinal()
-            self.data[self.data > end_ordinal] = self.no_data_value
+            if self.end_date:
+                end_ordinal = self.end_date.toordinal() - date(2014, 12, 31).toordinal()
+                self.data[self.data > end_ordinal] = self.no_data_value
 
     def get_raster_uri(self) -> str:
         # return hardcoded URL
