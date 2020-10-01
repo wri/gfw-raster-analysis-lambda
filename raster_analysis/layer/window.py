@@ -118,7 +118,7 @@ def get_window(
         return YearWindow(layer, tile, start_date, end_date)
     elif "umd_tree_cover_density" in layer_info.name:
         return TcdWindow(layer, tile)
-    elif layer_info.data_type == "ha-1":
+    elif layer_info.data_type.endswith("ha-1"):
         return AreaDensityWindow(layer, tile)
     elif layer_info.name == "whrc_aboveground_co2_emissions":
         return CarbonEmissionsWindow(layer, tile)
