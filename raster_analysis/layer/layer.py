@@ -29,11 +29,11 @@ class DataLakeLayerInfoManager:
 
     def get_pixel_value(self, layer_name: str, layer_value: Any) -> Any:
         inverted_map = self._get_inverted_value_map(layer_name)
-        return self._get_value(layer_name, layer_value, inverted_map)
+        return self._get_value(layer_value, inverted_map)
 
     def get_layer_value(self, layer_name: str, pixel_value: Any) -> Any:
         value_map = self._get_value_map(layer_name)
-        return self._get_value(layer_name, pixel_value, value_map)
+        return self._get_value(pixel_value, value_map)
 
     def has_default_value(self, layer_name: str, no_data_value: Any):
         """
@@ -55,7 +55,7 @@ class DataLakeLayerInfoManager:
         if layer_name not in self._data_lake_info:
             raise ValueError(f"Layer {layer_name} not available in data API.")
 
-    def _get_value(self, layer_name: str, value: Any, value_map: Dict[Any, Any]):
+    def _get_value(self, value: Any, value_map: Dict[Any, Any]):
         if value_map:
             if value in value_map:
                 return value_map[value]
@@ -63,6 +63,8 @@ class DataLakeLayerInfoManager:
                 return value_map[self.DEFAULT_KEY]
             else:
                 return None
+        else:
+            return value
 
     @staticmethod
     def _populate_data() -> Dict[str, Dict[str, Any]]:

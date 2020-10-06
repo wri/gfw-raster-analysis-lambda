@@ -1,4 +1,4 @@
-import threading
+from multiprocessing import Process
 import uuid
 import pytest
 import subprocess
@@ -45,8 +45,8 @@ def context(monkeypatch):
         from lambdas.fanout.src.lambda_function import handler as fanout_handler
 
         f = fanout_handler if lambda_name == "fanout" else analysis_handler
-        thread = threading.Thread(target=f, args=(payload, context))
-        thread.start()
+        p = Process(target=f, args=(payload, context))
+        p.start()
 
     # monkey patch to just run on thread instead of actually invoking lambda
     monkeypatch.setattr(raster_analysis.tiling, "invoke_lambda", mock_lambda)
@@ -172,7 +172,6 @@ def test_tree_cover_loss_by_driver(context):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
 
 
-@pytest.mark.skip(reason="Need to get new fixture once GLAD tables are up")
 def test_glad_alerts(context):
     result = tiled_handler(
         {
