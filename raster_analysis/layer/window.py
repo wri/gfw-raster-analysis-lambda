@@ -114,7 +114,7 @@ def get_window(
         return CountWindow(layer, tile)
     elif layer_info.name == "umd_glad_alerts":
         return GladAlertsWindow(layer, tile, start_date, end_date)
-    elif layer_info.data_type == "year":
+    elif layer == "umd_tree_cover_loss__year":
         return YearWindow(layer, tile, start_date, end_date)
     elif "umd_tree_cover_density" in layer_info.name:
         return TcdWindow(layer, tile)

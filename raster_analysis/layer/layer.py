@@ -183,7 +183,7 @@ class DataLakeLayerInfoManager:
             "birdlife_key_biodiversity_areas": {"latest": "v20191211"},
             "gfw_mining": {"latest": "v20190205"},
             "gfw_peatlands": {"latest": "v20190103"},
-            "gfw_oil_palm": {"latest": "gfw_oil_palm"},
+            "gfw_oil_palm": {"latest": "v20191031"},
             "gfw_wood_fiber": {"latest": "v20200725"},
             "gfw_resource_rights": {"latest": "v2015"},
             "gfw_managed_forests": {"latest": "v20190103"},
