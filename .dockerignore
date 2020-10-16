@@ -4,3 +4,6 @@
 venv/
 lambda/
 lambda.zip
+.mypy_cache/*
+.pytest_cache/*
+terraform/*

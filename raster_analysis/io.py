@@ -1,68 +1,63 @@
-import os
-import json
+import logging
+import traceback
+from typing import Tuple
 
 import numpy as np
 import rasterio
-from rasterio import features
-from shapely.geometry import Polygon
+from rasterio import features, DatasetReader
+from rasterio.transform import Affine
+from aws_xray_sdk.core import xray_recorder
 
-# from raster_analysis.utilities.errors import Error
-import math
-import logging
+from rasterio.windows import Window
+from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 
 
-def read_window(raster, geom, masked=False):
-    # Read a chunk of the raster that contains the bounding box of the
-    # input geometry.  This has memory implications if that rectangle
-    # is large. The affine transformation maps geom coordinates to the
-    # image mask below.
-    # can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+@xray_recorder.capture("Read Window")
+def read_window(
+    raster: str, geom: BasePolygon, masked: bool = False
+) -> Tuple[np.ndarray, Affine, Numeric]:
+    """
+    Read a chunk of the raster that contains the bounding box of the
+    input geometry.  This has memory implications if that rectangle
+    is large. The affine transformation maps geom coordinates to the
+    image mask below.
+    can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+    """
 
     with rasterio.Env():
+        LOGGER.info(f"Reading raster source {raster}")
+
         with rasterio.open(raster) as src:
             try:
                 window, shifted_affine = get_window_and_affine(geom, src)
                 data = src.read(1, masked=masked, window=window)
                 no_data_value = src.nodata
             except MemoryError:
+                logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
                 raise Exception(
                     "Out of memory- input polygon or input extent too large. "
                     "Try splitting the polygon into multiple requests."
                 )
+
     return data, shifted_affine, no_data_value
 
 
-def read_window_ignore_missing(raster, geom, masked=False):
+def read_window_ignore_missing(
+    raster: str, geom: BasePolygon, masked: bool = False
+) -> Tuple[np.ndarray, Affine, Numeric]:
     try:
         data = read_window(raster, geom, masked=masked)
     except rasterio.errors.RasterioIOError as e:
-        logging.warning(e)
+        logging.warning("RasterIO error reading " + raster + ":\n" + str(e))
         data = np.array([]), None, None
 
     return data
 
 
-def check_extent(user_poly, raster):
-    raster_ext = os.path.splitext(raster)[1]
-    geojson_src = raster.replace(raster_ext, ".geojson")
-
-    with open(geojson_src) as src:
-        d = json.load(src)
-
-    # get index geom
-    poly_intersects = False
-    poly_list = [Polygon(x["geometry"]["coordinates"][0]) for x in d["features"]]
-
-    # check if polygons intersect
-    for poly in poly_list:
-        if user_poly.intersects(poly):
-            poly_intersects = True
-            break
-
-    return poly_intersects
-
-
-def mask_geom_on_raster(geom, raster_path):
+@xray_recorder.capture("Mask Geometry")
+def mask_geom_on_raster(
+    raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
+) -> np.ndarray:
     """"
     For a given polygon, returns a numpy masked array with the intersecting
     values of the raster at `raster_path` unmasked, all non-intersecting
@@ -83,30 +78,23 @@ def mask_geom_on_raster(geom, raster_path):
 
     """
 
-    data, shifted_affine, no_data_value = read_window_ignore_missing(
-        raster_path, geom, masked=True
-    )
-
-    if data.any():
-
+    if raster_data.size > 0:
         # Create a numpy array to mask cells which don't intersect with the
         # polygon. Cells that intersect will have value of 1 (unmasked), the
         # rest are filled with 0s (masked)
         geom_mask = features.geometry_mask(
-            [geom], out_shape=data.shape, transform=shifted_affine, invert=True
+            [geom], out_shape=raster_data.shape, transform=shifted_affine, invert=True
         )
 
-        # Include any NODATA mask
-        full_mask = geom_mask | data.mask
-
         # Mask the data array, with modifications applied, by the query polygon
-        return np.ma.array(data=data, mask=full_mask), shifted_affine, no_data_value
-
+        return geom_mask
     else:
-        return np.array([]), None, None
+        return np.array([])
 
 
-def get_window_and_affine(geom, raster_src):
+def get_window_and_affine(
+    geom: BasePolygon, raster_src: DatasetReader
+) -> Tuple[Window, Affine]:
     """
     Get a rasterio window block from the bounding box of a vector feature and
     calculates the affine transformation needed to map the coordinates of the
@@ -129,21 +117,11 @@ def get_window_and_affine(geom, raster_src):
     """
 
     # Create a window range from the bounds
-    ul = raster_src.index(*geom.bounds[0:2])
-    lr = raster_src.index(*geom.bounds[2:4])
-    window = ((lr[0], ul[0] + 1), (ul[1], lr[1] + 1))
-    # window = ((lr[0], ul[0]), (ul[1], lr[1])) # TODO: figure out why we have to extent the bounds
+    window: Window = raster_src.window(*geom.bounds).round_lengths(
+        pixel_precision=5
+    ).round_offsets(pixel_precision=5)
 
     # Create a transform relative to this window
     affine = rasterio.windows.transform(window, raster_src.transform)
 
     return window, affine
-
-
-def array_to_xyz_rows(arr, shifted_affine):
-    i, j = np.where(arr.mask == False)
-    masked_x = j * 0.00025 + shifted_affine.xoff + 0.000125
-    masked_y = i * -0.00025 + shifted_affine.yoff - 0.000125
-
-    for x, y, z in zip(masked_x, masked_y, arr.compressed()):
-        yield (x, y, z)

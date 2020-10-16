@@ -1,8 +1,9 @@
 import math
+
 import numpy as np
 
 
-def get_area(lat):
+def get_area(lat: float) -> float:
     """
     Calculate geodesic area for Hansen data, assuming a fix pixel size of 0.00025 * 0.00025 degree
     using WGS 1984 as spatial reference.

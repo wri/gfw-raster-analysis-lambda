@@ -1,9 +1,18 @@
 import math
 
-BASE_URL = "/vsis3/gfw-files/2018_update/{raster_id}/{tile_id}.tif"
+from shapely.geometry import Point, Polygon
+
+from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER, GRID_SIZE, GRID_COLS
 
 
-def get_grid_id(point, grid_size=10):
+def _get_tile_id(point: Point, grid_size=10) -> str:
+    """
+    Get name of tile in data lake
+
+    :param point: Shapely point
+    :param grid_size: Tile size of grid to check against
+    :return:
+    """
     col = int(math.floor(point.x / grid_size)) * grid_size
     if col >= 0:
 
@@ -18,13 +27,27 @@ def get_grid_id(point, grid_size=10):
     else:
         lat = str(-row).zfill(2) + "S"
 
-    return "{}_{}".format(lat, long)
+    return f"{lat}_{long}"
 
 
-def get_tile_id(geometry):
+def get_tile_id(geometry: Polygon) -> str:
+    """
+    Get name of tile in data lake centroid of geometry falls in
+
+    :param: Shapely Polygon
+    :return: tile id
+    """
     centroid = geometry.centroid
-    return get_grid_id(centroid)
+    return _get_tile_id(centroid)
 
 
-def get_raster_url(raster_id, tile_id):
-    return BASE_URL.format(raster_id=raster_id, tile_id=tile_id)
+def get_raster_uri(layer_name: str, data_type: str, tile: Polygon) -> str:
+    """
+    Maps layer name input to a raster URI in the data lake
+    :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
+    :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
+    """
+
+    tile_id = get_tile_id(tile)
+    version = DATA_LAKE_LAYER_MANAGER.get_latest_version(layer_name)
+    return f"/vsis3/gfw-data-lake/{layer_name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{data_type}/gdal-geotiff/{tile_id}.tif"
