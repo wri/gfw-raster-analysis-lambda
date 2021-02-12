@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 
 import numpy as np
-from rasterio.transform import Affine
-from rasterio.transform import from_bounds
+from rasterio.transform import Affine, from_bounds, xy
 import concurrent.futures
 from shapely.geometry import Polygon
 from aws_xray_sdk.core import xray_recorder
@@ -114,6 +113,13 @@ class DataCube:
             window.result_col_name: window.result
             for window in self.group_windows + self.sum_windows
         }
+
+    def extract_coordinates(self) -> List[Tuple[float, float]]:
+        if self.select_layer:
+            points = self.filter * self.select_layer
+            rows, cols = np.nonzero(points)
+            lon_lat = zip(xy(self.shifted_affine, rows, cols))
+            return lon_lat
 
     @staticmethod
     def _get_window_results(futures):
