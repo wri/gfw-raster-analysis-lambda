@@ -23,9 +23,9 @@ class DataCube:
         self,
         geom: BasePolygon,
         tile: Polygon,
-        group_layers: List[str],
-        sum_layers: List[str],
-        filter_layers: List[str],
+        select_layers: List[str],
+        where_layers: List[str],
+        groupby_layers: List[str],
         start_date: Optional[datetime],
         end_date: Optional[datetime],
     ):
