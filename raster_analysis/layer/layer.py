@@ -74,7 +74,7 @@ class DataLakeLayerInfoManager:
         :return:
         """
         return {
-            "umd_tree_cover_loss": {"latest": "v1.7"},
+            "umd_tree_cover_loss": {"latest": "v1.8"},
             "umd_regional_primary_forest_2001": {"latest": "v201901"},
             "umd_tree_cover_density_2000": {
                 "latest": "v1.6",

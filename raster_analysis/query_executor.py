@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from rasterio.transform import xy
 
 from raster_analysis.data_cube import DataCube
+from raster_analysis.globals import CO2_FACTOR
 from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
 
 
@@ -95,6 +96,12 @@ class QueryExecutor:
             # is the corresponding group at that pixel
             sums = np.bincount(inverse_index, weights=masked_data, minlength=group_counts.size)
             if aggregate.function == AggregateFunction.sum:
+                if aggregate.layer.is_area_density:
+                    # layer value representing area density need to be multiplied by area to get gross value
+                    return sums * self.data_cube.mean_area
+                elif aggregate.layer.is_emissions:
+                    # emissions are just based on density layers multiplied by a constant
+                    return sums * CO2_FACTOR * self.data_cube.mean_area
                 return sums
             elif aggregate.function == AggregateFunction.avg:
                 return sums / masked_data.size

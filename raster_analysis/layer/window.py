@@ -22,10 +22,8 @@ ResultValues = Union[ndarray, ResultValue]
 
 
 class Window:
-    def __init__(self, layer: str, tile: Polygon):
-        self.layer: LayerInfo = LayerInfo(layer)
+    def __init__(self, layer: LayerInfo, tile: Polygon):
         self.tile: Polygon = tile
-
         data, shifted_affine, no_data_value = self.read(tile)
 
         if data.size == 0:
@@ -46,30 +44,6 @@ class Window:
         )
 
         return data, shifted_affine, no_data_value
-
-    @xray_recorder.capture("Window Sum")
-    def sum(
-        self,
-        mean_area: int,
-        mask: ndarray,
-        linear_index: ndarray = None,
-        index_counts: ndarray = None,
-    ) -> Union[Any, ndarray]:
-        """
-        Generic sum operation for windows based on groupings from linear index.
-        :param mean_area: mean area for tile. Used if area is necessary for sum calculation.
-        :param mask: A mask over the window to determine which pixels to sum.
-        :param linear_index: Linear index calculated for groupings, if they exist. Otherwise whole window will be summed
-            to a single number.
-        :param index_counts: Counts for each value in the linear index to determine number of bins for output.
-        :return: Either single sum number of 1d array of sum values per grouping in ascending order of linear index values.
-        """
-        data = np.extract(mask, self.data)
-
-        if linear_index is None or index_counts is None:
-            return data.sum()
-
-        return np.bincount(linear_index, weights=data, minlength=index_counts.size)
 
     def clear(self) -> None:
         """

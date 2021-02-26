@@ -3,23 +3,35 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER
+
+AREA_DENSITY_TYPE = "ha-1"
+EMISSIONS_LAYER = "whrc_aboveground_co2_emissions__Mg"
+
 
 class LayerInfo(BaseModel):
     name: str
     type: str
+    is_area_density: bool = False
+    is_emissions: bool = False
 
-    def __init__(self, name_type: str):
-        parts = name_type.split("__")
+    def __init__(self, layer: str):
+        parts = layer.split("__")
 
         if len(parts) != 2:
             raise ValueError(
-                f"Layer name `{name_type}` is invalid, should consist of layer name and unit separated by `__`"
+                f"Layer name `{layer}` is invalid, should consist of layer name and unit separated by `__`"
             )
 
         if parts[0] == "is":
             self.type, self.name = parts
         else:
             self.name, self.type = parts
+
+        if AREA_DENSITY_TYPE in self.type:
+            self.is_area_density = True
+        elif layer == EMISSIONS_LAYER:
+            self.is_emissions = True
 
 
 class SpecialSelectors(str, Enum):
@@ -43,6 +55,7 @@ class Filter(BaseModel):
     value: Any
 
     def apply_filter(self, window):
+        DATA_LAKE_LAYER_MANAGER.get_layer_value()
         return eval(f"window {self.operator.value} self.value")
 
 
