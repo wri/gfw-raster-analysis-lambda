@@ -7,8 +7,9 @@ from aws_xray_sdk.core import xray_recorder
 from raster_analysis.exceptions import InvalidGeometryException
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import LOGGER
-from raster_analysis.layer.data_cube import DataCube
+from raster_analysis.data_cube import DataCube
 from raster_analysis.utils import decode_geometry
+from raster_analysis.query_executor import QueryResult, QueryExecutor
 
 
 @xray_recorder.capture("Raster Analysis Lambda")
@@ -40,24 +41,12 @@ def handler(event, context):
                 results_store.save_result({}, context.aws_request_id)
                 return {}
 
-        start_date = try_parsing_date(event.get("start_date", None))
-        end_date = try_parsing_date(event.get("end_date", None))
+        data_cube = DataCube(geometry, tile, query)
+        query_executor = QueryExecutor(query, data_cube)
+        results: QueryResult = query_executor.execute()
 
-        data_cube = DataCube(
-            geometry,
-            tile,
-            event.get("group_by", []),
-            event.get("sum", []),
-            event.get("filters", []),
-            start_date,
-            end_date,
-        )
-        result = data_cube.calculate()
-        LOGGER.info(f"Ran analysis with result: {result}")
-
-        results_store.save_result(result, context.aws_request_id)
-
-        return result
+        LOGGER.info(f"Ran analysis with results: {results}")
+        results_store.save_result(results, context.aws_request_id)
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])
         results_store.save_error(context.aws_request_id)

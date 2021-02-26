@@ -101,13 +101,11 @@ class Window:
 
 
 def get_window(
-    layer: str,
+    layer: LayerInfo,
     tile: Polygon,
     start_date: Optional[datetime],
     end_date: Optional[datetime],
 ) -> Window:
-    layer_info = LayerInfo(layer)
-
     if layer_info.name_type == "area__ha":
         return AreaWindow(layer, tile)
     elif layer_info.name_type == "alert__count":

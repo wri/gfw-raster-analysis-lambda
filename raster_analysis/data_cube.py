@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple, Set
+
+from pydantic import BaseModel
 
 import numpy as np
 from rasterio.transform import Affine, from_bounds, xy
@@ -11,7 +13,55 @@ from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
 from raster_analysis.utils import get_linear_index
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
-from .window import get_window, Window, ResultValues
+from raster_analysis.query import Query, LayerInfo
+from raster_analysis.layer.window import get_window, Window, ResultValues
+
+
+class DataCube(BaseModel):
+    windows: Dict[LayerInfo, Window]
+    shifted_affine: Affine
+    mean_area: float
+    mask: ndarray
+
+    def __init__(
+        self,
+        geom: BasePolygon,
+        tile: Polygon,
+        layers: Set[LayerInfo],
+    ):
+        self.mean_area = get_area(tile.centroid.y) / 10000
+        self.windows = self._get_windows(layers, tile)
+        self.shifted_affine: Affine = from_bounds(
+            *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
+        )
+
+        self.mask = mask_geom_on_raster(
+            np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, geom
+        )
+
+    def _get_windows(self, layers: Set[LayerInfo], tile):
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Start the load operations and mark each future with its URL
+            futures = {
+                executor.submit(get_window, layer, tile): layer
+                for layer in layers
+            }
+
+            return self._get_window_results(futures)
+
+    @staticmethod
+    def _get_window_results(futures):
+        windows = {}
+        for future in concurrent.futures.as_completed(futures):
+            layer = futures[future]
+
+            try:
+                windows[layer] = future.result()
+            except Exception as e:
+                LOGGER.exception(f"Exception while reading window for layer {layer}")
+                raise e
+
+        return windows
 
 
 class DataCube:
@@ -23,11 +73,7 @@ class DataCube:
         self,
         geom: BasePolygon,
         tile: Polygon,
-        select_layers: List[str],
-        where_layers: List[str],
-        groupby_layers: List[str],
-        start_date: Optional[datetime],
-        end_date: Optional[datetime],
+        query: Query,
     ):
         """
        Create a datacube of many raster layers at once, and compute basic SQL-like operations across them.
@@ -42,25 +88,7 @@ class DataCube:
        """
         self.geom: BasePolygon = geom
         self.mean_area: float = get_area(tile.centroid.y) / 10000
-
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            # Start the load operations and mark each future with its URL
-            group_futures = {
-                executor.submit(get_window, layer, tile, start_date, end_date): layer
-                for layer in group_layers
-            }
-            sum_futures = {
-                executor.submit(get_window, layer, tile, start_date, end_date): layer
-                for layer in sum_layers
-            }
-            filter_futures = {
-                executor.submit(get_window, layer, tile, start_date, end_date): layer
-                for layer in filter_layers
-            }
-
-            self.group_windows: List[Window] = self._get_window_results(group_futures)
-            self.sum_windows: List[Window] = self._get_window_results(sum_futures)
-            self.filter_windows: List[Window] = self._get_window_results(filter_futures)
+        self.windows: List[Window] = self._get_windows(query, tile)
 
         self.shifted_affine: Affine = from_bounds(
             *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
@@ -70,15 +98,16 @@ class DataCube:
         self.filter: np.ndarray = mask_geom_on_raster(
             np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, self.geom
         )
-        for window in self.filter_windows:
-            self.filter *= window.data.astype(np.bool)
-            window.clear()
 
-        # we only care about areas where the group has data, so also add those to the filter
-        # unless the window has a default value we care about
-        for window in self.group_windows:
-            if not window.has_default_value():
-                self.filter *= window.data.astype(np.bool)
+        for filter in self.query.filters:
+            window = self.windows[filter.layer]
+            self.filter *= filter.apply_filter(window)
+
+        # # we only care about areas where the group has data, so also add those to the filter
+        # # unless the window has a default value we care about
+        # for window in self.group_windows:
+        #     if not window.has_default_value():
+        #         self.filter *= window.data.astype(np.bool)
 
         # generate linear index and then clear group rasters to save data
         if self.group_windows:
@@ -120,6 +149,16 @@ class DataCube:
             rows, cols = np.nonzero(points)
             lon_lat = zip(xy(self.shifted_affine, rows, cols))
             return lon_lat
+
+    def _get_windows(self, query: Query, tile):
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Start the load operations and mark each future with its URL
+            futures = {
+                executor.submit(get_window, layer, tile): layer
+                for layer in query.get_layers()
+            }
+
+            return self._get_window_results(futures)
 
     @staticmethod
     def _get_window_results(futures):
