@@ -1,7 +1,8 @@
-from typing import List, Any, Set
+from typing import List, Any, Set, Dict
 from enum import Enum
 
 from pydantic import BaseModel
+from moz_sql_parser import parse
 
 from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER
 
@@ -81,3 +82,44 @@ class Query(BaseModel):
         layers += [aggregate.layer for aggregate in self.aggregates]
 
         return set(layers)
+
+
+class QueryParseException(Exception):
+    pass
+
+
+def parse_query(raw_query: str) -> Query:
+    parsed = parse(raw_query)
+    query = Query()
+
+    if "select" not in parsed:
+        raise QueryParseException("Query be SELECT statement")
+
+    for selector in _ensure_list(parsed["select"]):
+        if isinstance(selector["value"], dict):
+            func, layer = _get_first_key_value(selector["value"])
+            aggregate = Aggregate(function=func, layer=LayerInfo(layer))
+            query.aggregates.append(aggregate)
+        elif isinstance(selector["value"], str):
+            query.selectors.append(LayerInfo(selector["value"]))
+
+    if "where" in parsed:
+        for filter in _ensure_list(parsed["where"]):
+            op, (layer, value) = _get_first_key_value(filter)
+            query.filters.append(Filter(operator=op, layer=LayerInfo(layer), value=value))
+
+    if "groupby" in parsed:
+        for group in _ensure_list(parsed["groupby"]):
+            query.groups.append(LayerInfo[group["value"]])
+
+
+# the SQL parser sometimes outputs a list or single value depending on input,
+# Just a helper to make it consistent
+def _ensure_list(a):
+    return a if type(a) is list else [a]
+
+
+# certain things are parsed single key value pairs, so just get the first key value pair
+def _get_first_key_value(d: Dict[str, str]):
+    for key, val in d.items():
+        return (key, val)
