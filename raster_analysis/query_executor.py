@@ -1,4 +1,4 @@
-from typing import List, Any, Dict, Tuple
+from typing import List, Any, Dict, Union, Tuple
 
 import numpy as np
 from numpy import ndarray
@@ -74,16 +74,16 @@ class QueryExecutor:
         aggregations = [
             QueryResult.Column(
                 name=agg.layer.name,
-                values=self._aggregate_window(agg, mask, group_counts, inverse_index)
+                values=self._aggregate_window_by_group(agg, mask, group_counts, inverse_index)
             )
             for agg in self.query.aggregates
         ]
 
         return QueryResult(columns=groups + aggregations)
 
-    def _aggregate_window(
+    def _aggregate_window_by_group(
             self, aggregate: Aggregate, mask: ndarray, group_counts: List[int], inverse_index: List[int]
-    ):
+    ) -> ndarray:
         if aggregate.layer == SpecialSelectors.count:
             return group_counts
         elif aggregate.layer == SpecialSelectors.area:
@@ -105,6 +105,36 @@ class QueryExecutor:
                 return sums
             elif aggregate.function == AggregateFunction.avg:
                 return sums / masked_data.size
+
+    def _aggregate_all(self, mask: ndarray):
+        aggregations = [
+            QueryResult.Column(
+                name=agg.layer.name,
+                values=self._aggregate_window(agg, mask)
+            )
+            for agg in self.query.aggregates
+        ]
+
+        return QueryResult(aggregations)
+
+    def _aggregate_window(self, aggregate: Aggregate, mask: ndarray) -> Union[int, float]:
+        if aggregate.layer == SpecialSelectors.count:
+            return mask.sum()
+        elif aggregate.layer == SpecialSelectors.area:
+            return mask.sum() * self.data_cube.mean_area
+        else:
+            window = self.data_cube[aggregate.layer]
+            masked_data = np.extract(mask, window.data)
+            sum = masked_data.sum()
+
+            if aggregate.function == AggregateFunction.sum:
+                if aggregate.layer.is_area_density:
+                    return sum * self.data_cube.mean_area
+                elif aggregate.layer.is_emissions:
+                    return sum * CO2_FACTOR * self.data_cube.mean_area
+                return sum
+            elif aggregate.function == AggregateFunction.avg:
+                return sum / masked_data.size
 
     def _select(self, mask: ndarray):
         columns = []
