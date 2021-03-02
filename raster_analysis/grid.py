@@ -3,6 +3,7 @@ import math
 from shapely.geometry import Point, Polygon
 
 from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER, GRID_SIZE, GRID_COLS
+from raster_analysis.query import LayerInfo
 
 
 def _get_tile_id(point: Point, grid_size=10) -> str:
@@ -41,7 +42,7 @@ def get_tile_id(geometry: Polygon) -> str:
     return _get_tile_id(centroid)
 
 
-def get_raster_uri(layer_name: str, data_type: str, tile: Polygon) -> str:
+def get_raster_uri(layer: LayerInfo, tile: Polygon) -> str:
     """
     Maps layer name input to a raster URI in the data lake
     :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
@@ -49,5 +50,5 @@ def get_raster_uri(layer_name: str, data_type: str, tile: Polygon) -> str:
     """
 
     tile_id = get_tile_id(tile)
-    version = DATA_LAKE_LAYER_MANAGER.get_latest_version(layer_name)
-    return f"/vsis3/gfw-data-lake/{layer_name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{data_type}/gdal-geotiff/{tile_id}.tif"
+    version = DATA_LAKE_LAYER_MANAGER.layers[layer].version
+    return f"/vsis3/gfw-data-lake/{layer.name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{layer.type}/gdal-geotiff/{tile_id}.tif"

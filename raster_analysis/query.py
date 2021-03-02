@@ -4,6 +4,7 @@ from enum import Enum
 from pydantic import BaseModel
 from moz_sql_parser import parse
 
+from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER
 
 AREA_DENSITY_TYPE = "ha-1"
@@ -14,7 +15,6 @@ class LayerInfo(BaseModel):
     name: str
     type: str
     is_area_density: bool = False
-    is_emissions: bool = False
 
     def __init__(self, layer: str):
         parts = layer.split("__")
@@ -84,10 +84,6 @@ class Query(BaseModel):
         return set(layers)
 
 
-class QueryParseException(Exception):
-    pass
-
-
 def parse_query(raw_query: str) -> Query:
     parsed = parse(raw_query)
     query = Query()
@@ -106,7 +102,10 @@ def parse_query(raw_query: str) -> Query:
     if "where" in parsed:
         for filter in _ensure_list(parsed["where"]):
             op, (layer, value) = _get_first_key_value(filter)
-            query.filters.append(Filter(operator=op, layer=LayerInfo(layer), value=value))
+            layer = LayerInfo(layer)
+            encoded_values = DATA_LAKE_LAYER_MANAGER.layers[layer].encode(value)
+            for encoded_value in encoded_values:
+                query.filters.append(Filter(operator=op, layer=LayerInfo(layer), value=encoded_value))
 
     if "groupby" in parsed:
         for group in _ensure_list(parsed["groupby"]):

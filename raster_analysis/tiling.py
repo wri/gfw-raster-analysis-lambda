@@ -3,6 +3,7 @@ from typing import Dict, List, Any
 from copy import deepcopy
 
 import pandas as pd
+from pandas import DataFrame
 from shapely.geometry import Polygon, mapping, box
 from aws_xray_sdk.core import xray_recorder
 
@@ -12,25 +13,39 @@ from raster_analysis.globals import (
     LOGGER,
     FANOUT_LAMBDA_NAME,
     RASTER_ANALYSIS_LAMBDA_NAME,
+    DATA_LAKE_LAYER_MANAGER,
     ResultValue,
     BasePolygon,
     Numeric,
 )
 
 
+class ResultsMerge:
+    def __init__(self, tile_results: DataFrame, query: Query):
+        self.results = tile_results
+        self.groupby_columns = groupby_columns
+
+    def group(self):
+        grouped_df: pd.DataFrame = self.results.groupby(self.groupby_columns).sum()
+        result_df: pd.DataFrame = grouped_df.sort_values(self.groupby_columns).reset_index()
+
+    def decode_values(self):
+        for layer in self.query.get_layers():
+            encoding = DATA_LAKE_LAYER_MANAGER.layers[layer].encoding
+            if encoding:
+                self.results[layer.name_type] = self.results[layer.name_type].map(encoding)
+
+
 @xray_recorder.capture("Merge Tiled Geometry Results")
 def merge_tile_results(
-    tile_results: Dict[Any, List[Any]], groupby_columns: List[str]
+    tile_results: DataFrame, groupby_columns: List[str]
 ) -> List[Dict[str, ResultValue]]:
-    if not groupby_columns:
-        dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
-        merged_df: pd.DataFrame = pd.concat(dataframes)
-        return merged_df.sum().to_dict()
-
-    dataframes = [pd.DataFrame(result) for result in tile_results]
-    merged_df = pd.concat(dataframes)
-
-    grouped_df: pd.DataFrame = merged_df.groupby(groupby_columns).sum()
+    # TODO how to deal with this?
+    # if not groupby_columns:
+    #     dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
+    #     merged_df: pd.DataFrame = pd.concat(dataframes)
+    #     return merged_df.sum().to_dict()
+    grouped_df: pd.DataFrame = tile_results.groupby(groupby_columns).sum()
     result_df: pd.DataFrame = grouped_df.sort_values(groupby_columns).reset_index()
 
     # convert ordinal dates to readable dates

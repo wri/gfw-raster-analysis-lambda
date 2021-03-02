@@ -1,6 +1,8 @@
-from typing import List, Any, Dict, Union, Tuple
+from typing import List, Any, Union, Tuple
+from io import StringIO
 
 import numpy as np
+import pandas as pd
 from numpy import ndarray
 from pydantic import BaseModel
 from rasterio.transform import xy
@@ -35,17 +37,22 @@ class QueryExecutor:
             mask *= filter.apply_filter(window)
 
         if self.query.aggregates:
-            return self._aggregate(mask)
+            self.result = self._aggregate(mask)
         elif self.query.selectors:
-            return self._select(mask)
+            self.result = self._select(mask)
 
-    def _aggregate(self, mask: ndarray):
+    def result_as_csv(self) -> StringIO:
+        buffer = StringIO()
+        self.result.to_csv(buffer, index=False)
+        return buffer
+
+    def _aggregate(self, mask: ndarray) -> QueryResult:
         if self.query.groups:
             self._aggregate_by_group(mask)
         else:
             self._aggregate_all(mask)
 
-    def _aggregate_by_group(self, mask: ndarray):
+    def _aggregate_by_group(self, mask: ndarray) -> QueryResult:
         group_windows = [self.data_cube[layer].window for layer in self.query.groups]
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]
@@ -62,24 +69,14 @@ class QueryExecutor:
             group_multi_index, return_counts=True, return_inverse=True
         )
 
-        # this maps the single number value back to an array of the original group values
-        groups = [
-            QueryResult.Column(
-                name=group.name,
-                values=values
-            )
-            for group, values in zip(self.query.groups, np.unravel_index(group_indices, group_dimensions))
-        ]
+        group_column_names = [group.name for group in self.query.groups]
+        agg_column_names = [agg.layer.name for agg in self.query.aggregates]
 
-        aggregations = [
-            QueryResult.Column(
-                name=agg.layer.name,
-                values=self._aggregate_window_by_group(agg, mask, group_counts, inverse_index)
-            )
-            for agg in self.query.aggregates
-        ]
+        results = dict(zip(group_column_names, np.unravel_index(group_indices, group_dimensions)))
+        results.update(dict(zip(agg_column_names, np.unravel_index(group_indices, group_dimensions))))
 
-        return QueryResult(columns=groups + aggregations)
+        return pd.DataFrame(results)
+
 
     def _aggregate_window_by_group(
             self, aggregate: Aggregate, mask: ndarray, group_counts: List[int], inverse_index: List[int]
@@ -106,7 +103,7 @@ class QueryExecutor:
             elif aggregate.function == AggregateFunction.avg:
                 return sums / masked_data.size
 
-    def _aggregate_all(self, mask: ndarray):
+    def _aggregate_all(self, mask: ndarray) -> QueryResult:
         aggregations = [
             QueryResult.Column(
                 name=agg.layer.name,
@@ -136,7 +133,7 @@ class QueryExecutor:
             elif aggregate.function == AggregateFunction.avg:
                 return sum / masked_data.size
 
-    def _select(self, mask: ndarray):
+    def _select(self, mask: ndarray) -> QueryResult:
         columns = []
 
         if SpecialSelectors.latitude in self.query.selectors or SpecialSelectors.longitude in self.query.selectors:

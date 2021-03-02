@@ -1,3 +1,4 @@
+from StringIO import StringIO
 from typing import Optional
 from datetime import datetime
 
@@ -32,9 +33,11 @@ def handler(event, context):
         query = parse_query(event["query"])
         data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
         query_executor = QueryExecutor(query, data_cube)
-        results: QueryResult = query_executor.execute()
+        query_executor.execute()
+        csv_results: StringIO = query_executor.result_as_csv()
 
-        LOGGER.info(f"Ran analysis with results: {results}")
+        csv_str = csv_results.getvalue()
+        LOGGER.info(f"Ran analysis with results: {csv_results}")
         results_store.save_result(results, context.aws_request_id)
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])

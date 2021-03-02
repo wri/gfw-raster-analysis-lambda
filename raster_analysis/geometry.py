@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from shapely.geometry import shape
+from shapely.geometry import shape, Polygon
 
 from raster_analysis.exceptions import InvalidGeometryException
 from raster_analysis.utils import decode_geometry
@@ -15,7 +15,7 @@ class GeometryTile:
             full_geom = shape(source_geom)
 
         self.geom: BasePolygon = full_geom
-        self.tile: BasePolygon = None
+        self.tile: Polygon = None
 
         if tile_geojson:
             tile = shape(tile_geojson)

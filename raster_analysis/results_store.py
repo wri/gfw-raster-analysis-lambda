@@ -4,7 +4,9 @@ from copy import deepcopy
 from time import sleep
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
+from io import StringIO
 
+import pandas as pd
 from boto3.dynamodb.table import TableResource
 
 from raster_analysis.boto import dynamodb_resource
@@ -22,13 +24,13 @@ class AnalysisResultsStore:
         self._client: TableResource = dynamodb_resource().Table(self._table_name)
         self.analysis_id: str = analysis_id
 
-    def save_result(self, result: Dict[str, Any], result_id: str) -> None:
-        store_result = self._convert_to_dynamo_format(result)
+    def save_result(self, result: str, result_id: str) -> None:
+        # store_result = self._convert_to_dynamo_format(result)
         self._client.put_item(
             Item={
                 "analysis_id": self.analysis_id,
                 "tile_id": result_id,
-                "result": store_result,
+                "result": result,
                 "time_to_live": self._get_ttl(),
                 "error": False,
             }
@@ -75,11 +77,9 @@ class AnalysisResultsStore:
                 f"Timeout occurred before all lambdas completed. Result count: {num_results}; results completed: {curr_count}"
             )
 
-        results = [
-            self._convert_from_dynamo_format(item["result"])
-            for item in results_response["Items"]
-        ]
-        return results
+        raw_results = [StringIO(item["result"]) for item in results_response["Items"]]
+        dfs = [pd.read_csv(result) for result in raw_results]
+        return pd.concat(dfs)
 
     @staticmethod
     def _convert_from_dynamo_format(result: Dict[str, Any]) -> Dict[str, Any]:
