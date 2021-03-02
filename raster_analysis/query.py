@@ -8,14 +8,9 @@ from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER
 
 AREA_DENSITY_TYPE = "ha-1"
-EMISSIONS_LAYER = "whrc_aboveground_co2_emissions__Mg"
 
 
-class LayerInfo(BaseModel):
-    name: str
-    type: str
-    is_area_density: bool = False
-
+class LayerInfo:
     def __init__(self, layer: str):
         parts = layer.split("__")
 
@@ -31,8 +26,6 @@ class LayerInfo(BaseModel):
 
         if AREA_DENSITY_TYPE in self.type:
             self.is_area_density = True
-        elif layer == EMISSIONS_LAYER:
-            self.is_emissions = True
 
 
 class SpecialSelectors(str, Enum):

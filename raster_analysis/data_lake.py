@@ -33,9 +33,9 @@ class DataLakeLayerInfoManager(BaseModel):
         :return:
         """
         return {
-            LayerInfo("umd_tree_cover_loss__year"): DataLakeLayerInfo("v1.8"),
-            LayerInfo("is__umd_regional_primary_forest_2001"):  DataLakeLayerInfo("v201901"),
-            LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo("v1.6", {
+            LayerInfo("umd_tree_cover_loss__year"): DataLakeLayerInfo(version="v1.8"),
+            LayerInfo("is__umd_regional_primary_forest_2001"):  DataLakeLayerInfo(version="v201901"),
+            LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo(version="v1.6", encoding={
                 1: 10,
                 2: 15,
                 3: 20,
@@ -44,7 +44,7 @@ class DataLakeLayerInfoManager(BaseModel):
                 6: 50,
                 7: 75,
             }),
-           LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo("v1.6", {
+           LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo(version="v1.6", encoding={
                1: 10,
                2: 15,
                3: 20,
@@ -53,9 +53,9 @@ class DataLakeLayerInfoManager(BaseModel):
                6: 50,
                7: 75,
            }),
-            LayerInfo("umd_tree_cover_gain_year"): DataLakeLayerInfo("v1.6"),
-            LayerInfo("whrc_aboveground_biomass_stock_2000__Mg_ha-1"): DataLakeLayerInfo("v4"),
-            LayerInfo("tsc_tree_cover_loss_drivers__type"): DataLakeLayerInfo("v2020", defaultdict(
+            LayerInfo("umd_tree_cover_gain_year"): DataLakeLayerInfo(version="v1.6"),
+            LayerInfo("whrc_aboveground_biomass_stock_2000__Mg_ha-1"): DataLakeLayerInfo(version="v4"),
+            LayerInfo("tsc_tree_cover_loss_drivers__type"): DataLakeLayerInfo(version="v2020", encoding=defaultdict(
                 lambda: "Unknown",
                 {
                     1: "Commodity driven deforestation",
@@ -65,7 +65,7 @@ class DataLakeLayerInfoManager(BaseModel):
                     5: "Urbanization",
                 }
             )),
-            LayerInfo("gfw_plantations__threshold"): DataLakeLayerInfo("v1.3", {
+            LayerInfo("gfw_plantations__threshold"): DataLakeLayerInfo(version="v1.3", encoding={
                 1: "Fruit",
                 2: "Fruit Mix",
                 3: "Oil Palm ",
@@ -78,11 +78,11 @@ class DataLakeLayerInfoManager(BaseModel):
                 10: "Wood fiber / Timber",
                 11: "Wood fiber / Timber Mix",
             }),
-            LayerInfo("wdpa_protected_areas__threshold"): DataLakeLayerInfo("v202007", {
+            LayerInfo("wdpa_protected_areas__threshold"): DataLakeLayerInfo(version="v202007", encoding={
                 1: "Category Ia/b or II",
                 2: "Other Category"
             }),
-            LayerInfo("esa_land_cover_2015__class"): DataLakeLayerInfo("v20160111", defaultdict(
+            LayerInfo("esa_land_cover_2015__class"): DataLakeLayerInfo(version="v20160111", encoding=defaultdict(
                 lambda: "Unknown",
                 {
                     10: "Agriculture",
@@ -122,22 +122,22 @@ class DataLakeLayerInfoManager(BaseModel):
                     210: "Water",
                     220: "Permanent snow and ice",
             })),
-            LayerInfo("birdlife_alliance_for_zero_extinction_sites"): DataLakeLayerInfo("v20200725"),
-            LayerInfo("gmw_mangroves_1996"): DataLakeLayerInfo("v20180701"),
-            LayerInfo("gmw_mangroves_2016"): DataLakeLayerInfo("v20180701"),
-            LayerInfo("ifl_intact_forest_landscapes"): DataLakeLayerInfo("v20180628"),
-            LayerInfo("gfw_tiger_landscapes"): DataLakeLayerInfo("v201904"),
+            LayerInfo("birdlife_alliance_for_zero_extinction_sites"): DataLakeLayerInfo(version="v20200725"),
+            LayerInfo("gmw_mangroves_1996"): DataLakeLayerInfo(version="v20180701"),
+            LayerInfo("gmw_mangroves_2016"): DataLakeLayerInfo(version="v20180701"),
+            LayerInfo("ifl_intact_forest_landscapes"): DataLakeLayerInfo(version="v20180628"),
+            LayerInfo("gfw_tiger_landscapes"): DataLakeLayerInfo(version="v201904"),
             LayerInfo("landmark_land_rights"): DataLakeLayerInfo("v20191111"),
-            LayerInfo("gfw_land_rights"): DataLakeLayerInfo("v2016"),
-            LayerInfo("birdlife_key_biodiversity_areas"): DataLakeLayerInfo("v20191211"),
-            LayerInfo("gfw_mining"): DataLakeLayerInfo("v20190205"),
-            LayerInfo("gfw_peatlands"): DataLakeLayerInfo("v20190103"),
-            LayerInfo("gfw_oil_palm"): DataLakeLayerInfo("v20191031"),
-            LayerInfo("gfw_wood_fiber"): DataLakeLayerInfo("v20200725"),
-            LayerInfo("gfw_resource_rights"): DataLakeLayerInfo("v2015"),
-            LayerInfo("gfw_managed_forests"): DataLakeLayerInfo("v20190103"),
-            LayerInfo("rspo_oil_palm__certification_status"): DataLakeLayerInfo("v20200114", {1: "Certified", 2: "Unknown", 3: "Not certified"}),
-            LayerInfo("idn_forest_area__type"): DataLakeLayerInfo("v201709", {
+            LayerInfo("gfw_land_rights"): DataLakeLayerInfo(version="v2016"),
+            LayerInfo("birdlife_key_biodiversity_areas"): DataLakeLayerInfo(version="v20191211"),
+            LayerInfo("gfw_mining"): DataLakeLayerInfo(version="v20190205"),
+            LayerInfo("gfw_peatlands"): DataLakeLayerInfo(version="v20190103"),
+            LayerInfo("gfw_oil_palm"): DataLakeLayerInfo(version="v20191031"),
+            LayerInfo("gfw_wood_fiber"): DataLakeLayerInfo(version="v20200725"),
+            LayerInfo("gfw_resource_rights"): DataLakeLayerInfo(version="v2015"),
+            LayerInfo("gfw_managed_forests"): DataLakeLayerInfo(version="v20190103"),
+            LayerInfo("rspo_oil_palm__certification_status"): DataLakeLayerInfo(version="v20200114", encoding={1: "Certified", 2: "Unknown", 3: "Not certified"}),
+            LayerInfo("idn_forest_area__type"): DataLakeLayerInfo(version="v201709", encoding={
                 1001: "Protected Forest",
                 1003: "Production Forest",
                 1004: "Limited Production Forest",
@@ -157,7 +157,7 @@ class DataLakeLayerInfoManager(BaseModel):
                 100201: "Marine Protected Areas",
                 100201: "Marine Protected Areas",
             }),
-            LayerInfo("per_forest_concession__type"): DataLakeLayerInfo("v20161001", {
+            LayerInfo("per_forest_concession__type"): DataLakeLayerInfo(version="v20161001", encoding={
                 1: "Conservation",
                 2: "Ecotourism",
                 3: "Nontimber Forest Products (Nuts)",
@@ -166,7 +166,7 @@ class DataLakeLayerInfoManager(BaseModel):
                 6: "Timber Concession",
                 7: "Wildlife",
             }),
-            LayerInfo("bra_biome__name"): DataLakeLayerInfo("v20150601", {
+            LayerInfo("bra_biome__name"): DataLakeLayerInfo(version="v20150601", encoding={
                 1: "Caatinga",
                 2: "Cerrado",
                 3: "Pantanal",

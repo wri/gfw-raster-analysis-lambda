@@ -49,6 +49,56 @@ def get_raster_uri(layer: LayerInfo, tile: Polygon) -> str:
     :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
     """
 
+    if layer.name == "umd_glad_alerts":
+        return _get_glad_raster_uri(tile)
+
     tile_id = get_tile_id(tile)
     version = DATA_LAKE_LAYER_MANAGER.layers[layer].version
     return f"/vsis3/gfw-data-lake/{layer.name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{layer.type}/gdal-geotiff/{tile_id}.tif"
+
+
+def _get_glad_raster_uri(tile: Polygon) -> str:
+    # return hardcoded URL
+    tile_id = get_tile_id(tile)
+    return f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
+
+
+def _get_glad_tile_id(tile) -> str:
+    left, bottom, right, top = tile.bounds
+
+    left = _lower_bound(left)
+    bottom = _lower_bound(bottom)
+    right = _upper_bound(right)
+    top = _upper_bound(top)
+
+    west = _get_longitude(left)
+    south = _get_latitude(bottom)
+    east = _get_longitude(right)
+    north = _get_latitude(top)
+
+    return f"{west}_{south}_{east}_{north}"
+
+
+def _get_longitude(x: int) -> str:
+    if x >= 0:
+        return str(x).zfill(3) + "E"
+    else:
+        return str(-x).zfill(3) + "W"
+
+
+def _get_latitude(y: int) -> str:
+    if y >= 0:
+        return str(y).zfill(2) + "N"
+    else:
+        return str(-y).zfill(2) + "S"
+
+
+def _lower_bound(y: int) -> int:
+    return int(math.floor(y / 10) * 10)
+
+
+def _upper_bound(y: int) -> int:
+    if y == _lower_bound(y):
+        return int(y)
+    else:
+        return int((math.floor(y / 10) * 10) + 10)

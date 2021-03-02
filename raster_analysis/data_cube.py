@@ -5,25 +5,18 @@ from pydantic import BaseModel
 
 import numpy as np
 from numpy import ndarray
+from rasterio import features
 from rasterio.transform import Affine, from_bounds, xy
 import concurrent.futures
 from shapely.geometry import Polygon
-from aws_xray_sdk.core import xray_recorder
 
-from raster_analysis.io import mask_geom_on_raster
 from raster_analysis.geodesy import get_area
-from raster_analysis.utils import get_linear_index
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
-from raster_analysis.query import Query, LayerInfo
-from raster_analysis.layer.window import get_window, Window, ResultValues
+from raster_analysis.query import LayerInfo
+from raster_analysis.window import Window
 
 
-class DataCube(BaseModel):
-    windows: Dict[LayerInfo, Window]
-    shifted_affine: Affine
-    mean_area: float
-    mask: ndarray
-
+class DataCube:
     def __init__(
         self,
         geom: BasePolygon,
@@ -36,7 +29,7 @@ class DataCube(BaseModel):
             *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
         )
 
-        self.mask = mask_geom_on_raster(
+        self.mask = self._mask_geom_on_raster(
             np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, geom
         )
 
@@ -44,7 +37,7 @@ class DataCube(BaseModel):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
             futures = {
-                executor.submit(get_window, layer, tile): layer
+                executor.submit(Window, layer, tile): layer
                 for layer in layers
             }
 
@@ -63,4 +56,43 @@ class DataCube(BaseModel):
                 raise e
 
         return windows
+
+
+    @staticmethod
+    def _mask_geom_on_raster(
+            raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
+    ) -> np.ndarray:
+        """"
+        For a given polygon, returns a numpy masked array with the intersecting
+        values of the raster at `raster_path` unmasked, all non-intersecting
+        cells are masked.  This assumes that the input geometry is in the same
+        SRS as the raster.  Currently only reads from a single band.
+
+        Args:
+            geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
+                which will define the area of the raster to mask.
+
+            raster_path (string): A local file path to a geographic raster
+                containing values to extract.
+
+        Returns
+           Numpy masked array of source raster, cropped to the extent of the
+           input geometry, with any modifications applied. Areas where the
+           supplied geometry does not intersect are masked.
+
+        """
+
+        if raster_data.size > 0:
+            # Create a numpy array to mask cells which don't intersect with the
+            # polygon. Cells that intersect will have value of 1 (unmasked), the
+            # rest are filled with 0s (masked)
+            geom_mask = features.geometry_mask(
+                [geom], out_shape=raster_data.shape, transform=shifted_affine, invert=True
+            )
+
+            # Mask the data array, with modifications applied, by the query polygon
+            return geom_mask
+        else:
+            return np.array([])
+
 
