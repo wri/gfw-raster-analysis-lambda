@@ -1,35 +1,13 @@
 from typing import List, Any, Set, Dict
 from enum import Enum
 
+from numpy import ndarray
 from pydantic import BaseModel
 from moz_sql_parser import parse
 
+from raster_analysis.data_lake import LAYERS, Layer
 from raster_analysis.exceptions import QueryParseException
-from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER
 
-AREA_DENSITY_TYPE = "ha-1"
-
-
-class LayerInfo:
-    def __init__(self, layer: str):
-        parts = layer.split("__")
-
-        if len(parts) != 2:
-            raise ValueError(
-                f"Layer name `{layer}` is invalid, should consist of layer name and unit separated by `__`"
-            )
-
-        if parts[0] == "is":
-            self.type, self.name = parts
-        else:
-            self.name, self.type = parts
-
-        if AREA_DENSITY_TYPE in self.type:
-            self.is_area_density = True
-
-
-class VirtualLayerInfo:
-    def __init__(self, layer):
 
 class SpecialSelectors(str, Enum):
     latitude = "latitude"
@@ -49,11 +27,10 @@ class Operator(str, Enum):
 
 class Filter(BaseModel):
     operator: Operator
-    layer: LayerInfo
+    layer: Layer
     value: Any
 
-    def apply_filter(self, window):
-        DATA_LAKE_LAYER_MANAGER.get_layer_value()
+    def apply_filter(self, window: ndarray) -> ndarray:
         return eval(f"window {self.operator.value} self.value")
 
 
@@ -64,20 +41,20 @@ class AggregateFunction(str, Enum):
 
 class Aggregate(BaseModel):
     function: AggregateFunction
-    layer: LayerInfo
+    layer: Layer
 
 
 class Query(BaseModel):
-    selectors: List[LayerInfo] = []
+    selectors: List[Layer] = []
     filters: List[Filter] = []
-    groups: List[LayerInfo] = []
+    groups: List[Layer] = []
     aggregates: List[Aggregate] = []
 
-    def get_real_layers(self) -> Set[LayerInfo]:
+    def get_real_layers(self) -> Set[Layer]:
         layers = self.get_layers()
         return [layer for layer in layers if layer.name_type not in SpecialSelectors]
 
-    def get_layers(self) -> Set[LayerInfo]:
+    def get_layers(self) -> Set[Layer]:
         layers = [selector for selector in self.selectors]
         layers += [filter.layer for filter in self.filters]
         layers += [aggregate.layer for aggregate in self.aggregates]
@@ -96,22 +73,21 @@ def parse_query(raw_query: str) -> Query:
     for selector in _ensure_list(parsed["select"]):
         if isinstance(selector["value"], dict):
             func, layer = _get_first_key_value(selector["value"])
-            aggregate = Aggregate(function=func, layer=LayerInfo(layer))
+            aggregate = Aggregate(function=func, layer=LAYERS[layer])
             query.aggregates.append(aggregate)
         elif isinstance(selector["value"], str):
-            query.selectors.append(LayerInfo(selector["value"]))
+            query.selectors.append(LAYERS[selector["value"]])
 
     if "where" in parsed:
         for filter in _ensure_list(parsed["where"]):
             op, (layer, value) = _get_first_key_value(filter)
-            layer = LayerInfo(layer)
-            encoded_values = DATA_LAKE_LAYER_MANAGER.layers[layer].encode(value)
-            for encoded_value in encoded_values:
-                query.filters.append(Filter(operator=op, layer=LayerInfo(layer), value=encoded_value))
+            layer = LAYERS[layer]
+            base_filter = Filter(operator=op, layer=layer, value=value)
+            query.filters += layer.encode_filter(base_filter)
 
     if "groupby" in parsed:
         for group in _ensure_list(parsed["groupby"]):
-            query.groups.append(LayerInfo[group["value"]])
+            query.groups.append(LAYERS[group["value"]])
 
 
 # the SQL parser sometimes outputs a list or single value depending on input,

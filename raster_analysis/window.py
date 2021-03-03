@@ -12,13 +12,13 @@ from aws_xray_sdk.core import xray_recorder
 from rasterio.windows import Window
 from shapely.geometry import Polygon
 
+from raster_analysis.data_lake import Layer
 from raster_analysis.globals import LOGGER, BasePolygon, Numeric, WINDOW_SIZE
 from raster_analysis.grid import get_raster_uri
-from raster_analysis.query import LayerInfo
 
 
 class Window:
-    def __init__(self, layer: LayerInfo, tile: Polygon):
+    def __init__(self, layer: Layer, tile: Polygon):
         self.layer = layer
         self.tile = tile
 
@@ -35,7 +35,7 @@ class Window:
         self.no_data_value: Numeric = no_data_value
 
     def read(self) -> Tuple[np.ndarray, Affine, Numeric]:
-        raster_uri = get_raster_uri(self.layer, self.tile)
+        raster_uri = get_raster_uri(self.layer.layer, self.tile)
         data, shifted_affine, no_data_value = Window._read_window_ignore_missing(
             raster_uri, self.tile
         )

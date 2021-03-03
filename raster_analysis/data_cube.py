@@ -10,9 +10,10 @@ from rasterio.transform import Affine, from_bounds, xy
 import concurrent.futures
 from shapely.geometry import Polygon
 
+from raster_analysis.data_lake import Layer
 from raster_analysis.geodesy import get_area
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
-from raster_analysis.query import LayerInfo, Query
+from raster_analysis.query import Query
 from raster_analysis.window import Window
 
 
@@ -33,7 +34,7 @@ class DataCube:
             np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, geom
         )
 
-    def _get_windows(self, layers: Set[LayerInfo], tile):
+    def _get_windows(self, layers: Set[Layer], tile):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
             futures = {

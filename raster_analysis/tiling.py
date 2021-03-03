@@ -8,13 +8,13 @@ from shapely.geometry import Polygon, mapping, box
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.boto import lambda_client, invoke_lambda
+from raster_analysis.data_lake import LAYERS
 from raster_analysis.query import Query
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import (
     LOGGER,
     FANOUT_LAMBDA_NAME,
     RASTER_ANALYSIS_LAMBDA_NAME,
-    DATA_LAKE_LAYER_MANAGER,
     ResultValue,
     BasePolygon,
     Numeric,
@@ -35,9 +35,11 @@ class AnalysisTiler:
 
     def _decode_values(self):
         for layer in set([self.query.selectors + self.query.groups]):
-            decoder = DATA_LAKE_LAYER_MANAGER.layers[layer].decoder
-            if decoder:
-                self.results[layer.name_type] = decoder(self.results[layer.name_type])
+            if layer.value_decoder:
+                decoded_columns = layer.value_decoder(self.results[layer.layer])
+                del self.results[layer.layer]
+                for name, series in decoded_columns:
+                    self.results[name] = series
 
     @xray_recorder.capture("Process Tiles")
     def _process_tiles(
@@ -105,46 +107,3 @@ class AnalysisTiler:
             geom.bounds[2] + (-geom.bounds[2] % width),
             geom.bounds[3] + (-geom.bounds[3] % width),
         )
-
-
-
-@xray_recorder.capture("Merge Tiled Geometry Results")
-def merge_tile_results(
-    tile_results: DataFrame, groupby_columns: List[str]
-) -> List[Dict[str, ResultValue]]:
-    # TODO how to deal with this?
-    # if not groupby_columns:
-    #     dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
-    #     merged_df: pd.DataFrame = pd.concat(dataframes)
-    #     return merged_df.sum().to_dict()
-    grouped_df: pd.DataFrame = tile_results.groupby(groupby_columns).sum()
-    result_df: pd.DataFrame = grouped_df.sort_values(groupby_columns).reset_index()
-
-    # convert ordinal dates to readable dates
-    for col in groupby_columns:
-        if "__date" in col:
-            result_df[col] = result_df[col].apply(
-                lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
-            )
-        elif "__isoweek" in col:
-            result_df[col.replace("__isoweek", "__year")] = (
-                result_df[col]
-                .astype(int)
-                .apply(lambda val: date.fromordinal(val).isocalendar()[0])
-            )
-            result_df[col] = (
-                result_df[col]
-                .astype(int)
-                .apply(lambda val: date.fromordinal(val).isocalendar()[1])
-            )
-
-        # sometimes pandas makes int fields into floats - a group by field should never be a float
-        if result_df[col].dtype == "float64":
-            result_df[col] = result_df[col].astype("int64")
-
-    return result_df.to_dict(orient="records")
-
-
-
-
-

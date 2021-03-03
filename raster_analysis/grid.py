@@ -2,8 +2,8 @@ import math
 
 from shapely.geometry import Point, Polygon
 
-from raster_analysis.globals import DATA_LAKE_LAYER_MANAGER, GRID_SIZE, GRID_COLS
-from raster_analysis.query import LayerInfo
+from raster_analysis.data_lake import Layer, LAYERS
+from raster_analysis.globals import GRID_SIZE
 
 
 def _get_tile_id(point: Point, grid_size=10) -> str:
@@ -42,19 +42,31 @@ def get_tile_id(geometry: Polygon) -> str:
     return _get_tile_id(centroid)
 
 
-def get_raster_uri(layer: LayerInfo, tile: Polygon) -> str:
+def get_raster_uri(layer: Layer, tile: Polygon) -> str:
     """
     Maps layer name input to a raster URI in the data lake
     :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
     :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
     """
 
-    if layer.name == "umd_glad_alerts":
+    if "umd_glad_alerts" in layer:
         return _get_glad_raster_uri(tile)
 
+    parts = layer.layer.split("__")
+
+    if len(parts) != 2:
+        raise ValueError(
+            f"Layer name `{layer.layer}` is invalid data lake layer, should consist of layer name and unit separated by `__`"
+        )
+
+    if parts[0] == "is":
+        type, name = parts
+    else:
+        name, type = parts
+
     tile_id = get_tile_id(tile)
-    version = DATA_LAKE_LAYER_MANAGER.layers[layer].version
-    return f"/vsis3/gfw-data-lake/{layer.name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{layer.type}/gdal-geotiff/{tile_id}.tif"
+    version = LAYERS[layer].version
+    return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{type}/gdal-geotiff/{tile_id}.tif"
 
 
 def _get_glad_raster_uri(tile: Polygon) -> str:

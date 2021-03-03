@@ -3,8 +3,6 @@ import logging
 import os
 from shapely.geometry import Polygon, MultiPolygon
 
-from raster_analysis.layer.layer import DataLakeLayerInfoManager
-
 Numeric = Union[int, float]
 BasePolygon = Union[Polygon, MultiPolygon]
 ResultValue = Union[int, float, str]
@@ -26,7 +24,6 @@ LAMBDA_ENDPOINT_URL = os.environ.get("LAMBDA_ENDPOINT_URL", None)
 DYNAMODB_ENDPOINT_URL = os.environ.get("DYNAMODB_ENDPOINT_URL", None)
 AWS_REGION = "us-east-1"
 
-DATA_LAKE_LAYER_MANAGER = DataLakeLayerInfoManager()
 
 FANOUT_LAMBDA_NAME = os.environ.get("FANOUT_LAMBDA_NAME", "")
 RASTER_ANALYSIS_LAMBDA_NAME = os.environ.get("RASTER_ANALYSIS_LAMBDA_NAME", "")

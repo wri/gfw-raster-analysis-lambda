@@ -12,15 +12,6 @@ from raster_analysis.data_cube import DataCube
 from raster_analysis.globals import CO2_FACTOR
 from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
 
-
-class QueryResult(BaseModel):
-    class Column(BaseModel):
-        name: str
-        values: List[Any]
-
-    columns: List[Column]
-
-
 class QueryExecutor:
     def __init__(
         self,
@@ -34,7 +25,7 @@ class QueryExecutor:
         mask = self.data_cube.mask
 
         for filter in self.query.filters:
-            window = self.windows[filter.layer]
+            window = self.data_cube.windows[filter.layer]
             mask *= filter.apply_filter(window)
 
         if self.query.aggregates:
@@ -70,14 +61,13 @@ class QueryExecutor:
             group_multi_index, return_counts=True, return_inverse=True
         )
 
-        group_column_names = [group.name for group in self.query.groups]
-        agg_column_names = [agg.layer.name for agg in self.query.aggregates]
+        group_column_names = [group.layer for group in self.query.groups]
+        agg_column_names = [agg.layer.layer for agg in self.query.aggregates]
 
         results = dict(zip(group_column_names, np.unravel_index(group_indices, group_dimensions)))
         results.update(dict(zip(agg_column_names, np.unravel_index(group_indices, group_dimensions))))
 
         return pd.DataFrame(results)
-
 
     def _aggregate_window_by_group(
             self, aggregate: Aggregate, mask: ndarray, group_counts: List[int], inverse_index: List[int]
@@ -104,16 +94,13 @@ class QueryExecutor:
             elif aggregate.function == AggregateFunction.avg:
                 return sums / masked_data.size
 
-    def _aggregate_all(self, mask: ndarray) -> QueryResult:
-        aggregations = [
-            QueryResult.Column(
-                name=agg.layer.name,
-                values=self._aggregate_window(agg, mask)
-            )
-            for agg in self.query.aggregates
-        ]
+    def _aggregate_all(self, mask: ndarray) -> DataFrame:
+        results = {}
 
-        return QueryResult(aggregations)
+        for agg in self.query.aggregates:
+            results[agg.layer.layer] = self._aggregate_window(agg, mask)
+
+        return pd.DataFrame(results)
 
     def _aggregate_window(self, aggregate: Aggregate, mask: ndarray) -> Union[int, float]:
         if aggregate.layer == SpecialSelectors.count:
@@ -134,21 +121,21 @@ class QueryExecutor:
             elif aggregate.function == AggregateFunction.avg:
                 return sum / masked_data.size
 
-    def _select(self, mask: ndarray) -> QueryResult:
-        columns = []
+    def _select(self, mask: ndarray) -> DataFrame:
+        results = {}
 
         if SpecialSelectors.latitude in self.query.selectors or SpecialSelectors.longitude in self.query.selectors:
             latitudes, longitudes = self._extract_coordinates(mask)
-            columns.append(QueryResult.Column(name=SpecialSelectors.latitude.value, values=latitudes))
-            columns.append(QueryResult.Column(name=SpecialSelectors.longitude.value, values=longitudes))
+            results[SpecialSelectors.latitude.value] = latitudes
+            results[SpecialSelectors.longitude.value] = longitudes
 
         for selector in self.query.selectors:
             window = self.data_cube[selector.layer].window
             window *= mask
             values = np.extract(window != 0, window)
-            columns.append(QueryResult.Column(name=selector.name, values=values))
+            results[selector.layer] = values
 
-        return QueryResult(columns=columns)
+        return pd.DataFrame(results)
 
     def _extract_coordinates(self, mask: ndarray) -> List[Tuple[float, float]]:
         rows, cols = np.nonzero(mask)
