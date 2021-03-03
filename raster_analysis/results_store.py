@@ -8,6 +8,7 @@ from io import StringIO
 
 import pandas as pd
 from boto3.dynamodb.table import TableResource
+from pandas import DataFrame
 
 from raster_analysis.boto import dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
@@ -54,7 +55,7 @@ class AnalysisResultsStore:
             TableName=self._table_name,
         )
 
-    def wait_for_results(self, num_results: int) -> List[Dict[str, Any]]:
+    def wait_for_results(self, num_results: int) -> DataFrame:
         curr_count = 0
         tries = 0
 

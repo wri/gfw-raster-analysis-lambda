@@ -4,6 +4,7 @@ from io import StringIO
 import numpy as np
 import pandas as pd
 from numpy import ndarray
+from pandas import DataFrame
 from pydantic import BaseModel
 from rasterio.transform import xy
 
@@ -46,13 +47,13 @@ class QueryExecutor:
         self.result.to_csv(buffer, index=False)
         return buffer
 
-    def _aggregate(self, mask: ndarray) -> QueryResult:
+    def _aggregate(self, mask: ndarray) -> DataFrame:
         if self.query.groups:
             self._aggregate_by_group(mask)
         else:
             self._aggregate_all(mask)
 
-    def _aggregate_by_group(self, mask: ndarray) -> QueryResult:
+    def _aggregate_by_group(self, mask: ndarray) -> DataFrame:
         group_windows = [self.data_cube[layer].window for layer in self.query.groups]
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]

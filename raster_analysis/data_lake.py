@@ -1,15 +1,29 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Callable
 from collections import defaultdict
 
 from pydantic import BaseModel
+from pandas import Series
 
 from raster_analysis.query import LayerInfo
 
-class DataLakeLayerInfo(BaseModel):
-    version: str
-    encoding: defaultdict[Any, Any] = defaultdict()
+class DataLakeLayerInfo:
+    def __init__(
+            self,
+            version: str,
+            decoder: Callable[[Series], Series] = None,
+            encoder: Callable[[Any], List[Any]] = None,
+            encoding: Dict[Any, Any] = {}
+    ):
+        self.version: str = version
+        if encoding:
+            self.decoder = (lambda series: series.map(encoding))
+            self.encoder = (lambda val: self.encode(val, encoding))
+        else:
+            self.decoder: Callable[[Series], Series] = decoder
+            self.encoder: Callable[[Any], Any] = encoder
 
-    def encode(self, val: Any) -> List[Any]:
+    @staticmethod
+    def encode(self, val: Any, encoding: Dict[Any, Any] = {}) -> List[Any]:
         """
         Get list of encoded values that map to a particular decoded value
         """
@@ -33,8 +47,18 @@ class DataLakeLayerInfoManager(BaseModel):
         :return:
         """
         return {
-            LayerInfo("umd_tree_cover_loss__year"): DataLakeLayerInfo(version="v1.8"),
+            LayerInfo("umd_tree_cover_loss__year"): DataLakeLayerInfo(version="v1.8", func=(lambda x: x + 2000)),
             LayerInfo("is__umd_regional_primary_forest_2001"):  DataLakeLayerInfo(version="v201901"),
+            LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo(version="v1.6", encoding=(lambda s: s.map({
+                1: 10,
+                2: 15,
+                3: 20,
+                4: 25,
+                5: 30,
+                6: 50,
+                7: 75,
+
+            }))),
             LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo(version="v1.6", encoding={
                 1: 10,
                 2: 15,
@@ -44,15 +68,6 @@ class DataLakeLayerInfoManager(BaseModel):
                 6: 50,
                 7: 75,
             }),
-           LayerInfo("umd_tree_cover_density_2000__threshold"): DataLakeLayerInfo(version="v1.6", encoding={
-               1: 10,
-               2: 15,
-               3: 20,
-               4: 25,
-               5: 30,
-               6: 50,
-               7: 75,
-           }),
             LayerInfo("umd_tree_cover_gain_year"): DataLakeLayerInfo(version="v1.6"),
             LayerInfo("whrc_aboveground_biomass_stock_2000__Mg_ha-1"): DataLakeLayerInfo(version="v4"),
             LayerInfo("tsc_tree_cover_loss_drivers__type"): DataLakeLayerInfo(version="v2020", encoding=defaultdict(
@@ -121,7 +136,7 @@ class DataLakeLayerInfoManager(BaseModel):
                     202: "Bare",
                     210: "Water",
                     220: "Permanent snow and ice",
-            })),
+                })),
             LayerInfo("birdlife_alliance_for_zero_extinction_sites"): DataLakeLayerInfo(version="v20200725"),
             LayerInfo("gmw_mangroves_1996"): DataLakeLayerInfo(version="v20180701"),
             LayerInfo("gmw_mangroves_2016"): DataLakeLayerInfo(version="v20180701"),

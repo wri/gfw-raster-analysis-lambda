@@ -12,7 +12,7 @@ from shapely.geometry import Polygon
 
 from raster_analysis.geodesy import get_area
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
-from raster_analysis.query import LayerInfo
+from raster_analysis.query import LayerInfo, Query
 from raster_analysis.window import Window
 
 
@@ -21,10 +21,10 @@ class DataCube:
         self,
         geom: BasePolygon,
         tile: Polygon,
-        layers: Set[LayerInfo],
+        query: Query,
     ):
         self.mean_area = get_area(tile.centroid.y) / 10000
-        self.windows = self._get_windows(layers, tile)
+        self.windows = self._get_windows(query.get_real_layers(), tile)
         self.shifted_affine: Affine = from_bounds(
             *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
         )

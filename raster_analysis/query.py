@@ -28,10 +28,14 @@ class LayerInfo:
             self.is_area_density = True
 
 
+class VirtualLayerInfo:
+    def __init__(self, layer):
+
 class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
     area = "area__ha"
+    count = "count"
 
 
 class Operator(str, Enum):
@@ -69,10 +73,15 @@ class Query(BaseModel):
     groups: List[LayerInfo] = []
     aggregates: List[Aggregate] = []
 
+    def get_real_layers(self) -> Set[LayerInfo]:
+        layers = self.get_layers()
+        return [layer for layer in layers if layer.name_type not in SpecialSelectors]
+
     def get_layers(self) -> Set[LayerInfo]:
-        layers = [selector.layer for selector in self.selectors]
+        layers = [selector for selector in self.selectors]
         layers += [filter.layer for filter in self.filters]
         layers += [aggregate.layer for aggregate in self.aggregates]
+        layers += [group for group in self.groups]
 
         return set(layers)
 
