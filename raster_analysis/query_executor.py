@@ -5,12 +5,11 @@ import numpy as np
 import pandas as pd
 from numpy import ndarray
 from pandas import DataFrame
-from pydantic import BaseModel
 from rasterio.transform import xy
 
 from raster_analysis.data_cube import DataCube
-from raster_analysis.globals import CO2_FACTOR
 from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
+
 
 class QueryExecutor:
     def __init__(
@@ -26,7 +25,7 @@ class QueryExecutor:
 
         for filter in self.query.filters:
             window = self.data_cube.windows[filter.layer]
-            mask *= filter.apply_filter(window)
+            mask *= filter.apply_filter(window.data)
 
         if self.query.aggregates:
             self.result = self._aggregate(mask)
@@ -40,12 +39,15 @@ class QueryExecutor:
 
     def _aggregate(self, mask: ndarray) -> DataFrame:
         if self.query.groups:
-            self._aggregate_by_group(mask)
+            return self._aggregate_by_group(mask)
         else:
-            self._aggregate_all(mask)
+            return self._aggregate_all(mask)
 
     def _aggregate_by_group(self, mask: ndarray) -> DataFrame:
-        group_windows = [self.data_cube[layer].window for layer in self.query.groups]
+        group_windows = [self.data_cube.windows[layer] for layer in self.query.groups]
+        for window in group_windows:
+            mask *= window.data.astype(dtype=np.bool)
+
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]
 
@@ -65,19 +67,24 @@ class QueryExecutor:
         agg_column_names = [agg.layer.layer for agg in self.query.aggregates]
 
         results = dict(zip(group_column_names, np.unravel_index(group_indices, group_dimensions)))
-        results.update(dict(zip(agg_column_names, np.unravel_index(group_indices, group_dimensions))))
+
+        agg_columns = [
+            self._aggregate_window_by_group(agg, mask, group_counts, inverse_index)
+            for agg in self.query.aggregates
+        ]
+        results.update(dict(zip(agg_column_names, agg_columns)))
 
         return pd.DataFrame(results)
 
     def _aggregate_window_by_group(
             self, aggregate: Aggregate, mask: ndarray, group_counts: List[int], inverse_index: List[int]
     ) -> ndarray:
-        if aggregate.layer == SpecialSelectors.count:
+        if aggregate.layer.layer == SpecialSelectors.count:
             return group_counts
-        elif aggregate.layer == SpecialSelectors.area:
+        elif aggregate.layer.layer == SpecialSelectors.area:
             return group_counts * self.data_cube.mean_area
         else:
-            window = self.data_cube[aggregate.layer]
+            window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
 
             # this will sum the values of aggregate data into different bins, where each bin
@@ -87,9 +94,6 @@ class QueryExecutor:
                 if aggregate.layer.is_area_density:
                     # layer value representing area density need to be multiplied by area to get gross value
                     return sums * self.data_cube.mean_area
-                elif aggregate.layer.is_emissions:
-                    # emissions are just based on density layers multiplied by a constant
-                    return sums * CO2_FACTOR * self.data_cube.mean_area
                 return sums
             elif aggregate.function == AggregateFunction.avg:
                 return sums / masked_data.size
@@ -98,25 +102,23 @@ class QueryExecutor:
         results = {}
 
         for agg in self.query.aggregates:
-            results[agg.layer.layer] = self._aggregate_window(agg, mask)
+            results[agg.layer.layer] = [self._aggregate_window(agg, mask)]
 
         return pd.DataFrame(results)
 
     def _aggregate_window(self, aggregate: Aggregate, mask: ndarray) -> Union[int, float]:
-        if aggregate.layer == SpecialSelectors.count:
+        if aggregate.layer.layer == SpecialSelectors.count:
             return mask.sum()
-        elif aggregate.layer == SpecialSelectors.area:
+        elif aggregate.layer.layer == SpecialSelectors.area:
             return mask.sum() * self.data_cube.mean_area
         else:
-            window = self.data_cube[aggregate.layer]
+            window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
             sum = masked_data.sum()
 
             if aggregate.function == AggregateFunction.sum:
                 if aggregate.layer.is_area_density:
                     return sum * self.data_cube.mean_area
-                elif aggregate.layer.is_emissions:
-                    return sum * CO2_FACTOR * self.data_cube.mean_area
                 return sum
             elif aggregate.function == AggregateFunction.avg:
                 return sum / masked_data.size
@@ -130,7 +132,7 @@ class QueryExecutor:
             results[SpecialSelectors.longitude.value] = longitudes
 
         for selector in self.query.selectors:
-            window = self.data_cube[selector.layer].window
+            window = self.data_cube.windows[selector.layer].window.data
             window *= mask
             values = np.extract(window != 0, window)
             results[selector.layer] = values

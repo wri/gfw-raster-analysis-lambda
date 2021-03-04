@@ -1,76 +1,105 @@
-from datetime import date
+import json
+import sys
+from io import StringIO
 from typing import Dict, List, Any, Tuple
 from copy import deepcopy
 
 import pandas as pd
 from pandas import DataFrame
-from shapely.geometry import Polygon, mapping, box
+from shapely.geometry import Polygon, mapping, box, shape
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.boto import lambda_client, invoke_lambda
-from raster_analysis.data_lake import LAYERS
+from raster_analysis.geometry import encode_geometry
 from raster_analysis.query import Query
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import (
     LOGGER,
     FANOUT_LAMBDA_NAME,
     RASTER_ANALYSIS_LAMBDA_NAME,
-    ResultValue,
     BasePolygon,
-    Numeric,
+    Numeric, LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES, TILE_WIDTH, FANOUT_NUM,
 )
 
 
 class AnalysisTiler:
-    def __init__(self, query: Query, geom: BasePolygon):
-        self.query = query
-        self.geom = geom
+    def __init__(self, raw_query: str, raw_geom: Dict[str, Any], request_id: str):
+        self.raw_query: str = raw_query
+        self.query: Query = Query.parse_query(raw_query)
 
-    def execute(self):
-        self._process_tiles()
+        self.raw_geom: Dict[str, Any] = raw_geom
+        self.geom: BasePolygon = shape(raw_geom)
 
-    def _group_results(self, results, groupby_columns):
-        grouped_df: pd.DataFrame = results.groupby(self.groupby_columns).sum()
-        return grouped_df.sort_values(groupby_columns).reset_index()
+        self.request_id: str = request_id
+        self.results: DataFrame = None
 
-    def _decode_values(self):
-        for layer in set([self.query.selectors + self.query.groups]):
-            if layer.value_decoder:
-                decoded_columns = layer.value_decoder(self.results[layer.layer])
-                del self.results[layer.layer]
-                for name, series in decoded_columns:
-                    self.results[name] = series
+    def execute(self) -> None:
+        results = self._execute_tiles()
+        results = self._decode_results(results)
+        self.results = self._group_results(results)
+
+    def result_as_csv(self) -> StringIO:
+        buffer = StringIO()
+        self.results.to_csv(buffer, index=False)
+        return buffer
+
+    def _group_results(self, results):
+        if self.query.groups:
+            group_columns = [group.layer for group in self.query.groups]
+            grouped_df = results.groupby(group_columns).sum()
+            return grouped_df.sort_values(group_columns).reset_index()
+        else:
+            # pandas does weird things when you sum the whole DF
+            df = results.sum().reset_index()
+            df = df.rename(columns=df['index'])
+            df = df.drop(columns=['index'])
+            return df
+
+    def _decode_results(self, results):
+        for layer in set(self.query.get_layers()):
+            if layer.decoder and layer.layer in results:
+                decoded_columns = layer.decoder(results[layer.layer])
+                del results[layer.layer]
+                for name, series in decoded_columns.items():
+                    results[name] = series
+
+        return results
 
     @xray_recorder.capture("Process Tiles")
-    def _process_tiles(
-            self,
-            tiles: List[Polygon],
-            geoprocessing_params: Dict[str, Any],
-            request_id: str,
-            fanout_num: int,
-    ) -> DataFrame:
+    def _execute_tiles(self) -> DataFrame:
+        tiles = self._get_tiles(TILE_WIDTH)
+        payload = {
+            "analysis_id": self.request_id,
+            "query": self.raw_query,
+        }
+
+        if sys.getsizeof(json.dumps(self.raw_geom)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
+            payload["encoded_geometry"] = encode_geometry(self.geom)
+        else:
+            payload["geometry"] = self.raw_geom
+
         geom_count = len(tiles)
-        geoprocessing_params["analysis_id"] = request_id
+
         LOGGER.info(f"Processing {geom_count} tiles")
 
-        if geom_count <= fanout_num:
+        if geom_count <= FANOUT_NUM:
             for tile in tiles:
-                tile_params = deepcopy(geoprocessing_params)
-                tile_params["tile"] = mapping(tile)
-                invoke_lambda(tile_params, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
+                tile_payload = deepcopy(payload)
+                tile_payload["tile"] = mapping(tile)
+                invoke_lambda(tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
         else:
             tile_geojsons = [mapping(tile) for tile in tiles]
             tile_chunks = [
-                tile_geojsons[x: x + fanout_num]
-                for x in range(0, len(tile_geojsons), fanout_num)
+                tile_geojsons[x: x + FANOUT_NUM]
+                for x in range(0, len(tile_geojsons), FANOUT_NUM)
             ]
 
             for chunk in tile_chunks:
-                event = {"payload": geoprocessing_params, "tiles": chunk}
+                event = {"payload": payload, "tiles": chunk}
                 invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
         LOGGER.info(f"Geom count: {geom_count}")
-        results_store = AnalysisResultsStore(request_id)
+        results_store = AnalysisResultsStore(self.request_id)
         results = results_store.wait_for_results(geom_count)
 
         return results

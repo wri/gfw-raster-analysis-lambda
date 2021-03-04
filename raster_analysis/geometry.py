@@ -5,7 +5,6 @@ import geobuf
 from shapely.geometry import shape, Polygon, mapping
 
 from raster_analysis.exceptions import InvalidGeometryException
-from raster_analysis.utils import decode_geometry
 from raster_analysis.globals import BasePolygon, LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES
 
 

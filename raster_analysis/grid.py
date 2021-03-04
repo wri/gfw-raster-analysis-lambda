@@ -2,8 +2,8 @@ import math
 
 from shapely.geometry import Point, Polygon
 
-from raster_analysis.data_lake import Layer, LAYERS
-from raster_analysis.globals import GRID_SIZE
+from raster_analysis.layer import Layer
+from raster_analysis.globals import GRID_SIZE, GRID_COLS
 
 
 def _get_tile_id(point: Point, grid_size=10) -> str:
@@ -65,7 +65,7 @@ def get_raster_uri(layer: Layer, tile: Polygon) -> str:
         name, type = parts
 
     tile_id = get_tile_id(tile)
-    version = LAYERS[layer].version
+    version = layer.version
     return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{type}/gdal-geotiff/{tile_id}.tif"
 
 

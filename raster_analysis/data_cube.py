@@ -1,16 +1,12 @@
-from datetime import datetime
-from typing import List, Optional, Dict, Tuple, Set
-
-from pydantic import BaseModel
+from typing import Set
 
 import numpy as np
-from numpy import ndarray
 from rasterio import features
 from rasterio.transform import Affine, from_bounds, xy
 import concurrent.futures
 from shapely.geometry import Polygon
 
-from raster_analysis.data_lake import Layer
+from raster_analysis.layer import Layer
 from raster_analysis.geodesy import get_area
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
 from raster_analysis.query import Query

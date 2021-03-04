@@ -5,7 +5,8 @@ from numpy import ndarray
 from pydantic import BaseModel
 from moz_sql_parser import parse
 
-from raster_analysis.data_lake import LAYERS, Layer
+from raster_analysis.layer import Layer
+from raster_analysis.data_lake import LAYERS
 from raster_analysis.exceptions import QueryParseException
 
 
@@ -31,6 +32,9 @@ class Filter(BaseModel):
     value: Any
 
     def apply_filter(self, window: ndarray) -> ndarray:
+        if self.layer.is_conf_encoded:
+            window = window % 10000
+
         return eval(f"window {self.operator.value} self.value")
 
 
@@ -52,7 +56,7 @@ class Query(BaseModel):
 
     def get_real_layers(self) -> Set[Layer]:
         layers = self.get_layers()
-        return [layer for layer in layers if layer.name_type not in SpecialSelectors]
+        return [layer for layer in layers if layer.layer not in SpecialSelectors]
 
     def get_layers(self) -> Set[Layer]:
         layers = [selector for selector in self.selectors]
@@ -62,41 +66,54 @@ class Query(BaseModel):
 
         return set(layers)
 
+    @staticmethod
+    def parse_query(raw_query: str):
+        parsed = parse(raw_query)
+        query = Query()
 
-def parse_query(raw_query: str) -> Query:
-    parsed = parse(raw_query)
-    query = Query()
+        if "select" not in parsed:
+            raise QueryParseException("Query be SELECT statement")
 
-    if "select" not in parsed:
-        raise QueryParseException("Query be SELECT statement")
+        for selector in Query._ensure_list(parsed["select"]):
+            if isinstance(selector["value"], dict):
+                func, layer = Query._get_first_key_value(selector["value"])
+                aggregate = Aggregate(function=func, layer=LAYERS[layer])
+                query.aggregates.append(aggregate)
+            elif isinstance(selector["value"], str):
+                query.selectors.append(LAYERS[selector["value"]])
 
-    for selector in _ensure_list(parsed["select"]):
-        if isinstance(selector["value"], dict):
-            func, layer = _get_first_key_value(selector["value"])
-            aggregate = Aggregate(function=func, layer=LAYERS[layer])
-            query.aggregates.append(aggregate)
-        elif isinstance(selector["value"], str):
-            query.selectors.append(LAYERS[selector["value"]])
+        if "where" in parsed:
+            if "and" in parsed["where"]:
+                if isinstance(parsed["where"]["and"], dict):
+                    raise QueryParseException("Only one level is supported in AND statement.")
+                filters = parsed["where"]["and"]
+            elif "or" in parsed["where"]:
+                raise QueryParseException("OR statement is not supported.")
+            else:
+                filters = parsed["where"]
 
-    if "where" in parsed:
-        for filter in _ensure_list(parsed["where"]):
-            op, (layer, value) = _get_first_key_value(filter)
-            layer = LAYERS[layer]
-            base_filter = Filter(operator=op, layer=layer, value=value)
-            query.filters += layer.encode_filter(base_filter)
+            for filter in Query._ensure_list(filters):
+                op, (layer, value) = Query._get_first_key_value(filter)
+                layer = LAYERS[layer]
+                if layer.encoder:
+                    for enc_val in layer.encoder(value):
+                        query.filters.append(Filter(operator=Operator[op], layer=layer, value=enc_val))
+                else:
+                    query.filters.append(Filter(operator=Operator[op], layer=layer, value=value))
 
-    if "groupby" in parsed:
-        for group in _ensure_list(parsed["groupby"]):
-            query.groups.append(LAYERS[group["value"]])
+        if "groupby" in parsed:
+            for group in Query._ensure_list(parsed["groupby"]):
+                query.groups.append(LAYERS[group["value"]])
+
+        return query
+
+    # the SQL parser sometimes outputs a list or single value depending on input,
+    # Just a helper to make it consistent
+    def _ensure_list(a):
+        return a if type(a) is list else [a]
 
 
-# the SQL parser sometimes outputs a list or single value depending on input,
-# Just a helper to make it consistent
-def _ensure_list(a):
-    return a if type(a) is list else [a]
-
-
-# certain things are parsed single key value pairs, so just get the first key value pair
-def _get_first_key_value(d: Dict[str, str]):
-    for key, val in d.items():
-        return (key, val)
+    # certain things are parsed single key value pairs, so just get the first key value pair
+    def _get_first_key_value(d: Dict[str, str]):
+        for key, val in d.items():
+            return (key, val)
