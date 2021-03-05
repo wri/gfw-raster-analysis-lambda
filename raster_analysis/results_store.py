@@ -2,9 +2,10 @@ from decimal import Decimal
 import os
 from copy import deepcopy
 from time import sleep
-from typing import List, Dict, Any
+from typing import Dict, Any
 from datetime import datetime, timedelta
 from io import StringIO
+import sys
 
 import pandas as pd
 from boto3.dynamodb.table import TableResource
@@ -26,15 +27,30 @@ class AnalysisResultsStore:
         self.analysis_id: str = analysis_id
 
     def save_result(self, result: str, result_id: str) -> None:
-        # store_result = self._convert_to_dynamo_format(result)
-        self._client.put_item(
-            Item={
-                "analysis_id": self.analysis_id,
-                "tile_id": result_id,
-                "result": result,
-                "time_to_live": self._get_ttl(),
-                "error": False,
+        items = []
+        max_size = 400
+        i = 0
+
+        while sys.getsizeof(result) > max_size:
+            item_result = result[:max_size]
+            result = result[max_size:]
+            i += 1
+
+            item = {
+                "PutRequest": {
+                    "Item": {
+                        "analysis_id": self.analysis_id,
+                        "tile_id": f"{result_id}.{i}",
+                        "result": item_result,
+                        "time_to_live": self._get_ttl(),
+                        "error": False,
+                    }
+                }
             }
+            items.append(item)
+
+        self._client.batch_write_item(
+            RequestItems={self._table_name: items}
         )
 
     def save_error(self, result_id: str) -> None:

@@ -43,17 +43,19 @@ class AnalysisTiler:
         self.results.to_csv(buffer, index=False)
         return buffer
 
-    def _group_results(self, results):
+    def _group_results(self, results: DataFrame) -> DataFrame:
         if self.query.groups:
             group_columns = [group.layer for group in self.query.groups]
             grouped_df = results.groupby(group_columns).sum()
             return grouped_df.sort_values(group_columns).reset_index()
-        else:
+        elif self.query.aggregates:
             # pandas does weird things when you sum the whole DF
             df = results.sum().reset_index()
             df = df.rename(columns=df['index'])
             df = df.drop(columns=['index'])
             return df
+        else:
+            return results
 
     def _decode_results(self, results):
         for layer in set(self.query.get_layers()):

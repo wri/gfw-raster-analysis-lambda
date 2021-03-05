@@ -13,7 +13,7 @@ from raster_analysis.exceptions import QueryParseException
 class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
-    area = "area__ha"
+    area__ha = "area__ha"
     count = "count"
 
 
@@ -56,7 +56,7 @@ class Query(BaseModel):
 
     def get_real_layers(self) -> Set[Layer]:
         layers = self.get_layers()
-        return [layer for layer in layers if layer.layer not in SpecialSelectors]
+        return [layer for layer in layers if layer.layer not in SpecialSelectors.__members__]
 
     def get_layers(self) -> Set[Layer]:
         layers = [selector for selector in self.selectors]
@@ -94,6 +94,9 @@ class Query(BaseModel):
 
             for filter in Query._ensure_list(filters):
                 op, (layer, value) = Query._get_first_key_value(filter)
+                if isinstance(value, dict):
+                    value = value["literal"]
+
                 layer = LAYERS[layer]
                 if layer.encoder:
                     for enc_val in layer.encoder(value):

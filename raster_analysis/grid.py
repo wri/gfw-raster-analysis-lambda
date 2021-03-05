@@ -49,7 +49,7 @@ def get_raster_uri(layer: Layer, tile: Polygon) -> str:
     :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
     """
 
-    if "umd_glad_alerts" in layer:
+    if "umd_glad_alerts" in layer.layer:
         return _get_glad_raster_uri(tile)
 
     parts = layer.layer.split("__")
@@ -71,7 +71,7 @@ def get_raster_uri(layer: Layer, tile: Polygon) -> str:
 
 def _get_glad_raster_uri(tile: Polygon) -> str:
     # return hardcoded URL
-    tile_id = get_tile_id(tile)
+    tile_id = _get_glad_tile_id(tile)
     return f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
 
 

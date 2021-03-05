@@ -110,6 +110,15 @@ def test_extent_2010(context):
     )
 
 
+def test_lat_lon(context):
+    query = "select latitude, longitude, umd_glad_alerts__date from data where umd_glad_alerts__date > '2020-06-01'"
+    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    assert result["status"] == "success"
+
+    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
+    assert record_results
+
+
 def test_raw_area(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "sum": ["area__ha"]}, context)[
         "body"

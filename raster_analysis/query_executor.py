@@ -8,6 +8,7 @@ from pandas import DataFrame
 from rasterio.transform import xy
 
 from raster_analysis.data_cube import DataCube
+from raster_analysis.data_lake import LAYERS
 from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
 
 
@@ -34,7 +35,7 @@ class QueryExecutor:
 
     def result_as_csv(self) -> StringIO:
         buffer = StringIO()
-        self.result.to_csv(buffer, index=False)
+        self.result.to_csv(buffer, index=False, float_format="%.5f")
         return buffer
 
     def _aggregate(self, mask: ndarray) -> DataFrame:
@@ -81,7 +82,7 @@ class QueryExecutor:
     ) -> ndarray:
         if aggregate.layer.layer == SpecialSelectors.count:
             return group_counts
-        elif aggregate.layer.layer == SpecialSelectors.area:
+        elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return group_counts * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
@@ -109,7 +110,7 @@ class QueryExecutor:
     def _aggregate_window(self, aggregate: Aggregate, mask: ndarray) -> Union[int, float]:
         if aggregate.layer.layer == SpecialSelectors.count:
             return mask.sum()
-        elif aggregate.layer.layer == SpecialSelectors.area:
+        elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return mask.sum() * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
@@ -126,16 +127,20 @@ class QueryExecutor:
     def _select(self, mask: ndarray) -> DataFrame:
         results = {}
 
-        if SpecialSelectors.latitude in self.query.selectors or SpecialSelectors.longitude in self.query.selectors:
-            latitudes, longitudes = self._extract_coordinates(mask)
-            results[SpecialSelectors.latitude.value] = latitudes
-            results[SpecialSelectors.longitude.value] = longitudes
+        selector_names = [selector.layer for selector in self.query.selectors]
 
-        for selector in self.query.selectors:
-            window = self.data_cube.windows[selector.layer].window.data
+        if SpecialSelectors.latitude in selector_names or SpecialSelectors.longitude in selector_names:
+            latitudes, longitudes = self._extract_coordinates(mask)
+            results[SpecialSelectors.latitude.value] = np.array(latitudes).astype(np.double)
+            results[SpecialSelectors.longitude.value] = np.array(longitudes).astype(np.double)
+            selector_names.remove(SpecialSelectors.latitude.value)
+            selector_names.remove(SpecialSelectors.longitude.value)
+
+        for selector in selector_names:
+            window = self.data_cube.windows[LAYERS[selector]].data
             window *= mask
             values = np.extract(window != 0, window)
-            results[selector.layer] = values
+            results[selector] = values
 
         return pd.DataFrame(results)
 
