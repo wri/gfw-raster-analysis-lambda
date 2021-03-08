@@ -1,7 +1,8 @@
 from io import StringIO
 from aws_xray_sdk.core import xray_recorder
+from pandas import DataFrame
 
-from raster_analysis.results_store import AnalysisResultsStore
+from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 from raster_analysis.globals import LOGGER
 from raster_analysis.data_cube import DataCube
 from raster_analysis.query_executor import QueryExecutor
@@ -29,15 +30,13 @@ def handler(event, context):
         query = Query.parse_query(event["query"])
         data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
         query_executor = QueryExecutor(query, data_cube)
-        query_executor.execute()
-        csv_results: StringIO = query_executor.result_as_csv()
+        results: DataFrame = query_executor.execute()
 
-        csv_str = csv_results.getvalue()
-        LOGGER.info(f"Ran analysis with results: {csv_str}")
-        results_store.save_result(csv_str, context.aws_request_id)
+        LOGGER.info(f"Ran analysis with results: {results}")
+        results_store.save_result(results, context.aws_request_id)
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])
-        results_store.save_error(context.aws_request_id)
+        results_store.save_status(context.aws_request_id, ResultStatus.error)
 
         LOGGER.exception(e)
         raise Exception(f"Internal Server Error <{context.aws_request_id}>")

@@ -23,6 +23,7 @@ resource "aws_lambda_function" "raster_analysis" {
       ENV                         = var.environment
       S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
+      TILED_STATUS_TABLE_NAME    = aws_dynamodb_table.tiled_status_table.name
       SETUPTOOLS_USE_DISTUTILS = "stdlib"
     }
   }

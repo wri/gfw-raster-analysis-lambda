@@ -21,7 +21,7 @@ class QueryExecutor:
         self.query = query
         self.data_cube = data_cube
 
-    def execute(self):
+    def execute(self) -> DataFrame:
         mask = self.data_cube.mask
 
         for filter in self.query.filters:
@@ -29,14 +29,14 @@ class QueryExecutor:
             mask *= filter.apply_filter(window.data)
 
         if self.query.aggregates:
-            self.result = self._aggregate(mask)
+            return self._aggregate(mask)
         elif self.query.selectors:
-            self.result = self._select(mask)
+            return self._select(mask)
 
-    def result_as_csv(self) -> StringIO:
-        buffer = StringIO()
-        self.result.to_csv(buffer, index=False, float_format="%.5f")
-        return buffer
+    # def result_as_csv(self) -> StringIO:
+    #     buffer = StringIO()
+    #     self.result.to_csv(buffer, index=False, float_format="%.5f")
+    #     return buffer
 
     def _aggregate(self, mask: ndarray) -> DataFrame:
         if self.query.groups:

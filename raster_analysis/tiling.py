@@ -4,7 +4,6 @@ from io import StringIO
 from typing import Dict, List, Any, Tuple
 from copy import deepcopy
 
-import pandas as pd
 from pandas import DataFrame
 from shapely.geometry import Polygon, mapping, box, shape
 from aws_xray_sdk.core import xray_recorder

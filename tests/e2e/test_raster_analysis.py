@@ -1,4 +1,3 @@
-from multiprocessing import Process
 from threading import Thread
 import uuid
 import pytest
@@ -60,6 +59,7 @@ def context(monkeypatch):
     os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
     os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"
     os.environ["TILED_RESULTS_TABLE_NAME"] = "tiled-raster-analysis"
+    os.environ["TILED_STATUS_TABLE_NAME"] = "tiled-raster-analysis-status"
     os.environ[
         "S3_BUCKET_DATA_LAKE"
     ] = "gfw-data-lake"  # This is actual production data lake
@@ -76,6 +76,19 @@ def context(monkeypatch):
                 {"AttributeName": "tile_id", "KeyType": "RANGE"},
             ],
             TableName="tiled-raster-analysis",
+            BillingMode="PAY_PER_REQUEST",
+        )
+
+        boto.dynamodb_client().create_table(
+            AttributeDefinitions=[
+                {"AttributeName": "analysis_id", "AttributeType": "S"},
+                {"AttributeName": "tile_id", "AttributeType": "S"},
+            ],
+            KeySchema=[
+                {"AttributeName": "analysis_id", "KeyType": "HASH"},
+                {"AttributeName": "tile_id", "KeyType": "RANGE"},
+            ],
+            TableName="tiled-raster-analysis-status",
             BillingMode="PAY_PER_REQUEST",
         )
 
@@ -111,7 +124,7 @@ def test_extent_2010(context):
 
 
 def test_lat_lon(context):
-    query = "select latitude, longitude, umd_glad_alerts__date from data where umd_glad_alerts__date > '2020-06-01'"
+    query = "select latitude, longitude, umd_glad_alerts__date from data where umd_glad_alerts__date > '2020-01-01'"
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
     assert result["status"] == "success"
 

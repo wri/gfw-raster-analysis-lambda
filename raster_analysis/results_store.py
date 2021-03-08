@@ -5,70 +5,104 @@ from time import sleep
 from typing import Dict, Any
 from datetime import datetime, timedelta
 from io import StringIO
-import sys
+from enum import Enum
 
 import pandas as pd
 from boto3.dynamodb.table import TableResource
 from pandas import DataFrame
 
-from raster_analysis.boto import dynamodb_resource
+from raster_analysis.boto import dynamodb_resource, dynamodb_client
 from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.globals import (
     RESULTS_CHECK_INTERVAL,
     RESULTS_CHECK_TRIES,
     DYMANODB_TTL_SECONDS,
+    TILED_RESULTS_TABLE_NAME,
+    TILED_STATUS_TABLE_NAME,
 )
+
+
+class ResultStatus(str, Enum):
+    success = "success"
+    error = "error"
 
 
 class AnalysisResultsStore:
     def __init__(self, analysis_id: str):
-        self._table_name: str = os.environ["TILED_RESULTS_TABLE_NAME"]
-        self._client: TableResource = dynamodb_resource().Table(self._table_name)
+        self._client: TableResource = dynamodb_resource().Table(TILED_RESULTS_TABLE_NAME)
         self.analysis_id: str = analysis_id
 
-    def save_result(self, result: str, result_id: str) -> None:
-        items = []
-        max_size = 400
+    def save_result(self, results: DataFrame, result_id: str) -> None:
+        records_per_item = 5000
+        curr_record = 0
         i = 0
+        num_records = results.shape[0]
+        items = []
 
-        while sys.getsizeof(result) > max_size:
-            item_result = result[:max_size]
-            result = result[max_size:]
-            i += 1
+        while curr_record < num_records:
+            end_record = min(curr_record + records_per_item, num_records + 1)
+            curr_df = results[curr_record:end_record]
+
+            csv_buf = StringIO()
+            curr_df.to_csv(csv_buf, index=False, float_format="%.5f")
 
             item = {
                 "PutRequest": {
                     "Item": {
-                        "analysis_id": self.analysis_id,
-                        "tile_id": f"{result_id}.{i}",
-                        "result": item_result,
-                        "time_to_live": self._get_ttl(),
-                        "error": False,
+                        "analysis_id": {"S": self.analysis_id},
+                        "tile_id": {"S": f"{result_id}.{i}"},
+                        "result": {"S": csv_buf.getvalue()},
+                        "time_to_live": {"N": self._get_ttl()},
                     }
                 }
             }
             items.append(item)
 
-        self._client.batch_write_item(
-            RequestItems={self._table_name: items}
+            curr_record += end_record
+            i += 1
+
+        dynamodb_client().batch_write_item(
+            RequestItems={TILED_RESULTS_TABLE_NAME: items}
         )
 
-    def save_error(self, result_id: str) -> None:
-        self._client.put_item(
+        self.save_status(result_id, ResultStatus.success)
+
+    def save_status(self, result_id: str, status: ResultStatus) -> None:
+        dynamodb_client().put_item(
+            TableName=TILED_STATUS_TABLE_NAME,
             Item={
-                "analysis_id": self.analysis_id,
-                "tile_id": result_id,
-                "result": [],
-                "time_to_live": self._get_ttl(),
-                "error": True,
+                "analysis_id": {"S": self.analysis_id},
+                "tile_id": {"S": result_id},
+                "status": {"S": status.value},
+                "time_to_live": {"N": self._get_ttl()},
             }
         )
 
     def get_results(self) -> Dict[str, Any]:
-        return self._client.query(
-            ExpressionAttributeValues={":id": self.analysis_id},
+        results = dynamodb_client().query(
+            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
             KeyConditionExpression="analysis_id = :id",
-            TableName=self._table_name,
+            TableName=TILED_RESULTS_TABLE_NAME,
+        )
+
+        page_key = results.get("LastEvaluatedKey", None)
+        while page_key:
+            next_page = dynamodb_client().query(
+                ExpressionAttributeValues={":id": {"S": self.analysis_id}},
+                KeyConditionExpression="analysis_id = :id",
+                TableName=TILED_RESULTS_TABLE_NAME,
+                ExclusiveStartKey=page_key,
+            )
+            results["Items"] += next_page["Items"]
+            page_key = next_page.get("LastEvaluatedKey", None)
+
+        return results
+
+    def get_statuses(self) -> Dict[str, Any]:
+        return dynamodb_client().query(
+            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
+            KeyConditionExpression="analysis_id = :id",
+            TableName=TILED_STATUS_TABLE_NAME,
         )
 
     def wait_for_results(self, num_results: int) -> DataFrame:
@@ -79,63 +113,26 @@ class AnalysisResultsStore:
             sleep(RESULTS_CHECK_INTERVAL)
             tries += 1
 
-            results_response = self.get_results()
+            statuses_response = self.get_statuses()
 
-            for item in results_response["Items"]:
-                if item["error"]:
+            for item in statuses_response["Items"]:
+                if item["status"]["S"] == ResultStatus.error:
                     raise RasterAnalysisException(
                         f"Tile {item['tile_id']} encountered an error, check logs."
                     )
 
-            curr_count = results_response["Count"]
+            curr_count = statuses_response["Count"]
 
         if curr_count != num_results:
             raise TimeoutError(
                 f"Timeout occurred before all lambdas completed. Result count: {num_results}; results completed: {curr_count}"
             )
 
-        raw_results = [StringIO(item["result"]) for item in results_response["Items"]]
+        results_response = self.get_results()
+        raw_results = [StringIO(item["result"]["S"]) for item in results_response["Items"]]
         dfs = [pd.read_csv(result) for result in raw_results]
         return pd.concat(dfs)
 
     @staticmethod
-    def _convert_from_dynamo_format(result: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        DynamoDB API returns Decimal objects for all numbers, so this is a util to
-        convert the result back to ints and floats
-
-        :param result: resulting dict from a call to raster analysis
-        :return: result with int and float values instead of Decimal
-        """
-        converted_result = deepcopy(result)
-
-        for layer, col in converted_result.items():
-            if isinstance(col, list):
-                if any(isinstance(val, Decimal) for val in col):
-                    if all([val % 1 == 0 for val in col]):
-                        converted_result[layer] = [int(val) for val in col]
-                    else:
-                        converted_result[layer] = [float(val) for val in col]
-            else:
-                if isinstance(col, Decimal):
-                    converted_result[layer] = int(col) if col % 1 == 0 else float(col)
-
-        return converted_result
-
-    @staticmethod
-    def _convert_to_dynamo_format(result: Dict[str, Any]) -> Dict[str, Any]:
-        store_result = deepcopy(result)
-
-        for layer, col in store_result.items():
-            if isinstance(col, float):
-                store_result[layer] = Decimal(str(col))
-            elif isinstance(col, list) and len(col) > 0 and isinstance(col[0], float):
-                store_result[layer] = [Decimal(str(val)) for val in col]
-
-        return store_result
-
-    @staticmethod
     def _get_ttl():
-        return int(
-            (datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()
-        )
+        return str(Decimal((datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()))
