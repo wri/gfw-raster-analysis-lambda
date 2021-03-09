@@ -33,11 +33,6 @@ class QueryExecutor:
         elif self.query.selectors:
             return self._select(mask)
 
-    # def result_as_csv(self) -> StringIO:
-    #     buffer = StringIO()
-    #     self.result.to_csv(buffer, index=False, float_format="%.5f")
-    #     return buffer
-
     def _aggregate(self, mask: ndarray) -> DataFrame:
         if self.query.groups:
             return self._aggregate_by_group(mask)

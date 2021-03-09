@@ -40,8 +40,7 @@ class AnalysisResultsStore:
         items = []
 
         while curr_record < num_records:
-            end_record = min(curr_record + records_per_item, num_records + 1)
-            curr_df = results[curr_record:end_record]
+            curr_df = results[curr_record:(curr_record + records_per_item)]
 
             csv_buf = StringIO()
             curr_df.to_csv(csv_buf, index=False, float_format="%.5f")
@@ -58,7 +57,7 @@ class AnalysisResultsStore:
             }
             items.append(item)
 
-            curr_record += end_record
+            curr_record += records_per_item
             i += 1
 
         dynamodb_client().batch_write_item(

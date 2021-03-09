@@ -23,10 +23,7 @@ def handler(event, context):
         tiler.execute()
         results = tiler.result_as_csv().getvalue()
 
-        LOGGER.info(
-            f"Successfully merged tiled results to produce final result: {results}"
-        )
-
+        LOGGER.info("Successfully merged tiled results")
         return {"statusCode": 200, "body": {"status": "success", "data": results}}
     except Exception as e:
         LOGGER.exception(e)

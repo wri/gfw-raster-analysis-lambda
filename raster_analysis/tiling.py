@@ -39,7 +39,7 @@ class AnalysisTiler:
 
     def result_as_csv(self) -> StringIO:
         buffer = StringIO()
-        self.results.to_csv(buffer, index=False)
+        self.results.to_csv(buffer, index=False, float_format="%.5f")
         return buffer
 
     def _group_results(self, results: DataFrame) -> DataFrame:

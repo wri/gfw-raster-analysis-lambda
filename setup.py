@@ -7,5 +7,5 @@ setup(
     packages=["raster_analysis"],
     author="Justin Terry/Thomas Maschler",
     license="MIT",
-    install_requires=["aws-xray-sdk", "requests", "geobuf"],
+    install_requires=["aws-xray-sdk", "requests", "geobuf", "pydantic", "moz_sql_parser"],
 )
