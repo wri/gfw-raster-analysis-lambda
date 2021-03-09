@@ -11,7 +11,7 @@ resource "aws_lambda_function" "raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.lambda_layer_rasterio_arn
+    data.terraform_remote_state.lambda-layers.outputs.py37_rasterio_115_arn,
   ]
 
   tracing_config {
@@ -41,8 +41,8 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.lambda_layer_shapely_pyyaml_arn,
-    data.terraform_remote_state.lambda-layers.outputs.lambda_layer_pandas_arn
+    data.terraform_remote_state.lambda-layers.outputs.py37_pandas_110_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_shapely_164_arn,
   ]
 
   tracing_config {
@@ -74,7 +74,7 @@ resource "aws_lambda_function" "raster_analysis_fanout" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.lambda_layer_shapely_pyyaml_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_shapely_164_arn,
   ]
 
   tracing_config {
