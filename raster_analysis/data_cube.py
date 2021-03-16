@@ -1,4 +1,4 @@
-from typing import Set
+from typing import List
 
 import numpy as np
 from rasterio import features
@@ -14,12 +14,7 @@ from raster_analysis.window import Window
 
 
 class DataCube:
-    def __init__(
-        self,
-        geom: BasePolygon,
-        tile: Polygon,
-        query: Query,
-    ):
+    def __init__(self, geom: BasePolygon, tile: Polygon, query: Query):
         self.mean_area = get_area(tile.centroid.y) / 10000
         self.windows = self._get_windows(query.get_real_layers(), tile)
         self.shifted_affine: Affine = from_bounds(
@@ -30,13 +25,10 @@ class DataCube:
             np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, geom
         )
 
-    def _get_windows(self, layers: Set[Layer], tile):
+    def _get_windows(self, layers: List[Layer], tile):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
-            futures = {
-                executor.submit(Window, layer, tile): layer
-                for layer in layers
-            }
+            futures = {executor.submit(Window, layer, tile): layer for layer in layers}
 
             return self._get_window_results(futures)
 
@@ -54,10 +46,9 @@ class DataCube:
 
         return windows
 
-
     @staticmethod
     def _mask_geom_on_raster(
-            raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
+        raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
     ) -> np.ndarray:
         """"
         For a given polygon, returns a numpy masked array with the intersecting
@@ -84,12 +75,13 @@ class DataCube:
             # polygon. Cells that intersect will have value of 1 (unmasked), the
             # rest are filled with 0s (masked)
             geom_mask = features.geometry_mask(
-                [geom], out_shape=raster_data.shape, transform=shifted_affine, invert=True
+                [geom],
+                out_shape=raster_data.shape,
+                transform=shifted_affine,
+                invert=True,
             )
 
             # Mask the data array, with modifications applied, by the query polygon
             return geom_mask
         else:
             return np.array([])
-
-

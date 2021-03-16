@@ -1,15 +1,14 @@
 import logging
 import traceback
-from math import floor
 from typing import Tuple
 
 import numpy as np
 import rasterio
 from numpy import ndarray
-from rasterio import features, DatasetReader
+from rasterio import DatasetReader
 from rasterio.transform import Affine
 from aws_xray_sdk.core import xray_recorder
-from rasterio.windows import Window
+import rasterio.windows as wd
 from shapely.geometry import Polygon
 
 from raster_analysis.layer import Layer
@@ -48,7 +47,6 @@ class Window:
         """
         self.data = []
 
-
     @xray_recorder.capture("Read Window")
     @staticmethod
     def _read_window(
@@ -67,7 +65,7 @@ class Window:
 
             with rasterio.open(raster) as src:
                 try:
-                    window, shifted_affine = Window._get_window_and_affine(geom, src)
+                    window, shifted_affine = wd.Window._get_window_and_affine(geom, src)
                     data = src.read(1, masked=masked, window=window)
                     no_data_value = src.nodata
                 except MemoryError:
@@ -79,13 +77,12 @@ class Window:
 
         return data, shifted_affine, no_data_value
 
-
     @staticmethod
     def _read_window_ignore_missing(
         raster: str, geom: BasePolygon, masked: bool = False
     ) -> Tuple[np.ndarray, Affine, Numeric]:
         try:
-            data = Window._read_window(raster, geom, masked=masked)
+            data = wd.Window._read_window(raster, geom, masked=masked)
         except rasterio.errors.RasterioIOError as e:
             logging.warning("RasterIO error reading " + raster + ":\n" + str(e))
             data = np.array([]), None, None
@@ -94,8 +91,8 @@ class Window:
 
     @staticmethod
     def _get_window_and_affine(
-            geom: BasePolygon, raster_src: DatasetReader
-    ) -> Tuple[Window, Affine]:
+        geom: BasePolygon, raster_src: DatasetReader
+    ) -> Tuple[wd.Window, Affine]:
         """
         Get a rasterio window block from the bounding box of a vector feature and
         calculates the affine transformation needed to map the coordinates of the
@@ -118,7 +115,7 @@ class Window:
         """
 
         # Create a window range from the bounds
-        window: Window = raster_src.window(*geom.bounds).round_lengths(
+        window: wd.Window = raster_src.window(*geom.bounds).round_lengths(
             pixel_precision=5
         ).round_offsets(pixel_precision=5)
 

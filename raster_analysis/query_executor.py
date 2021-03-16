@@ -13,11 +13,7 @@ from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Ag
 
 
 class QueryExecutor:
-    def __init__(
-        self,
-        query: Query,
-        data_cube: DataCube
-    ):
+    def __init__(self, query: Query, data_cube: DataCube):
         self.query = query
         self.data_cube = data_cube
 
@@ -40,16 +36,22 @@ class QueryExecutor:
             return self._aggregate_all(mask)
 
     def _aggregate_by_group(self, mask: ndarray) -> DataFrame:
-        group_windows = [self.data_cube.windows[layer] for layer in self.query.groups]
-        for window in group_windows:
-            mask *= window.data.astype(dtype=np.bool)
+        group_windows = []
+        for layer in self.query.groups:
+            window = self.data_cube.windows[layer]
+            group_windows.append(self.data_cube.windows[layer])
+
+            if not layer.has_default_value:
+                mask *= window.data.astype(dtype=np.bool)
 
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]
 
         # numpy trick to consolidate unique combinations of group values into a single number
         # running np.unique is way faster on single numbers than arrays
-        group_multi_index = np.ravel_multi_index(group_columns, group_dimensions).astype(np.uint32)
+        group_multi_index = np.ravel_multi_index(
+            group_columns, group_dimensions
+        ).astype(np.uint32)
         if mask is not None:
             group_multi_index = np.compress(np.ravel(mask), group_multi_index)
 
@@ -62,7 +64,9 @@ class QueryExecutor:
         group_column_names = [group.layer for group in self.query.groups]
         agg_column_names = [agg.layer.layer for agg in self.query.aggregates]
 
-        results = dict(zip(group_column_names, np.unravel_index(group_indices, group_dimensions)))
+        results = dict(
+            zip(group_column_names, np.unravel_index(group_indices, group_dimensions))
+        )
 
         agg_columns = [
             self._aggregate_window_by_group(agg, mask, group_counts, inverse_index)
@@ -73,9 +77,13 @@ class QueryExecutor:
         return pd.DataFrame(results)
 
     def _aggregate_window_by_group(
-            self, aggregate: Aggregate, mask: ndarray, group_counts: List[int], inverse_index: List[int]
+        self,
+        aggregate: Aggregate,
+        mask: ndarray,
+        group_counts: ndarray,
+        inverse_index: ndarray,
     ) -> ndarray:
-        if aggregate.layer.layer == SpecialSelectors.count:
+        if aggregate.layer.layer == SpecialSelectors.pixel__count:
             return group_counts
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return group_counts * self.data_cube.mean_area
@@ -85,7 +93,9 @@ class QueryExecutor:
 
             # this will sum the values of aggregate data into different bins, where each bin
             # is the corresponding group at that pixel
-            sums = np.bincount(inverse_index, weights=masked_data, minlength=group_counts.size)
+            sums = np.bincount(
+                inverse_index, weights=masked_data, minlength=group_counts.size
+            )
             if aggregate.function == AggregateFunction.sum:
                 if aggregate.layer.is_area_density:
                     # layer value representing area density need to be multiplied by area to get gross value
@@ -102,8 +112,10 @@ class QueryExecutor:
 
         return pd.DataFrame(results)
 
-    def _aggregate_window(self, aggregate: Aggregate, mask: ndarray) -> Union[int, float]:
-        if aggregate.layer.layer == SpecialSelectors.count:
+    def _aggregate_window(
+        self, aggregate: Aggregate, mask: ndarray
+    ) -> Union[int, float]:
+        if aggregate.layer.layer == SpecialSelectors.pixel__count:
             return mask.sum()
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return mask.sum() * self.data_cube.mean_area
@@ -118,16 +130,25 @@ class QueryExecutor:
                 return sum
             elif aggregate.function == AggregateFunction.avg:
                 return sum / masked_data.size
+            else:
+                raise NotImplementedError("Undefined aggregate function")
 
     def _select(self, mask: ndarray) -> DataFrame:
         results = {}
 
         selector_names = [selector.layer for selector in self.query.selectors]
 
-        if SpecialSelectors.latitude in selector_names or SpecialSelectors.longitude in selector_names:
+        if (
+            SpecialSelectors.latitude in selector_names
+            or SpecialSelectors.longitude in selector_names
+        ):
             latitudes, longitudes = self._extract_coordinates(mask)
-            results[SpecialSelectors.latitude.value] = np.array(latitudes).astype(np.double)
-            results[SpecialSelectors.longitude.value] = np.array(longitudes).astype(np.double)
+            results[SpecialSelectors.latitude.value] = np.array(latitudes).astype(
+                np.double
+            )
+            results[SpecialSelectors.longitude.value] = np.array(longitudes).astype(
+                np.double
+            )
             selector_names.remove(SpecialSelectors.latitude.value)
             selector_names.remove(SpecialSelectors.longitude.value)
 

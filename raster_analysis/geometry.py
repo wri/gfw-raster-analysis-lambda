@@ -9,7 +9,12 @@ from raster_analysis.globals import BasePolygon, LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTE
 
 
 class GeometryTile:
-    def __init__(self, source_geom: Any, tile_geojson: Dict[str, Any] = None, is_encoded: bool = False):
+    def __init__(
+        self,
+        source_geom: Any,
+        tile_geojson: Dict[str, Any] = None,
+        is_encoded: bool = False,
+    ):
         if is_encoded:
             full_geom = decode_geometry(source_geom)
         else:
@@ -35,7 +40,7 @@ class GeometryTile:
             if geom_tile.is_empty:
                 self.geom = {}
 
-            self.geom: BasePolygon = geom_tile
+            self.geom = geom_tile
 
 
 def encode_geometry(geom: BasePolygon) -> str:
@@ -63,4 +68,3 @@ def decode_geometry(geom: str) -> BasePolygon:
     Decode geometry from compressed string
     """
     return shape(geobuf.decode(bytes.fromhex(geom))).buffer(0)
-

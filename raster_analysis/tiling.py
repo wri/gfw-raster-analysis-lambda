@@ -17,7 +17,10 @@ from raster_analysis.globals import (
     FANOUT_LAMBDA_NAME,
     RASTER_ANALYSIS_LAMBDA_NAME,
     BasePolygon,
-    Numeric, LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES, TILE_WIDTH, FANOUT_NUM,
+    Numeric,
+    LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
+    TILE_WIDTH,
+    FANOUT_NUM,
 )
 
 
@@ -33,43 +36,50 @@ class AnalysisTiler:
         self.results: DataFrame = None
 
     def execute(self) -> None:
-        results = self._execute_tiles()
-        results = self._decode_results(results)
-        self.results = self._group_results(results)
+        self.results = self._execute_tiles()
+
+        if self.results.size > 0:
+            self.results = self._decode_and_group_results(self.results)
 
     def result_as_csv(self) -> StringIO:
-        buffer = StringIO()
-        self.results.to_csv(buffer, index=False, float_format="%.5f")
-        return buffer
+        if self.results.size > 0:
+            buffer = StringIO()
+            self.results.to_csv(buffer, index=False, float_format="%.5f")
+            return buffer
+        else:
+            return StringIO()
 
-    def _group_results(self, results: DataFrame) -> DataFrame:
-        if self.query.groups:
-            group_columns = [group.layer for group in self.query.groups]
+    def _decode_and_group_results(self, results):
+        group_columns = self.query.get_group_columns()
+
+        for layer in self.query.get_result_layers():
+            if layer.decoder and layer.layer in results:
+                decoded_columns = layer.decoder(results[layer.layer])
+                del results[layer.layer]
+
+                for name, series in decoded_columns.items():
+                    results[name] = series
+
+                if layer.layer in group_columns:
+                    group_columns.remove(layer.layer)
+                    group_columns += [name for name in decoded_columns.keys()]
+
+        if group_columns:
             grouped_df = results.groupby(group_columns).sum()
             return grouped_df.sort_values(group_columns).reset_index()
         elif self.query.aggregates:
             # pandas does weird things when you sum the whole DF
             df = results.sum().reset_index()
-            df = df.rename(columns=df['index'])
-            df = df.drop(columns=['index'])
+            df = df.rename(columns=df["index"])
+            df = df.drop(columns=["index"])
             return df
         else:
             return results
 
-    def _decode_results(self, results):
-        for layer in set(self.query.get_layers()):
-            if layer.decoder and layer.layer in results:
-                decoded_columns = layer.decoder(results[layer.layer])
-                del results[layer.layer]
-                for name, series in decoded_columns.items():
-                    results[name] = series
-
-        return results
-
     @xray_recorder.capture("Process Tiles")
     def _execute_tiles(self) -> DataFrame:
         tiles = self._get_tiles(TILE_WIDTH)
-        payload = {
+        payload: Dict[str, Any] = {
             "analysis_id": self.request_id,
             "query": self.raw_query,
         }
@@ -87,11 +97,13 @@ class AnalysisTiler:
             for tile in tiles:
                 tile_payload = deepcopy(payload)
                 tile_payload["tile"] = mapping(tile)
-                invoke_lambda(tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
+                invoke_lambda(
+                    tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
+                )
         else:
             tile_geojsons = [mapping(tile) for tile in tiles]
             tile_chunks = [
-                tile_geojsons[x: x + FANOUT_NUM]
+                tile_geojsons[x : x + FANOUT_NUM]
                 for x in range(0, len(tile_geojsons), FANOUT_NUM)
             ]
 
@@ -127,7 +139,9 @@ class AnalysisTiler:
         return tiles
 
     @staticmethod
-    def _get_rounded_bounding_box(geom: BasePolygon, width: Numeric) -> Tuple[int, int, int, int]:
+    def _get_rounded_bounding_box(
+        geom: BasePolygon, width: Numeric
+    ) -> Tuple[int, int, int, int]:
         """
         Round bounding box to divide evenly into width x width tiles from plane origin
         """

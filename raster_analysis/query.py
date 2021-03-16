@@ -14,7 +14,7 @@ class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
     area__ha = "area__ha"
-    count = "count"
+    pixel__count = "count"
 
 
 class Operator(str, Enum):
@@ -54,17 +54,29 @@ class Query(BaseModel):
     groups: List[Layer] = []
     aggregates: List[Aggregate] = []
 
-    def get_real_layers(self) -> Set[Layer]:
+    def get_real_layers(self) -> List[Layer]:
         layers = self.get_layers()
-        return [layer for layer in layers if layer.layer not in SpecialSelectors.__members__]
+        return [
+            layer for layer in layers if layer.layer not in SpecialSelectors.__members__
+        ]
 
-    def get_layers(self) -> Set[Layer]:
+    def get_layers(self) -> List[Layer]:
         layers = [selector for selector in self.selectors]
         layers += [filter.layer for filter in self.filters]
         layers += [aggregate.layer for aggregate in self.aggregates]
         layers += [group for group in self.groups]
 
-        return set(layers)
+        return list(dict.fromkeys(layers))
+
+    def get_result_layers(self) -> List[Layer]:
+        layers = [selector for selector in self.selectors]
+        layers += [aggregate.layer for aggregate in self.aggregates]
+        layers += [group for group in self.groups]
+
+        return list(dict.fromkeys(layers))
+
+    def get_group_columns(self) -> List[str]:
+        return [group.layer for group in self.groups]
 
     @staticmethod
     def parse_query(raw_query: str):
@@ -85,7 +97,9 @@ class Query(BaseModel):
         if "where" in parsed:
             if "and" in parsed["where"]:
                 if isinstance(parsed["where"]["and"], dict):
-                    raise QueryParseException("Only one level is supported in AND statement.")
+                    raise QueryParseException(
+                        "Only one level is supported in AND statement."
+                    )
                 filters = parsed["where"]["and"]
             elif "or" in parsed["where"]:
                 raise QueryParseException("OR statement is not supported.")
@@ -100,9 +114,13 @@ class Query(BaseModel):
                 layer = LAYERS[layer]
                 if layer.encoder:
                     for enc_val in layer.encoder(value):
-                        query.filters.append(Filter(operator=Operator[op], layer=layer, value=enc_val))
+                        query.filters.append(
+                            Filter(operator=Operator[op], layer=layer, value=enc_val)
+                        )
                 else:
-                    query.filters.append(Filter(operator=Operator[op], layer=layer, value=value))
+                    query.filters.append(
+                        Filter(operator=Operator[op], layer=layer, value=value)
+                    )
 
         if "groupby" in parsed:
             for group in Query._ensure_list(parsed["groupby"]):
@@ -114,7 +132,6 @@ class Query(BaseModel):
     # Just a helper to make it consistent
     def _ensure_list(a):
         return a if type(a) is list else [a]
-
 
     # certain things are parsed single key value pairs, so just get the first key value pair
     def _get_first_key_value(d: Dict[str, str]):

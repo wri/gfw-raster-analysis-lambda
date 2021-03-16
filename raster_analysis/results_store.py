@@ -29,7 +29,9 @@ class ResultStatus(str, Enum):
 
 class AnalysisResultsStore:
     def __init__(self, analysis_id: str):
-        self._client: TableResource = dynamodb_resource().Table(TILED_RESULTS_TABLE_NAME)
+        self._client: TableResource = dynamodb_resource().Table(
+            TILED_RESULTS_TABLE_NAME
+        )
         self.analysis_id: str = analysis_id
 
     def save_result(self, results: DataFrame, result_id: str) -> None:
@@ -40,7 +42,7 @@ class AnalysisResultsStore:
         items = []
 
         while curr_record < num_records:
-            curr_df = results[curr_record:(curr_record + records_per_item)]
+            curr_df = results[curr_record : (curr_record + records_per_item)]
 
             csv_buf = StringIO()
             curr_df.to_csv(csv_buf, index=False, float_format="%.5f")
@@ -60,9 +62,10 @@ class AnalysisResultsStore:
             curr_record += records_per_item
             i += 1
 
-        dynamodb_client().batch_write_item(
-            RequestItems={TILED_RESULTS_TABLE_NAME: items}
-        )
+        if items:
+            dynamodb_client().batch_write_item(
+                RequestItems={TILED_RESULTS_TABLE_NAME: items}
+            )
 
         self.save_status(result_id, ResultStatus.success)
 
@@ -74,7 +77,7 @@ class AnalysisResultsStore:
                 "tile_id": {"S": result_id},
                 "status": {"S": status.value},
                 "time_to_live": {"N": self._get_ttl()},
-            }
+            },
         )
 
     def get_results(self) -> Dict[str, Any]:
@@ -128,10 +131,16 @@ class AnalysisResultsStore:
             )
 
         results_response = self.get_results()
-        raw_results = [StringIO(item["result"]["S"]) for item in results_response["Items"]]
+        raw_results = [
+            StringIO(item["result"]["S"]) for item in results_response["Items"]
+        ]
         dfs = [pd.read_csv(result) for result in raw_results]
-        return pd.concat(dfs)
+        return pd.concat(dfs) if dfs else pd.DataFrame()
 
     @staticmethod
     def _get_ttl():
-        return str(Decimal((datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()))
+        return str(
+            Decimal(
+                (datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()
+            )
+        )
