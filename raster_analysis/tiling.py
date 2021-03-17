@@ -41,13 +41,16 @@ class AnalysisTiler:
         if self.results.size > 0:
             self.results = self._decode_and_group_results(self.results)
 
-    def result_as_csv(self) -> StringIO:
+    def result_as_csv(self) -> str:
         if self.results.size > 0:
             buffer = StringIO()
             self.results.to_csv(buffer, index=False, float_format="%.5f")
-            return buffer
+            return buffer.getvalue()
         else:
-            return StringIO()
+            return ""
+
+    def result_as_dict(self) -> Dict[str, Any]:
+        return self.results.to_dict(orient="records")
 
     def _decode_and_group_results(self, results):
         group_columns = self.query.get_group_columns()

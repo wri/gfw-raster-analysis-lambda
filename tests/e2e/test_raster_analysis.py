@@ -102,8 +102,7 @@ def test_primary_tree_cover_loss(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
     assert result["status"] == "success"
 
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    for row_actual, row_expected in zip(record_results, IDN_24_9_PRIMARY_LOSS):
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_PRIMARY_LOSS):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
         assert row_actual["whrc_aboveground_co2_emissions__Mg"] == pytest.approx(
             row_expected["whrc_aboveground_co2_emissions__Mg"], 0.001
@@ -115,19 +114,20 @@ def test_extent_2010(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
     assert result["status"] == "success"
 
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    assert record_results[0]["area__ha"] == pytest.approx(
+    assert result["data"][0]["area__ha"] == pytest.approx(
         IDN_24_9_2010_EXTENT["area__ha"], 0.01  # TODO slightly more off than expected
     )
 
 
 def test_lat_lon(context):
-    query = "select latitude, longitude, umd_glad_alerts__date from data where umd_glad_alerts__date > '2020-01-01'"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    query = "select latitude, longitude, umd_glad_alerts__date from data where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01'"
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "format": "csv"}, context
+    )["body"]
     assert result["status"] == "success"
 
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    assert record_results
+    lines = result["data"].splitlines()
+    assert len(lines) == 317920
 
 
 def test_raw_area(context):
@@ -135,9 +135,7 @@ def test_raw_area(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
-
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    assert record_results[0]["area__ha"] == pytest.approx(
+    assert result["data"][0]["area__ha"] == pytest.approx(
         IDN_24_9_2010_RAW_AREA["area__ha"], 0.001
     )
 
@@ -145,18 +143,14 @@ def test_raw_area(context):
 def test_tree_cover_gain(context, monkeypatch):
     # let's also test encoded geometries
     monkeypatch.setattr(
-        lambdas.tiled_analysis.src.lambda_function,
-        "LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES",
-        80000,
+        raster_analysis.globals, "LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES", 80000
     )
 
     query = "select sum(area__ha) from data where is__umd_tree_cover_gain = true"
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
-
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    assert record_results[0]["area__ha"] == pytest.approx(
+    assert result["data"][0]["area__ha"] == pytest.approx(
         IDN_24_9_GAIN["area__ha"], 0.001
     )
 
@@ -166,8 +160,7 @@ def test_tree_cover_loss_by_driver(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    for row_actual, row_expected in zip(record_results, IDN_24_9_LOSS_BY_DRIVER):
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_LOSS_BY_DRIVER):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
 
 
@@ -176,8 +169,7 @@ def test_glad_alerts(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    for row_actual, row_expected in zip(record_results, IDN_24_9_GLAD_ALERTS):
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
         assert row_actual["value__count"] == row_expected["alert__count"]
 
 
@@ -186,8 +178,7 @@ def test_land_cover_area(context):
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
-    record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
-    for row_actual, row_expected in zip(record_results, IDN_24_9_ESA_LAND_COVER):
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_ESA_LAND_COVER):
         print(
             f"{row_actual['esa_land_cover_2015__class']}, {row_expected['esa_land_cover_2015__class']}"
         )

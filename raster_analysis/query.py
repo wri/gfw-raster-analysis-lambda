@@ -1,4 +1,4 @@
-from typing import List, Any, Set, Dict
+from typing import List, Any, Dict
 from enum import Enum
 
 from numpy import ndarray
@@ -56,7 +56,9 @@ class Query(BaseModel):
 
     def get_real_layers(self) -> List[Layer]:
         layers = self.get_layers()
-        return [layer for layer in layers if layer.layer not in SpecialSelectors]
+        return [
+            layer for layer in layers if layer.layer not in SpecialSelectors.__members__
+        ]
 
     def get_layers(self) -> List[Layer]:
         layers = [selector for selector in self.selectors]
