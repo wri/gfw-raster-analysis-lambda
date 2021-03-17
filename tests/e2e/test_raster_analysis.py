@@ -172,13 +172,13 @@ def test_tree_cover_loss_by_driver(context):
 
 
 def test_glad_alerts(context):
-    query = "select sum(count) from data where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
+    query = "select sum(value__count) from data where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
     record_results = pd.read_csv(StringIO(result["data"])).to_dict(orient="records")
     for row_actual, row_expected in zip(record_results, IDN_24_9_GLAD_ALERTS):
-        assert row_actual["count"] == row_expected["alert__count"]
+        assert row_actual["value__count"] == row_expected["alert__count"]
 
 
 def test_land_cover_area(context):

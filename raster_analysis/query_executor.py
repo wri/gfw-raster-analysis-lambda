@@ -83,7 +83,7 @@ class QueryExecutor:
         group_counts: ndarray,
         inverse_index: ndarray,
     ) -> ndarray:
-        if aggregate.layer.layer == SpecialSelectors.pixel__count:
+        if aggregate.layer.layer == SpecialSelectors.value__count:
             return group_counts
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return group_counts * self.data_cube.mean_area
@@ -115,7 +115,7 @@ class QueryExecutor:
     def _aggregate_window(
         self, aggregate: Aggregate, mask: ndarray
     ) -> Union[int, float]:
-        if aggregate.layer.layer == SpecialSelectors.pixel__count:
+        if aggregate.layer.layer == SpecialSelectors.value__count:
             return mask.sum()
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return mask.sum() * self.data_cube.mean_area

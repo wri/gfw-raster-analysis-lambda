@@ -14,7 +14,7 @@ class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
     area__ha = "area__ha"
-    pixel__count = "count"
+    value__count = "value__count"
 
 
 class Operator(str, Enum):
@@ -56,9 +56,7 @@ class Query(BaseModel):
 
     def get_real_layers(self) -> List[Layer]:
         layers = self.get_layers()
-        return [
-            layer for layer in layers if layer.layer not in SpecialSelectors.__members__
-        ]
+        return [layer for layer in layers if layer.layer not in SpecialSelectors]
 
     def get_layers(self) -> List[Layer]:
         layers = [selector for selector in self.selectors]

@@ -65,7 +65,7 @@ class Window:
 
             with rasterio.open(raster) as src:
                 try:
-                    window, shifted_affine = wd.Window._get_window_and_affine(geom, src)
+                    window, shifted_affine = Window._get_window_and_affine(geom, src)
                     data = src.read(1, masked=masked, window=window)
                     no_data_value = src.nodata
                 except MemoryError:
@@ -82,7 +82,7 @@ class Window:
         raster: str, geom: BasePolygon, masked: bool = False
     ) -> Tuple[np.ndarray, Affine, Numeric]:
         try:
-            data = wd.Window._read_window(raster, geom, masked=masked)
+            data = Window._read_window(raster, geom, masked=masked)
         except rasterio.errors.RasterioIOError as e:
             logging.warning("RasterIO error reading " + raster + ":\n" + str(e))
             data = np.array([]), None, None

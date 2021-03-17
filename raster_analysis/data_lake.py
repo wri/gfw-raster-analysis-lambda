@@ -41,7 +41,7 @@ def glad_isoweek_decoder(s: Series):
 
 LAYERS: Dict[str, Layer] = {
     "area__ha": Layer(layer="area__ha", version="virtual"),
-    "count": Layer(layer="count", version="virtual"),
+    "value__count": Layer(layer="value__count", version="virtual"),
     "latitude": Layer(layer="latitude", version="virtual"),
     "longitude": Layer(layer="longitude", version="virtual"),
     "umd_tree_cover_loss__year": Layer(
