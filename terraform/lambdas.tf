@@ -78,6 +78,7 @@ resource "aws_lambda_function" "raster_analysis_fanout" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_shapely_164_arn,
   ]
 
   tracing_config {
