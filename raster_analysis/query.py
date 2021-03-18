@@ -49,7 +49,8 @@ class Aggregate(BaseModel):
 
 
 class Query(BaseModel):
-    selectors: List[Layer] = []
+    base: Layer
+    selectors: List[Layer]
     filters: List[Filter] = []
     groups: List[Layer] = []
     aggregates: List[Aggregate] = []
@@ -65,6 +66,7 @@ class Query(BaseModel):
         layers += [filter.layer for filter in self.filters]
         layers += [aggregate.layer for aggregate in self.aggregates]
         layers += [group for group in self.groups]
+        layers.append(self.base)
 
         return list(dict.fromkeys(layers))
 
@@ -81,18 +83,24 @@ class Query(BaseModel):
     @staticmethod
     def parse_query(raw_query: str):
         parsed = parse(raw_query)
-        query = Query()
+        selectors = []
+        where = []
+        groups = []
+        aggregates = []
 
-        if "select" not in parsed:
-            raise QueryParseException("Query be SELECT statement")
+        if "select" not in parsed or "from" not in parsed:
+            raise QueryParseException(
+                "Invalid query, must include SELECT and FROM components"
+            )
 
+        base = LAYERS[parsed["from"]]
         for selector in Query._ensure_list(parsed["select"]):
             if isinstance(selector["value"], dict):
                 func, layer = Query._get_first_key_value(selector["value"])
                 aggregate = Aggregate(function=func, layer=LAYERS[layer])
-                query.aggregates.append(aggregate)
+                aggregates.append(aggregate)
             elif isinstance(selector["value"], str):
-                query.selectors.append(LAYERS[selector["value"]])
+                selectors.append(LAYERS[selector["value"]])
 
         if "where" in parsed:
             if "and" in parsed["where"]:
@@ -114,26 +122,34 @@ class Query(BaseModel):
                 layer = LAYERS[layer]
                 if layer.encoder:
                     for enc_val in layer.encoder(value):
-                        query.filters.append(
+                        where.append(
                             Filter(operator=Operator[op], layer=layer, value=enc_val)
                         )
                 else:
-                    query.filters.append(
+                    where.append(
                         Filter(operator=Operator[op], layer=layer, value=value)
                     )
 
         if "groupby" in parsed:
             for group in Query._ensure_list(parsed["groupby"]):
-                query.groups.append(LAYERS[group["value"]])
+                groups.append(LAYERS[group["value"]])
 
-        return query
+        return Query(
+            base=base,
+            selectors=selectors,
+            filters=where,
+            groups=groups,
+            aggregates=aggregates,
+        )
 
     # the SQL parser sometimes outputs a list or single value depending on input,
     # Just a helper to make it consistent
+    @staticmethod
     def _ensure_list(a):
         return a if type(a) is list else [a]
 
     # certain things are parsed single key value pairs, so just get the first key value pair
+    @staticmethod
     def _get_first_key_value(d: Dict[str, str]):
         for key, val in d.items():
             return (key, val)

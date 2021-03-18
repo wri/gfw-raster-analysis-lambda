@@ -20,6 +20,7 @@ class QueryExecutor:
     def execute(self) -> DataFrame:
         mask = self.data_cube.mask
 
+        mask *= self.data_cube.windows[self.query.base].data.astype(dtype=np.bool)
         for filter in self.query.filters:
             window = self.data_cube.windows[filter.layer]
             mask *= filter.apply_filter(window.data)
