@@ -15,7 +15,7 @@ resource "aws_iam_role_policy_attachment" "raster_analysis_lambda" {
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name        = "lambda_logging"
+  name        = substr("${local.project}-lambda_logging${local.name_suffix}", 0, 64)
   path        = "/"
   description = "IAM policy for logging from a lambda"
 

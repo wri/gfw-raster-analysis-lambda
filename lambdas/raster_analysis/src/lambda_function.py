@@ -1,14 +1,12 @@
-from typing import Optional
-from datetime import datetime
-
-from shapely.geometry import shape
 from aws_xray_sdk.core import xray_recorder
+from pandas import DataFrame
 
-from raster_analysis.exceptions import InvalidGeometryException
-from raster_analysis.results_store import AnalysisResultsStore
+from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 from raster_analysis.globals import LOGGER
-from raster_analysis.layer.data_cube import DataCube
-from raster_analysis.utils import decode_geometry
+from raster_analysis.data_cube import DataCube
+from raster_analysis.query_executor import QueryExecutor
+from raster_analysis.geometry import GeometryTile
+from raster_analysis.query import Query
 
 
 @xray_recorder.capture("Raster Analysis Lambda")
@@ -17,61 +15,27 @@ def handler(event, context):
         LOGGER.info(f"Running analysis with parameters: {event}")
         results_store = AnalysisResultsStore(event["analysis_id"])
 
-        geojson = event.get("geometry", None)
-        if geojson:
-            geometry = shape(geojson)
-        else:
-            geometry = decode_geometry(event["encoded_geometry"])
+        source_geom = event.get("geometry", None)
+        tile_geojson = event.get("tile", None)
+        is_encoded = event.get("is_encoded", False)
 
-        if "tile" in event:
-            tile = shape(event["tile"])
-            geometry = geometry.intersection(tile)
+        geom_tile = GeometryTile(source_geom, tile_geojson, is_encoded)
 
-            if not geometry.is_valid:
-                geometry = geometry.buffer(0)
+        if not geom_tile.geom:
+            LOGGER.info(f"Geometry for tile {context.aws_request_id} is empty.")
+            results_store.save_result({}, context.aws_request_id)
+            return {}
 
-                if not geometry.is_valid:
-                    raise InvalidGeometryException(
-                        f"Geometry {geometry.wkt} is invalid"
-                    )
+        query = Query.parse_query(event["query"])
+        data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
+        query_executor = QueryExecutor(query, data_cube)
+        results: DataFrame = query_executor.execute()
 
-            if geometry.is_empty:
-                LOGGER.info(f"Geometry for tile {context.aws_request_id} is empty.")
-                results_store.save_result({}, context.aws_request_id)
-                return {}
-
-        start_date = try_parsing_date(event.get("start_date", None))
-        end_date = try_parsing_date(event.get("end_date", None))
-
-        data_cube = DataCube(
-            geometry,
-            tile,
-            event.get("group_by", []),
-            event.get("sum", []),
-            event.get("filters", []),
-            start_date,
-            end_date,
-        )
-        result = data_cube.calculate()
-        LOGGER.info(f"Ran analysis with result: {result}")
-
-        results_store.save_result(result, context.aws_request_id)
-
-        return result
+        LOGGER.debug(f"Ran analysis with results: {results}")
+        results_store.save_result(results, context.aws_request_id)
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])
-        results_store.save_error(context.aws_request_id)
+        results_store.save_status(context.aws_request_id, ResultStatus.error)
 
         LOGGER.exception(e)
         raise Exception(f"Internal Server Error <{context.aws_request_id}>")
-
-
-def try_parsing_date(text: str) -> Optional[datetime]:
-    if text:
-        for fmt in ("%Y-%m-%d", "%Y"):
-            try:
-                return datetime.strptime(text, fmt)
-            except ValueError:
-                pass
-        raise ValueError("no valid date format found")
-    return None

@@ -12,6 +12,8 @@ resource "aws_lambda_function" "raster_analysis" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     data.terraform_remote_state.lambda-layers.outputs.py37_rasterio_115_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_shapely_164_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_pandas_110_arn
   ]
 
   tracing_config {
@@ -23,7 +25,8 @@ resource "aws_lambda_function" "raster_analysis" {
       ENV                         = var.environment
       S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
-      SETUPTOOLS_USE_DISTUTILS = "stdlib"
+      TILED_STATUS_TABLE_NAME     = aws_dynamodb_table.tiled_status_table.name
+      SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }
 }
@@ -41,8 +44,8 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py37_pandas_110_arn,
     data.terraform_remote_state.lambda-layers.outputs.py37_shapely_164_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_pandas_110_arn
   ]
 
   tracing_config {
@@ -56,7 +59,8 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
       RASTER_ANALYSIS_LAMBDA_NAME = aws_lambda_function.raster_analysis.function_name
       FANOUT_LAMBDA_NAME          = aws_lambda_function.raster_analysis_fanout.function_name
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
-      SETUPTOOLS_USE_DISTUTILS = "stdlib"
+      TILED_STATUS_TABLE_NAME     = aws_dynamodb_table.tiled_status_table.name
+      SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }
 }
