@@ -20,7 +20,9 @@ class QueryExecutor:
     def execute(self) -> DataFrame:
         mask = self.data_cube.mask
 
-        mask *= self.data_cube.windows[self.query.base].data.astype(dtype=np.bool)
+        if self.query.base in self.data_cube.windows:
+            mask *= self.data_cube.windows[self.query.base].data.astype(dtype=np.bool)
+
         for filter in self.query.filters:
             window = self.data_cube.windows[filter.layer]
             mask *= filter.apply_filter(window.data)
@@ -84,7 +86,7 @@ class QueryExecutor:
         group_counts: ndarray,
         inverse_index: ndarray,
     ) -> ndarray:
-        if aggregate.layer.layer == SpecialSelectors.value__count:
+        if aggregate.layer.layer == SpecialSelectors.alert__count:
             return group_counts
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return group_counts * self.data_cube.mean_area
@@ -116,7 +118,7 @@ class QueryExecutor:
     def _aggregate_window(
         self, aggregate: Aggregate, mask: ndarray
     ) -> Union[int, float]:
-        if aggregate.layer.layer == SpecialSelectors.value__count:
+        if aggregate.layer.layer == SpecialSelectors.alert__count:
             return mask.sum()
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return mask.sum() * self.data_cube.mean_area
@@ -137,7 +139,10 @@ class QueryExecutor:
     def _select(self, mask: ndarray) -> DataFrame:
         results = {}
 
-        selector_names = [selector.layer for selector in self.query.selectors]
+        selector_names = [
+            selector.alias if selector.alias else selector.layer
+            for selector in self.query.selectors
+        ]
 
         if (
             SpecialSelectors.latitude in selector_names

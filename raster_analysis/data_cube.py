@@ -6,6 +6,7 @@ from rasterio.transform import Affine, from_bounds, xy
 import concurrent.futures
 from shapely.geometry import Polygon
 
+from raster_analysis.data_lake import LAYERS
 from raster_analysis.layer import Layer
 from raster_analysis.geodesy import get_area
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
@@ -17,6 +18,8 @@ class DataCube:
     def __init__(self, geom: BasePolygon, tile: Polygon, query: Query):
         self.mean_area = get_area(tile.centroid.y) / 10000
         self.windows = self._get_windows(query.get_real_layers(), tile)
+        self._expand_encoded_layers(query)
+
         self.shifted_affine: Affine = from_bounds(
             *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
         )
@@ -24,6 +27,24 @@ class DataCube:
         self.mask = self._mask_geom_on_raster(
             np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, geom
         )
+
+    def _expand_encoded_layers(self, query: Query):
+        layers = query.get_layers()
+
+        # TODO should be only reading each layer once
+        for layer in layers:
+            if layer.alias in [
+                "umd_glad_alerts__confidence",
+                "umd_glad_landsat_alerts__confidence",
+            ]:
+                self.windows[layer].data = np.floor(
+                    self.windows[layer].data / 10000
+                ).astype(dtype=np.uint8)
+            elif layer.layer in [
+                "umd_glad_alerts__date",
+                "umd_glad_landsat_alerts__date",
+            ]:
+                self.windows[layer].data = self.windows[layer].data % 10000
 
     def _get_windows(self, layers: List[Layer], tile):
         with concurrent.futures.ThreadPoolExecutor() as executor:

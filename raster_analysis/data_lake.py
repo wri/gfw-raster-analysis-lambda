@@ -14,7 +14,7 @@ def glad_date_decoder(s: Series) -> Dict[str, Series]:
     str_dates = ordinal_dates.apply(
         lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
     )
-    return {"umd_glad_alerts__date": str_dates}
+    return {"umd_glad_landsat_alerts__date": str_dates}
 
 
 def glad_date_encoder(val: Any) -> List[Any]:
@@ -32,16 +32,16 @@ def glad_isoweek_decoder(s: Series):
     iso_weeks = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
     years = list(map(lambda val: val.isocalendar()[1], iso_week_dates))
 
-    return {"umd_glad_alerts__isoweek": iso_weeks, "umd_glad_alerts__year": years}
+    return {
+        "umd_glad_landsat_alerts__isoweek": iso_weeks,
+        "umd_glad_landsat_alerts__year": years,
+    }
 
 
-# def glad_conf_status_decoder(s):
-#     return int((s - (s % 10000)) / 10000)
-#
-
+# TODO refactor this when you start consuming from data API, using a dict here gets messy
 LAYERS: Dict[str, Layer] = {
     "area__ha": Layer(layer="area__ha", version="virtual"),
-    "value__count": Layer(layer="value__count", version="virtual"),
+    "alert__count": Layer(layer="alert__count", version="virtual"),
     "latitude": Layer(layer="latitude", version="virtual"),
     "longitude": Layer(layer="longitude", version="virtual"),
     "umd_tree_cover_loss__year": Layer(
@@ -50,15 +50,36 @@ LAYERS: Dict[str, Layer] = {
         decoder=(lambda s: {"umd_tree_cover_loss__year": s + 2000}),
         encoder=(lambda val: [val - 2000]),
     ),
+    # deprecated
     "umd_glad_alerts__date": Layer(
-        layer="umd_glad_alerts__date",
+        layer="umd_glad_landsat_alerts__date",
+        version="v1.7",
+        decoder=glad_date_decoder,
+        encoder=glad_date_encoder,
+    ),
+    # deprecated
+    "umd_glad_alerts__isoweek": Layer(
+        layer="umd_glad_landsat_alerts__date",
+        version="v1.7",
+        decoder=glad_isoweek_decoder,
+    ),
+    "umd_glad_landsat_alerts__date": Layer(
+        layer="umd_glad_landsat_alerts__date",
         version="v1.7",
         decoder=glad_date_decoder,
         encoder=glad_date_encoder,
         is_conf_encoded=True,
     ),
-    "umd_glad_alerts__isoweek": Layer(
-        layer="umd_glad_alerts__date", version="v1.7", decoder=glad_isoweek_decoder
+    "umd_glad_landsat_alerts__isoweek": Layer(
+        layer="umd_glad_landsat_alerts__date",
+        version="v1.7",
+        decoder=glad_isoweek_decoder,
+    ),
+    "umd_glad_landsat_alerts__confidence": Layer.from_encoding(
+        "umd_glad_landsat_alerts__date",
+        "v1.7",
+        encoding={2: "", 3: "high"},
+        alias="umd_glad_landsat_alerts__confidence",
     ),
     "is__umd_regional_primary_forest_2001": Layer(
         layer="is__umd_regional_primary_forest_2001", version="v201901"

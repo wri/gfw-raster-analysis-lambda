@@ -3227,6 +3227,8 @@ IDN_24_9_GEOM = {
     ],
 }
 
+IDN_24_9_2019_GLAD_ALERTS_TOTAL = 317920
+
 # select sum(umd_tree_cover_extent_2010__ha) as area__ha from table where iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 15
 IDN_24_9_2010_EXTENT = {"area__ha": 1174810.186906901}
 

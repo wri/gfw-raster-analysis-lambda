@@ -14,7 +14,7 @@ class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
     area__ha = "area__ha"
-    value__count = "value__count"
+    alert__count = "alert__count"
 
 
 class Operator(str, Enum):
@@ -32,9 +32,6 @@ class Filter(BaseModel):
     value: Any
 
     def apply_filter(self, window: ndarray) -> ndarray:
-        if self.layer.is_conf_encoded:
-            window = window % 10000
-
         return eval(f"window {self.operator.value} self.value")
 
 
@@ -66,7 +63,9 @@ class Query(BaseModel):
         layers += [filter.layer for filter in self.filters]
         layers += [aggregate.layer for aggregate in self.aggregates]
         layers += [group for group in self.groups]
-        layers.append(self.base)
+
+        if self.base.layer in LAYERS:
+            layers.append(self.base)
 
         return list(dict.fromkeys(layers))
 

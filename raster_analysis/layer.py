@@ -8,11 +8,11 @@ from pandas import Series
 class Layer(BaseModel):
     layer: str
     version: str
+    alias: Optional[str] = None
     decoder: Optional[Callable[[Series], Dict[str, Series]]] = None
     encoder: Optional[Callable[[Any], List[Any]]] = None
     has_default_value: bool = False
     is_area_density: bool = False
-    is_conf_encoded: bool = False
 
     def __hash__(self):
         return hash(self.layer)
@@ -22,13 +22,13 @@ class Layer(BaseModel):
         layer: str,
         version: str,
         encoding: Dict[Any, Any],
+        alias: Optional[str] = None,
         is_area_density: bool = False,
-        is_conf_encoded: bool = False,
     ):
         has_default_value = 0 in encoding or isinstance(encoding, defaultdict)
 
         def decode(s):
-            return {layer: s.map(encoding)}
+            return {(alias if alias else layer): s.map(encoding)}
 
         def encode(val):
             return [enc_val for enc_val, dec_val in encoding.items() if val == dec_val]
@@ -40,9 +40,9 @@ class Layer(BaseModel):
             version=version,
             encoder=encoder,
             decoder=decoder,
+            alias=alias,
             has_default_value=has_default_value,
             is_area_density=is_area_density,
-            is_conf_encoded=is_conf_encoded,
         )
 
     @staticmethod

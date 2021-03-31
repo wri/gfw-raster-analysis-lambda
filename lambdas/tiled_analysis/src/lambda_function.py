@@ -14,6 +14,8 @@ def handler(event, context):
         geojson = event["geometry"]
         format = event.get("format", "json")
 
+        LOGGER.info(f"Executing query: {query}")
+
         tiler = AnalysisTiler(query, geojson, context.aws_request_id)
         tiler.execute()
 

@@ -34,6 +34,7 @@ from tests.fixtures.idn_24_9 import (
     IDN_24_9_PRIMARY_LOSS,
     IDN_24_9_ESA_LAND_COVER,
     IDN_24_9_2010_RAW_AREA,
+    IDN_24_9_2019_GLAD_ALERTS_TOTAL,
 )
 
 
@@ -120,14 +121,14 @@ def test_extent_2010(context):
 
 
 def test_lat_lon(context):
-    query = "select latitude, longitude, umd_glad_alerts__date from umd_glad_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01'"
+    query = "select latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence from umd_glad_landsat_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01'"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "format": "csv"}, context
     )["body"]
     assert result["status"] == "success"
 
     lines = result["data"].splitlines()
-    assert len(lines) == 317920
+    assert len(lines) == IDN_24_9_2019_GLAD_ALERTS_TOTAL
 
 
 @pytest.mark.skip(reason="Need to figure out if this should still be supported")
@@ -166,12 +167,12 @@ def test_tree_cover_loss_by_driver(context):
 
 
 def test_glad_alerts(context):
-    query = "select sum(value__count) from umd_glad_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
+    query = "select sum(alert__count) from umd_glad_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
-        assert row_actual["value__count"] == row_expected["alert__count"]
+        assert row_actual["alert__count"] == row_expected["alert__count"]
 
 
 def test_land_cover_area(context):

@@ -56,15 +56,16 @@ class AnalysisTiler:
         group_columns = self.query.get_group_columns()
 
         for layer in self.query.get_result_layers():
-            if layer.decoder and layer.layer in results:
-                decoded_columns = layer.decoder(results[layer.layer])
-                del results[layer.layer]
+            layer_name = layer.alias if layer.alias else layer.layer
+            if layer.decoder and layer_name in results.columns:
+                decoded_columns = layer.decoder(results[layer_name])
+                del results[layer_name]
 
                 for name, series in decoded_columns.items():
                     results[name] = series
 
-                if layer.layer in group_columns:
-                    group_columns.remove(layer.layer)
+                if layer_name in group_columns:
+                    group_columns.remove(layer_name)
                     group_columns += [name for name in decoded_columns.keys()]
 
         if group_columns:
