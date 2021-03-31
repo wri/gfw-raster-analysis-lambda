@@ -29,8 +29,8 @@ def glad_isoweek_decoder(s: Series):
     dates = [date.fromordinal(ordinal) for ordinal in ordinal_dates]
     iso_week_dates = [(d - timedelta(days=d.isoweekday() - 1)) for d in dates]
 
-    iso_weeks = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
-    years = list(map(lambda val: val.isocalendar()[1], iso_week_dates))
+    iso_weeks = list(map(lambda val: val.isocalendar()[1], iso_week_dates))
+    years = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
 
     return {
         "umd_glad_landsat_alerts__isoweek": iso_weeks,
