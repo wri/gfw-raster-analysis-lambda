@@ -160,8 +160,7 @@ class QueryExecutor:
 
         for selector in selector_names:
             window = self.data_cube.windows[LAYERS[selector]].data
-            window *= mask
-            values = np.extract(window != 0, window)
+            values = np.extract(mask, window)
             results[selector] = values
 
         return pd.DataFrame(results)
