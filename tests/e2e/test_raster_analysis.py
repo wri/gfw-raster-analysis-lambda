@@ -99,7 +99,7 @@ def context(monkeypatch):
 
 
 def test_primary_tree_cover_loss(context):
-    query = "select sum(area__ha), sum(whrc_aboveground_co2_emissions__Mg) from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = true and umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year"
+    query = "select sum(area__ha), sum(whrc_aboveground_co2_emissions__Mg) from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year"
     result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
     assert result["status"] == "success"
 
@@ -121,7 +121,7 @@ def test_extent_2010(context):
 
 
 def test_lat_lon(context):
-    query = "select latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence from umd_glad_landsat_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01'"
+    query = "select latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence, is__umd_regional_primary_forest_2001, is__gfw_oil_palm from umd_glad_landsat_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01'"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "format": "csv"}, context
     )["body"]

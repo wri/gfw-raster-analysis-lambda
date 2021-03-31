@@ -81,8 +81,8 @@ LAYERS: Dict[str, Layer] = {
         encoding={2: "", 3: "high"},
         alias="umd_glad_landsat_alerts__confidence",
     ),
-    "is__umd_regional_primary_forest_2001": Layer(
-        layer="is__umd_regional_primary_forest_2001", version="v201901"
+    "is__umd_regional_primary_forest_2001": Layer.boolean(
+        "is__umd_regional_primary_forest_2001", "v201901"
     ),
     "umd_tree_cover_density_2000__threshold": Layer.from_encoding(
         "umd_tree_cover_density_2000__threshold",
@@ -187,36 +187,26 @@ LAYERS: Dict[str, Layer] = {
             },
         ),
     ),
-    "is__birdlife_alliance_for_zero_extinction_sites": Layer(
-        layer="is__birdlife_alliance_for_zero_extinction_sites", version="v20200725"
+    "is__birdlife_alliance_for_zero_extinction_sites": Layer.boolean(
+        "is__birdlife_alliance_for_zero_extinction_sites", "v20200725"
     ),
-    "is__gmw_mangroves_1996": Layer(
-        layer="is__gmw_mangroves_1996", version="v20180701"
+    "is__gmw_mangroves_1996": Layer.boolean("is__gmw_mangroves_1996", "v20180701"),
+    "is__gmw_mangroves_2016": Layer.boolean("is__gmw_mangroves_2016", "v20180701"),
+    "ifl_intact_forest_landscapes__year": Layer(
+        layer="ifl_intact_forest_landscapes__year", version="v20180628"
     ),
-    "is__gmw_mangroves_2016": Layer(
-        layer="is__gmw_mangroves_2016", version="v20180701"
+    "is__gfw_tiger_landscapes": Layer.boolean("is__gfw_tiger_landscapes", "v201904"),
+    "is__landmark_land_rights": Layer.boolean("is__landmark_land_rights", "v20191111"),
+    "is__gfw_land_rights": Layer.boolean("is__gfw_land_rights", "v2016"),
+    "is__birdlife_key_biodiversity_areas": Layer.boolean(
+        "is__birdlife_key_biodiversity_areas", "v20191211"
     ),
-    "is__ifl_intact_forest_landscapes": Layer(
-        layer="is__ifl_intact_forest_landscapes", version="v20180628"
-    ),
-    "is__gfw_tiger_landscapes": Layer(
-        layer="is__gfw_tiger_landscapes", version="v201904"
-    ),
-    "is__landmark_land_rights": Layer(
-        layer="is__landmark_land_rights", version="v20191111"
-    ),
-    "is__gfw_land_rights": Layer(layer="is__gfw_land_rights", version="v2016"),
-    "is__birdlife_key_biodiversity_areas": Layer(
-        layer="is__birdlife_key_biodiversity_areas", version="v20191211"
-    ),
-    "is__gfw_mining": Layer(layer="is__gfw_mining", version="v20190205"),
-    "is__gfw_peatlands": Layer(layer="is__gfw_peatlands", version="v20190103"),
-    "is__gfw_oil_palm": Layer(layer="is__gfw_oil_palm", version="v20191031"),
-    "is__gfw_wood_fiber": Layer(layer="is__gfw_wood_fiber", version="v20200725"),
-    "is__gfw_resource_rights": Layer(layer="is__gfw_resource_rights", version="v2015"),
-    "is__gfw_managed_forests": Layer(
-        layer="is__gfw_managed_forests", version="v20190103"
-    ),
+    "is__gfw_mining": Layer.boolean("is__gfw_mining", "v20190205"),
+    "is__gfw_peatlands": Layer.boolean("is__gfw_peatlands", "v20190103"),
+    "is__gfw_oil_palm": Layer.boolean("is__gfw_oil_palm", "v20191031"),
+    "is__gfw_wood_fiber": Layer.boolean("is__gfw_wood_fiber", "v20200725"),
+    "is__gfw_resource_rights": Layer.boolean("is__gfw_resource_rights", "v2015"),
+    "is__gfw_managed_forests": Layer.boolean("is__gfw_managed_forests", "v20190103"),
     "rspo_oil_palm__certification_status": Layer(
         layer="rspo_oil_palm__certification_status",
         version="v20200114",

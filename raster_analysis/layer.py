@@ -47,5 +47,5 @@ class Layer(BaseModel):
 
     @staticmethod
     def boolean(*args, **kwargs):
-        kwargs["encoding"] = {0: False, 1: True}
+        kwargs["encoding"] = {0: "false", 1: "true"}
         return Layer.from_encoding(*args, **kwargs)
