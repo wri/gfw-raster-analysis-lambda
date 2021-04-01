@@ -79,6 +79,16 @@ class Query(BaseModel):
     def get_group_columns(self) -> List[str]:
         return [group.layer for group in self.groups]
 
+    def get_minimum_grid(self):
+        layers = self.get_layers()
+
+        minimum_grid = layers[0].grid
+        for layer in layers:
+            if layer.grid.get_pixel_width() < minimum_grid.get_pixel_width():
+                minimum_grid = layer.grid
+
+        return minimum_grid
+
     @staticmethod
     def parse_query(raw_query: str):
         parsed = parse(raw_query)

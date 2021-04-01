@@ -5,9 +5,22 @@ from pydantic import BaseModel
 from pandas import Series
 
 
+class Grid(BaseModel):
+    degrees: int
+    pixels: int
+    tile_degrees: float
+
+    def get_pixel_width(self) -> float:
+        return self.degrees / self.pixels
+
+    def get_tile_width(self) -> int:
+        return round((self.tile_degrees / self.degrees) * self.pixels)
+
+
 class Layer(BaseModel):
     layer: str
     version: str
+    grid: Grid = Grid(degrees=10, pixels=40000, tile_degrees=1.25)
     alias: Optional[str] = None
     decoder: Optional[Callable[[Series], Dict[str, Series]]] = None
     encoder: Optional[Callable[[Any], List[Any]]] = None

@@ -5,7 +5,7 @@ from collections import defaultdict
 from pandas import Series
 
 from raster_analysis.globals import CO2_FACTOR
-from raster_analysis.layer import Layer
+from raster_analysis.layer import Layer, Grid
 
 
 def glad_date_decoder(s: Series) -> Dict[str, Series]:

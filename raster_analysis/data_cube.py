@@ -2,12 +2,11 @@ from typing import List
 
 import numpy as np
 from rasterio import features
-from rasterio.transform import Affine, from_bounds, xy
+from rasterio.transform import Affine, from_bounds
 import concurrent.futures
 from shapely.geometry import Polygon
 
-from raster_analysis.data_lake import LAYERS
-from raster_analysis.layer import Layer
+from raster_analysis.layer import Layer, Grid
 from raster_analysis.geodesy import get_area
 from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
 from raster_analysis.query import Query
@@ -16,16 +15,16 @@ from raster_analysis.window import Window
 
 class DataCube:
     def __init__(self, geom: BasePolygon, tile: Polygon, query: Query):
-        self.mean_area = get_area(tile.centroid.y) / 10000
+        self.grid = query.get_minimum_grid()
+        self.mean_area = get_area(tile.centroid.y, self.grid.get_pixel_width()) / 10000
         self.windows = self._get_windows(query.get_real_layers(), tile)
         self._expand_encoded_layers(query)
 
-        self.shifted_affine: Affine = from_bounds(
-            *tile.bounds, WINDOW_SIZE, WINDOW_SIZE
-        )
+        tile_width = self.grid.get_tile_width()
+        self.shifted_affine: Affine = from_bounds(*tile.bounds, tile_width, tile_width)
 
         self.mask = self._mask_geom_on_raster(
-            np.ones((WINDOW_SIZE, WINDOW_SIZE)), self.shifted_affine, geom
+            np.ones((tile_width, tile_width)), self.shifted_affine, geom
         )
 
     def _expand_encoded_layers(self, query: Query):
@@ -49,7 +48,10 @@ class DataCube:
     def _get_windows(self, layers: List[Layer], tile):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
-            futures = {executor.submit(Window, layer, tile): layer for layer in layers}
+            futures = {
+                executor.submit(Window, layer, tile, self.grid): layer
+                for layer in layers
+            }
 
             return self._get_window_results(futures)
 

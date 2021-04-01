@@ -66,7 +66,7 @@ def get_raster_uri(layer: Layer, tile: Polygon) -> str:
 
     tile_id = get_tile_id(tile)
     version = layer.version
-    return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{GRID_SIZE}/{GRID_COLS}/{type}/gdal-geotiff/{tile_id}.tif"
+    return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{layer.grid.degrees}/{layer.grid.pixels}/{type}/gdal-geotiff/{tile_id}.tif"
 
 
 def _get_glad_raster_uri(tile: Polygon) -> str:
