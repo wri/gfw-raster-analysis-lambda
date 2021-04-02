@@ -19,7 +19,6 @@ from raster_analysis.globals import (
     BasePolygon,
     Numeric,
     LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
-    TILE_WIDTH,
     FANOUT_NUM,
 )
 
@@ -31,6 +30,7 @@ class AnalysisTiler:
 
         self.raw_geom: Dict[str, Any] = raw_geom
         self.geom: BasePolygon = shape(raw_geom)
+        self.grid = self.query.get_minimum_grid()
 
         self.request_id: str = request_id
         self.results: DataFrame = None
@@ -58,7 +58,7 @@ class AnalysisTiler:
         for layer in self.query.get_result_layers():
             layer_name = layer.alias if layer.alias else layer.layer
             if layer.decoder and layer_name in results.columns:
-                decoded_columns = layer.decoder(results[layer_name])
+                decoded_columns = layer.decoder(layer_name, results[layer_name])
                 del results[layer_name]
 
                 for name, series in decoded_columns.items():
@@ -82,7 +82,7 @@ class AnalysisTiler:
 
     @xray_recorder.capture("Process Tiles")
     def _execute_tiles(self) -> DataFrame:
-        tiles = self._get_tiles(TILE_WIDTH)
+        tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
             "analysis_id": self.request_id,
             "query": self.raw_query,

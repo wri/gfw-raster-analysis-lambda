@@ -8,22 +8,23 @@ from raster_analysis.globals import CO2_FACTOR
 from raster_analysis.layer import Layer, Grid
 
 
-def glad_date_decoder(s: Series) -> Dict[str, Series]:
+def date_conf_decoder(layer: str, s: Series) -> Dict[str, Series]:
     days_since_2015 = s % 10000
     ordinal_dates = days_since_2015 + date(2014, 12, 31).toordinal()
     str_dates = ordinal_dates.apply(
         lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
     )
-    return {"umd_glad_landsat_alerts__date": str_dates}
+
+    return {layer: str_dates}
 
 
-def glad_date_encoder(val: Any) -> List[Any]:
+def date_conf_encoder(val: Any) -> List[Any]:
     as_date = datetime.strptime(val, "%Y-%m-%d")
     days_since_2015 = as_date.toordinal() - date(2014, 12, 31).toordinal()
     return [days_since_2015]
 
 
-def glad_isoweek_decoder(s: Series):
+def date_conf_isoweek_decoder(layer: str, s: Series):
     days_since_2015 = s % 10000
     ordinal_dates = days_since_2015 + date(2014, 12, 31).toordinal()
     dates = [date.fromordinal(ordinal) for ordinal in ordinal_dates]
@@ -32,10 +33,20 @@ def glad_isoweek_decoder(s: Series):
     iso_weeks = list(map(lambda val: val.isocalendar()[1], iso_week_dates))
     years = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
 
-    return {
-        "umd_glad_landsat_alerts__isoweek": iso_weeks,
-        "umd_glad_landsat_alerts__year": years,
-    }
+    base_name = layer.split("__")[0]
+    return {f"{base_name}__isoweek": iso_weeks, f"{base_name}__year": years}
+
+
+def year_decoder(layer, s):
+    return {layer: s + 2000}
+
+
+def year_encoder(val):
+    return [val - 2000]
+
+
+def co2_decoder(layer, s):
+    return {"whrc_aboveground_co2_emissions__Mg": s * CO2_FACTOR}
 
 
 # TODO refactor this when you start consuming from data API, using a dict here gets messy
@@ -47,39 +58,54 @@ LAYERS: Dict[str, Layer] = {
     "umd_tree_cover_loss__year": Layer(
         layer="umd_tree_cover_loss__year",
         version="v1.8",
-        decoder=(lambda s: {"umd_tree_cover_loss__year": s + 2000}),
-        encoder=(lambda val: [val - 2000]),
+        decoder=year_decoder,
+        encoder=year_encoder,
     ),
     # deprecated
     "umd_glad_alerts__date": Layer(
         layer="umd_glad_landsat_alerts__date",
         version="v1.7",
-        decoder=glad_date_decoder,
-        encoder=glad_date_encoder,
+        decoder=date_conf_decoder,
+        encoder=date_conf_encoder,
     ),
     # deprecated
     "umd_glad_alerts__isoweek": Layer(
         layer="umd_glad_landsat_alerts__date",
         version="v1.7",
-        decoder=glad_isoweek_decoder,
+        decoder=date_conf_isoweek_decoder,
     ),
     "umd_glad_landsat_alerts__date": Layer(
         layer="umd_glad_landsat_alerts__date",
         version="v1.7",
-        decoder=glad_date_decoder,
-        encoder=glad_date_encoder,
+        decoder=date_conf_decoder,
+        encoder=date_conf_encoder,
         is_conf_encoded=True,
     ),
     "umd_glad_landsat_alerts__isoweek": Layer(
         layer="umd_glad_landsat_alerts__date",
         version="v1.7",
-        decoder=glad_isoweek_decoder,
+        decoder=date_conf_isoweek_decoder,
     ),
     "umd_glad_landsat_alerts__confidence": Layer.from_encoding(
         "umd_glad_landsat_alerts__date",
         "v1.7",
         encoding={2: "", 3: "high"},
         alias="umd_glad_landsat_alerts__confidence",
+    ),
+    "gfw_radd_alerts__date": Layer(
+        layer="gfw_radd_alerts__date_conf",
+        alias="gfw_radd_alerts__date",
+        version="v20210328",
+        decoder=date_conf_decoder,
+        encoder=date_conf_encoder,
+        grid=Grid(degrees=10, pixels=100000, tile_degrees=0.5),
+    ),
+    "gfw_radd_alerts__confidence": Layer.from_encoding(
+        "gfw_radd_alerts__date_conf",
+        "v20210328",
+        encoding={2: "", 3: "high"},
+        grid=Grid(degrees=10, pixels=100000, tile_degrees=0.5),
+        alias="gfw_radd_alerts__confidence",
     ),
     "is__umd_regional_primary_forest_2001": Layer.boolean(
         "is__umd_regional_primary_forest_2001", "v201901"
@@ -104,7 +130,7 @@ LAYERS: Dict[str, Layer] = {
         layer="whrc_aboveground_biomass_stock_2000__Mg_ha-1",
         version="v4",
         is_area_density=True,
-        decoder=(lambda s: {"whrc_aboveground_co2_emissions__Mg": s * CO2_FACTOR}),
+        decoder=co2_decoder,
     ),
     "tsc_tree_cover_loss_drivers__type": Layer.from_encoding(
         "tsc_tree_cover_loss_drivers__type",

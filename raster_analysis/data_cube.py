@@ -35,6 +35,7 @@ class DataCube:
             if layer.alias in [
                 "umd_glad_alerts__confidence",
                 "umd_glad_landsat_alerts__confidence",
+                "gfw_radd_alerts__confidence",
             ]:
                 self.windows[layer].data = np.floor(
                     self.windows[layer].data / 10000
@@ -42,6 +43,7 @@ class DataCube:
             elif layer.layer in [
                 "umd_glad_alerts__date",
                 "umd_glad_landsat_alerts__date",
+                "gfw_radd_alerts__date_conf",
             ]:
                 self.windows[layer].data = self.windows[layer].data % 10000
 

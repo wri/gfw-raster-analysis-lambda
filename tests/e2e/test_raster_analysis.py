@@ -35,6 +35,7 @@ from tests.fixtures.idn_24_9 import (
     IDN_24_9_ESA_LAND_COVER,
     IDN_24_9_2010_RAW_AREA,
     IDN_24_9_2019_GLAD_ALERTS_TOTAL,
+    COD_21_4_GEOM,
 )
 
 
@@ -173,6 +174,13 @@ def test_glad_alerts(context):
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
         assert row_actual["alert__count"] == row_expected["alert__count"]
+
+
+def test_radd_alerts(context):
+    query = "select latitude, longitude, gfw_radd_alerts__date, gfw_radd_alerts__confidence from gfw_radd_alerts__date where is__umd_regional_primary_forest_2001 = 'true' and gfw_radd_alerts__date >= '2021-01-01'"
+    result = tiled_handler({"geometry": COD_21_4_GEOM, "query": query}, context)["body"]
+
+    assert result["status"] == "success"
 
 
 def test_land_cover_area(context):

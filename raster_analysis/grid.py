@@ -3,7 +3,6 @@ import math
 from shapely.geometry import Point, Polygon
 
 from raster_analysis.layer import Layer
-from raster_analysis.globals import GRID_SIZE, GRID_COLS
 
 
 def _get_tile_id(point: Point, grid_size=10) -> str:
