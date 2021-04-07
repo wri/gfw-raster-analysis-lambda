@@ -107,6 +107,21 @@ LAYERS: Dict[str, Layer] = {
         grid=Grid(degrees=10, pixels=100000, tile_degrees=0.5),
         alias="gfw_radd_alerts__confidence",
     ),
+    "umd_glad_sentinel2_alerts__date": Layer(
+        layer="umd_glad_sentinel2_alerts__date_conf",
+        alias="umd_glad_sentinel2_alerts__date",
+        version="v20210406",
+        decoder=date_conf_decoder,
+        encoder=date_conf_encoder,
+        grid=Grid(degrees=10, pixels=100000, tile_degrees=0.5),
+    ),
+    "umd_glad_sentinel2_alerts__confidence": Layer.from_encoding(
+        "umd_glad_sentinel2_alerts__date_conf",
+        "v20210406",
+        encoding={2: "", 3: "high"},
+        grid=Grid(degrees=10, pixels=100000, tile_degrees=0.5),
+        alias="umd_glad_sentinel2_alerts__confidence",
+    ),
     "is__umd_regional_primary_forest_2001": Layer.boolean(
         "is__umd_regional_primary_forest_2001", "v201901"
     ),
