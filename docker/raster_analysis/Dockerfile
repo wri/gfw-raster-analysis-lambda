@@ -1,4 +1,4 @@
-FROM remotepixel/amazonlinux-gdal:3.0.1
+FROM lambgeo/lambda-gdal:3.2-python3.7
 
 WORKDIR /var/task
 ENV WORKDIR /var/task

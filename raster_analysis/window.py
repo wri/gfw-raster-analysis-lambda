@@ -6,26 +6,31 @@ import numpy as np
 import rasterio
 from numpy import ndarray
 from rasterio import DatasetReader
+from rasterio.enums import Resampling
 from rasterio.transform import Affine
 from aws_xray_sdk.core import xray_recorder
 import rasterio.windows as wd
+from rasterio.vrt import WarpedVRT
 from shapely.geometry import Polygon
 
-from raster_analysis.layer import Layer
-from raster_analysis.globals import LOGGER, BasePolygon, Numeric, WINDOW_SIZE
+from raster_analysis.layer import Layer, Grid
+from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 from raster_analysis.grid import get_raster_uri
 
 
 class Window:
-    def __init__(self, layer: Layer, tile: Polygon):
+    def __init__(self, layer: Layer, tile: Polygon, grid: Grid):
         self.layer = layer
         self.tile = tile
+        self.grid = grid
 
         data, shifted_affine, no_data_value = self.read()
 
         if data.size == 0:
             self.empty = True
-            data = np.zeros((WINDOW_SIZE, WINDOW_SIZE), dtype=np.uint8)
+            data = np.zeros(
+                (self.grid.get_tile_width(), self.grid.get_tile_width()), dtype=np.uint8
+            )
         else:
             self.empty = False
 
@@ -36,7 +41,7 @@ class Window:
     def read(self) -> Tuple[np.ndarray, Affine, Numeric]:
         raster_uri = get_raster_uri(self.layer, self.tile)
         data, shifted_affine, no_data_value = self._read_window_ignore_missing(
-            raster_uri, self.tile
+            raster_uri, self.tile, self.grid
         )
 
         return data, shifted_affine, no_data_value
@@ -50,7 +55,7 @@ class Window:
     @xray_recorder.capture("Read Window")
     @staticmethod
     def _read_window(
-        raster: str, geom: BasePolygon, masked: bool = False
+        raster: str, geom: BasePolygon, grid: Grid, masked: bool = False
     ) -> Tuple[np.ndarray, Affine, Numeric]:
         """
         Read a chunk of the raster that contains the bounding box of the
@@ -62,27 +67,45 @@ class Window:
 
         with rasterio.Env():
             LOGGER.info(f"Reading raster source {raster}")
-
             with rasterio.open(raster) as src:
-                try:
-                    window, shifted_affine = Window._get_window_and_affine(geom, src)
-                    data = src.read(1, masked=masked, window=window)
-                    no_data_value = src.nodata
-                except MemoryError:
-                    logging.error("[ERROR][RasterAnalysis] " + traceback.format_exc())
-                    raise Exception(
-                        "Out of memory- input polygon or input extent too large. "
-                        "Try splitting the polygon into multiple requests."
-                    )
+                transform = Window._adjust_affine_to_grid(src.transform, grid)
+                with WarpedVRT(
+                    src,
+                    transform=transform,
+                    resampling=Resampling.nearest,
+                    height=grid.pixels,
+                    width=grid.pixels,
+                ) as vrt:
+                    try:
+                        window, shifted_affine = Window._get_window_and_affine(
+                            geom, vrt, grid
+                        )
+                        data = vrt.read(1, masked=masked, window=window)
+                        no_data_value = src.nodata
+                    except MemoryError:
+                        logging.exception(
+                            "[ERROR][RasterAnalysis] " + traceback.format_exc()
+                        )
+                        raise Exception(
+                            "Out of memory- input polygon or input extent too large. "
+                            "Try splitting the polygon into multiple requests."
+                        )
 
         return data, shifted_affine, no_data_value
 
     @staticmethod
+    def _adjust_affine_to_grid(affine: Affine, grid: Grid):
+        pixel_width = grid.get_pixel_width()
+        return Affine(
+            pixel_width, affine[1], affine[2], affine[3], -pixel_width, affine[5]
+        )
+
+    @staticmethod
     def _read_window_ignore_missing(
-        raster: str, geom: BasePolygon, masked: bool = False
+        raster: str, geom: BasePolygon, grid: Grid, masked: bool = False
     ) -> Tuple[np.ndarray, Affine, Numeric]:
         try:
-            data = Window._read_window(raster, geom, masked=masked)
+            data = Window._read_window(raster, geom, grid, masked=masked)
         except rasterio.errors.RasterioIOError as e:
             logging.warning("RasterIO error reading " + raster + ":\n" + str(e))
             data = np.array([]), None, None
@@ -91,7 +114,7 @@ class Window:
 
     @staticmethod
     def _get_window_and_affine(
-        geom: BasePolygon, raster_src: DatasetReader
+        geom: BasePolygon, raster_src: DatasetReader, grid: Grid
     ) -> Tuple[wd.Window, Affine]:
         """
         Get a rasterio window block from the bounding box of a vector feature and
@@ -121,5 +144,9 @@ class Window:
 
         # Create a transform relative to this window
         affine = rasterio.windows.transform(window, raster_src.transform)
+
+        # # change pixel width to grid size
+        # pixel_width = grid.get_pixel_width()
+        # affine = Affine(pixel_width, affine[1], affine[2], affine[3], -pixel_width, affine[5])
 
         return window, affine

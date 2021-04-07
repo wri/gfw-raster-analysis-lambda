@@ -31,7 +31,7 @@ def handler(event, context):
         query_executor = QueryExecutor(query, data_cube)
         results: DataFrame = query_executor.execute()
 
-        LOGGER.debug(f"Ran analysis with results: {results}")
+        # LOGGER.debug(f"Ran analysis with results: {results}")
         results_store.save_result(results, context.aws_request_id)
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])

@@ -5,7 +5,7 @@ from numpy import ndarray
 from pydantic import BaseModel
 from moz_sql_parser import parse
 
-from raster_analysis.layer import Layer
+from raster_analysis.layer import Layer, Grid
 from raster_analysis.data_lake import LAYERS
 from raster_analysis.exceptions import QueryParseException
 
@@ -64,7 +64,7 @@ class Query(BaseModel):
         layers += [aggregate.layer for aggregate in self.aggregates]
         layers += [group for group in self.groups]
 
-        if self.base.layer in LAYERS:
+        if self.base.layer in LAYERS or self.base.alias in LAYERS:
             layers.append(self.base)
 
         return list(dict.fromkeys(layers))
@@ -78,6 +78,16 @@ class Query(BaseModel):
 
     def get_group_columns(self) -> List[str]:
         return [group.layer for group in self.groups]
+
+    def get_minimum_grid(self) -> Grid:
+        layers = self.get_layers()
+
+        minimum_grid = layers[0].grid
+        for layer in layers:
+            if layer.grid.get_pixel_width() < minimum_grid.get_pixel_width():
+                minimum_grid = layer.grid
+
+        return minimum_grid
 
     @staticmethod
     def parse_query(raw_query: str):

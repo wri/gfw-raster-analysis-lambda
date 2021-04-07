@@ -7,10 +7,10 @@ pytest~=5.3.1
 pytest-cov~=2.8.1
 # lambdas
 shapely
-rasterio[s3]
+rasterio[s3]~=1.2.0
 aws-xray-sdk
 pytest-mock
-pyproj
+pyproj~=3.0.0
 lambda-decorators~=0.3.0
 pytest-env~=0.6.2
 requests_mock~=1.7.0
