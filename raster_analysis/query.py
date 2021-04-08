@@ -1,4 +1,4 @@
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Union
 from enum import Enum
 
 from numpy import ndarray
@@ -14,7 +14,7 @@ class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
     area__ha = "area__ha"
-    alert__count = "alert__count"
+    alert__count = "alert__count"  # deprecated
 
 
 class Operator(str, Enum):
@@ -38,6 +38,7 @@ class Filter(BaseModel):
 class AggregateFunction(str, Enum):
     sum = "sum"
     avg = "avg"
+    count_ = "count"
 
 
 class Aggregate(BaseModel):
@@ -61,7 +62,11 @@ class Query(BaseModel):
     def get_layers(self) -> List[Layer]:
         layers = [selector for selector in self.selectors]
         layers += [filter.layer for filter in self.filters]
-        layers += [aggregate.layer for aggregate in self.aggregates]
+        layers += [
+            agg.layer
+            for agg in self.aggregates
+            if agg.function != AggregateFunction.count_
+        ]
         layers += [group for group in self.groups]
 
         if self.base.layer in LAYERS or self.base.alias in LAYERS:

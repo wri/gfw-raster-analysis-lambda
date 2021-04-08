@@ -65,17 +65,15 @@ class QueryExecutor:
         )
 
         group_column_names = [group.layer for group in self.query.groups]
-        agg_column_names = [agg.layer.layer for agg in self.query.aggregates]
-
         results = dict(
             zip(group_column_names, np.unravel_index(group_indices, group_dimensions))
         )
 
-        agg_columns = [
-            self._aggregate_window_by_group(agg, mask, group_counts, inverse_index)
-            for agg in self.query.aggregates
-        ]
-        results.update(dict(zip(agg_column_names, agg_columns)))
+        for agg in self.query.aggregates:
+            column_name, column_val = self._aggregate_window_by_group(
+                agg, mask, group_counts, inverse_index
+            )
+            results[column_name] = column_val
 
         return pd.DataFrame(results)
 
@@ -85,14 +83,17 @@ class QueryExecutor:
         mask: ndarray,
         group_counts: ndarray,
         inverse_index: ndarray,
-    ) -> ndarray:
+    ) -> Tuple[str, ndarray]:
         if aggregate.layer.layer == SpecialSelectors.alert__count:
-            return group_counts
+            return SpecialSelectors.alert__count, group_counts
+        elif aggregate.function == AggregateFunction.count_:
+            return AggregateFunction.count_, group_counts
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
-            return group_counts * self.data_cube.mean_area
+            return SpecialSelectors.area__ha, group_counts * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
+            # column_name = f"sum({aggregate.layer.layer})"
 
             # this will sum the values of aggregate data into different bins, where each bin
             # is the corresponding group at that pixel
@@ -102,26 +103,31 @@ class QueryExecutor:
             if aggregate.function == AggregateFunction.sum:
                 if aggregate.layer.is_area_density:
                     # layer value representing area density need to be multiplied by area to get gross value
-                    return sums * self.data_cube.mean_area
-                return sums
+                    return aggregate.layer.layer, sums * self.data_cube.mean_area
+                return aggregate.layer.layer, sums
             elif aggregate.function == AggregateFunction.avg:
-                return sums / masked_data.size
+                return aggregate.layer.layer, sums / masked_data.size
+            else:
+                raise NotImplementedError("Undefined aggregate function")
 
     def _aggregate_all(self, mask: ndarray) -> DataFrame:
         results = {}
 
         for agg in self.query.aggregates:
-            results[agg.layer.layer] = [self._aggregate_window(agg, mask)]
+            column_name, column_val = self._aggregate_window(agg, mask)
+            results[column_name] = [column_val]
 
         return pd.DataFrame(results)
 
     def _aggregate_window(
         self, aggregate: Aggregate, mask: ndarray
-    ) -> Union[int, float]:
+    ) -> Tuple[str, Union[int, float]]:
         if aggregate.layer.layer == SpecialSelectors.alert__count:
-            return mask.sum()
+            return SpecialSelectors.alert__count, mask.sum()
+        elif aggregate.function == AggregateFunction.count_:
+            return AggregateFunction.count_, mask.sum()
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
-            return mask.sum() * self.data_cube.mean_area
+            return aggregate.layer.layer, mask.sum() * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
@@ -129,10 +135,10 @@ class QueryExecutor:
 
             if aggregate.function == AggregateFunction.sum:
                 if aggregate.layer.is_area_density:
-                    return sum * self.data_cube.mean_area
-                return sum
+                    return aggregate.layer.layer, sum * self.data_cube.mean_area
+                return aggregate.layer.layer, sum
             elif aggregate.function == AggregateFunction.avg:
-                return sum / masked_data.size
+                return aggregate.layer.layer, sum / masked_data.size
             else:
                 raise NotImplementedError("Undefined aggregate function")
 

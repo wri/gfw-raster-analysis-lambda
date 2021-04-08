@@ -177,6 +177,15 @@ def test_glad_alerts(context):
         assert row_actual["alert__count"] == row_expected["alert__count"]
 
 
+def test_glad_alerts_count(context):
+    query = "select count(umd_glad_alerts) from umd_glad_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
+    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+
+    assert result["status"] == "success"
+    for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
+        assert row_actual["count"] == row_expected["alert__count"]
+
+
 def test_radd_alerts(context):
     # TODO calculate number of alerts offline
     query = "select latitude, longitude, gfw_radd_alerts__date, gfw_radd_alerts__confidence from gfw_radd_alerts__date where is__umd_regional_primary_forest_2001 = 'true' and gfw_radd_alerts__date >= '2021-01-01'"
