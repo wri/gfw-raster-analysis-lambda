@@ -5,6 +5,7 @@ from numpy import ndarray
 from pydantic import BaseModel
 from moz_sql_parser import parse
 
+from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.layer import Layer, Grid
 from raster_analysis.data_lake import LAYERS
 from raster_analysis.exceptions import QueryParseException
@@ -52,6 +53,7 @@ class Query(BaseModel):
     filters: List[Filter] = []
     groups: List[Layer] = []
     aggregates: List[Aggregate] = []
+    data_environment: DataEnvironment
 
     def get_real_layers(self) -> List[Layer]:
         layers = self.get_layers()
@@ -69,7 +71,7 @@ class Query(BaseModel):
         ]
         layers += [group for group in self.groups]
 
-        if self.base.layer in LAYERS or self.base.alias in LAYERS:
+        if self.has_layer(self.base.layer):  # self.base.alias in LAYERS:
             layers.append(self.base)
 
         return list(dict.fromkeys(layers))
@@ -86,16 +88,17 @@ class Query(BaseModel):
 
     def get_minimum_grid(self) -> Grid:
         layers = self.get_layers()
+        grids = [self.data_environment.get_layer_grid(layer.name) for layer in layers]
 
-        minimum_grid = layers[0].grid
-        for layer in layers:
-            if layer.grid.get_pixel_width() < minimum_grid.get_pixel_width():
-                minimum_grid = layer.grid
+        minimum_grid = grids[0]
+        for grid in grids:
+            if grid.get_pixel_width() < minimum_grid.get_pixel_width():
+                minimum_grid = grid
 
         return minimum_grid
 
     @staticmethod
-    def parse_query(raw_query: str):
+    def parse_query(raw_query: str, data_environment: DataEnvironment):
         parsed = parse(raw_query)
         selectors = []
         where = []
@@ -107,14 +110,15 @@ class Query(BaseModel):
                 "Invalid query, must include SELECT and FROM components"
             )
 
-        base = LAYERS[parsed["from"]]
+        base = data_environment.get_layer([parsed["from"]])
         for selector in Query._ensure_list(parsed["select"]):
             if isinstance(selector["value"], dict):
-                func, layer = Query._get_first_key_value(selector["value"])
-                aggregate = Aggregate(function=func, layer=LAYERS[layer])
+                func, layer_name = Query._get_first_key_value(selector["value"])
+                layer = data_environment.get_layer(layer_name)
+                aggregate = Aggregate(function=func, layer=layer)
                 aggregates.append(aggregate)
             elif isinstance(selector["value"], str):
-                selectors.append(LAYERS[selector["value"]])
+                selectors.append(data_environment.get_layer(selector["value"]))
 
         if "where" in parsed:
             if "and" in parsed["where"]:
@@ -133,7 +137,7 @@ class Query(BaseModel):
                 if isinstance(value, dict):
                     value = value["literal"]
 
-                layer = LAYERS[layer]
+                layer = data_environment.get_layer(layer)
                 if layer.encoder:
                     for enc_val in layer.encoder(value):
                         where.append(
@@ -146,7 +150,7 @@ class Query(BaseModel):
 
         if "groupby" in parsed:
             for group in Query._ensure_list(parsed["groupby"]):
-                groups.append(LAYERS[group["value"]])
+                groups.append(data_environment.get_layer(group["value"]))
 
         return Query(
             base=base,

@@ -8,7 +8,6 @@ from pandas import DataFrame
 from rasterio.transform import xy
 
 from raster_analysis.data_cube import DataCube
-from raster_analysis.data_lake import LAYERS
 from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
 
 
@@ -20,11 +19,13 @@ class QueryExecutor:
     def execute(self) -> DataFrame:
         mask = self.data_cube.mask
 
-        if self.query.base in self.data_cube.windows:
-            mask *= self.data_cube.windows[self.query.base].data.astype(dtype=np.bool)
+        if self.query.base.name in self.data_cube.windows:
+            mask *= self.data_cube.windows[self.query.base.name].data.astype(
+                dtype=np.bool
+            )
 
         for filter in self.query.filters:
-            window = self.data_cube.windows[filter.layer]
+            window = self.data_cube.windows[filter.layer.name]
             mask *= filter.apply_filter(window.data)
 
         if self.query.aggregates:
@@ -41,8 +42,8 @@ class QueryExecutor:
     def _aggregate_by_group(self, mask: ndarray) -> DataFrame:
         group_windows = []
         for layer in self.query.groups:
-            window = self.data_cube.windows[layer]
-            group_windows.append(self.data_cube.windows[layer])
+            window = self.data_cube.windows[layer.name]
+            group_windows.append(self.data_cube.windows[layer.name])
 
             if not layer.has_default_value:
                 mask *= window.data.astype(dtype=np.bool)
@@ -91,7 +92,7 @@ class QueryExecutor:
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return SpecialSelectors.area__ha, group_counts * self.data_cube.mean_area
         else:
-            window = self.data_cube.windows[aggregate.layer]
+            window = self.data_cube.windows[aggregate.layer.name]
             masked_data = np.extract(mask, window.data)
             # column_name = f"sum({aggregate.layer.layer})"
 
@@ -129,7 +130,7 @@ class QueryExecutor:
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return aggregate.layer.layer, mask.sum() * self.data_cube.mean_area
         else:
-            window = self.data_cube.windows[aggregate.layer]
+            window = self.data_cube.windows[aggregate.layer.name]
             masked_data = np.extract(mask, window.data)
             sum = masked_data.sum()
 
@@ -165,7 +166,7 @@ class QueryExecutor:
             selector_names.remove(SpecialSelectors.longitude.value)
 
         for selector in selector_names:
-            window = self.data_cube.windows[LAYERS[selector]].data
+            window = self.data_cube.windows[selector].data
             values = np.extract(mask, window)
             results[selector] = values
 

@@ -3,6 +3,7 @@ from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.tiling import AnalysisTiler
 from raster_analysis.globals import LOGGER
+from raster_analysis.data_environment import DataEnvironment
 
 patch(["boto3"])
 
@@ -13,6 +14,8 @@ def handler(event, context):
         query = event["query"]
         geojson = event["geometry"]
         format = event.get("format", "json")
+
+        environment = event["environment"]
 
         LOGGER.info(f"Executing query: {query}")
 

@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+import numexpr as ne
 from rasterio import features
 from rasterio.transform import Affine, from_bounds
 import concurrent.futures
@@ -18,7 +19,10 @@ class DataCube:
         self.grid = query.get_minimum_grid()
         self.mean_area = get_area(tile.centroid.y, self.grid.get_pixel_width()) / 10000
         self.windows = self._get_windows(query.get_real_layers(), tile)
-        self._expand_encoded_layers(query)
+
+        for layer in query.get_derived_layers():
+            A = self.windows[layer.source_layer]
+            self.windows[layer.name] = ne.evaluate(layer.derivation_expression)
 
         tile_width = self.grid.get_tile_width()
         self.shifted_affine: Affine = from_bounds(*tile.bounds, tile_width, tile_width)
@@ -66,7 +70,7 @@ class DataCube:
             layer = futures[future]
 
             try:
-                windows[layer] = future.result()
+                windows[layer.name] = future.result()
             except Exception as e:
                 LOGGER.exception(f"Exception while reading window for layer {layer}")
                 raise e
