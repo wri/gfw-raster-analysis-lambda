@@ -4,11 +4,10 @@ import uuid
 import pytest
 import subprocess
 import os
-from io import StringIO
 from datetime import datetime, timedelta
 
 from shapely.geometry import box, mapping
-import pandas as pd
+
 
 # set environment before importing our lambda layer
 os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
@@ -25,7 +24,7 @@ import lambdas.fanout.src.lambda_function
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
 import lambdas.tiled_analysis.src.lambda_function
-from tests.fixtures.idn_24_9 import (
+from tests.fixtures.fixtures import (
     IDN_24_9_GLAD_ALERTS,
     IDN_24_9_GEOM,
     IDN_24_9_GAIN,
@@ -37,6 +36,7 @@ from tests.fixtures.idn_24_9 import (
     IDN_24_9_2019_GLAD_ALERTS_TOTAL,
     COD_21_4_GEOM,
     BRA_14_87_GEOM,
+    DATA_ENVIRONMENT,
 )
 
 
@@ -102,7 +102,10 @@ def context(monkeypatch):
 
 def test_primary_tree_cover_loss(context):
     query = "select sum(area__ha), sum(whrc_aboveground_co2_emissions__Mg) from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
     assert result["status"] == "success"
 
     for row_actual, row_expected in zip(result["data"], IDN_24_9_PRIMARY_LOSS):

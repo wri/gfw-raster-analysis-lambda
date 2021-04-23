@@ -4,17 +4,17 @@ from collections import defaultdict
 from pydantic import BaseModel
 from pandas import Series
 
-
-class Grid(BaseModel):
-    degrees: int
-    pixels: int
-    tile_degrees: float
-
-    def get_pixel_width(self) -> float:
-        return self.degrees / self.pixels
-
-    def get_tile_width(self) -> int:
-        return round((self.tile_degrees / self.degrees) * self.pixels)
+#
+# class Grid(BaseModel):
+#     degrees: int
+#     pixels: int
+#     tile_degrees: float
+#
+#     def get_pixel_width(self) -> float:
+#         return self.degrees / self.pixels
+#
+#     def get_tile_width(self) -> int:
+#         return round((self.tile_degrees / self.degrees) * self.pixels)
 
 
 # class Layer(BaseModel):

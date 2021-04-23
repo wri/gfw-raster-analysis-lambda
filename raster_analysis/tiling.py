@@ -1,5 +1,6 @@
 import json
 import sys
+from datetime import date
 from io import StringIO
 from typing import Dict, List, Any, Tuple
 from copy import deepcopy
@@ -9,8 +10,9 @@ from shapely.geometry import Polygon, mapping, box, shape
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.boto import lambda_client, invoke_lambda
+from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.geometry import encode_geometry
-from raster_analysis.query import Query
+from raster_analysis.query import Query, Function
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import (
     LOGGER,
@@ -24,9 +26,16 @@ from raster_analysis.globals import (
 
 
 class AnalysisTiler:
-    def __init__(self, raw_query: str, raw_geom: Dict[str, Any], request_id: str):
+    def __init__(
+        self,
+        raw_query: str,
+        raw_geom: Dict[str, Any],
+        request_id: str,
+        data_environment: DataEnvironment,
+    ):
         self.raw_query: str = raw_query
-        self.query: Query = Query.parse_query(raw_query)
+        self.query: Query = Query.parse_query(raw_query, data_environment)
+        self.data_environment = data_environment
 
         self.raw_geom: Dict[str, Any] = raw_geom
         self.geom: BasePolygon = shape(raw_geom)
@@ -55,18 +64,22 @@ class AnalysisTiler:
     def _decode_and_group_results(self, results):
         group_columns = self.query.get_group_columns()
 
-        for layer in self.query.get_result_layers():
-            layer_name = layer.alias if layer.alias else layer.layer
-            if layer.decoder and layer_name in results.columns:
-                decoded_columns = layer.decoder(layer_name, results[layer_name])
-                del results[layer_name]
+        for selector in self.query.get_selectors():
+            layer = self.data_environment.get_layer(selector.layer)
+            if layer.pixel_encoding:
+                results[selector.layer] = results[selector.layer].map(
+                    layer.pixel_encoding
+                )
 
-                for name, series in decoded_columns.items():
-                    results[name] = series
+            if selector.function:
+                if selector.function == Function.isoweek:
+                    dates = date(results[selector.layer])
+                    isoweeks = list(map(lambda val: val.isocalendar()[1], dates))
+                    years = list(map(lambda val: val.isocalendar()[0], dates))
 
-                if layer_name in group_columns:
-                    group_columns.remove(layer_name)
-                    group_columns += [name for name in decoded_columns.keys()]
+                    results[selector.layer.replace("date", "isoweek")] = isoweeks
+                    results[selector.layer.replace("date", "year")] = years
+                    del results[selector.layer]
 
         if group_columns:
             grouped_df = results.groupby(group_columns).sum()
@@ -86,6 +99,7 @@ class AnalysisTiler:
         payload: Dict[str, Any] = {
             "analysis_id": self.request_id,
             "query": self.raw_query,
+            "environment": self.data_environment.dict()["layers"],
         }
 
         if sys.getsizeof(json.dumps(self.raw_geom)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:

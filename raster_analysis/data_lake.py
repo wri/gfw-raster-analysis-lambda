@@ -25,16 +25,16 @@
 #
 #
 # def date_conf_isoweek_decoder(layer: str, s: Series):
-#     days_since_2015 = s % 10000
-#     ordinal_dates = days_since_2015 + date(2014, 12, 31).toordinal()
-#     dates = [date.fromordinal(ordinal) for ordinal in ordinal_dates]
-#     iso_week_dates = [(d - timedelta(days=d.isoweekday() - 1)) for d in dates]
+# days_since_2015 = s % 10000
+# ordinal_dates = days_since_2015 + date(2014, 12, 31).toordinal()
+# dates = [date.fromordinal(ordinal) for ordinal in ordinal_dates]
+# iso_week_dates = [(d - timedelta(days=d.isoweekday() - 1)) for d in dates]
 #
-#     iso_weeks = list(map(lambda val: val.isocalendar()[1], iso_week_dates))
-#     years = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
+# iso_weeks = list(map(lambda val: val.isocalendar()[1], iso_week_dates))
+# years = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
 #
-#     base_name = layer.split("__")[0]
-#     return {f"{base_name}__isoweek": iso_weeks, f"{base_name}__year": years}
+# base_name = layer.split("__")[0]
+# return {f"{base_name}__isoweek": iso_weeks, f"{base_name}__year": years}
 #
 #
 # def year_decoder(layer, s):

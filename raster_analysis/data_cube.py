@@ -1,15 +1,14 @@
 from typing import List
 
 import numpy as np
-import numexpr as ne
 from rasterio import features
 from rasterio.transform import Affine, from_bounds
 import concurrent.futures
 from shapely.geometry import Polygon
 
-from raster_analysis.layer import Layer, Grid
+from raster_analysis.data_environment import Layer, SourceLayer
 from raster_analysis.geodesy import get_area
-from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
+from raster_analysis.globals import LOGGER, BasePolygon
 from raster_analysis.query import Query
 from raster_analysis.window import Window
 
@@ -18,11 +17,21 @@ class DataCube:
     def __init__(self, geom: BasePolygon, tile: Polygon, query: Query):
         self.grid = query.get_minimum_grid()
         self.mean_area = get_area(tile.centroid.y, self.grid.get_pixel_width()) / 10000
-        self.windows = self._get_windows(query.get_real_layers(), tile)
+
+        source_layers = query.get_source_layers()
+        layer_names = query.get_layer_names()
+        self.windows = self._get_windows(source_layers, tile)
 
         for layer in query.get_derived_layers():
             A = self.windows[layer.source_layer]
-            self.windows[layer.name] = ne.evaluate(layer.derivation_expression)
+            area = self.mean_area
+            self.windows[layer.name] = eval(layer.derivation_expression)
+
+        for layer in source_layers:
+            if layer.name not in layer_names:
+                # free up memory, since this means the source layer was only required
+                # for a derived layer
+                del self.windows[layer.name]
 
         tile_width = self.grid.get_tile_width()
         self.shifted_affine: Affine = from_bounds(*tile.bounds, tile_width, tile_width)
@@ -31,29 +40,7 @@ class DataCube:
             np.ones((tile_width, tile_width)), self.shifted_affine, geom
         )
 
-    def _expand_encoded_layers(self, query: Query):
-        layers = query.get_layers()
-
-        # TODO should be only reading each layer once
-        for layer in layers:
-            if layer.alias in [
-                "umd_glad_alerts__confidence",
-                "umd_glad_landsat_alerts__confidence",
-                "gfw_radd_alerts__confidence",
-                "umd_glad_sentinel2_alerts__confidence",
-            ]:
-                self.windows[layer].data = np.floor(
-                    self.windows[layer].data / 10000
-                ).astype(dtype=np.uint8)
-            elif layer.layer in [
-                "umd_glad_alerts__date",
-                "umd_glad_landsat_alerts__date",
-                "gfw_radd_alerts__date_conf",
-                "umd_glad_sentinel2_alerts__date_conf",
-            ]:
-                self.windows[layer].data = self.windows[layer].data % 10000
-
-    def _get_windows(self, layers: List[Layer], tile):
+    def _get_windows(self, layers: List[SourceLayer], tile):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
             futures = {

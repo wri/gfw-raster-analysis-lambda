@@ -1,5 +1,6 @@
 from aws_xray_sdk.core import patch
 from aws_xray_sdk.core import xray_recorder
+from pydantic import parse_obj_as
 
 from raster_analysis.tiling import AnalysisTiler
 from raster_analysis.globals import LOGGER
@@ -14,12 +15,11 @@ def handler(event, context):
         query = event["query"]
         geojson = event["geometry"]
         format = event.get("format", "json")
-
-        environment = event["environment"]
+        data_environment = DataEnvironment(layers=event["environment"])
 
         LOGGER.info(f"Executing query: {query}")
 
-        tiler = AnalysisTiler(query, geojson, context.aws_request_id)
+        tiler = AnalysisTiler(query, geojson, context.aws_request_id, data_environment)
         tiler.execute()
 
         if format == "csv":

@@ -1,5 +1,4 @@
-from typing import List, Any, Union, Tuple
-from io import StringIO
+from typing import List, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -8,7 +7,12 @@ from pandas import DataFrame
 from rasterio.transform import xy
 
 from raster_analysis.data_cube import DataCube
-from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
+from raster_analysis.query import (
+    Query,
+    SupportedAggregates,
+    SpecialSelectors,
+    Aggregate,
+)
 
 
 class QueryExecutor:
@@ -87,8 +91,8 @@ class QueryExecutor:
     ) -> Tuple[str, ndarray]:
         if aggregate.layer.layer == SpecialSelectors.alert__count:
             return SpecialSelectors.alert__count, group_counts
-        elif aggregate.function == AggregateFunction.count_:
-            return AggregateFunction.count_, group_counts
+        elif aggregate.name == SupportedAggregates.count_:
+            return SupportedAggregates.count_, group_counts
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return SpecialSelectors.area__ha, group_counts * self.data_cube.mean_area
         else:
@@ -101,12 +105,12 @@ class QueryExecutor:
             sums = np.bincount(
                 inverse_index, weights=masked_data, minlength=group_counts.size
             )
-            if aggregate.function == AggregateFunction.sum:
+            if aggregate.name == SupportedAggregates.sum:
                 if aggregate.layer.is_area_density:
                     # layer value representing area density need to be multiplied by area to get gross value
                     return aggregate.layer.layer, sums * self.data_cube.mean_area
                 return aggregate.layer.layer, sums
-            elif aggregate.function == AggregateFunction.avg:
+            elif aggregate.name == SupportedAggregates.avg:
                 return aggregate.layer.layer, sums / masked_data.size
             else:
                 raise NotImplementedError("Undefined aggregate function")
@@ -125,8 +129,8 @@ class QueryExecutor:
     ) -> Tuple[str, Union[int, float]]:
         if aggregate.layer.layer == SpecialSelectors.alert__count:
             return SpecialSelectors.alert__count, mask.sum()
-        elif aggregate.function == AggregateFunction.count_:
-            return AggregateFunction.count_, mask.sum()
+        elif aggregate.name == SupportedAggregates.count_:
+            return SupportedAggregates.count_, mask.sum()
         elif aggregate.layer.layer == SpecialSelectors.area__ha:
             return aggregate.layer.layer, mask.sum() * self.data_cube.mean_area
         else:
@@ -134,11 +138,11 @@ class QueryExecutor:
             masked_data = np.extract(mask, window.data)
             sum = masked_data.sum()
 
-            if aggregate.function == AggregateFunction.sum:
+            if aggregate.name == SupportedAggregates.sum:
                 if aggregate.layer.is_area_density:
                     return aggregate.layer.layer, sum * self.data_cube.mean_area
                 return aggregate.layer.layer, sum
-            elif aggregate.function == AggregateFunction.avg:
+            elif aggregate.name == SupportedAggregates.avg:
                 return aggregate.layer.layer, sum / masked_data.size
             else:
                 raise NotImplementedError("Undefined aggregate function")

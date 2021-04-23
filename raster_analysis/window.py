@@ -13,16 +13,18 @@ import rasterio.windows as wd
 from rasterio.vrt import WarpedVRT
 from shapely.geometry import Polygon
 
-from raster_analysis.layer import Layer, Grid
 from raster_analysis.globals import LOGGER, BasePolygon, Numeric
-from raster_analysis.grid import get_raster_uri
+from raster_analysis.grid import Grid
+from raster_analysis.data_environment import SourceLayer
 
 
 class Window:
-    def __init__(self, layer: Layer, tile: Polygon, grid: Grid):
+    def __init__(self, layer: SourceLayer, tile: Polygon, grid: Grid):
         self.layer = layer
         self.tile = tile
         self.grid = grid
+        self.tile_id = layer.grid.get_tile_id(tile, layer.tile_scheme)
+        self.source_uri = layer.source_uri.format(tile_id=self.tile_id)
 
         data, shifted_affine, no_data_value = self.read()
 
@@ -39,9 +41,8 @@ class Window:
         self.no_data_value: Numeric = no_data_value
 
     def read(self) -> Tuple[np.ndarray, Affine, Numeric]:
-        raster_uri = get_raster_uri(self.layer, self.tile)
         data, shifted_affine, no_data_value = self._read_window_ignore_missing(
-            raster_uri, self.tile, self.grid
+            self.source_uri, self.tile, self.grid
         )
 
         return data, shifted_affine, no_data_value

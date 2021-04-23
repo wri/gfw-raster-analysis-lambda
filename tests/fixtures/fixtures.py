@@ -1,3 +1,80 @@
+DATA_ENVIRONMENT = [
+    {
+        "source_uri": "s3://gfw-data-lake-staging/umd_tree_cover_loss/v1.8/raster/epsg-4326/10/40000/year/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "umd_tree_cover_loss__year",
+        "pixel_encoding": {
+            1: 2001,
+            2: 2002,
+            3: 2003,
+            4: 2004,
+            5: 2005,
+            6: 2006,
+            7: 2007,
+            8: 2008,
+            9: 2009,
+            10: 2010,
+            11: 2011,
+            12: 2012,
+            13: 2013,
+            14: 2014,
+            15: 2015,
+            16: 2016,
+            17: 2017,
+            18: 2018,
+            19: 2019,
+            20: 2020,
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake-staging/umd_tree_cover_density_2000/v1.6/raster/epsg-4326/10/40000/threshold/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "umd_tree_cover_density_2000__threshold",
+        "pixel_encoding": {1: 10, 2: 15, 3: 20, 4: 25, 5: 30, 6: 50, 7: 75},
+    },
+    {
+        "source_uri": "s3://gfw-data-lake-staging/umd_regional_primary_forest_2001/v201901/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "is__umd_regional_primary_forest_2001",
+        "pixel_encoding": {0: "false", 1: "true"},
+    },
+    {
+        "source_uri": "s3://gfw-data-lake-staging/whrc_aboveground_biomass_stock_2000/v1.6/raster/epsg-4326/10/40000/Mg_ha-1/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
+    },
+    {
+        "source_layer": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
+        "name": "whrc_aboveground_co2_emissions__Mg",
+        "derivation_expression": "A * area * (0.5 * 44 / 12)",
+    },
+    # {
+    #     "source_uri": "s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif",
+    #     "tile_scheme": "nwse",
+    #     "grid": "10/40000",
+    #     "type": "date_conf",
+    #     "name": "umd_glad_landsat_alerts__date_conf",
+    # },
+    # {
+    #     "source_layer": "umd_glad_landsat_alerts__date_conf",
+    #     "name": "umd_glad_landsat_alerts__date",
+    #     "derivation_expression": "(A % 10000).astype('timedelta64[D]') + datetime64('2015-01-01')",
+    # },
+    # {
+    #     "source_layer": "umd_glad_landsat_alerts__date_conf",
+    #     "name": "umd_glad_landsat_alerts__date",
+    #     "derivation_expression": "floor(A / 10000)",
+    #     "encoding": {
+    #         2: "",
+    #         3: "high"
+    #     }
+    # },
+]
+
 IDN_24_9_GEOM = {
     "type": "MultiPolygon",
     "coordinates": [

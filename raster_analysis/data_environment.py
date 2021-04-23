@@ -1,13 +1,12 @@
 import json
-from enum import Enum
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List, Union, Callable, Type, cast
 
 from pydantic import BaseModel, parse_obj_as
 
-from raster_analysis.globals import BasePolygon
+from raster_analysis.grid import GridName, TileScheme, Grid
 
 
-class RealLayer(BaseModel):
+class SourceLayer(BaseModel):
     source_uri: str
     tile_scheme: TileScheme
     grid: GridName
@@ -21,16 +20,32 @@ class DerivedLayer(BaseModel):
     derivation_expression: str
 
 
-class DataEnvironment:
-    def __init__(self, layers: List[Dict[str, Any]]):
-        self.layers = parse_obj_as(layers, List[Union[RealLayer, DerivedLayer])
+class ReservedLayer(BaseModel):
+    name: str
 
-    def get_layer(self, name: str) -> RealLayer:
-        for layer in self.layers:
+
+Layer = Union[SourceLayer, DerivedLayer, ReservedLayer]
+
+
+RESERVED_LAYERS = [
+    ReservedLayer(name="area__ha"),
+    ReservedLayer(name="latitude"),
+    ReservedLayer(name="longitude"),
+    ReservedLayer(name="alert__count"),
+]
+
+
+class DataEnvironment(BaseModel):
+    layers: List[Layer]
+
+    def get_layer(self, name: str) -> SourceLayer:
+        for layer in self.layers + RESERVED_LAYERS:
             if layer.name == name:
                 return layer
 
-        raise KeyError(f"Could not find layer with name {name} in data environment {json.dumps(self.layers)}")
+        raise KeyError(
+            f"Could not find layer with name {name} in data environment {json.dumps(self.dict())}"
+        )
 
     def get_layer_grid(self, name: str) -> Grid:
         layer = self.get_layer(name)
@@ -43,59 +58,29 @@ class DataEnvironment:
         except ValueError:
             return False
 
-    def get_real_layers(self):
-        pass
+    def get_layers(self, layer_names: List[str]) -> List[Layer]:
+        layers = []
+        for layer_name in layer_names:
+            layer = self.get_layer(layer_name)
+            layers.append(layer)
 
+        return list(dict.fromkeys(layers))
 
-    def get_source_uri(self, name: str, geometry: BasePolygon) -> str:
-        layer = self.get_layer(name)
+    def get_source_layers(self, layer_names: List[str]) -> List[SourceLayer]:
+        layers = self.get_layers(layer_names)
 
-        if layer.source_uri:
-            tile_id = layer.grid.get_tile_id(geometry, layer.tile_scheme)
-            return layer.source_uri.format(tile_id)
-        elif layer.source_layer:
-            return self.get_source_uri(layer.source_layer, geometry)
-        else:
-            raise ValueError(f"Cannot get source URI for layer {name}")
+        source_layers = []
+        for layer in layers:
+            if isinstance(layer, SourceLayer):
+                layer = cast(SourceLayer, layer)
+                source_layers.append(layer)
+            elif isinstance(layer, SourceLayer):
+                layer = cast(DerivedLayer, layer)
+                source_layer = self.get_layer(layer.source_layer)
+                source_layers.append(source_layer)
 
-    def decode_layer(self, name: str):
-        layer = self.get_layer(name)
-        if layer.pixel_encoding:
+        return self.get_layers(layer_names, SourceLayer)
 
-
-TEST = [
-    {
-        "source_uri": "s3://gfw-data-lake-staging/umd_tree_cover_loss/v1.8/raster/epsg-4326/10/40000/year/geotiff/{tile_id}.tif",
-        "tile_scheme": "nw",
-        "grid": "10/40000",
-        "name": "umd_tree_cover_loss__year",
-        "pixel_encoding": {
-            1: 2001,
-            2: 2002,
-            3: 2003,
-            4: 2004,
-            5: 2005,
-        }
-    },
-    {
-        "source_uri": "s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif",
-        "tile_scheme": "nwse",
-        "grid": "10/40000",
-        "type": "date_conf",
-        "name": "umd_glad_landsat_alerts__date_conf",
-    },
-    {
-        "source_layer": "umd_glad_landsat_alerts__date_conf",
-        "name": "umd_glad_landsat_alerts__date",
-        "derivation_expression": "(A % 10000).astype('timedelta64[D]') + datetime64('2015-01-01')",
-    },
-    {
-        "source_layer": "umd_glad_landsat_alerts__date_conf",
-        "name": "umd_glad_landsat_alerts__date",
-        "derivation_expression": "floor(A / 10000)",
-        "encoding": {
-            2: "",
-            3: "high"
-        }
-    },
-]
+    def get_derived_layers(self, layer_names: List[str]) -> List[DerivedLayer]:
+        layers = self.get_layers(layer_names)
+        return [layer for layer in layers if isinstance(layer, DerivedLayer)]

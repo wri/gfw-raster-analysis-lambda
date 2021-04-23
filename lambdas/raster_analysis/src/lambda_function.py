@@ -1,6 +1,8 @@
 from aws_xray_sdk.core import xray_recorder
 from pandas import DataFrame
+from pydantic.tools import parse_obj_as
 
+from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 from raster_analysis.globals import LOGGER
 from raster_analysis.data_cube import DataCube
@@ -26,7 +28,9 @@ def handler(event, context):
             results_store.save_result({}, context.aws_request_id)
             return {}
 
-        query = Query.parse_query(event["query"])
+        data_environment = DataEnvironment(layers=event["environment"])
+        query = Query.parse_query(event["query"], data_environment)
+
         data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
         query_executor = QueryExecutor(query, data_cube)
         results: DataFrame = query_executor.execute()

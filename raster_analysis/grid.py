@@ -119,36 +119,36 @@ class Grid(BaseModel):
             return int((math.floor(y / 10) * 10) + 10)
 
 
-def get_raster_uri(layer: Layer, tile: Polygon) -> str:
-    """
-    Maps layer name input to a raster URI in the data lake
-    :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
-    :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
-    """
-
-    if "umd_glad_landsat_alerts" in layer.layer:
-        return _get_glad_raster_uri(tile)
-
-    parts = layer.layer.split("__")
-
-    if len(parts) != 2:
-        raise ValueError(
-            f"Layer name `{layer.layer}` is invalid data lake layer, should consist of layer name and unit separated by `__`"
-        )
-
-    if parts[0] == "is":
-        type, name = parts
-    else:
-        name, type = parts
-
-    tile_id = get_tile_id(tile)
-    version = layer.version
-    return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{layer.grid.degrees}/{layer.grid.pixels}/{type}/gdal-geotiff/{tile_id}.tif"
-
-
-def _get_glad_raster_uri(tile: Polygon) -> str:
-    # return hardcoded URL
-    tile_id = _get_glad_tile_id(tile)
-    return (
-        f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
-    )
+# def get_raster_uri(layer: Layer, tile: Polygon) -> str:
+#     """
+#     Maps layer name input to a raster URI in the data lake
+#     :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
+#     :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
+#     """
+#
+#     if "umd_glad_landsat_alerts" in layer.layer:
+#         return _get_glad_raster_uri(tile)
+#
+#     parts = layer.layer.split("__")
+#
+#     if len(parts) != 2:
+#         raise ValueError(
+#             f"Layer name `{layer.layer}` is invalid data lake layer, should consist of layer name and unit separated by `__`"
+#         )
+#
+#     if parts[0] == "is":
+#         type, name = parts
+#     else:
+#         name, type = parts
+#
+#     tile_id = get_tile_id(tile)
+#     version = layer.version
+#     return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{layer.grid.degrees}/{layer.grid.pixels}/{type}/gdal-geotiff/{tile_id}.tif"
+#
+#
+# def _get_glad_raster_uri(tile: Polygon) -> str:
+#     # return hardcoded URL
+#     tile_id = _get_glad_tile_id(tile)
+#     return (
+#         f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
+#     )
