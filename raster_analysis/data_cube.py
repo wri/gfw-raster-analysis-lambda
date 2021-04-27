@@ -1,16 +1,16 @@
+import concurrent.futures
 from typing import List
 
 import numpy as np
 from rasterio import features
 from rasterio.transform import Affine, from_bounds
-import concurrent.futures
 from shapely.geometry import Polygon
 
-from raster_analysis.data_environment import Layer, SourceLayer
+from raster_analysis.data_environment import DataEnvironment, SourceLayer
 from raster_analysis.geodesy import get_area
 from raster_analysis.globals import LOGGER, BasePolygon
 from raster_analysis.query import Query
-from raster_analysis.window import Window
+from raster_analysis.window import DerivedWindow, SourceWindow
 
 
 class DataCube:
@@ -20,15 +20,15 @@ class DataCube:
 
         source_layers = query.get_source_layers()
         layer_names = query.get_layer_names()
-        self.windows = self._get_windows(source_layers, tile)
+        self.windows = self._get_windows(source_layers, tile, query.data_environment)
 
         for layer in query.get_derived_layers():
-            A = self.windows[layer.source_layer]
-            area = self.mean_area
-            self.windows[layer.name] = eval(layer.derivation_expression)
+            self.windows[layer.name] = DerivedWindow(
+                layer, self.windows[layer.source_layer], self.mean_area
+            )
 
         for layer in source_layers:
-            if layer.name not in layer_names:
+            if layer.name not in layer_names and layer.name in self.windows:
                 # free up memory, since this means the source layer was only required
                 # for a derived layer
                 del self.windows[layer.name]
@@ -40,11 +40,18 @@ class DataCube:
             np.ones((tile_width, tile_width)), self.shifted_affine, geom
         )
 
-    def _get_windows(self, layers: List[SourceLayer], tile):
+    def _get_windows(
+        self,
+        layers: List[SourceLayer],
+        tile: BasePolygon,
+        data_environment: DataEnvironment,
+    ):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
             futures = {
-                executor.submit(Window, layer, tile, self.grid): layer
+                executor.submit(
+                    SourceWindow, layer, tile, self.grid, data_environment
+                ): layer
                 for layer in layers
             }
 
@@ -68,11 +75,11 @@ class DataCube:
     def _mask_geom_on_raster(
         raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
     ) -> np.ndarray:
-        """"
-        For a given polygon, returns a numpy masked array with the intersecting
-        values of the raster at `raster_path` unmasked, all non-intersecting
-        cells are masked.  This assumes that the input geometry is in the same
-        SRS as the raster.  Currently only reads from a single band.
+        """For a given polygon, returns a numpy masked array with the
+        intersecting values of the raster at `raster_path` unmasked, all non-
+        intersecting cells are masked.  This assumes that the input geometry is
+        in the same SRS as the raster.  Currently only reads from a single
+        band.
 
         Args:
             geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
@@ -85,7 +92,6 @@ class DataCube:
            Numpy masked array of source raster, cropped to the extent of the
            input geometry, with any modifications applied. Areas where the
            supplied geometry does not intersect are masked.
-
         """
 
         if raster_data.size > 0:

@@ -1,17 +1,14 @@
-from aws_xray_sdk.core import xray_recorder
 from pandas import DataFrame
-from pydantic.tools import parse_obj_as
 
-from raster_analysis.data_environment import DataEnvironment
-from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
-from raster_analysis.globals import LOGGER
 from raster_analysis.data_cube import DataCube
-from raster_analysis.query_executor import QueryExecutor
+from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.geometry import GeometryTile
+from raster_analysis.globals import LOGGER
 from raster_analysis.query import Query
+from raster_analysis.query_executor import QueryExecutor
+from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 
 
-@xray_recorder.capture("Raster Analysis Lambda")
 def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")

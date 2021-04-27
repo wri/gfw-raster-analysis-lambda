@@ -1,15 +1,8 @@
-from aws_xray_sdk.core import patch
-from aws_xray_sdk.core import xray_recorder
-from pydantic import parse_obj_as
-
-from raster_analysis.tiling import AnalysisTiler
-from raster_analysis.globals import LOGGER
 from raster_analysis.data_environment import DataEnvironment
+from raster_analysis.globals import LOGGER
+from raster_analysis.tiling import AnalysisTiler
 
-patch(["boto3"])
 
-
-@xray_recorder.capture("Tiled Analysis")
 def handler(event, context):
     try:
         query = event["query"]

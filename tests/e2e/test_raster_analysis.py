@@ -1,13 +1,12 @@
 # flake8: noqa
-from threading import Thread
-import uuid
-import pytest
-import subprocess
 import os
+import subprocess
+import uuid
 from datetime import datetime, timedelta
+from threading import Thread
 
+import pytest
 from shapely.geometry import box, mapping
-
 
 # set environment before importing our lambda layer
 os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
@@ -18,25 +17,25 @@ os.environ[
     "S3_BUCKET_DATA_LAKE"
 ] = "gfw-data-lake"  # This is actual production data lake
 
+import lambdas.fanout.src.lambda_function
+import lambdas.tiled_analysis.src.lambda_function
 import raster_analysis
 import raster_analysis.boto as boto
-import lambdas.fanout.src.lambda_function
 from lambdas.raster_analysis.src.lambda_function import handler as analysis_handler
 from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
-import lambdas.tiled_analysis.src.lambda_function
 from tests.fixtures.fixtures import (
-    IDN_24_9_GLAD_ALERTS,
-    IDN_24_9_GEOM,
-    IDN_24_9_GAIN,
+    BRA_14_87_GEOM,
+    COD_21_4_GEOM,
+    DATA_ENVIRONMENT,
     IDN_24_9_2010_EXTENT,
-    IDN_24_9_LOSS_BY_DRIVER,
-    IDN_24_9_PRIMARY_LOSS,
-    IDN_24_9_ESA_LAND_COVER,
     IDN_24_9_2010_RAW_AREA,
     IDN_24_9_2019_GLAD_ALERTS_TOTAL,
-    COD_21_4_GEOM,
-    BRA_14_87_GEOM,
-    DATA_ENVIRONMENT,
+    IDN_24_9_ESA_LAND_COVER,
+    IDN_24_9_GAIN,
+    IDN_24_9_GEOM,
+    IDN_24_9_GLAD_ALERTS,
+    IDN_24_9_LOSS_BY_DRIVER,
+    IDN_24_9_PRIMARY_LOSS,
 )
 
 
@@ -106,8 +105,9 @@ def test_primary_tree_cover_loss(context):
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
     )["body"]
-    assert result["status"] == "success"
 
+    assert result["status"] == "success"
+    assert result["data"]
     for row_actual, row_expected in zip(result["data"], IDN_24_9_PRIMARY_LOSS):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
         assert row_actual["whrc_aboveground_co2_emissions__Mg"] == pytest.approx(
@@ -117,7 +117,10 @@ def test_primary_tree_cover_loss(context):
 
 def test_extent_2010(context):
     query = "select sum(area__ha) from umd_tree_cover_density_2000__threshold where umd_tree_cover_density_2000__threshold >= 15"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
     assert result["status"] == "success"
 
     assert result["data"][0]["area__ha"] == pytest.approx(
@@ -126,9 +129,15 @@ def test_extent_2010(context):
 
 
 def test_lat_lon(context):
-    query = "select latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence, is__umd_regional_primary_forest_2001, is__gfw_oil_palm from umd_glad_landsat_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01'"
+    query = "select latitude, longitude, umd_glad_landsat_alerts__date, umd_glad_landsat_alerts__confidence, is__umd_regional_primary_forest_2001 from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01'"
     result = tiled_handler(
-        {"geometry": IDN_24_9_GEOM, "query": query, "format": "csv"}, context
+        {
+            "geometry": IDN_24_9_GEOM,
+            "query": query,
+            "format": "csv",
+            "environment": DATA_ENVIRONMENT,
+        },
+        context,
     )["body"]
     assert result["status"] == "success"
 
@@ -139,7 +148,10 @@ def test_lat_lon(context):
 @pytest.mark.skip(reason="Need to figure out if this should still be supported")
 def test_raw_area(context):
     query = "select sum(area__ha) from data"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
     assert result["data"][0]["area__ha"] == pytest.approx(
@@ -154,7 +166,10 @@ def test_tree_cover_gain(context, monkeypatch):
     )
 
     query = "select sum(area__ha) from is__umd_tree_cover_gain"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
     assert result["data"][0]["area__ha"] == pytest.approx(
@@ -164,16 +179,22 @@ def test_tree_cover_gain(context, monkeypatch):
 
 def test_tree_cover_loss_by_driver(context):
     query = "select sum(area__ha) from umd_tree_cover_loss__year where umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_LOSS_BY_DRIVER):
-        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
+        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.01)
 
 
 def test_glad_alerts(context):
-    query = "select sum(alert__count) from umd_glad_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    query = "select sum(alert__count) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
@@ -181,8 +202,11 @@ def test_glad_alerts(context):
 
 
 def test_glad_alerts_count(context):
-    query = "select count(umd_glad_alerts) from umd_glad_alerts__date where umd_glad_alerts__date >= '2019-01-01' and umd_glad_alerts__date < '2020-01-01' group by umd_glad_alerts__isoweek"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    query = "select count(umd_glad_landsat_alerts) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
@@ -192,24 +216,31 @@ def test_glad_alerts_count(context):
 def test_radd_alerts(context):
     # TODO calculate number of alerts offline
     query = "select latitude, longitude, gfw_radd_alerts__date, gfw_radd_alerts__confidence from gfw_radd_alerts__date where is__umd_regional_primary_forest_2001 = 'true' and gfw_radd_alerts__date >= '2021-01-01'"
-    result = tiled_handler({"geometry": COD_21_4_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": COD_21_4_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
 
 
-def test_glad_plus_alerts(context):
+def test_glad_s2_alerts(context):
     # TODO calculate number of alerts offline
     query = "select latitude, longitude, umd_glad_sentinel2_alerts__date, umd_glad_sentinel2_alerts__confidence from umd_glad_sentinel2_alerts__date where is__umd_regional_primary_forest_2001 = 'true' and umd_glad_sentinel2_alerts__date >= '2021-03-01'"
-    result = tiled_handler({"geometry": BRA_14_87_GEOM, "query": query}, context)[
-        "body"
-    ]
+    result = tiled_handler(
+        {"geometry": BRA_14_87_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
 
 
 def test_land_cover_area(context):
     query = "select sum(area__ha) from esa_land_cover_2015__class group by esa_land_cover_2015__class"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_ESA_LAND_COVER):
@@ -222,7 +253,10 @@ def test_land_cover_area(context):
 def test_error(context):
     start = datetime.now()
     query = "select sum(area__ha) from incorrect group by not_real"
-    result = tiled_handler({"geometry": IDN_24_9_GEOM, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )["body"]
     end = datetime.now()
 
     timeout = timedelta(seconds=29)
@@ -231,12 +265,13 @@ def test_error(context):
 
 
 def test_beyond_extent(context):
-    """
-    Test a geometry outside the extent of is__umd_regional_primary_forest_2001
-    """
+    """Test a geometry outside the extent of
+    is__umd_regional_primary_forest_2001."""
     geometry = mapping(box(0, 40, 1, 41))
     query = "select sum(area__ha) from is__umd_regional_primary_forest_2001 group by umd_tree_cover_loss__year"
-    result = tiled_handler({"geometry": geometry, "query": query}, context)["body"]
+    result = tiled_handler(
+        {"geometry": geometry, "query": query, "environment": DATA_ENVIRONMENT}, context
+    )["body"]
 
     assert result["status"] == "success"
     assert not result["data"]

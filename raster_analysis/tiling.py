@@ -1,28 +1,27 @@
 import json
 import sys
-from datetime import date
-from io import StringIO
-from typing import Dict, List, Any, Tuple
 from copy import deepcopy
+from datetime import datetime
+from io import StringIO
+from typing import Any, Dict, List, Tuple
 
 from pandas import DataFrame
-from shapely.geometry import Polygon, mapping, box, shape
-from aws_xray_sdk.core import xray_recorder
+from shapely.geometry import Polygon, box, mapping, shape
 
-from raster_analysis.boto import lambda_client, invoke_lambda
+from raster_analysis.boto import invoke_lambda, lambda_client
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.geometry import encode_geometry
-from raster_analysis.query import Query, Function
-from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import (
-    LOGGER,
     FANOUT_LAMBDA_NAME,
+    FANOUT_NUM,
+    LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
+    LOGGER,
     RASTER_ANALYSIS_LAMBDA_NAME,
     BasePolygon,
     Numeric,
-    LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
-    FANOUT_NUM,
 )
+from raster_analysis.query import Function, Query
+from raster_analysis.results_store import AnalysisResultsStore
 
 
 class AnalysisTiler:
@@ -48,7 +47,7 @@ class AnalysisTiler:
         self.results = self._execute_tiles()
 
         if self.results.size > 0:
-            self.results = self._decode_and_group_results(self.results)
+            self.results = self._postprocess_results(self.results)
 
     def result_as_csv(self) -> str:
         if self.results.size > 0:
@@ -61,25 +60,41 @@ class AnalysisTiler:
     def result_as_dict(self) -> Dict[str, Any]:
         return self.results.to_dict(orient="records")
 
-    def _decode_and_group_results(self, results):
+    def _postprocess_results(self, results):
+        """Decode results from pixel values if necessary for layer, apply any
+        selector functions, and re-apply any group by's based on final
+        values."""
         group_columns = self.query.get_group_columns()
 
-        for selector in self.query.get_selectors():
-            layer = self.data_environment.get_layer(selector.layer)
-            if layer.pixel_encoding:
-                results[selector.layer] = results[selector.layer].map(
-                    layer.pixel_encoding
-                )
+        for selector in self.query.get_result_selectors():
+            results[selector.layer] = self.data_environment.decode_layer(
+                selector.layer, results[selector.layer]
+            )
 
             if selector.function:
+                # TODO put this out to a special processor
+                layer = self.data_environment.get_layer(selector.layer)
                 if selector.function == Function.isoweek:
-                    dates = date(results[selector.layer])
-                    isoweeks = list(map(lambda val: val.isocalendar()[1], dates))
-                    years = list(map(lambda val: val.isocalendar()[0], dates))
+                    years, isoweeks = zip(
+                        *map(
+                            lambda val: datetime.strptime(
+                                val, "%Y-%m-%d"
+                            ).isocalendar()[:2],
+                            results[layer.name],
+                        )
+                    )
 
-                    results[selector.layer.replace("date", "isoweek")] = isoweeks
-                    results[selector.layer.replace("date", "year")] = years
-                    del results[selector.layer]
+                    isoweek_col_name = layer.name.replace("date", "isoweek")
+                    year_col_name = layer.name.replace("date", "year")
+
+                    results[isoweek_col_name] = isoweeks
+                    results[year_col_name] = years
+                    del results[layer.name]
+
+                    if group_columns:
+                        group_columns.append(isoweek_col_name)
+                        group_columns.append(year_col_name)
+                        group_columns.remove(layer.name)
 
         if group_columns:
             grouped_df = results.groupby(group_columns).sum()
@@ -93,7 +108,6 @@ class AnalysisTiler:
         else:
             return results
 
-    @xray_recorder.capture("Process Tiles")
     def _execute_tiles(self) -> DataFrame:
         tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
@@ -136,9 +150,8 @@ class AnalysisTiler:
         return results
 
     def _get_tiles(self, width: Numeric) -> List[Polygon]:
-        """
-        Get width x width tile geometries over the extent of the geometry
-        """
+        """Get width x width tile geometries over the extent of the
+        geometry."""
         min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
         tiles = []
 
@@ -160,9 +173,8 @@ class AnalysisTiler:
     def _get_rounded_bounding_box(
         geom: BasePolygon, width: Numeric
     ) -> Tuple[int, int, int, int]:
-        """
-        Round bounding box to divide evenly into width x width tiles from plane origin
-        """
+        """Round bounding box to divide evenly into width x width tiles from
+        plane origin."""
         return (
             geom.bounds[0] - (geom.bounds[0] % width),
             geom.bounds[1] - (geom.bounds[1] % width),

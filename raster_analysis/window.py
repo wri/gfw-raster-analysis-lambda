@@ -1,40 +1,37 @@
+# flake8: noqa
 import logging
 import traceback
 from typing import Tuple
 
 import numpy as np
 import rasterio
-from numpy import ndarray
+import rasterio.windows as wd
+from numpy import datetime64, floor, ndarray
 from rasterio import DatasetReader
 from rasterio.enums import Resampling
 from rasterio.transform import Affine
-from aws_xray_sdk.core import xray_recorder
-import rasterio.windows as wd
 from rasterio.vrt import WarpedVRT
 from shapely.geometry import Polygon
 
+from raster_analysis.data_environment import DataEnvironment, DerivedLayer, SourceLayer
 from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 from raster_analysis.grid import Grid
-from raster_analysis.data_environment import SourceLayer
 
 
-class Window:
-    def __init__(self, layer: SourceLayer, tile: Polygon, grid: Grid):
+class SourceWindow:
+    def __init__(
+        self,
+        layer: SourceLayer,
+        tile: Polygon,
+        grid: Grid,
+        data_environment: DataEnvironment,
+    ):
         self.layer = layer
         self.tile = tile
         self.grid = grid
-        self.tile_id = layer.grid.get_tile_id(tile, layer.tile_scheme)
-        self.source_uri = layer.source_uri.format(tile_id=self.tile_id)
+        self.source_uri = data_environment.get_source_uri(layer.name, tile)
 
         data, shifted_affine, no_data_value = self.read()
-
-        if data.size == 0:
-            self.empty = True
-            data = np.zeros(
-                (self.grid.get_tile_width(), self.grid.get_tile_width()), dtype=np.uint8
-            )
-        else:
-            self.empty = False
 
         self.data: ndarray = data
         self.shifted_affine: Affine = shifted_affine
@@ -48,28 +45,26 @@ class Window:
         return data, shifted_affine, no_data_value
 
     def clear(self) -> None:
-        """
-        Clear internal data array to save memory.
-        """
+        """Clear internal data array to save memory."""
         self.data = []
 
-    @xray_recorder.capture("Read Window")
     @staticmethod
     def _read_window(
         raster: str, geom: BasePolygon, grid: Grid, masked: bool = False
     ) -> Tuple[np.ndarray, Affine, Numeric]:
-        """
-        Read a chunk of the raster that contains the bounding box of the
-        input geometry.  This has memory implications if that rectangle
-        is large. The affine transformation maps geom coordinates to the
-        image mask below.
-        can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
+        """Read a chunk of the raster that contains the bounding box of the
+        input geometry.
+
+        This has memory implications if that rectangle is large. The
+        affine transformation maps geom coordinates to the image mask
+        below. can set CPL_DEBUG=True to see HTTP range
+        requests/rasterio env/etc
         """
 
         with rasterio.Env():
             LOGGER.info(f"Reading raster source {raster}")
             with rasterio.open(raster) as src:
-                transform = Window._adjust_affine_to_grid(src.transform, grid)
+                transform = SourceWindow._adjust_affine_to_grid(src.transform, grid)
                 with WarpedVRT(
                     src,
                     transform=transform,
@@ -78,7 +73,7 @@ class Window:
                     width=grid.pixels,
                 ) as vrt:
                     try:
-                        window, shifted_affine = Window._get_window_and_affine(
+                        window, shifted_affine = SourceWindow._get_window_and_affine(
                             geom, vrt, grid
                         )
                         data = vrt.read(1, masked=masked, window=window)
@@ -106,10 +101,16 @@ class Window:
         raster: str, geom: BasePolygon, grid: Grid, masked: bool = False
     ) -> Tuple[np.ndarray, Affine, Numeric]:
         try:
-            data = Window._read_window(raster, geom, grid, masked=masked)
+            data = SourceWindow._read_window(raster, geom, grid, masked=masked)
         except rasterio.errors.RasterioIOError as e:
             logging.warning("RasterIO error reading " + raster + ":\n" + str(e))
-            data = np.array([]), None, None
+            data = (
+                np.zeros(
+                    (grid.get_tile_width(), grid.get_tile_width()), dtype=np.uint8
+                ),
+                Affine(0, 0, 0, 0, 0, 0),
+                0,
+            )
 
         return data
 
@@ -117,10 +118,10 @@ class Window:
     def _get_window_and_affine(
         geom: BasePolygon, raster_src: DatasetReader, grid: Grid
     ) -> Tuple[wd.Window, Affine]:
-        """
-        Get a rasterio window block from the bounding box of a vector feature and
-        calculates the affine transformation needed to map the coordinates of the
-        geometry onto a resulting array defined by the shape of the window.
+        """Get a rasterio window block from the bounding box of a vector
+        feature and calculates the affine transformation needed to map the
+        coordinates of the geometry onto a resulting array defined by the shape
+        of the window.
 
         Args:
             geom (Shapely geometry): A geometry in the spatial reference system
@@ -139,9 +140,11 @@ class Window:
         """
 
         # Create a window range from the bounds
-        window: wd.Window = raster_src.window(*geom.bounds).round_lengths(
-            pixel_precision=5
-        ).round_offsets(pixel_precision=5)
+        window: wd.Window = (
+            raster_src.window(*geom.bounds)
+            .round_lengths(pixel_precision=5)
+            .round_offsets(pixel_precision=5)
+        )
 
         # Create a transform relative to this window
         affine = rasterio.windows.transform(window, raster_src.transform)
@@ -151,3 +154,9 @@ class Window:
         # affine = Affine(pixel_width, affine[1], affine[2], affine[3], -pixel_width, affine[5])
 
         return window, affine
+
+
+class DerivedWindow(SourceWindow):
+    def __init__(self, layer: DerivedLayer, source_window: SourceWindow, area: float):
+        A = source_window.data
+        self.data = eval(layer.derivation_expression)

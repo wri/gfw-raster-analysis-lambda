@@ -1,9 +1,10 @@
 import math
+from enum import Enum
 
+from pydantic import BaseModel
 from shapely.geometry import Point, Polygon
 
-from enum import Enum
-from pydantic import BaseModel
+from raster_analysis.globals import BasePolygon
 
 
 class TileScheme(str, Enum):
@@ -29,9 +30,11 @@ class Grid(BaseModel):
 
     @staticmethod
     def get_grid(name: GridName):
-        degrees, pixels = name.split("/")
+        degrees_str, pixels_str = name.split("/")
+        degrees = int(degrees_str)
+        pixels = int(pixels_str)
         tile_degrees = degrees * (5000 / pixels)
-        return Grid(degrees, pixels, tile_degrees)
+        return Grid(degrees=degrees, pixels=pixels, tile_degrees=tile_degrees)
 
     def get_pixel_width(self) -> float:
         return self.degrees / self.pixels
@@ -40,22 +43,22 @@ class Grid(BaseModel):
         return round((self.tile_degrees / self.degrees) * self.pixels)
 
     def get_tile_id(self, geometry: Polygon, tile_scheme: TileScheme) -> str:
-        """
-        Get name of tile in data lake centroid of geometry falls in
+        """Get name of tile in data lake centroid of geometry falls in.
 
         :param: Shapely Polygon
         :return: tile id
         """
-        centroid = geometry.centroid
         if tile_scheme == TileScheme.nw:
+            centroid = geometry.centroid
             return self._get_nw_tile_id(centroid, self.degrees)
         elif tile_scheme == TileScheme.nwse:
-            return self._get_nwse_tile_id(centroid, self.degrees)
+            return self._get_nwse_tile_id(geometry, self.degrees)
+        else:
+            raise NotImplementedError(f"Tile scheme {tile_scheme} not implemented.")
 
     @staticmethod
     def _get_nw_tile_id(point: Point, grid_size) -> str:
-        """
-        Get name of tile in data lake
+        """Get name of tile in data lake.
 
         :param point: Shapely point
         :param grid_size: Tile size of grid to check against
@@ -78,13 +81,13 @@ class Grid(BaseModel):
         return f"{lat}_{long}"
 
     @staticmethod
-    def _get_nwse_tile_id(tile) -> str:
+    def _get_nwse_tile_id(tile: BasePolygon, grid_size: int) -> str:
         left, bottom, right, top = tile.bounds
 
-        left = Grid._lower_bound(left)
-        bottom = Grid._lower_bound(bottom)
-        right = Grid._upper_bound(right)
-        top = Grid._upper_bound(top)
+        left = Grid._lower_bound(left, grid_size)
+        bottom = Grid._lower_bound(bottom, grid_size)
+        right = Grid._upper_bound(right, grid_size)
+        top = Grid._upper_bound(top, grid_size)
 
         west = Grid._get_longitude(left)
         south = Grid._get_latitude(bottom)
@@ -108,47 +111,12 @@ class Grid(BaseModel):
             return str(-y).zfill(2) + "S"
 
     @staticmethod
-    def _lower_bound(y: int) -> int:
-        return int(math.floor(y / 10) * 10)
+    def _lower_bound(y: int, grid_size: int) -> int:
+        return int(math.floor(y / grid_size) * grid_size)
 
     @staticmethod
-    def _upper_bound(y: int) -> int:
-        if y == Grid._lower_bound(y):
+    def _upper_bound(y: int, grid_size: int) -> int:
+        if y == Grid._lower_bound(y, grid_size):
             return int(y)
         else:
-            return int((math.floor(y / 10) * 10) + 10)
-
-
-# def get_raster_uri(layer: Layer, tile: Polygon) -> str:
-#     """
-#     Maps layer name input to a raster URI in the data lake
-#     :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
-#     :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
-#     """
-#
-#     if "umd_glad_landsat_alerts" in layer.layer:
-#         return _get_glad_raster_uri(tile)
-#
-#     parts = layer.layer.split("__")
-#
-#     if len(parts) != 2:
-#         raise ValueError(
-#             f"Layer name `{layer.layer}` is invalid data lake layer, should consist of layer name and unit separated by `__`"
-#         )
-#
-#     if parts[0] == "is":
-#         type, name = parts
-#     else:
-#         name, type = parts
-#
-#     tile_id = get_tile_id(tile)
-#     version = layer.version
-#     return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{layer.grid.degrees}/{layer.grid.pixels}/{type}/gdal-geotiff/{tile_id}.tif"
-#
-#
-# def _get_glad_raster_uri(tile: Polygon) -> str:
-#     # return hardcoded URL
-#     tile_id = _get_glad_tile_id(tile)
-#     return (
-#         f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
-#     )
+            return int((math.floor(y / grid_size) * grid_size) + grid_size)
