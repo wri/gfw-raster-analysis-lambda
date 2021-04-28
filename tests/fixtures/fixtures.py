@@ -50,7 +50,7 @@ DATA_ENVIRONMENT = [
     {
         "source_layer": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
         "name": "whrc_aboveground_co2_emissions__Mg",
-        "derivation_expression": "A * area * (0.5 * 44 / 12)",
+        "calc": "A * area * (0.5 * 44 / 12)",
     },
     {
         "source_uri": "s3://gfw-data-lake/umd_tree_cover_gain/v1.6/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
@@ -127,14 +127,14 @@ DATA_ENVIRONMENT = [
     {
         "source_layer": "umd_glad_landsat_alerts__date_conf",
         "name": "umd_glad_landsat_alerts__date",
-        "derivation_expression": "A % 10000",
+        "calc": "A % 10000",
         "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
         "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
     },
     {
         "source_layer": "umd_glad_landsat_alerts__date_conf",
         "name": "umd_glad_landsat_alerts__confidence",
-        "derivation_expression": "floor(A / 10000)",
+        "calc": "floor(A / 10000)",
         "pixel_encoding": {2: "", 3: "high"},
     },
     {
@@ -146,14 +146,14 @@ DATA_ENVIRONMENT = [
     {
         "source_layer": "umd_glad_sentinel2_alerts__date_conf",
         "name": "umd_glad_sentinel2_alerts__date",
-        "derivation_expression": "A % 10000",
+        "calc": "A % 10000",
         "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
         "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
     },
     {
         "source_layer": "umd_glad_sentinel2_alerts__date_conf",
         "name": "umd_glad_sentinel2_alerts__confidence",
-        "derivation_expression": "floor(A / 10000)",
+        "calc": "floor(A / 10000)",
         "pixel_encoding": {2: "", 3: "high"},
     },
     {
@@ -165,14 +165,14 @@ DATA_ENVIRONMENT = [
     {
         "source_layer": "gfw_radd_alerts__date_conf",
         "name": "gfw_radd_alerts__date",
-        "derivation_expression": "A % 10000",
+        "calc": "A % 10000",
         "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
         "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
     },
     {
         "source_layer": "gfw_radd_alerts__date_conf",
         "name": "gfw_radd_alerts__confidence",
-        "derivation_expression": "floor(A / 10000)",
+        "calc": "floor(A / 10000)",
         "pixel_encoding": {2: "", 3: "high"},
     },
 ]

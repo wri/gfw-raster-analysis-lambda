@@ -159,4 +159,4 @@ class SourceWindow:
 class DerivedWindow(SourceWindow):
     def __init__(self, layer: DerivedLayer, source_window: SourceWindow, area: float):
         A = source_window.data
-        self.data = eval(layer.derivation_expression)
+        self.data = eval(layer.calc)

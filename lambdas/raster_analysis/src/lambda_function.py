@@ -26,7 +26,7 @@ def handler(event, context):
             return {}
 
         data_environment = DataEnvironment(layers=event["environment"])
-        query = Query.parse_query(event["query"], data_environment)
+        query = Query(event["query"], data_environment)
 
         data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
         query_executor = QueryExecutor(query, data_cube)

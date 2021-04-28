@@ -33,8 +33,8 @@ class AnalysisTiler:
         data_environment: DataEnvironment,
     ):
         self.raw_query: str = raw_query
-        self.query: Query = Query.parse_query(raw_query, data_environment)
-        self.data_environment = data_environment
+        self.query: Query = Query(raw_query, data_environment)
+        self.data_environment: DataEnvironment = data_environment
 
         self.raw_geom: Dict[str, Any] = raw_geom
         self.geom: BasePolygon = shape(raw_geom)

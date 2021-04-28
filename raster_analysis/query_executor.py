@@ -89,9 +89,7 @@ class QueryExecutor:
         group_counts: ndarray,
         inverse_index: ndarray,
     ) -> Tuple[str, ndarray]:
-        if aggregate.layer == SpecialSelectors.alert__count:
-            return SpecialSelectors.alert__count, group_counts
-        elif aggregate.name == SupportedAggregates.count_:
+        if aggregate.name == SupportedAggregates.count_:
             return SupportedAggregates.count_, group_counts
         elif aggregate.layer == SpecialSelectors.area__ha:
             return SpecialSelectors.area__ha, group_counts * self.data_cube.mean_area
@@ -124,9 +122,7 @@ class QueryExecutor:
     def _aggregate_window(
         self, aggregate: Aggregate, mask: ndarray
     ) -> Tuple[str, Union[int, float]]:
-        if aggregate.layer == SpecialSelectors.alert__count:
-            return SpecialSelectors.alert__count, mask.sum()
-        elif aggregate.name == SupportedAggregates.count_:
+        if aggregate.name == SupportedAggregates.count_:
             return SupportedAggregates.count_, mask.sum()
         elif aggregate.layer == SpecialSelectors.area__ha:
             return aggregate.layer, mask.sum() * self.data_cube.mean_area

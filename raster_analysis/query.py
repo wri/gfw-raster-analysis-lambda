@@ -14,7 +14,6 @@ class SpecialSelectors(str, Enum):
     latitude = "latitude"
     longitude = "longitude"
     area__ha = "area__ha"
-    alert__count = "alert__count"  # deprecated
 
 
 class Operator(str, Enum):
@@ -59,13 +58,15 @@ class Selector(BaseModel):
         return hash(self.layer)
 
 
-class Query(BaseModel):
-    base: Selector
-    selectors: List[Selector]
-    filters: List[Filter] = []
-    groups: List[Selector] = []
-    aggregates: List[Aggregate] = []
-    data_environment: DataEnvironment
+class Query:
+    def __init__(self, query: str, data_environment: DataEnvironment):
+        self.data_environment = data_environment
+        base, selectors, filters, groups, aggregates = self.parse_query(query)
+        self.base = base
+        self.selectors = selectors
+        self.filters = filters
+        self.groups = groups
+        self.aggregates = aggregates
 
     def get_source_layers(self) -> List[Layer]:
         layer_names = self.get_layer_names()
@@ -110,13 +111,8 @@ class Query(BaseModel):
 
         return minimum_grid
 
-    @staticmethod
-    def parse_query(raw_query: str, data_environment: DataEnvironment):
+    def parse_query(self, raw_query: str):
         parsed = parse(raw_query)
-        selectors: List[Selector] = []
-        where: List[Filter] = []
-        groups: List[Selector] = []
-        aggregates: List[Aggregate] = []
 
         if "select" not in parsed or "from" not in parsed:
             raise QueryParseException(
@@ -124,7 +120,16 @@ class Query(BaseModel):
             )
 
         base = Selector(layer=parsed["from"])
-        for selector in Query._ensure_list(parsed["select"]):
+        selectors, aggregates = self._parse_select(parsed)
+        where = self._parse_where(parsed)
+        groups = self._parse_group_by(parsed)
+
+        return base, selectors, where, groups, aggregates
+
+    def _parse_select(self, query: Dict[str, Any]):
+        selectors = []
+        aggregates = []
+        for selector in Query._ensure_list(query["select"]):
             if isinstance(selector["value"], dict):
                 func_name, layer_name = Query._get_first_key_value(selector["value"])
                 if func_name in SupportedAggregates.__members__.values():
@@ -137,31 +142,39 @@ class Query(BaseModel):
                 selector = Selector(layer=selector["value"])
                 selectors.append(selector)
 
-        if "where" in parsed:
-            if "and" in parsed["where"]:
-                if isinstance(parsed["where"]["and"], dict):
+        return selectors, aggregates
+
+    def _parse_where(self, query: Dict[str, Any]):
+        where = []
+        if "where" in query:
+            if "or" in query["where"]:
+                raise QueryParseException("OR statement is not supported.")
+            elif "and" in query["where"]:
+                if isinstance(query["where"]["and"], dict):
                     raise QueryParseException(
                         "Only one level is supported in AND statement."
                     )
-                filters = parsed["where"]["and"]
-            elif "or" in parsed["where"]:
-                raise QueryParseException("OR statement is not supported.")
+                filters = query["where"]["and"]
             else:
-                filters = parsed["where"]
+                filters = query["where"]
 
             for filter in Query._ensure_list(filters):
                 op, (layer, value) = Query._get_first_key_value(filter)
                 if isinstance(value, dict):
                     value = value["literal"]
 
-                encoded_values = data_environment.encode_layer(layer, value)
+                encoded_values = self.data_environment.encode_layer(layer, value)
                 where += [
                     Filter(operator=Operator[op], layer=layer, value=enc_val)
                     for enc_val in encoded_values
                 ]
 
-        if "groupby" in parsed:
-            for group in Query._ensure_list(parsed["groupby"]):
+        return where
+
+    def _parse_group_by(self, query: Dict[str, Any]):
+        groups = []
+        if "groupby" in query:
+            for group in Query._ensure_list(query["groupby"]):
                 if isinstance(group["value"], dict):
                     func_name, layer_name = Query._get_first_key_value(group["value"])
                     if func_name in Function.__members__.values():
@@ -175,14 +188,7 @@ class Query(BaseModel):
                     group = Selector(layer=group["value"])
                     groups.append(group)
 
-        return Query(
-            base=base,
-            selectors=selectors,
-            filters=where,
-            groups=groups,
-            aggregates=aggregates,
-            data_environment=data_environment,
-        )
+        return groups
 
     # the SQL parser sometimes outputs a list or single value depending on input,
     # Just a helper to make it consistent

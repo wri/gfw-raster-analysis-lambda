@@ -18,33 +18,35 @@ from numpy import (
     uint64,
 )
 from pandas import Series
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel
 
 from raster_analysis.globals import BasePolygon
 from raster_analysis.grid import Grid, GridName, TileScheme
 
 
-class SourceLayer(BaseModel):
-    source_uri: str
+class BaseLayer(BaseModel):
     name: str
+
+
+class EncodedLayer(BaseLayer):
+    pixel_encoding: Dict[Any, Any] = {}
+    decode_expression: str = ""
+    encode_expression: str = ""
+
+
+class SourceLayer(EncodedLayer):
+    source_uri: str
     tile_scheme: TileScheme = TileScheme.nw
     grid: GridName = GridName.ten_by_forty_thousand
-    pixel_encoding: Dict[Any, Any] = {}
-    decode_expression: str = ""
-    encode_expression: str = ""
 
 
-class DerivedLayer(BaseModel):
+class DerivedLayer(EncodedLayer):
     source_layer: str
-    name: str
-    derivation_expression: str
-    pixel_encoding: Dict[Any, Any] = {}
-    decode_expression: str = ""
-    encode_expression: str = ""
+    calc: str
 
 
-class ReservedLayer(BaseModel):
-    name: str
+class ReservedLayer(BaseLayer):
+    pass
 
 
 Layer = Union[SourceLayer, DerivedLayer, ReservedLayer]
@@ -54,7 +56,6 @@ RESERVED_LAYERS = [
     ReservedLayer(name="area__ha"),
     ReservedLayer(name="latitude"),
     ReservedLayer(name="longitude"),
-    ReservedLayer(name="alert__count"),
 ]
 
 
@@ -105,25 +106,26 @@ class DataEnvironment(BaseModel):
 
     def encode_layer(self, name: str, val: Any) -> List[Any]:
         layer = self.get_layer(name)
-        if layer.pixel_encoding:
-            encoded_vals = [
-                encoded_val
-                for encoded_val, decoded_val in layer.pixel_encoding.items()
-                if val == decoded_val
-            ]
+        if isinstance(layer, EncodedLayer):
+            if layer.pixel_encoding:
+                encoded_vals = [
+                    encoded_val
+                    for encoded_val, decoded_val in layer.pixel_encoding.items()
+                    if val == decoded_val
+                ]
 
-            if not encoded_vals:
-                raise ValueError(
-                    f"Value {val} not in pixel encoding {layer.pixel_encoding}"
-                )
-            return encoded_vals
-        elif layer.encode_expression:
-            A = val
-            result = eval(layer.encode_expression)
-            return list(result) if isinstance(result, Iterable) else [result]
-        else:
-            # if no pixel_encoding, encoded value is just the same as decoded value
-            return [val]
+                if not encoded_vals:
+                    raise ValueError(
+                        f"Value {val} not in pixel encoding {layer.pixel_encoding}"
+                    )
+                return encoded_vals
+            elif layer.encode_expression:
+                A = val
+                result = eval(layer.encode_expression)
+                return list(result) if isinstance(result, Iterable) else [result]
+
+        # if no pixel_encoding, encoded value is just the same as decoded value
+        return [val]
 
     def decode_layer(self, name: str, values: Series) -> Series:
         layer = self.get_layer(name)

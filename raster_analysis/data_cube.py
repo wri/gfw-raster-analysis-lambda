@@ -76,17 +76,18 @@ class DataCube:
         raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
     ) -> np.ndarray:
         """For a given polygon, returns a numpy masked array with the
-        intersecting values of the raster at `raster_path` unmasked, all non-
-        intersecting cells are masked.  This assumes that the input geometry is
-        in the same SRS as the raster.  Currently only reads from a single
-        band.
+        intersecting values of the raster_data, all non- intersecting cells are
+        masked.  This assumes that the input geometry is in the same SRS as the
+        raster.
 
         Args:
+            raster_data (ndarray): ndarray of raster data to be masked onto
+            shifted_affine (Affine): the transform used to map the vector geometry to the raster
             geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
                 which will define the area of the raster to mask.
 
-            raster_path (string): A local file path to a geographic raster
-                containing values to extract.
+            geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
+                which will define the area of the raster to mask.
 
         Returns
            Numpy masked array of source raster, cropped to the extent of the

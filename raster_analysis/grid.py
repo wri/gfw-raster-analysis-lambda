@@ -1,7 +1,6 @@
 import math
 from enum import Enum
 
-from pydantic import BaseModel
 from shapely.geometry import Point, Polygon
 
 from raster_analysis.globals import BasePolygon
@@ -23,18 +22,19 @@ class GridName(str, Enum):
     ninety_by_twenty_seven_thousand_eight = "90/27008"
 
 
-class Grid(BaseModel):
-    degrees: int
-    pixels: int
-    tile_degrees: float
+class Grid:
+    def __init__(self, degrees: int, pixels: int, tile_degrees: float):
+        self.degrees = degrees
+        self.pixels = pixels
+        self.tile_degrees = tile_degrees
 
-    @staticmethod
-    def get_grid(name: GridName):
+    @classmethod
+    def get_grid(cls, name: GridName):
         degrees_str, pixels_str = name.split("/")
         degrees = int(degrees_str)
         pixels = int(pixels_str)
         tile_degrees = degrees * (5000 / pixels)
-        return Grid(degrees=degrees, pixels=pixels, tile_degrees=tile_degrees)
+        return cls(degrees, pixels, tile_degrees)
 
     def get_pixel_width(self) -> float:
         return self.degrees / self.pixels
@@ -56,8 +56,7 @@ class Grid(BaseModel):
         else:
             raise NotImplementedError(f"Tile scheme {tile_scheme} not implemented.")
 
-    @staticmethod
-    def _get_nw_tile_id(point: Point, grid_size) -> str:
+    def _get_nw_tile_id(self, point: Point, grid_size) -> str:
         """Get name of tile in data lake.
 
         :param point: Shapely point
@@ -66,7 +65,6 @@ class Grid(BaseModel):
         """
         col = int(math.floor(point.x / grid_size)) * grid_size
         if col >= 0:
-
             long = str(col).zfill(3) + "E"
         else:
             long = str(-col).zfill(3) + "W"
@@ -80,19 +78,18 @@ class Grid(BaseModel):
 
         return f"{lat}_{long}"
 
-    @staticmethod
-    def _get_nwse_tile_id(tile: BasePolygon, grid_size: int) -> str:
+    def _get_nwse_tile_id(self, tile: BasePolygon, grid_size: int) -> str:
         left, bottom, right, top = tile.bounds
 
-        left = Grid._lower_bound(left, grid_size)
-        bottom = Grid._lower_bound(bottom, grid_size)
-        right = Grid._upper_bound(right, grid_size)
-        top = Grid._upper_bound(top, grid_size)
+        left = self._lower_bound(left, grid_size)
+        bottom = self._lower_bound(bottom, grid_size)
+        right = self._upper_bound(right, grid_size)
+        top = self._upper_bound(top, grid_size)
 
-        west = Grid._get_longitude(left)
-        south = Grid._get_latitude(bottom)
-        east = Grid._get_longitude(right)
-        north = Grid._get_latitude(top)
+        west = self._get_longitude(left)
+        south = self._get_latitude(bottom)
+        east = self._get_longitude(right)
+        north = self._get_latitude(top)
 
         return f"{west}_{south}_{east}_{north}"
 

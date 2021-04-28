@@ -190,7 +190,7 @@ def test_tree_cover_loss_by_driver(context):
 
 
 def test_glad_alerts(context):
-    query = "select sum(alert__count) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
+    query = "select count(umd_glad_landsat_alerts) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
@@ -198,7 +198,7 @@ def test_glad_alerts(context):
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
-        assert row_actual["alert__count"] == row_expected["alert__count"]
+        assert row_actual["count"] == row_expected["alert__count"]
 
 
 def test_glad_alerts_count(context):
