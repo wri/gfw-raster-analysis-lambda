@@ -65,7 +65,7 @@ class Window:
         can set CPL_DEBUG=True to see HTTP range requests/rasterio env/etc
         """
 
-        with rasterio.Env():
+        with rasterio.Env(AWS_REQUEST_PAYER="requester"):
             LOGGER.info(f"Reading raster source {raster}")
             with rasterio.open(raster) as src:
                 transform = Window._adjust_affine_to_grid(src.transform, grid)

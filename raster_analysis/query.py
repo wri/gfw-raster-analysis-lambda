@@ -1,4 +1,4 @@
-from typing import List, Any, Dict, Union
+from typing import List, Any, Dict, Union, Optional
 from enum import Enum
 
 from numpy import ndarray
@@ -47,7 +47,7 @@ class Aggregate(BaseModel):
 
 
 class Query(BaseModel):
-    base: Layer
+    base: Optional[Layer]
     selectors: List[Layer]
     filters: List[Filter] = []
     groups: List[Layer] = []
@@ -69,7 +69,7 @@ class Query(BaseModel):
         ]
         layers += [group for group in self.groups]
 
-        if self.base.layer in LAYERS or self.base.alias in LAYERS:
+        if self.base:
             layers.append(self.base)
 
         return list(dict.fromkeys(layers))
@@ -107,7 +107,7 @@ class Query(BaseModel):
                 "Invalid query, must include SELECT and FROM components"
             )
 
-        base = LAYERS[parsed["from"]]
+        base = LAYERS[parsed["from"]] if parsed["from"] in LAYERS else None
         for selector in Query._ensure_list(parsed["select"]):
             if isinstance(selector["value"], dict):
                 func, layer = Query._get_first_key_value(selector["value"])
