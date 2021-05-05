@@ -1,13 +1,16 @@
-from typing import Union
 import logging
 import os
-from shapely.geometry import Polygon, MultiPolygon
+from typing import Union
+
+from shapely.geometry import MultiPolygon, Polygon
 
 Numeric = Union[int, float]
 BasePolygon = Union[Polygon, MultiPolygon]
 ResultValue = Union[int, float, str]
 
-LOGGING_LEVEL = logging.INFO
+ENV = os.environ.get("ENV", "dev")
+
+LOGGING_LEVEL = logging.DEBUG if ENV == "dev" else logging.INFO
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(LOGGING_LEVEL)
 
@@ -24,7 +27,6 @@ S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", None)
 LAMBDA_ENDPOINT_URL = os.environ.get("LAMBDA_ENDPOINT_URL", None)
 DYNAMODB_ENDPOINT_URL = os.environ.get("DYNAMODB_ENDPOINT_URL", None)
 AWS_REGION = "us-east-1"
-
 
 FANOUT_LAMBDA_NAME = os.environ.get("FANOUT_LAMBDA_NAME", "")
 RASTER_ANALYSIS_LAMBDA_NAME = os.environ.get("RASTER_ANALYSIS_LAMBDA_NAME", "")

@@ -29,7 +29,7 @@ class BaseLayer(BaseModel):
 
 
 class EncodedLayer(BaseLayer):
-    pixel_encoding: Dict[Any, Any] = {}
+    pixel_encoding: Dict[str, Any] = {}
     decode_expression: str = ""
     encode_expression: str = ""
 
@@ -107,17 +107,16 @@ class DataEnvironment(BaseModel):
     def encode_layer(self, name: str, val: Any) -> List[Any]:
         layer = self.get_layer(name)
         if isinstance(layer, EncodedLayer):
-            if layer.pixel_encoding:
+            encoding = self.get_pixel_encoding(name)
+            if encoding:
                 encoded_vals = [
                     encoded_val
-                    for encoded_val, decoded_val in layer.pixel_encoding.items()
+                    for encoded_val, decoded_val in encoding.items()
                     if val == decoded_val
                 ]
 
                 if not encoded_vals:
-                    raise ValueError(
-                        f"Value {val} not in pixel encoding {layer.pixel_encoding}"
-                    )
+                    raise ValueError(f"Value {val} not in pixel encoding {encoding}")
                 return encoded_vals
             elif layer.encode_expression:
                 A = val
@@ -143,26 +142,34 @@ class DataEnvironment(BaseModel):
     def get_source_uri(self, name: str, tile: BasePolygon):
         layer = self.get_layer(name)
 
+        source_uri = layer.source_uri
+
         if layer.tile_scheme:
             grid = Grid.get_grid(layer.grid)
             tile_id = grid.get_tile_id(tile, layer.tile_scheme)
-            return layer.source_uri.format(tile_id=tile_id)
-        else:
-            return layer.source_uri
+            source_uri = layer.source_uri.format(tile_id=tile_id)
 
-    def get_pixel_encoding(self, name: str):
+        if "s3" in source_uri:
+            source_uri = source_uri.replace("s3://", "/vsis3/")
+
+        return source_uri
+
+    def get_pixel_encoding(self, name: str) -> Dict[int, Any]:
         layer = self.get_layer(name)
 
-        # default value is implemented in Python as a defaultdict
-        if isinstance(layer, SourceLayer):
-            if "_" in layer.pixel_encoding:
-                encoding = deepcopy(layer.pixel_encoding)
+        if isinstance(layer, EncodedLayer):
+            encoding = deepcopy(layer.pixel_encoding)
+
+            # only allowed str value is wildcard
+            encoding = {(int(k) if k != "_" else k): v for k, v in encoding.items()}
+
+            # default value is implemented in Python as a defaultdict
+            if "_" in encoding:
                 default_val = encoding["_"]
                 del encoding["_"]
+                encoding = defaultdict(lambda: default_val, encoding)
 
-                return defaultdict(lambda: default_val, encoding)
-
-            return layer.pixel_encoding
+            return encoding
         else:
             return {}
 
