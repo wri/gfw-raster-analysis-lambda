@@ -96,7 +96,6 @@ class QueryExecutor:
         else:
             window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
-            # column_name = f"sum({aggregate.layer.layer})"
 
             # this will sum the values of aggregate data into different bins, where each bin
             # is the corresponding group at that pixel

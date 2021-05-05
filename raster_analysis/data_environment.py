@@ -24,12 +24,22 @@ from raster_analysis.globals import BasePolygon
 from raster_analysis.grid import Grid, GridName, TileScheme
 
 
+class RasterTableRow(BaseModel):
+    value: int
+    meaning: Any
+
+
+class RasterTable(BaseModel):
+    rows: List[RasterTableRow]
+    default_meaning: Any = None
+
+
 class BaseLayer(BaseModel):
     name: str
 
 
 class EncodedLayer(BaseLayer):
-    pixel_encoding: Dict[str, Any] = {}
+    raster_table: Optional[RasterTable] = None
     decode_expression: str = ""
     encode_expression: str = ""
 
@@ -157,17 +167,15 @@ class DataEnvironment(BaseModel):
     def get_pixel_encoding(self, name: str) -> Dict[int, Any]:
         layer = self.get_layer(name)
 
-        if isinstance(layer, EncodedLayer):
-            encoding = deepcopy(layer.pixel_encoding)
+        if isinstance(layer, EncodedLayer) and layer.raster_table:
+            raster_table = layer.raster_table
+            cast(RasterTable, raster_table)
 
-            # only allowed str value is wildcard
-            encoding = {(int(k) if k != "_" else k): v for k, v in encoding.items()}
+            encoding = {row.value: row.meaning for row in raster_table.rows}
 
             # default value is implemented in Python as a defaultdict
-            if "_" in encoding:
-                default_val = encoding["_"]
-                del encoding["_"]
-                encoding = defaultdict(lambda: default_val, encoding)
+            if layer.raster_table.default_meaning:
+                encoding = defaultdict(lambda: raster_table.default_meaning, encoding)
 
             return encoding
         else:
@@ -179,5 +187,5 @@ class DataEnvironment(BaseModel):
 
         Otherwise, 0 is considered NoData and will be filtered out.
         """
-        layer = self.get_layer(name)
-        return "_" in layer.pixel_encoding or 0 in layer.pixel_encoding
+        encoding = self.get_pixel_encoding(name)
+        return isinstance(encoding, defaultdict) or 0 in encoding

@@ -61,7 +61,7 @@ class SourceWindow:
         requests/rasterio env/etc
         """
 
-        with rasterio.Env():
+        with rasterio.Env(AWS_REQUEST_PAYER="requester"):
             LOGGER.info(f"Reading raster source {raster}")
             with rasterio.open(raster) as src:
                 transform = SourceWindow._adjust_affine_to_grid(src.transform, grid)
