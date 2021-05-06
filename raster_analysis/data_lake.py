@@ -34,6 +34,10 @@ def date_conf_isoweek_decoder(layer: str, s: Series):
     years = list(map(lambda val: val.isocalendar()[0], iso_week_dates))
 
     base_name = layer.split("__")[0]
+
+    if base_name == "umd_glad_landsat_alerts":
+        base_name = "umd_glad_alerts"
+
     return {f"{base_name}__isoweek": iso_weeks, f"{base_name}__year": years}
 
 
