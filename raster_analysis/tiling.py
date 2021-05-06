@@ -1,128 +1,157 @@
-from datetime import date
-from typing import Dict, List, Any
+import json
+import sys
+from io import StringIO
+from typing import Dict, List, Any, Tuple
 from copy import deepcopy
 
-import pandas as pd
-from shapely.geometry import Polygon, mapping, box
+from pandas import DataFrame
+from shapely.geometry import Polygon, mapping, box, shape
 from aws_xray_sdk.core import xray_recorder
 
 from raster_analysis.boto import lambda_client, invoke_lambda
+from raster_analysis.geometry import encode_geometry
+from raster_analysis.query import Query
 from raster_analysis.results_store import AnalysisResultsStore
 from raster_analysis.globals import (
     LOGGER,
     FANOUT_LAMBDA_NAME,
     RASTER_ANALYSIS_LAMBDA_NAME,
-    ResultValue,
     BasePolygon,
     Numeric,
+    LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
+    FANOUT_NUM,
 )
 
 
-@xray_recorder.capture("Merge Tiled Geometry Results")
-def merge_tile_results(
-    tile_results: Dict[Any, List[Any]], groupby_columns: List[str]
-) -> List[Dict[str, ResultValue]]:
-    if not groupby_columns:
-        dataframes = [pd.DataFrame(result, index=[0]) for result in tile_results]
-        merged_df: pd.DataFrame = pd.concat(dataframes)
-        return merged_df.sum().to_dict()
+class AnalysisTiler:
+    def __init__(self, raw_query: str, raw_geom: Dict[str, Any], request_id: str):
+        self.raw_query: str = raw_query
+        self.query: Query = Query.parse_query(raw_query)
 
-    dataframes = [pd.DataFrame(result) for result in tile_results]
-    merged_df = pd.concat(dataframes)
+        self.raw_geom: Dict[str, Any] = raw_geom
+        self.geom: BasePolygon = shape(raw_geom)
+        self.grid = self.query.get_minimum_grid()
 
-    grouped_df: pd.DataFrame = merged_df.groupby(groupby_columns).sum()
-    result_df: pd.DataFrame = grouped_df.sort_values(groupby_columns).reset_index()
+        self.request_id: str = request_id
+        self.results: DataFrame = None
 
-    # convert ordinal dates to readable dates
-    for col in groupby_columns:
-        if "__date" in col:
-            result_df[col] = result_df[col].apply(
-                lambda val: date.fromordinal(val).strftime("%Y-%m-%d")
-            )
-        elif "__isoweek" in col:
-            result_df[col.replace("__isoweek", "__year")] = (
-                result_df[col]
-                .astype(int)
-                .apply(lambda val: date.fromordinal(val).isocalendar()[0])
-            )
-            result_df[col] = (
-                result_df[col]
-                .astype(int)
-                .apply(lambda val: date.fromordinal(val).isocalendar()[1])
-            )
+    def execute(self) -> None:
+        self.results = self._execute_tiles()
 
-        # sometimes pandas makes int fields into floats - a group by field should never be a float
-        if result_df[col].dtype == "float64":
-            result_df[col] = result_df[col].astype("int64")
+        if self.results.size > 0:
+            self.results = self._decode_and_group_results(self.results)
 
-    return result_df.to_dict(orient="records")
+    def result_as_csv(self) -> str:
+        if self.results.size > 0:
+            buffer = StringIO()
+            self.results.to_csv(buffer, index=False, float_format="%.5f")
+            return buffer.getvalue()
+        else:
+            return ""
 
+    def result_as_dict(self) -> Dict[str, Any]:
+        return self.results.to_dict(orient="records")
 
-@xray_recorder.capture("Process Tiles")
-def process_tiled_geoms(
-    tiles: List[Polygon],
-    geoprocessing_params: Dict[str, Any],
-    request_id: str,
-    fanout_num: int,
-):
-    geom_count = len(tiles)
-    geoprocessing_params["analysis_id"] = request_id
-    LOGGER.info(f"Processing {geom_count} tiles")
+    def _decode_and_group_results(self, results):
+        group_columns = self.query.get_group_columns()
 
-    # if
-    if geom_count <= fanout_num:
-        for tile in tiles:
-            tile_params = deepcopy(geoprocessing_params)
-            tile_params["tile"] = mapping(tile)
-            invoke_lambda(tile_params, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())
-    else:
-        tile_geojsons = [mapping(tile) for tile in tiles]
-        tile_chunks = [
-            tile_geojsons[x : x + fanout_num]
-            for x in range(0, len(tile_geojsons), fanout_num)
-        ]
+        for layer in self.query.get_result_layers():
+            layer_name = layer.alias if layer.alias else layer.layer
+            if layer.decoder and layer_name in results.columns:
+                decoded_columns = layer.decoder(layer_name, results[layer_name])
+                del results[layer_name]
 
-        for chunk in tile_chunks:
-            event = {"payload": geoprocessing_params, "tiles": chunk}
-            invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
+                for name, series in decoded_columns.items():
+                    results[name] = series
 
-    LOGGER.info(f"Geom count: {geom_count}")
-    results_store = AnalysisResultsStore(request_id)
-    results = results_store.wait_for_results(geom_count)
+                if layer_name in group_columns:
+                    group_columns.remove(layer_name)
+                    group_columns += [name for name in decoded_columns.keys()]
 
-    return results
+        if group_columns:
+            grouped_df = results.groupby(group_columns).sum()
+            return grouped_df.sort_values(group_columns).reset_index()
+        elif self.query.aggregates:
+            # pandas does weird things when you sum the whole DF
+            df = results.sum().reset_index()
+            df = df.rename(columns=df["index"])
+            df = df.drop(columns=["index"])
+            return df
+        else:
+            return results
 
+    @xray_recorder.capture("Process Tiles")
+    def _execute_tiles(self) -> DataFrame:
+        tiles = self._get_tiles(self.grid.tile_degrees)
+        payload: Dict[str, Any] = {
+            "analysis_id": self.request_id,
+            "query": self.raw_query,
+        }
 
-@xray_recorder.capture("Get Tiles")
-def get_tiles(geom: BasePolygon, width: Numeric) -> List[Polygon]:
-    """
-    Get width x width tile geometries over the extent of the geometry
-    """
-    min_x, min_y, max_x, max_y = _get_rounded_bounding_box(geom, width)
-    tiles = []
+        if sys.getsizeof(json.dumps(self.raw_geom)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
+            payload["encoded_geometry"] = encode_geometry(self.geom)
+        else:
+            payload["geometry"] = self.raw_geom
 
-    for i in range(0, int((max_x - min_x) / width)):
-        for j in range(0, int((max_y - min_y) / width)):
-            tile = box(
-                (i * width) + min_x,
-                (j * width) + min_y,
-                ((i + 1) * width) + min_x,
-                ((j + 1) * width) + min_y,
-            )
+        geom_count = len(tiles)
 
-            if geom.intersects(tile):
-                tiles.append(tile)
+        LOGGER.info(f"Processing {geom_count} tiles")
 
-    return tiles
+        if geom_count <= FANOUT_NUM:
+            for tile in tiles:
+                tile_payload = deepcopy(payload)
+                tile_payload["tile"] = mapping(tile)
+                invoke_lambda(
+                    tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
+                )
+        else:
+            tile_geojsons = [mapping(tile) for tile in tiles]
+            tile_chunks = [
+                tile_geojsons[x : x + FANOUT_NUM]
+                for x in range(0, len(tile_geojsons), FANOUT_NUM)
+            ]
 
+            for chunk in tile_chunks:
+                event = {"payload": payload, "tiles": chunk}
+                invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
-def _get_rounded_bounding_box(geom: BasePolygon, width: Numeric):
-    """
-    Round bounding box to divide evenly into width x width tiles from plane origin
-    """
-    return (
-        geom.bounds[0] - (geom.bounds[0] % width),
-        geom.bounds[1] - (geom.bounds[1] % width),
-        geom.bounds[2] + (-geom.bounds[2] % width),
-        geom.bounds[3] + (-geom.bounds[3] % width),
-    )
+        LOGGER.info(f"Geom count: {geom_count}")
+        results_store = AnalysisResultsStore(self.request_id)
+        results = results_store.wait_for_results(geom_count)
+
+        return results
+
+    def _get_tiles(self, width: Numeric) -> List[Polygon]:
+        """
+        Get width x width tile geometries over the extent of the geometry
+        """
+        min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
+        tiles = []
+
+        for i in range(0, int((max_x - min_x) / width)):
+            for j in range(0, int((max_y - min_y) / width)):
+                tile = box(
+                    (i * width) + min_x,
+                    (j * width) + min_y,
+                    ((i + 1) * width) + min_x,
+                    ((j + 1) * width) + min_y,
+                )
+
+                if self.geom.intersects(tile):
+                    tiles.append(tile)
+
+        return tiles
+
+    @staticmethod
+    def _get_rounded_bounding_box(
+        geom: BasePolygon, width: Numeric
+    ) -> Tuple[int, int, int, int]:
+        """
+        Round bounding box to divide evenly into width x width tiles from plane origin
+        """
+        return (
+            geom.bounds[0] - (geom.bounds[0] % width),
+            geom.bounds[1] - (geom.bounds[1] % width),
+            geom.bounds[2] + (-geom.bounds[2] % width),
+            geom.bounds[3] + (-geom.bounds[3] % width),
+        )

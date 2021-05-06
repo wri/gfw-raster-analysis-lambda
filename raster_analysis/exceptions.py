@@ -12,3 +12,7 @@ class RasterAnalysisException(Exception):
 
 class InvalidGeometryException(Exception):
     pass
+
+
+class QueryParseException(Exception):
+    pass

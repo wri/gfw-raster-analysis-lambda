@@ -1,4 +1,4 @@
-FROM remotepixel/amazonlinux-gdal:3.0.1
+FROM lambgeo/lambda-gdal:3.2-python3.7
 
 # Make the dir and to install all packages into packages/
 COPY raster_analysis/ raster_analysis/

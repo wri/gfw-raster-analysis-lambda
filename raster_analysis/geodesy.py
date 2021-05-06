@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def get_area(lat: float) -> float:
+def get_area(lat: float, pixel_width: float) -> float:
     """
     Calculate geodesic area for Hansen data, assuming a fix pixel size of 0.00025 * 0.00025 degree
     using WGS 1984 as spatial reference.
@@ -12,8 +12,8 @@ def get_area(lat: float) -> float:
     a = 6378137.0  # Semi major axis of WGS 1984 ellipsoid
     b = 6356752.314245179  # Semi minor axis of WGS 1984 ellipsoid
 
-    d_lat = 0.00025  # pixel hight
-    d_lon = 0.00025  # pixel width
+    d_lat = pixel_width
+    d_lon = pixel_width
 
     pi = math.pi
 

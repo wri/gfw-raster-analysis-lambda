@@ -1,3 +1,5 @@
 requests
 aws-xray-sdk
 geobuf~=1.1.1
+pydantic
+moz_sql_parser
