@@ -1,3 +1,208 @@
+DATA_ENVIRONMENT = [
+    {
+        "source_uri": "s3://gfw-data-lake/umd_tree_cover_loss/v1.8/raster/epsg-4326/10/40000/year/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "umd_tree_cover_loss__year",
+        "raster_table": {
+            "rows": [
+                {"value": 1, "meaning": 2001},
+                {"value": 2, "meaning": 2002},
+                {"value": 3, "meaning": 2003},
+                {"value": 4, "meaning": 2004},
+                {"value": 5, "meaning": 2005},
+                {"value": 6, "meaning": 2006},
+                {"value": 7, "meaning": 2007},
+                {"value": 8, "meaning": 2008},
+                {"value": 9, "meaning": 2009},
+                {"value": 10, "meaning": 2010},
+                {"value": 11, "meaning": 2011},
+                {"value": 12, "meaning": 2012},
+                {"value": 13, "meaning": 2013},
+                {"value": 14, "meaning": 2014},
+                {"value": 15, "meaning": 2015},
+                {"value": 16, "meaning": 2016},
+                {"value": 17, "meaning": 2017},
+                {"value": 18, "meaning": 2018},
+                {"value": 19, "meaning": 2019},
+                {"value": 20, "meaning": 2020},
+            ]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/umd_tree_cover_density_2000/v1.6/raster/epsg-4326/10/40000/threshold/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "umd_tree_cover_density_2000__threshold",
+        "raster_table": {
+            "rows": [
+                {"value": 1, "meaning": 10},
+                {"value": 2, "meaning": 15},
+                {"value": 3, "meaning": 20},
+                {"value": 4, "meaning": 25},
+                {"value": 5, "meaning": 30},
+                {"value": 6, "meaning": 50},
+                {"value": 7, "meaning": 75},
+            ]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/umd_regional_primary_forest_2001/v201901/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "is__umd_regional_primary_forest_2001",
+        "raster_table": {
+            "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/whrc_aboveground_biomass_stock_2000/v4/raster/epsg-4326/10/40000/Mg_ha-1/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
+    },
+    {
+        "source_layer": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
+        "name": "whrc_aboveground_co2_emissions__Mg",
+        "calc": "A * area * (0.5 * 44 / 12)",
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/umd_tree_cover_gain/v1.6/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "is__umd_tree_cover_gain",
+        "raster_table": {
+            "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/tsc_tree_cover_loss_drivers/v2020/raster/epsg-4326/10/40000/type/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "tsc_tree_cover_loss_drivers__type",
+        "raster_table": {
+            "default_meaning": "Unknown",
+            "rows": [
+                {"value": 1, "meaning": "Commodity driven deforestation"},
+                {"value": 2, "meaning": "Shifting agriculture"},
+                {"value": 3, "meaning": "Forestry"},
+                {"value": 4, "meaning": "Wildfire"},
+                {"value": 5, "meaning": "Urbanization"},
+            ],
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/esa_land_cover_2015/v20160111/raster/epsg-4326/10/40000/class/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "esa_land_cover_2015__class",
+        "raster_table": {
+            "default_meaning": "Unknown",
+            "rows": [
+                {"value": 10, "meaning": "Agriculture"},
+                {"value": 11, "meaning": "Agriculture"},
+                {"value": 12, "meaning": "Agriculture"},
+                {"value": 20, "meaning": "Agriculture"},
+                {"value": 30, "meaning": "Agriculture"},
+                {"value": 40, "meaning": "Agriculture"},
+                {"value": 50, "meaning": "Forest"},
+                {"value": 60, "meaning": "Forest"},
+                {"value": 61, "meaning": "Forest"},
+                {"value": 62, "meaning": "Forest"},
+                {"value": 70, "meaning": "Forest"},
+                {"value": 72, "meaning": "Forest"},
+                {"value": 80, "meaning": "Forest"},
+                {"value": 81, "meaning": "Forest"},
+                {"value": 82, "meaning": "Forest"},
+                {"value": 90, "meaning": "Forest"},
+                {"value": 100, "meaning": "Forest"},
+                {"value": 160, "meaning": "Forest"},
+                {"value": 170, "meaning": "Forest"},
+                {"value": 110, "meaning": "Grassland"},
+                {"value": 130, "meaning": "Grassland"},
+                {"value": 180, "meaning": "Wetland"},
+                {"value": 190, "meaning": "Settlement"},
+                {"value": 120, "meaning": "Shrubland"},
+                {"value": 121, "meaning": "Shrubland"},
+                {"value": 122, "meaning": "Shrubland"},
+                {"value": 140, "meaning": "Sparse vegetation"},
+                {"value": 150, "meaning": "Sparse vegetation"},
+                {"value": 151, "meaning": "Sparse vegetation"},
+                {"value": 152, "meaning": "Sparse vegetation"},
+                {"value": 153, "meaning": "Sparse vegetation"},
+                {"value": 200, "meaning": "Bare"},
+                {"value": 201, "meaning": "Bare"},
+                {"value": 202, "meaning": "Bare"},
+                {"value": 210, "meaning": "Water"},
+                {"value": 220, "meaning": "Permanent snow and ice"},
+            ],
+        },
+    },
+    {
+        "source_uri": "s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif",
+        "tile_scheme": "nwse",
+        "grid": "10/40000",
+        "name": "umd_glad_landsat_alerts__date_conf",
+    },
+    {
+        "source_layer": "umd_glad_landsat_alerts__date_conf",
+        "name": "umd_glad_landsat_alerts__date",
+        "calc": "A % 10000",
+        "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
+        "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
+    },
+    {
+        "source_layer": "umd_glad_landsat_alerts__date_conf",
+        "name": "umd_glad_landsat_alerts__confidence",
+        "calc": "floor(A / 10000)",
+        "raster_table": {
+            "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/umd_glad_sentinel2_alerts/v20210406/raster/epsg-4326/10/40000/date_conf/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "umd_glad_sentinel2_alerts__date_conf",
+    },
+    {
+        "source_layer": "umd_glad_sentinel2_alerts__date_conf",
+        "name": "umd_glad_sentinel2_alerts__date",
+        "calc": "A % 10000",
+        "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
+        "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
+    },
+    {
+        "source_layer": "umd_glad_sentinel2_alerts__date_conf",
+        "name": "umd_glad_sentinel2_alerts__confidence",
+        "calc": "floor(A / 10000)",
+        "raster_table": {
+            "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/gfw_radd_alerts/v20210328/raster/epsg-4326/10/40000/date_conf/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "gfw_radd_alerts__date_conf",
+    },
+    {
+        "source_layer": "gfw_radd_alerts__date_conf",
+        "name": "gfw_radd_alerts__date",
+        "calc": "A % 10000",
+        "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
+        "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
+    },
+    {
+        "source_layer": "gfw_radd_alerts__date_conf",
+        "name": "gfw_radd_alerts__confidence",
+        "calc": "floor(A / 10000)",
+        "raster_table": {
+            "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
+        },
+    },
+]
+
 IDN_24_9_GEOM = {
     "type": "MultiPolygon",
     "coordinates": [
