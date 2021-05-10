@@ -36,7 +36,7 @@ def handler(event, context):
         results_store.save_result(results, context.aws_request_id)
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])
-        results_store.save_status(context.aws_request_id, ResultStatus.error)
+        results_store.save_status(context.aws_request_id, ResultStatus.error, str(e))
 
         LOGGER.exception(e)
-        raise Exception(f"Internal Server Error <{context.aws_request_id}>")
+        raise e

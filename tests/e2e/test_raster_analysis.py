@@ -104,7 +104,7 @@ def test_primary_tree_cover_loss(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     assert result["data"]
@@ -120,7 +120,7 @@ def test_extent_2010(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
     assert result["status"] == "success"
 
     assert result["data"][0]["area__ha"] == pytest.approx(
@@ -138,7 +138,7 @@ def test_lat_lon(context):
             "environment": DATA_ENVIRONMENT,
         },
         context,
-    )["body"]
+    )
     assert result["status"] == "success"
 
     lines = result["data"].splitlines()
@@ -151,7 +151,7 @@ def test_raw_area(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     assert result["data"][0]["area__ha"] == pytest.approx(
@@ -169,7 +169,7 @@ def test_tree_cover_gain(context, monkeypatch):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     assert result["data"][0]["area__ha"] == pytest.approx(
@@ -182,7 +182,7 @@ def test_tree_cover_loss_by_driver(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_LOSS_BY_DRIVER):
@@ -194,7 +194,7 @@ def test_glad_alerts(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
@@ -206,7 +206,7 @@ def test_glad_alerts_count(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
@@ -219,7 +219,7 @@ def test_radd_alerts(context):
     result = tiled_handler(
         {"geometry": COD_21_4_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
 
@@ -230,7 +230,7 @@ def test_glad_s2_alerts(context):
     result = tiled_handler(
         {"geometry": BRA_14_87_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
 
@@ -240,7 +240,7 @@ def test_land_cover_area(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_ESA_LAND_COVER):
@@ -256,11 +256,11 @@ def test_error(context):
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
-    )["body"]
+    )
     end = datetime.now()
 
     timeout = timedelta(seconds=29)
-    assert result["status"] == "failed"
+    assert result["status"] == "fail"
     assert (end - start) < timeout
 
 
@@ -271,7 +271,7 @@ def test_beyond_extent(context):
     query = "select sum(area__ha) from is__umd_regional_primary_forest_2001 group by umd_tree_cover_loss__year"
     result = tiled_handler(
         {"geometry": geometry, "query": query, "environment": DATA_ENVIRONMENT}, context
-    )["body"]
+    )
 
     assert result["status"] == "success"
     assert not result["data"]

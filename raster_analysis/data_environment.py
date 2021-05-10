@@ -1,8 +1,7 @@
 # flake8: noqa
 import json
 from collections import Iterable, defaultdict
-from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Type, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 from numpy import (
     ceil,
@@ -20,7 +19,8 @@ from numpy import (
 from pandas import Series
 from pydantic import BaseModel
 
-from raster_analysis.globals import BasePolygon
+from raster_analysis.exceptions import QueryParseException
+from raster_analysis.globals import LOGGER, BasePolygon
 from raster_analysis.grid import Grid, GridName, TileScheme
 
 
@@ -77,9 +77,10 @@ class DataEnvironment(BaseModel):
             if layer.name == name:
                 return layer
 
-        raise KeyError(
+        LOGGER.error(
             f"Could not find layer with name {name} in data environment {json.dumps(self.dict())}"
         )
+        raise QueryParseException(f"Layer {name} is invalid")
 
     def get_layer_grid(self, name: str) -> Grid:
         layer = self.get_layer(name)
@@ -148,6 +149,8 @@ class DataEnvironment(BaseModel):
         elif layer.decode_expression:
             A = values
             return eval(layer.decode_expression)
+        else:
+            return values
 
     def get_source_uri(self, name: str, tile: BasePolygon):
         layer = self.get_layer(name)

@@ -1,22 +1,20 @@
-from decimal import Decimal
-import os
-from copy import deepcopy
-from time import sleep
-from typing import Dict, Any
 from datetime import datetime, timedelta
-from io import StringIO
+from decimal import Decimal
 from enum import Enum
+from io import StringIO
+from time import sleep
+from typing import Any, Dict
 
 import pandas as pd
 from boto3.dynamodb.table import TableResource
 from pandas import DataFrame
 
-from raster_analysis.boto import dynamodb_resource, dynamodb_client
+from raster_analysis.boto import dynamodb_client, dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.globals import (
+    DYMANODB_TTL_SECONDS,
     RESULTS_CHECK_INTERVAL,
     RESULTS_CHECK_TRIES,
-    DYMANODB_TTL_SECONDS,
     TILED_RESULTS_TABLE_NAME,
     TILED_STATUS_TABLE_NAME,
 )
@@ -69,13 +67,16 @@ class AnalysisResultsStore:
 
         self.save_status(result_id, ResultStatus.success)
 
-    def save_status(self, result_id: str, status: ResultStatus) -> None:
+    def save_status(
+        self, result_id: str, status: ResultStatus, detail: str = " "
+    ) -> None:
         dynamodb_client().put_item(
             TableName=TILED_STATUS_TABLE_NAME,
             Item={
                 "analysis_id": {"S": self.analysis_id},
                 "tile_id": {"S": result_id},
                 "status": {"S": status.value},
+                "detail": {"S": detail},
                 "time_to_live": {"N": self._get_ttl()},
             },
         )
@@ -120,7 +121,7 @@ class AnalysisResultsStore:
             for item in statuses_response["Items"]:
                 if item["status"]["S"] == ResultStatus.error:
                     raise RasterAnalysisException(
-                        f"Tile {item['tile_id']} encountered an error, check logs."
+                        f"Tile {item['tile_id']} encountered error: {item['detail']}"
                     )
 
             curr_count = statuses_response["Count"]
@@ -134,8 +135,11 @@ class AnalysisResultsStore:
         raw_results = [
             StringIO(item["result"]["S"]) for item in results_response["Items"]
         ]
+
         dfs = [pd.read_csv(result) for result in raw_results]
-        return pd.concat(dfs) if dfs else pd.DataFrame()
+        results = pd.concat(dfs) if dfs else pd.DataFrame()
+        print(f"Result dataframe: {results.to_dict()}")
+        return results
 
     @staticmethod
     def _get_ttl():

@@ -62,11 +62,18 @@ class Query:
     def __init__(self, query: str, data_environment: DataEnvironment):
         self.data_environment = data_environment
         base, selectors, filters, groups, aggregates = self.parse_query(query)
+
         self.base = base
         self.selectors = selectors
         self.filters = filters
         self.groups = groups
         self.aggregates = aggregates
+
+        self.validate_query()
+
+    def validate_query(self):
+        layer_names = self.get_layer_names()
+        self.data_environment.get_layers(layer_names)
 
     def get_source_layers(self) -> List[Layer]:
         layer_names = self.get_layer_names()
@@ -181,7 +188,7 @@ class Query:
                         group = Selector(layer=layer_name, function=func_name)
                         groups.append(group)
                     else:
-                        raise ValueError(
+                        raise QueryParseException(
                             f"Unsupported function {func_name} for selector {layer_name} in GROUP BY"
                         )
                 elif isinstance(group["value"], str):
