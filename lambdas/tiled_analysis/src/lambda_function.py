@@ -24,7 +24,7 @@ def handler(event, context):
         LOGGER.info("Successfully merged tiled results")
         return {"status": "success", "data": results}
     except QueryParseException as e:
-        return {"status": "fail", "message": str(e)}
+        return {"status": "failed", "message": str(e)}
     except Exception as e:
         LOGGER.exception(e)
         return {"status": "error", "message": str(e)}

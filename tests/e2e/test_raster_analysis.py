@@ -260,7 +260,7 @@ def test_error(context):
     end = datetime.now()
 
     timeout = timedelta(seconds=29)
-    assert result["status"] == "fail"
+    assert result["status"] == "failed"
     assert (end - start) < timeout
 
 
