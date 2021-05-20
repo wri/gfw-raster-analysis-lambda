@@ -6,6 +6,8 @@ from raster_analysis.tiling import AnalysisTiler
 
 def handler(event, context):
     try:
+        LOGGER.info(f"Running analysis with parameters: {event}")
+
         query = event["query"]
         geojson = event["geometry"]
         format = event.get("format", "json")

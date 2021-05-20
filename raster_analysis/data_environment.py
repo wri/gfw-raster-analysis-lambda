@@ -90,7 +90,7 @@ class DataEnvironment(BaseModel):
         try:
             self.get_layer(name)
             return True
-        except ValueError:
+        except QueryParseException:
             return False
 
     def get_layers(self, layer_names: List[str]) -> List[Layer]:
