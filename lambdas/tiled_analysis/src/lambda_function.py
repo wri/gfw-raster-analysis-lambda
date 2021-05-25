@@ -1,6 +1,7 @@
 from aws_xray_sdk.core import patch
 from aws_xray_sdk.core import xray_recorder
 
+from raster_analysis.exceptions import QueryParseException
 from raster_analysis.tiling import AnalysisTiler
 from raster_analysis.globals import LOGGER
 
@@ -25,7 +26,9 @@ def handler(event, context):
             results = tiler.result_as_dict()
 
         LOGGER.info("Successfully merged tiled results")
-        return {"statusCode": 200, "body": {"status": "success", "data": results}}
+        return {"status": "success", "data": results}
+    except QueryParseException as e:
+        return {"status": "failed", "message": str(e)}
     except Exception as e:
         LOGGER.exception(e)
-        return {"statusCode": 500, "body": {"status": "failed", "message": str(e)}}
+        return {"status": "error", "message": str(e)}
