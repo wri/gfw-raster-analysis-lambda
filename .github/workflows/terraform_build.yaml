@@ -33,6 +33,17 @@ jobs:
         AWS_REQUEST_PAYER: requester
       run: |
         ./scripts/test -b ${{github.ref}} -k ${{ secrets.aws_key_dev }} -s ${{ secrets.aws_secret_dev }}
+
+    - name: Run CodeCOV action
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: tests/cobertura.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+        verbose: false
+
     - name: Deploy production
       if: success() && contains(github.ref, 'master')
       env:

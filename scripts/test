@@ -29,7 +29,7 @@ if [ -z "${AWS_ACCESS_KEY_ID}" ]; then
               -e ENV="test" \
               --rm \
               --entrypoint pytest gfw-raster-analysis-test \
-              --cov-report term --cov-report xml --cov=/usr/local/app \
+              --cov-report term --cov-report xml:/usr/local/app/tests/cobertura.xml --cov=/usr/local/app \
               /usr/local/app/tests/
 else
   # when running on Github, use Secrets and link pwd to tmp to have access to coverage file
@@ -42,6 +42,6 @@ else
               -e ENV="test" \
               --rm \
               --entrypoint pytest gfw-raster-analysis-test \
-              --cov-report term --cov-report xml --cov=/usr/local/app \
+              --cov-report term --cov-report xml:/usr/local/app/tests/cobertura.xml --cov=/usr/local/app \
               /usr/local/app/tests/
 fi
