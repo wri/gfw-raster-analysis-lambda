@@ -28,4 +28,4 @@ do
     build_lambda_layer "${l}"
 done
 
-docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .
+#docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .

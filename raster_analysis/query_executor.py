@@ -154,7 +154,7 @@ class QueryExecutor:
             SpecialSelectors.latitude in selector_names
             or SpecialSelectors.longitude in selector_names
         ):
-            latitudes, longitudes = self._extract_coordinates(mask)
+            longitudes, latitudes = self._extract_coordinates(mask)
             results[SpecialSelectors.latitude.value] = np.array(latitudes).astype(
                 np.double
             )
