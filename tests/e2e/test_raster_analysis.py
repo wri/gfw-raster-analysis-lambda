@@ -148,7 +148,7 @@ def test_raw_area(context):
 def test_tree_cover_gain(context, monkeypatch):
     # let's also test encoded geometries
     monkeypatch.setattr(
-        raster_analysis.globals, "LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES", 80000
+        raster_analysis.tiling, "LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES", 80000
     )
 
     query = "select sum(area__ha) from is__umd_tree_cover_gain"
