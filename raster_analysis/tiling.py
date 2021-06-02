@@ -29,7 +29,7 @@ class AnalysisTiler:
         self.query: Query = Query.parse_query(raw_query)
 
         self.raw_geom: Dict[str, Any] = raw_geom
-        self.geom: BasePolygon = shape(raw_geom)
+        self.geom: BasePolygon = shape(raw_geom).buffer(0)
         self.grid = self.query.get_minimum_grid()
 
         self.request_id: str = request_id
