@@ -145,7 +145,6 @@ def test_lat_lon(context):
     assert len(lines) == IDN_24_9_2019_GLAD_ALERTS_TOTAL
 
 
-@pytest.mark.skip(reason="Need to figure out if this should still be supported")
 def test_raw_area(context):
     query = "select sum(area__ha) from data"
     result = tiled_handler(

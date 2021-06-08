@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from raster_analysis.data_environment import DataEnvironment, Layer
 from raster_analysis.exceptions import QueryParseException
-from raster_analysis.grid import Grid
+from raster_analysis.grid import Grid, GridName
 
 
 class SpecialSelectors(str, Enum):
@@ -111,10 +111,13 @@ class Query:
         layers = self.get_source_layers()
         grids = [self.data_environment.get_layer_grid(layer.name) for layer in layers]
 
-        minimum_grid = grids[0]
-        for grid in grids:
-            if grid.get_pixel_width() < minimum_grid.get_pixel_width():
-                minimum_grid = grid
+        if grids:
+            minimum_grid = grids[0]
+            for grid in grids:
+                if grid.get_pixel_width() < minimum_grid.get_pixel_width():
+                    minimum_grid = grid
+        else:
+            minimum_grid = Grid.get_grid(GridName.ten_by_forty_thousand)
 
         return minimum_grid
 
