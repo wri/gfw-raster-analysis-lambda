@@ -14,6 +14,7 @@ def handler(event, context):
         data_environment = DataEnvironment(layers=event["environment"])
 
         LOGGER.info(f"Executing query: {query}")
+        LOGGER.info(f"On geometry: {geojson}")
 
         tiler = AnalysisTiler(query, geojson, context.aws_request_id, data_environment)
         tiler.execute()
