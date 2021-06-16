@@ -87,13 +87,13 @@ class AnalysisTiler:
                     isoweek_col_name = layer.name.replace("date", "isoweek")
                     year_col_name = layer.name.replace("date", "year")
 
-                    results[isoweek_col_name] = isoweeks
                     results[year_col_name] = years
+                    results[isoweek_col_name] = isoweeks
                     del results[layer.name]
 
                     if group_columns:
-                        group_columns.append(isoweek_col_name)
                         group_columns.append(year_col_name)
+                        group_columns.append(isoweek_col_name)
                         group_columns.remove(layer.name)
 
         if group_columns:
