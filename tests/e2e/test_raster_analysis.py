@@ -251,7 +251,7 @@ def test_land_cover_area(context):
         assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
 
 
-def test_error(context):
+def test_failed(context):
     start = datetime.now()
     query = "select sum(area__ha) from incorrect group by not_real"
     result = tiled_handler(
@@ -261,7 +261,7 @@ def test_error(context):
     end = datetime.now()
 
     timeout = timedelta(seconds=29)
-    assert result["status"] == "error"
+    assert result["status"] == "failed"
     assert (end - start) < timeout
 
 
