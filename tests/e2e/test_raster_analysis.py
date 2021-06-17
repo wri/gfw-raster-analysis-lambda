@@ -13,6 +13,7 @@ os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
 os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"
 os.environ["TILED_RESULTS_TABLE_NAME"] = "tiled-raster-analysis"
 os.environ["TILED_STATUS_TABLE_NAME"] = "tiled-raster-analysis-status"
+os.environ["DYNAMODB_ENDPOINT_URL"] = "http://127.0.0.1:3000"
 os.environ[
     "S3_BUCKET_DATA_LAKE"
 ] = "gfw-data-lake"  # This is actual production data lake
@@ -200,6 +201,7 @@ def test_glad_alerts(context):
         assert row_actual["count"] == row_expected["alert__count"]
 
 
+@pytest.mark.skip
 def test_glad_alerts_count(context):
     query = "select count(umd_glad_landsat_alerts) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
     result = tiled_handler(
@@ -259,7 +261,7 @@ def test_error(context):
     end = datetime.now()
 
     timeout = timedelta(seconds=29)
-    assert result["status"] == "failed"
+    assert result["status"] == "error"
     assert (end - start) < timeout
 
 

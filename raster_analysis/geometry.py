@@ -18,7 +18,7 @@ class GeometryTile:
         if is_encoded:
             full_geom = decode_geometry(source_geom)
         else:
-            full_geom = shape(source_geom)
+            full_geom = shape(source_geom).buffer(0)
 
         self.geom: BasePolygon = full_geom
         self.tile: Polygon = None
