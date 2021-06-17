@@ -1,117 +1,119 @@
 import math
+from enum import Enum
 
 from shapely.geometry import Point, Polygon
 
-from raster_analysis.layer import Layer
+from raster_analysis.globals import BasePolygon
 
 
-def _get_tile_id(point: Point, grid_size=10) -> str:
-    """
-    Get name of tile in data lake
-
-    :param point: Shapely point
-    :param grid_size: Tile size of grid to check against
-    :return:
-    """
-    col = int(math.floor(point.x / grid_size)) * grid_size
-    if col >= 0:
-
-        long = str(col).zfill(3) + "E"
-    else:
-        long = str(-col).zfill(3) + "W"
-
-    row = int(math.ceil(point.y / grid_size)) * grid_size
-
-    if row >= 0:
-        lat = str(row).zfill(2) + "N"
-    else:
-        lat = str(-row).zfill(2) + "S"
-
-    return f"{lat}_{long}"
+class TileScheme(str, Enum):
+    nw = "nw"
+    nwse = "nwse"
 
 
-def get_tile_id(geometry: Polygon) -> str:
-    """
-    Get name of tile in data lake centroid of geometry falls in
-
-    :param: Shapely Polygon
-    :return: tile id
-    """
-    centroid = geometry.centroid
-    return _get_tile_id(centroid)
-
-
-def get_raster_uri(layer: Layer, tile: Polygon) -> str:
-    """
-    Maps layer name input to a raster URI in the data lake
-    :param layer: Either of format <layer name>__<unit> or <unit>__<layer>
-    :return: A GDAL (vsis3) URI to the corresponding VRT for the layer in the data lake
-    """
-
-    if "umd_glad_landsat_alerts" in layer.layer:
-        return _get_glad_raster_uri(tile)
-
-    parts = layer.layer.split("__")
-
-    if len(parts) != 2:
-        raise ValueError(
-            f"Layer name `{layer.layer}` is invalid data lake layer, should consist of layer name and unit separated by `__`"
-        )
-
-    if parts[0] == "is":
-        type, name = parts
-    else:
-        name, type = parts
-
-    tile_id = get_tile_id(tile)
-    version = layer.version
-    return f"/vsis3/gfw-data-lake/{name}/{version}/raster/epsg-4326/{layer.grid.degrees}/{layer.grid.pixels}/{type}/gdal-geotiff/{tile_id}.tif"
+class GridName(str, Enum):
+    one_by_four_thousand = "1/4000"
+    three_by_thirty_three_thousand_six_hundred = "3/33600"
+    three_by_fifty_thousand = "3/50000"
+    eight_by_thirty_two_thousand = "8/32000"
+    ten_by_forty_thousand = "10/40000"
+    ten_by_one_hundred_thousand = "10/100000"
+    ninety_by_nine_thousand_nine_hundred_eighty_four = "90/9984"
+    ninety_by_twenty_seven_thousand_eight = "90/27008"
 
 
-def _get_glad_raster_uri(tile: Polygon) -> str:
-    # return hardcoded URL
-    tile_id = _get_glad_tile_id(tile)
-    return (
-        f"s3://gfw2-data/forest_change/umd_landsat_alerts/prod/analysis/{tile_id}.tif"
-    )
+class Grid:
+    def __init__(self, degrees: int, pixels: int, tile_degrees: float):
+        self.degrees = degrees
+        self.pixels = pixels
+        self.tile_degrees = tile_degrees
 
+    @classmethod
+    def get_grid(cls, name: GridName):
+        degrees_str, pixels_str = name.split("/")
+        degrees = int(degrees_str)
+        pixels = int(pixels_str)
+        tile_degrees = degrees * (5000 / pixels)
+        return cls(degrees, pixels, tile_degrees)
 
-def _get_glad_tile_id(tile) -> str:
-    left, bottom, right, top = tile.bounds
+    def get_pixel_width(self) -> float:
+        return self.degrees / self.pixels
 
-    left = _lower_bound(left)
-    bottom = _lower_bound(bottom)
-    right = _upper_bound(right)
-    top = _upper_bound(top)
+    def get_tile_width(self) -> int:
+        return round((self.tile_degrees / self.degrees) * self.pixels)
 
-    west = _get_longitude(left)
-    south = _get_latitude(bottom)
-    east = _get_longitude(right)
-    north = _get_latitude(top)
+    def get_tile_id(self, geometry: Polygon, tile_scheme: TileScheme) -> str:
+        """Get name of tile in data lake centroid of geometry falls in.
 
-    return f"{west}_{south}_{east}_{north}"
+        :param: Shapely Polygon
+        :return: tile id
+        """
+        if tile_scheme == TileScheme.nw:
+            centroid = geometry.centroid
+            return self._get_nw_tile_id(centroid, self.degrees)
+        elif tile_scheme == TileScheme.nwse:
+            return self._get_nwse_tile_id(geometry, self.degrees)
+        else:
+            raise NotImplementedError(f"Tile scheme {tile_scheme} not implemented.")
 
+    def _get_nw_tile_id(self, point: Point, grid_size) -> str:
+        """Get name of tile in data lake.
 
-def _get_longitude(x: int) -> str:
-    if x >= 0:
-        return str(x).zfill(3) + "E"
-    else:
-        return str(-x).zfill(3) + "W"
+        :param point: Shapely point
+        :param grid_size: Tile size of grid to check against
+        :return:
+        """
+        col = int(math.floor(point.x / grid_size)) * grid_size
+        if col >= 0:
+            long = str(col).zfill(3) + "E"
+        else:
+            long = str(-col).zfill(3) + "W"
 
+        row = int(math.ceil(point.y / grid_size)) * grid_size
 
-def _get_latitude(y: int) -> str:
-    if y >= 0:
-        return str(y).zfill(2) + "N"
-    else:
-        return str(-y).zfill(2) + "S"
+        if row >= 0:
+            lat = str(row).zfill(2) + "N"
+        else:
+            lat = str(-row).zfill(2) + "S"
 
+        return f"{lat}_{long}"
 
-def _lower_bound(y: int) -> int:
-    return int(math.floor(y / 10) * 10)
+    def _get_nwse_tile_id(self, tile: BasePolygon, grid_size: int) -> str:
+        left, bottom, right, top = tile.bounds
 
+        left = self._lower_bound(left, grid_size)
+        bottom = self._lower_bound(bottom, grid_size)
+        right = self._upper_bound(right, grid_size)
+        top = self._upper_bound(top, grid_size)
 
-def _upper_bound(y: int) -> int:
-    if y == _lower_bound(y):
-        return int(y)
-    else:
-        return int((math.floor(y / 10) * 10) + 10)
+        west = self._get_longitude(left)
+        south = self._get_latitude(bottom)
+        east = self._get_longitude(right)
+        north = self._get_latitude(top)
+
+        return f"{west}_{south}_{east}_{north}"
+
+    @staticmethod
+    def _get_longitude(x: int) -> str:
+        if x >= 0:
+            return str(x).zfill(3) + "E"
+        else:
+            return str(-x).zfill(3) + "W"
+
+    @staticmethod
+    def _get_latitude(y: int) -> str:
+        if y >= 0:
+            return str(y).zfill(2) + "N"
+        else:
+            return str(-y).zfill(2) + "S"
+
+    @staticmethod
+    def _lower_bound(y: int, grid_size: int) -> int:
+        return int(math.floor(y / grid_size) * grid_size)
+
+    @staticmethod
+    def _upper_bound(y: int, grid_size: int) -> int:
+        if y == Grid._lower_bound(y, grid_size):
+            return int(y)
+        else:
+            return int((math.floor(y / grid_size) * grid_size) + grid_size)

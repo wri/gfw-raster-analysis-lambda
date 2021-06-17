@@ -1,24 +1,37 @@
+import concurrent.futures
 from typing import List
 
 import numpy as np
 from rasterio import features
 from rasterio.transform import Affine, from_bounds
-import concurrent.futures
 from shapely.geometry import Polygon
 
-from raster_analysis.layer import Layer, Grid
+from raster_analysis.data_environment import DataEnvironment, SourceLayer
 from raster_analysis.geodesy import get_area
-from raster_analysis.globals import LOGGER, WINDOW_SIZE, BasePolygon
+from raster_analysis.globals import LOGGER, BasePolygon
 from raster_analysis.query import Query
-from raster_analysis.window import Window
+from raster_analysis.window import DerivedWindow, SourceWindow
 
 
 class DataCube:
     def __init__(self, geom: BasePolygon, tile: Polygon, query: Query):
         self.grid = query.get_minimum_grid()
         self.mean_area = get_area(tile.centroid.y, self.grid.get_pixel_width()) / 10000
-        self.windows = self._get_windows(query.get_real_layers(), tile)
-        self._expand_encoded_layers(query)
+
+        source_layers = query.get_source_layers()
+        layer_names = query.get_layer_names()
+        self.windows = self._get_windows(source_layers, tile, query.data_environment)
+
+        for layer in query.get_derived_layers():
+            self.windows[layer.name] = DerivedWindow(
+                layer, self.windows[layer.source_layer], self.mean_area
+            )
+
+        for layer in source_layers:
+            if layer.name not in layer_names and layer.name in self.windows:
+                # free up memory, since this means the source layer was only required
+                # for a derived layer
+                del self.windows[layer.name]
 
         tile_width = self.grid.get_tile_width()
         self.shifted_affine: Affine = from_bounds(*tile.bounds, tile_width, tile_width)
@@ -27,33 +40,18 @@ class DataCube:
             np.ones((tile_width, tile_width)), self.shifted_affine, geom
         )
 
-    def _expand_encoded_layers(self, query: Query):
-        layers = query.get_layers()
-
-        # TODO should be only reading each layer once
-        for layer in layers:
-            if layer.alias in [
-                "umd_glad_alerts__confidence",
-                "umd_glad_landsat_alerts__confidence",
-                "gfw_radd_alerts__confidence",
-                "umd_glad_sentinel2_alerts__confidence",
-            ]:
-                self.windows[layer].data = np.floor(
-                    self.windows[layer].data / 10000
-                ).astype(dtype=np.uint8)
-            elif layer.layer in [
-                "umd_glad_alerts__date",
-                "umd_glad_landsat_alerts__date",
-                "gfw_radd_alerts__date_conf",
-                "umd_glad_sentinel2_alerts__date_conf",
-            ]:
-                self.windows[layer].data = self.windows[layer].data % 10000
-
-    def _get_windows(self, layers: List[Layer], tile):
+    def _get_windows(
+        self,
+        layers: List[SourceLayer],
+        tile: BasePolygon,
+        data_environment: DataEnvironment,
+    ):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             # Start the load operations and mark each future with its URL
             futures = {
-                executor.submit(Window, layer, tile, self.grid): layer
+                executor.submit(
+                    SourceWindow, layer, tile, self.grid, data_environment
+                ): layer
                 for layer in layers
             }
 
@@ -66,7 +64,7 @@ class DataCube:
             layer = futures[future]
 
             try:
-                windows[layer] = future.result()
+                windows[layer.name] = future.result()
             except Exception as e:
                 LOGGER.exception(f"Exception while reading window for layer {layer}")
                 raise e
@@ -77,24 +75,24 @@ class DataCube:
     def _mask_geom_on_raster(
         raster_data: np.ndarray, shifted_affine: Affine, geom: BasePolygon
     ) -> np.ndarray:
-        """"
-        For a given polygon, returns a numpy masked array with the intersecting
-        values of the raster at `raster_path` unmasked, all non-intersecting
-        cells are masked.  This assumes that the input geometry is in the same
-        SRS as the raster.  Currently only reads from a single band.
+        """For a given polygon, returns a numpy masked array with the
+        intersecting values of the raster_data, all non- intersecting cells are
+        masked.  This assumes that the input geometry is in the same SRS as the
+        raster.
 
         Args:
+            raster_data (ndarray): ndarray of raster data to be masked onto
+            shifted_affine (Affine): the transform used to map the vector geometry to the raster
             geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
                 which will define the area of the raster to mask.
 
-            raster_path (string): A local file path to a geographic raster
-                containing values to extract.
+            geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
+                which will define the area of the raster to mask.
 
         Returns
            Numpy masked array of source raster, cropped to the extent of the
            input geometry, with any modifications applied. Areas where the
            supplied geometry does not intersect are masked.
-
         """
 
         if raster_data.size > 0:

@@ -1,11 +1,11 @@
-from datetime import date, datetime, timedelta
-from typing import Dict, List, Any
 from collections import defaultdict
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, List
 
 from pandas import Series
 
 from raster_analysis.globals import CO2_FACTOR
-from raster_analysis.layer import Layer, Grid
+from raster_analysis.layer import Grid, Layer
 
 
 def date_conf_decoder(layer: str, s: Series) -> Dict[str, Series]:

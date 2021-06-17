@@ -1,5 +1,4 @@
-from typing import List, Any, Union, Tuple
-from io import StringIO
+from typing import List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -8,8 +7,12 @@ from pandas import DataFrame
 from rasterio.transform import xy
 
 from raster_analysis.data_cube import DataCube
-from raster_analysis.data_lake import LAYERS
-from raster_analysis.query import Query, AggregateFunction, SpecialSelectors, Aggregate
+from raster_analysis.query import (
+    Aggregate,
+    Query,
+    SpecialSelectors,
+    SupportedAggregates,
+)
 
 
 class QueryExecutor:
@@ -20,8 +23,10 @@ class QueryExecutor:
     def execute(self) -> DataFrame:
         mask = self.data_cube.mask
 
-        if self.query.base in self.data_cube.windows:
-            mask *= self.data_cube.windows[self.query.base].data.astype(dtype=np.bool)
+        if self.query.base.layer in self.data_cube.windows:
+            mask *= self.data_cube.windows[self.query.base.layer].data.astype(
+                dtype=np.bool
+            )
 
         for filter in self.query.filters:
             window = self.data_cube.windows[filter.layer]
@@ -40,11 +45,11 @@ class QueryExecutor:
 
     def _aggregate_by_group(self, mask: ndarray) -> DataFrame:
         group_windows = []
-        for layer in self.query.groups:
-            window = self.data_cube.windows[layer]
-            group_windows.append(self.data_cube.windows[layer])
+        for group in self.query.groups:
+            window = self.data_cube.windows[group.layer]
+            group_windows.append(self.data_cube.windows[group.layer])
 
-            if not layer.has_default_value:
+            if not self.query.data_environment.has_default_value(group.layer):
                 mask *= window.data.astype(dtype=np.bool)
 
         group_columns = [np.ravel(window.data) for window in group_windows]
@@ -84,29 +89,23 @@ class QueryExecutor:
         group_counts: ndarray,
         inverse_index: ndarray,
     ) -> Tuple[str, ndarray]:
-        if aggregate.layer.layer == SpecialSelectors.alert__count:
-            return SpecialSelectors.alert__count, group_counts
-        elif aggregate.function == AggregateFunction.count_:
-            return AggregateFunction.count_, group_counts
-        elif aggregate.layer.layer == SpecialSelectors.area__ha:
+        if aggregate.name == SupportedAggregates.count_:
+            return SupportedAggregates.count_, group_counts
+        elif aggregate.layer == SpecialSelectors.area__ha:
             return SpecialSelectors.area__ha, group_counts * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
-            # column_name = f"sum({aggregate.layer.layer})"
 
             # this will sum the values of aggregate data into different bins, where each bin
             # is the corresponding group at that pixel
             sums = np.bincount(
                 inverse_index, weights=masked_data, minlength=group_counts.size
             )
-            if aggregate.function == AggregateFunction.sum:
-                if aggregate.layer.is_area_density:
-                    # layer value representing area density need to be multiplied by area to get gross value
-                    return aggregate.layer.layer, sums * self.data_cube.mean_area
-                return aggregate.layer.layer, sums
-            elif aggregate.function == AggregateFunction.avg:
-                return aggregate.layer.layer, sums / masked_data.size
+            if aggregate.name == SupportedAggregates.sum:
+                return aggregate.layer, sums
+            elif aggregate.name == SupportedAggregates.avg:
+                return aggregate.layer, sums / masked_data.size
             else:
                 raise NotImplementedError("Undefined aggregate function")
 
@@ -122,23 +121,19 @@ class QueryExecutor:
     def _aggregate_window(
         self, aggregate: Aggregate, mask: ndarray
     ) -> Tuple[str, Union[int, float]]:
-        if aggregate.layer.layer == SpecialSelectors.alert__count:
-            return SpecialSelectors.alert__count, mask.sum()
-        elif aggregate.function == AggregateFunction.count_:
-            return AggregateFunction.count_, mask.sum()
-        elif aggregate.layer.layer == SpecialSelectors.area__ha:
-            return aggregate.layer.layer, mask.sum() * self.data_cube.mean_area
+        if aggregate.name == SupportedAggregates.count_:
+            return SupportedAggregates.count_, mask.sum()
+        elif aggregate.layer == SpecialSelectors.area__ha:
+            return aggregate.layer, mask.sum() * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
             sum = masked_data.sum()
 
-            if aggregate.function == AggregateFunction.sum:
-                if aggregate.layer.is_area_density:
-                    return aggregate.layer.layer, sum * self.data_cube.mean_area
-                return aggregate.layer.layer, sum
-            elif aggregate.function == AggregateFunction.avg:
-                return aggregate.layer.layer, sum / masked_data.size
+            if aggregate.name == SupportedAggregates.sum:
+                return aggregate.layer, sum
+            elif aggregate.name == SupportedAggregates.avg:
+                return aggregate.layer, sum / masked_data.size
             else:
                 raise NotImplementedError("Undefined aggregate function")
 
@@ -165,7 +160,7 @@ class QueryExecutor:
             selector_names.remove(SpecialSelectors.longitude.value)
 
         for selector in selector_names:
-            window = self.data_cube.windows[LAYERS[selector]].data
+            window = self.data_cube.windows[selector].data
             values = np.extract(mask, window)
             results[selector] = values
 
