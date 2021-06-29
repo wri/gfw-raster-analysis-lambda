@@ -36,6 +36,7 @@ from tests.fixtures.fixtures import (
     IDN_24_9_GEOM,
     IDN_24_9_GLAD_ALERTS,
     IDN_24_9_LOSS_BY_DRIVER,
+    IDN_24_9_NET_FLUX,
     IDN_24_9_PRIMARY_LOSS,
 )
 
@@ -101,7 +102,7 @@ def context(monkeypatch):
 
 
 def test_primary_tree_cover_loss(context):
-    query = "select sum(area__ha), sum(whrc_aboveground_co2_emissions__Mg) from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year"
+    query = "select sum(area__ha), sum(gfw_forest_carbon_gross_emissions__Mg_CO2e) from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and (umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true') group by umd_tree_cover_loss__year"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
@@ -110,9 +111,11 @@ def test_primary_tree_cover_loss(context):
     assert result["status"] == "success"
     assert result["data"]
     for row_actual, row_expected in zip(result["data"], IDN_24_9_PRIMARY_LOSS):
-        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
-        assert row_actual["whrc_aboveground_co2_emissions__Mg"] == pytest.approx(
-            row_expected["whrc_aboveground_co2_emissions__Mg"], 0.001
+        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.01)
+        assert row_actual[
+            "gfw_forest_carbon_gross_emissions__Mg_CO2e"
+        ] == pytest.approx(
+            row_expected["gfw_forest_carbon_gross_emissions__Mg_CO2e"], 0.01
         )
 
 
@@ -125,7 +128,7 @@ def test_extent_2010(context):
     assert result["status"] == "success"
 
     assert result["data"][0]["area__ha"] == pytest.approx(
-        IDN_24_9_2010_EXTENT["area__ha"], 0.01  # TODO slightly more off than expected
+        IDN_24_9_2010_EXTENT["area__ha"], 0.01
     )
 
 
@@ -201,7 +204,6 @@ def test_glad_alerts(context):
         assert row_actual["count"] == row_expected["alert__count"]
 
 
-@pytest.mark.skip
 def test_glad_alerts_count(context):
     query = "select count(umd_glad_landsat_alerts) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
     result = tiled_handler(
@@ -276,3 +278,26 @@ def test_beyond_extent(context):
 
     assert result["status"] == "success"
     assert not result["data"]
+
+
+def test_net_flux(context):
+    query = "select sum(gfw_forest_carbon_net_flux__Mg_CO2e), sum(gfw_forest_carbon_gross_emissions__Mg_CO2e), sum(gfw_forest_carbon_gross_removals__Mg_CO2e) from data where umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true'"
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )
+
+    assert result["status"] == "success"
+    assert result["data"][0]["gfw_forest_carbon_net_flux__Mg_CO2e"] == pytest.approx(
+        IDN_24_9_NET_FLUX["gfw_forest_carbon_net_flux__Mg_CO2e"], 0.01
+    )
+    assert result["data"][0][
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e"
+    ] == pytest.approx(
+        IDN_24_9_NET_FLUX["gfw_forest_carbon_gross_emissions__Mg_CO2e"], 0.01
+    )
+    assert result["data"][0][
+        "gfw_forest_carbon_gross_removals__Mg_CO2e"
+    ] == pytest.approx(
+        IDN_24_9_NET_FLUX["gfw_forest_carbon_gross_removals__Mg_CO2e"], 0.01
+    )

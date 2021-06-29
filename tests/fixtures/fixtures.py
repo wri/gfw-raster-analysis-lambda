@@ -56,15 +56,37 @@ DATA_ENVIRONMENT = [
         },
     },
     {
-        "source_uri": "s3://gfw-data-lake/whrc_aboveground_biomass_stock_2000/v4/raster/epsg-4326/10/40000/Mg_ha-1/geotiff/{tile_id}.tif",
+        "source_uri": "s3://gfw-data-lake/gfw_forest_carbon_gross_emissions/v20210331/raster/epsg-4326/10/40000/Mg_CO2e_ha/geotiff/{tile_id}.tif",
         "tile_scheme": "nw",
         "grid": "10/40000",
-        "name": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
+        "name": "gfw_forest_carbon_gross_emissions__Mg_CO2e_ha-1",
     },
     {
-        "source_layer": "whrc_aboveground_biomass_stock_2000__Mg_ha-1",
-        "name": "whrc_aboveground_co2_emissions__Mg",
-        "calc": "A * area * (0.5 * 44 / 12)",
+        "source_layer": "gfw_forest_carbon_gross_emissions__Mg_CO2e_ha-1",
+        "name": "gfw_forest_carbon_gross_emissions__Mg_CO2e",
+        "calc": "A * area",
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/gfw_forest_carbon_net_flux/v20210331/raster/epsg-4326/10/40000/Mg_CO2e_ha/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "gfw_forest_carbon_net_flux__Mg_CO2e_ha-1",
+    },
+    {
+        "source_layer": "gfw_forest_carbon_net_flux__Mg_CO2e_ha-1",
+        "name": "gfw_forest_carbon_net_flux__Mg_CO2e",
+        "calc": "A * area",
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/gfw_forest_carbon_gross_removals/v20210331/raster/epsg-4326/10/40000/Mg_CO2e_ha/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "gfw_forest_carbon_gross_removals__Mg_CO2e_ha-1",
+    },
+    {
+        "source_layer": "gfw_forest_carbon_gross_removals__Mg_CO2e_ha-1",
+        "name": "gfw_forest_carbon_gross_removals__Mg_CO2e",
+        "calc": "A * area",
     },
     {
         "source_uri": "s3://gfw-data-lake/umd_tree_cover_gain/v1.6/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
@@ -4191,102 +4213,107 @@ IDN_24_9_2010_RAW_AREA = {"area__ha": 1306674.845559304}
 # select sum(umd_tree_cover_gain_2000-2012__ha) as area__ha from table where iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 30
 IDN_24_9_GAIN = {"area__ha": 319412.7145255103}
 
-# select umd_tree_cover_loss__year, sum(umd_tree_cover_loss__ha) as area__ha, sum(whrc_aboveground_co2_emissions__Mg) as whrc_aboveground_co2_emissions__Mg from table where is__umd_regional_primary_forest_2001 = 'true' AND iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 30 GROUP BY umd_tree_cover_loss__year ORDER BY umd_tree_cover_loss__year ASC
+# SELECT umd_tree_cover_loss__year, SUM(umd_tree_cover_loss__ha) AS area__ha, SUM("gfw_gross_emissions_co2e_all_gases__Mg") AS "gfw_forest_carbon_gross_emissions__Mg_CO2e" FROM data WHERE iso = 'IDN' AND adm1 = 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 30 AND is__umd_regional_primary_forest_2001 = 'true' GROUP BY umd_tree_cover_loss__year, iso, adm1, adm2 ORDER BY umd_tree_cover_loss__year, iso, adm1, adm2
 IDN_24_9_PRIMARY_LOSS = [
     {
         "umd_tree_cover_loss__year": 2001,
-        "area__ha": 9062.52823828508,
-        "whrc_aboveground_co2_emissions__Mg": 4725965.213319334,
+        "area__ha": 9062.528238285082,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 9615443.583671868,
     },
     {
         "umd_tree_cover_loss__year": 2002,
-        "area__ha": 19468.226666702732,
-        "whrc_aboveground_co2_emissions__Mg": 10236190.012461694,
+        "area__ha": 19468.22666670265,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 30362479.07533627,
     },
     {
         "umd_tree_cover_loss__year": 2003,
-        "area__ha": 1198.8047796977107,
-        "whrc_aboveground_co2_emissions__Mg": 664940.1241868492,
+        "area__ha": 1198.8047796977087,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 1409229.0108816281,
     },
     {
         "umd_tree_cover_loss__year": 2004,
-        "area__ha": 50161.41951952722,
-        "whrc_aboveground_co2_emissions__Mg": 24787277.59090011,
+        "area__ha": 50161.41951952721,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 81255052.44656852,
     },
     {
         "umd_tree_cover_loss__year": 2005,
-        "area__ha": 34390.124140735585,
-        "whrc_aboveground_co2_emissions__Mg": 16741943.825219514,
+        "area__ha": 34390.124140735556,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 47242150.76018184,
     },
     {
         "umd_tree_cover_loss__year": 2006,
-        "area__ha": 2876.101094758884,
-        "whrc_aboveground_co2_emissions__Mg": 1323131.7800512866,
+        "area__ha": 2876.1010947588834,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 3355913.9264816125,
     },
     {
         "umd_tree_cover_loss__year": 2007,
-        "area__ha": 22212.13047324748,
-        "whrc_aboveground_co2_emissions__Mg": 11364527.104763823,
+        "area__ha": 22212.130473247365,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 31418594.028991096,
     },
     {
         "umd_tree_cover_loss__year": 2008,
         "area__ha": 23651.933095541248,
-        "whrc_aboveground_co2_emissions__Mg": 12733059.995472632,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 30088573.307445247,
     },
     {
         "umd_tree_cover_loss__year": 2009,
-        "area__ha": 15368.88044441196,
-        "whrc_aboveground_co2_emissions__Mg": 8506740.527723137,
+        "area__ha": 15368.880444411958,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 18387354.827145446,
     },
     {
         "umd_tree_cover_loss__year": 2010,
-        "area__ha": 51297.29687525635,
-        "whrc_aboveground_co2_emissions__Mg": 25910195.168870397,
+        "area__ha": 51297.29687525639,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 58070451.191620484,
     },
     {
         "umd_tree_cover_loss__year": 2011,
-        "area__ha": 59816.146856843334,
-        "whrc_aboveground_co2_emissions__Mg": 29461002.40389797,
+        "area__ha": 59816.14685684337,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 75243179.35489923,
     },
     {
         "umd_tree_cover_loss__year": 2012,
-        "area__ha": 42498.38444797647,
-        "whrc_aboveground_co2_emissions__Mg": 22207186.102380242,
+        "area__ha": 42498.384447976605,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 51778981.54064904,
     },
     {
         "umd_tree_cover_loss__year": 2013,
-        "area__ha": 26516.38682626898,
-        "whrc_aboveground_co2_emissions__Mg": 13796795.162790429,
+        "area__ha": 26516.38682626903,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 32171456.415754586,
     },
     {
         "umd_tree_cover_loss__year": 2014,
-        "area__ha": 26427.365168143348,
-        "whrc_aboveground_co2_emissions__Mg": 12810852.37364955,
+        "area__ha": 26427.36516814334,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 24834342.121051837,
     },
     {
         "umd_tree_cover_loss__year": 2015,
-        "area__ha": 4392.983519158021,
-        "whrc_aboveground_co2_emissions__Mg": 2348041.009024716,
+        "area__ha": 4392.9835191580205,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 3964010.0156046697,
     },
     {
         "umd_tree_cover_loss__year": 2016,
-        "area__ha": 11076.918516397694,
-        "whrc_aboveground_co2_emissions__Mg": 5947645.8014558405,
+        "area__ha": 11076.918516397684,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 9681446.573822623,
     },
     {
         "umd_tree_cover_loss__year": 2017,
-        "area__ha": 3318.707265644758,
-        "whrc_aboveground_co2_emissions__Mg": 1670514.5416485516,
+        "area__ha": 3318.7072656447576,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 3289975.7885706094,
     },
     {
         "umd_tree_cover_loss__year": 2018,
-        "area__ha": 2606.1711528026094,
-        "whrc_aboveground_co2_emissions__Mg": 1307984.6477276767,
+        "area__ha": 2606.171152802611,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 2547267.3989654696,
     },
     {
         "umd_tree_cover_loss__year": 2019,
-        "area__ha": 4314.116833962398,
-        "whrc_aboveground_co2_emissions__Mg": 2112228.0786305824,
+        "area__ha": 4314.1168339623955,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 3789256.947693908,
+    },
+    {
+        "umd_tree_cover_loss__year": 2020,
+        "area__ha": 2884.372919617904,
+        "gfw_forest_carbon_gross_emissions__Mg_CO2e": 2509193.3835261776,
     },
 ]
 
@@ -4633,3 +4660,11 @@ IDN_24_9_ESA_LAND_COVER = [
     {"esa_land_cover_2015__class": "Unknown", "area__ha": 94951.97940876547},
     {"esa_land_cover_2015__class": "Water", "area__ha": 22434.337695237078},
 ]
+
+
+# SELECT SUM("gfw_net_flux_co2e__Mg") AS "gfw_forest_carbon_net_flux__Mg_CO2e", SUM("gfw_gross_cumulative_aboveground_belowground_co2_removals__Mg") AS "gfw_forest_carbon_gross_removals__Mg_CO2e", SUM("gfw_gross_emissions_co2e_all_gases__Mg") AS "gfw_forest_carbon_gross_emissions__Mg_CO2e", TRUE AS "includes_gain_pixels" FROM data WHERE iso = 'IDN' AND adm1= 24 AND adm2 = 9 AND umd_tree_cover_density__threshold = 30
+IDN_24_9_NET_FLUX = {
+    "gfw_forest_carbon_net_flux__Mg_CO2e": 478469414.34911656,
+    "gfw_forest_carbon_gross_removals__Mg_CO2e": 224974028.46711487,
+    "gfw_forest_carbon_gross_emissions__Mg_CO2e": 703443441.3867857,
+}
