@@ -21,16 +21,15 @@ class QueryExecutor:
         self.data_cube = data_cube
 
     def execute(self) -> DataFrame:
-        mask = self.data_cube.mask
+        filter_mask = self.query.filter.apply(
+            self.data_cube.grid.get_tile_width(), self.data_cube.windows
+        )
+        mask = filter_mask * self.data_cube.mask
 
         if self.query.base.layer in self.data_cube.windows:
             mask *= self.data_cube.windows[self.query.base.layer].data.astype(
                 dtype=np.bool
             )
-
-        for filter in self.query.filters:
-            window = self.data_cube.windows[filter.layer]
-            mask *= filter.apply_filter(window.data)
 
         if self.query.aggregates:
             return self._aggregate(mask)

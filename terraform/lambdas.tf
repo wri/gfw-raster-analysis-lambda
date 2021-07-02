@@ -44,6 +44,7 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py37_rasterio_115_arn,
     data.terraform_remote_state.lambda-layers.outputs.py37_shapely_164_arn,
     data.terraform_remote_state.lambda-layers.outputs.py37_pandas_110_arn
   ]

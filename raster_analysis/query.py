@@ -1,6 +1,8 @@
+# flake8: noqa
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+import numpy as np
 from moz_sql_parser import parse
 from numpy import ndarray
 from pydantic import BaseModel
@@ -8,6 +10,7 @@ from pydantic import BaseModel
 from raster_analysis.data_environment import DataEnvironment, Layer
 from raster_analysis.exceptions import QueryParseException
 from raster_analysis.grid import Grid, GridName
+from raster_analysis.window import SourceWindow
 
 
 class SpecialSelectors(str, Enum):
@@ -16,7 +19,7 @@ class SpecialSelectors(str, Enum):
     area__ha = "area__ha"
 
 
-class Operator(str, Enum):
+class ComparisonOperator(str, Enum):
     gt = ">"
     lt = "<"
     gte = ">="
@@ -25,13 +28,60 @@ class Operator(str, Enum):
     neq = "!="
 
 
-class Filter(BaseModel):
-    operator: Operator
-    layer: str
-    value: Any
+class SetOperator(str, Enum):
+    intersect = "intersect"
+    union = "union"
 
-    def apply_filter(self, window: ndarray) -> ndarray:
+
+class Filter:
+    """Base class representing an empty filter."""
+
+    def apply(self, tile_width: int, windows: Dict[str, ndarray]):
+        return np.ones((tile_width, tile_width))
+
+    def get_layers(self):
+        return []
+
+
+class FilterLeaf(Filter):
+    def __init__(self, layer, operator: ComparisonOperator, value):
+        self.layer = layer
+        self.operator = operator
+        self.value = value
+
+    def apply(self, tile_width: int, windows: Dict[str, SourceWindow]) -> ndarray:
+        window = windows[self.layer].data
         return eval(f"window {self.operator.value} self.value")
+
+    def get_layers(self):
+        return [self.layer]
+
+
+class FilterNode(Filter):
+    def __init__(self, filters: List[Filter], operator: SetOperator):
+        self.filters = filters
+        self.operator = operator
+
+    def apply(self, tile_width: int, windows: Dict[str, ndarray]) -> ndarray:
+        if self.operator == SetOperator.intersect:
+            node_filter = np.ones((tile_width, tile_width))
+            for f in self.filters:
+                node_filter *= f.apply(tile_width, windows)
+        elif self.operator == SetOperator.union:
+            node_filter = np.zeros((tile_width, tile_width)).astype(dtype=np.bool)
+            for f in self.filters:
+                node_filter |= f.apply(tile_width, windows)
+        else:
+            raise ValueError(f"Set operator {self.operator} not implemented.")
+
+        return node_filter
+
+    def get_layers(self):
+        layers = []
+        for f in self.filters:
+            layers += f.get_layers()
+
+        return layers
 
 
 class SupportedAggregates(str, Enum):
@@ -61,11 +111,11 @@ class Selector(BaseModel):
 class Query:
     def __init__(self, query: str, data_environment: DataEnvironment):
         self.data_environment = data_environment
-        base, selectors, filters, groups, aggregates = self.parse_query(query)
+        base, selectors, filter, groups, aggregates = self.parse_query(query)
 
         self.base = base
         self.selectors = selectors
-        self.filters = filters
+        self.filter = filter
         self.groups = groups
         self.aggregates = aggregates
 
@@ -85,7 +135,7 @@ class Query:
 
     def get_layer_names(self) -> List[str]:
         layers = [selector.layer for selector in self.selectors]
-        layers += [filter.layer for filter in self.filters]
+        layers += self.filter.get_layers()
         layers += [
             agg.layer
             for agg in self.aggregates
@@ -155,31 +205,29 @@ class Query:
         return selectors, aggregates
 
     def _parse_where(self, query: Dict[str, Any]):
-        where = []
         if "where" in query:
-            if "or" in query["where"]:
-                raise QueryParseException("OR statement is not supported.")
-            elif "and" in query["where"]:
-                if isinstance(query["where"]["and"], dict):
-                    raise QueryParseException(
-                        "Only one level is supported in AND statement."
-                    )
-                filters = query["where"]["and"]
-            else:
-                filters = query["where"]
+            return self._parse_filter(query["where"])
 
-            for filter in Query._ensure_list(filters):
-                op, (layer, value) = Query._get_first_key_value(filter)
-                if isinstance(value, dict):
-                    value = value["literal"]
+        return Filter()
 
-                encoded_values = self.data_environment.encode_layer(layer, value)
-                where += [
-                    Filter(operator=Operator[op], layer=layer, value=enc_val)
+    def _parse_filter(self, filter):
+        op, values = self._get_first_key_value(filter)
+        if op in ["and", "or"]:
+            filters = [self._parse_filter(value) for value in values]
+            return FilterNode(filters, self.get_set_operator(op))
+        elif op in ComparisonOperator.__members__:
+            layer, value = values
+            if isinstance(value, dict):
+                value = value["literal"]
+
+            encoded_values = self.data_environment.encode_layer(layer, value)
+            return FilterNode(
+                [
+                    FilterLeaf(layer, ComparisonOperator[op], enc_val)
                     for enc_val in encoded_values
-                ]
-
-        return where
+                ],
+                SetOperator.union,
+            )
 
     def _parse_group_by(self, query: Dict[str, Any]):
         groups = []
@@ -211,3 +259,10 @@ class Query:
     def _get_first_key_value(d: Dict[str, str]):
         for key, val in d.items():
             return (key, val)
+
+    @staticmethod
+    def get_set_operator(sql_op: str):
+        return {
+            "and": SetOperator.intersect,
+            "or": SetOperator.union,
+        }[sql_op]
