@@ -100,10 +100,10 @@ class AnalysisTiler:
             grouped_df = results.groupby(group_columns).sum()
             return grouped_df.sort_values(group_columns).reset_index()
         elif self.query.aggregates:
-            # pandas does weird things when you sum the whole DF
-            df = results.sum().reset_index()
-            df = df.rename(columns=df["index"])
-            df = df.drop(columns=["index"])
+            df = results.sum()
+
+            # convert back to single row DF instead of Series
+            df = DataFrame([df.values], columns=df.keys().values)
             return df
         else:
             return results
