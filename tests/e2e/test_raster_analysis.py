@@ -121,6 +121,7 @@ def test_primary_tree_cover_loss(context):
 
 def test_extent_2010(context):
     query = "select sum(area__ha) from umd_tree_cover_density_2000__threshold where umd_tree_cover_density_2000__threshold >= 15"
+    query = "select sum(area__ha) from umd_tree_cover_density_2000__threshold where umd_tree_cover_density_2000__threshold >= 15"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
