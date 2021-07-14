@@ -7,7 +7,20 @@ from typing import Tuple
 import numpy as np
 import rasterio
 import rasterio.windows as wd
-from numpy import datetime64, floor, ndarray
+from numpy import (
+    ceil,
+    datetime64,
+    float,
+    float32,
+    float64,
+    floor,
+    timedelta64,
+    uint,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+)
 from rasterio import DatasetReader
 from rasterio.enums import Resampling
 from rasterio.transform import Affine
@@ -34,7 +47,7 @@ class SourceWindow:
 
         data, shifted_affine, no_data_value = self.read()
 
-        self.data: ndarray = data
+        self.data = data
         self.shifted_affine: Affine = shifted_affine
         self.no_data_value: Numeric = no_data_value
 

@@ -12,6 +12,7 @@ from numpy import (
     floor,
     timedelta64,
     uint,
+    uint8,
     uint16,
     uint32,
     uint64,
