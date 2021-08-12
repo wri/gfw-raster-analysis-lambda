@@ -113,6 +113,7 @@ class Query:
         self.data_environment = data_environment
         base, selectors, filter, groups, aggregates = self.parse_query(query)
 
+        self.raw_query = query
         self.base = base
         self.selectors = selectors
         self.filter = filter

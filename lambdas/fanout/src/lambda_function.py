@@ -10,7 +10,8 @@ def handler(event, context):
 
     for tile in tiles:
         payload = deepcopy(payload_base)
-        payload["tile"] = tile
+        payload["tile"] = tile[1]
+        payload["tile_result_id"] = tile[0]
 
         try:
             invoke_lambda(payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client())

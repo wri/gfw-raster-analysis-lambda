@@ -4,11 +4,13 @@ from copy import deepcopy
 from datetime import datetime
 from io import StringIO
 from typing import Any, Dict, List, Tuple
+from hashlib import md5
 
+from numpy import ceil
 from pandas import DataFrame
 from shapely.geometry import Polygon, box, mapping, shape
 
-from raster_analysis.boto import invoke_lambda, lambda_client
+from raster_analysis.boto import invoke_lambda, lambda_client, dynamodb_client
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.geometry import encode_geometry
 from raster_analysis.globals import (
@@ -17,6 +19,7 @@ from raster_analysis.globals import (
     LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
     LOGGER,
     RASTER_ANALYSIS_LAMBDA_NAME,
+    TILED_RESULTS_TABLE_NAME,
     BasePolygon,
     Numeric,
 )
@@ -128,12 +131,15 @@ class AnalysisTiler:
         if geom_count <= FANOUT_NUM:
             for tile in tiles:
                 tile_payload = deepcopy(payload)
+                tile_payload["tile_result_id"] = self._get_cache_key(tile)
                 tile_payload["tile"] = mapping(tile)
                 invoke_lambda(
                     tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
                 )
         else:
-            tile_geojsons = [mapping(tile) for tile in tiles]
+            tile_geojsons = [
+                (self._get_cache_key(tile), mapping(tile)) for tile in tiles
+            ]
             tile_chunks = [
                 tile_geojsons[x : x + FANOUT_NUM]
                 for x in range(0, len(tile_geojsons), FANOUT_NUM)
@@ -151,8 +157,9 @@ class AnalysisTiler:
 
     def _get_tiles(self, width: Numeric) -> List[Polygon]:
         """Get width x width tile geometries over the extent of the
-        geometry."""
-        min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
+        geometry snapped to global tile grid of size width."""
+        # min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
+        min_x, max_x, min_y, max_y = self._snap_bounds_to_tile_grid(self.geom, width)
         tiles = []
 
         for i in range(0, int((max_x - min_x) / width)):
@@ -164,9 +171,11 @@ class AnalysisTiler:
                     ((j + 1) * width) + min_y,
                 )
 
+                
                 if self.geom.intersects(tile):
                     tiles.append(tile)
-
+        
+                
         return tiles
 
     @staticmethod
@@ -181,3 +190,37 @@ class AnalysisTiler:
             geom.bounds[2] + (-geom.bounds[2] % width),
             geom.bounds[3] + (-geom.bounds[3] % width),
         )
+        
+    @staticmethod
+    def _snap_bounds_to_tile_grid(
+        geom: BasePolygon, width: Numeric
+    ) -> Tuple[int, int, int, int]:
+        """Snap the geometry bounds to the global tile grid of size `width`"""
+        min_x, min_y, max_x, max_y = geom.bounds
+        return (
+            int(min_x / width) * width,
+            int(min_y / width) * width,
+            ceil(max_x / width) * width,
+            ceil(max_y / width) * width,
+        )
+
+    def _get_cache_key(self, tile: Polygon) -> str:
+        "Create md5 has for tile-geom_overlap-query result"
+        geom_tile_intersection = tile.intersection(self.geom)
+        key = f"{self.raw_query}-{tile.wkt}-{geom_tile_intersection.wkt}"
+        
+        return md5(key.encode())
+
+
+    def _is_cached(self, tile: Polygon) -> bool:
+        """Check if query result for the tile-geometry overlap area is in cache"""
+        self._get_cache_key(tile, self.geom)
+
+        results = dynamodb_client().query(
+            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
+            KeyConditionExpression="analysis_id = :id",
+            TableName=TILED_RESULTS_TABLE_NAME,
+        )
+
+        return results.get()
+
