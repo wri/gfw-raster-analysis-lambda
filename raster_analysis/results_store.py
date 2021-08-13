@@ -3,7 +3,8 @@ from decimal import Decimal
 from enum import Enum
 from io import StringIO
 from time import sleep
-from typing import Any, Dict
+from typing import Any, Dict, List
+from wsgiref.util import request_uri
 
 import pandas as pd
 from boto3.dynamodb.table import TableResource
@@ -48,8 +49,8 @@ class AnalysisResultsStore:
             item = {
                 "PutRequest": {
                     "Item": {
-                        "analysis_id": {"S": self.analysis_id},
-                        "tile_id": {"S": f"{result_id}.{i}"},
+                        "tile_id": {"S": f"{result_id}"},
+                        "result_id": {"N": f"{i}"},
                         "result": {"S": csv_buf.getvalue()},
                         "time_to_live": {"N": self._get_ttl()},
                     }
@@ -73,7 +74,6 @@ class AnalysisResultsStore:
         dynamodb_client().put_item(
             TableName=TILED_STATUS_TABLE_NAME,
             Item={
-                "analysis_id": {"S": self.analysis_id},
                 "tile_id": {"S": result_id},
                 "status": {"S": status.value},
                 "detail": {"S": detail},
@@ -81,7 +81,18 @@ class AnalysisResultsStore:
             },
         )
 
-    def get_results(self) -> Dict[str, Any]:
+    def get_results(self, tiles: List[str]) -> Dict[str, Any]:
+        tiles_response = dynamodb_client().query(
+            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
+            KeyConditionExpression="analysis_id = :id",
+            TableName=TILED_RESULTS_TABLE_NAME,
+        )
+
+        results = []
+        for tile_key in tiles_response["Items"]:
+            result_response = dynamodb_client
+
+
         results = dynamodb_client().query(
             ExpressionAttributeValues={":id": {"S": self.analysis_id}},
             KeyConditionExpression="analysis_id = :id",
@@ -101,37 +112,41 @@ class AnalysisResultsStore:
 
         return results
 
-    def get_statuses(self) -> Dict[str, Any]:
-        return dynamodb_client().query(
-            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
-            KeyConditionExpression="analysis_id = :id",
-            TableName=TILED_STATUS_TABLE_NAME,
-        )
+    def get_statuses(self, tile_ids=List[str]) -> Dict[str, Any]:
+        batch_tiles = [
+            {"tile_id": {"S": tile_id}} for tile_id in tile_ids
+        ]
+        statuses_response = dynamodb_client().batch_get_item(
+            RequestItems={TILED_STATUS_TABLE_NAME: {"Keys": batch_tiles}})
 
-    def wait_for_results(self, num_results: int) -> DataFrame:
+        return statuses_response
+
+    def wait_for_results(self, lambda_tiles: List[str], all_tiles: List[str]) -> DataFrame:
         curr_count = 0
         tries = 0
+        num_results = len(lambda_tiles)
 
-        while curr_count < num_results and tries < RESULTS_CHECK_TRIES:
+        while curr_count < len(lambda_tiles) and tries < RESULTS_CHECK_TRIES:
             sleep(RESULTS_CHECK_INTERVAL)
             tries += 1
 
-            statuses_response = self.get_statuses()
+            statuses_response = self.get_statuses(lambda_tiles)
 
-            for item in statuses_response["Items"]:
+            statuses = statuses_response["Responses"][TILED_STATUS_TABLE_NAME]
+            for item in statuses:
                 if item["status"]["S"] == ResultStatus.error:
                     raise RasterAnalysisException(
                         f"Tile {item['tile_id']} encountered error: {item['detail']}"
                     )
 
-            curr_count = statuses_response["Count"]
+            curr_count = len(statuses)
 
         if curr_count != num_results:
             raise TimeoutError(
                 f"Timeout occurred before all lambdas completed. Result count: {num_results}; results completed: {curr_count}"
             )
 
-        results_response = self.get_results()
+        results_response = self.get_results(all_tiles)
         raw_results = [
             StringIO(item["result"]["S"]) for item in results_response["Items"]
         ]
