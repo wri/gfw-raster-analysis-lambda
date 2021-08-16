@@ -44,7 +44,8 @@ def handler(event, context):
         results_store.save_result(results, event["tile_result_id"])
     except Exception as e:
         results_store = AnalysisResultsStore(event["analysis_id"])
-        results_store.save_status(event["tile_result_id"], ResultStatus.error, str(e))
+        results_store.save_status(
+            event["tile_result_id"], ResultStatus.error, str(0), str(e))
 
         LOGGER.exception(e)
         raise e

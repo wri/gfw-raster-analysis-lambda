@@ -19,7 +19,6 @@ from raster_analysis.globals import (
     LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
     LOGGER,
     RASTER_ANALYSIS_LAMBDA_NAME,
-    TILED_RESULTS_TABLE_NAME,
     TILED_STATUS_TABLE_NAME,
     BasePolygon,
     Numeric,
@@ -114,7 +113,6 @@ class AnalysisTiler:
 
     def _execute_tiles(self) -> DataFrame:
         tiles_for_lambda = self._get_tiles(self.grid.tile_degrees)
-        all_tiles = self._get_tiles(self.grid.tile_degrees, include_cached=True)
         payload: Dict[str, Any] = {
             "analysis_id": self.request_id,
             "query": self.raw_query,
@@ -133,7 +131,8 @@ class AnalysisTiler:
         if geom_count <= FANOUT_NUM:
             for tile in tiles_for_lambda:
                 tile_payload = deepcopy(payload)
-                tile_payload["tile_result_id"] = self._get_cache_key(tile)
+                tile_id = self._get_cache_key(tile)
+                tile_payload["tile_result_id"] = tile_id
                 tile_payload["tile"] = mapping(tile)
                 invoke_lambda(
                     tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
@@ -151,12 +150,17 @@ class AnalysisTiler:
                 event = {"payload": payload, "tiles": chunk}
                 invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
-        LOGGER.info(f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(all_tiles) - geom_count}")
+
         results_store = AnalysisResultsStore(self.request_id)
-        results_store.save_analysis_tiles(
-            [self._get_cache_key(tile) for tile in all_tiles])
-        results = results_store.wait_for_results(len(all_tiles))
-        
+        all_tile_ids = [
+            self._get_cache_key(tile) for tile in
+            self._get_tiles(self.grid.tile_degrees, include_cached=True)
+        ]
+        lambda_tile_ids = [self._get_cache_key(tile) for tile in tiles_for_lambda]
+        LOGGER.info(f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(all_tile_ids) - geom_count}")
+
+        results = results_store.wait_for_results(lambda_tile_ids, all_tile_ids)
+
         return results
 
     def _get_tiles(self, width: Numeric, include_cached=False) -> List[Polygon]:
@@ -173,7 +177,7 @@ class AnalysisTiler:
                     ((i + 1) * width) + min_x,
                     ((j + 1) * width) + min_y,
                 )
-                include_tile = self.geom_intersects(tile)
+                include_tile = self.geom.intersects(tile)
                 if not include_cached:
                     include_tile = bool(include_tile * ~self._is_cached(tile))
 
@@ -201,12 +205,13 @@ class AnalysisTiler:
         geom_tile_intersection = tile.intersection(self.geom)
         key = f"{self.raw_query}-{tile.wkt}-{geom_tile_intersection.wkt}"
         
-        return md5(key.encode())
+
+        return md5(key.encode()).hexdigest()
 
 
     def _is_cached(self, tile: Polygon) -> bool:
         """Check if query result for the tile-geometry overlap area is in cache"""
-        cache_key = self._get_cache_key(tile, self.geom)
+        cache_key = self._get_cache_key(tile)
 
         tile_response = dynamodb_client().query(
             ExpressionAttributeValues={":id": {"S": cache_key}, },

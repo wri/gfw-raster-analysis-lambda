@@ -4,7 +4,6 @@ from enum import Enum
 from io import StringIO
 from time import sleep
 from typing import Any, Dict, List
-from wsgiref.util import request_uri
 
 import pandas as pd
 from boto3.dynamodb.table import TableResource
@@ -66,10 +65,10 @@ class AnalysisResultsStore:
                 RequestItems={TILED_RESULTS_TABLE_NAME: items}
             )
 
-        self.save_status(result_id, ResultStatus.success)
+        self.save_status(result_id, ResultStatus.success, str(i + 1))
 
     def save_status(
-        self, result_id: str, status: ResultStatus, detail: str = " "
+        self, result_id: str, status: ResultStatus, parts: int, detail: str = " ",
     ) -> None:
         dynamodb_client().put_item(
             TableName=TILED_STATUS_TABLE_NAME,
@@ -77,38 +76,40 @@ class AnalysisResultsStore:
                 "tile_id": {"S": result_id},
                 "status": {"S": status.value},
                 "detail": {"S": detail},
+                "parts": {"N": parts},
                 "time_to_live": {"N": self._get_ttl()},
             },
         )
 
     def get_results(self, tiles: List[str]) -> Dict[str, Any]:
-        tiles_response = dynamodb_client().query(
-            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
-            KeyConditionExpression="analysis_id = :id",
-            TableName=TILED_RESULTS_TABLE_NAME,
+        
+        # Fetching result parts for tile from status table to able to batch_get
+        # results that requires secondary index
+        result_statuses = self.get_statuses(tiles)
+        if len(result_statuses) == 0:
+            return []
+
+        tiles_and_result_parts = [
+            {"tile_id": {"S": status["tile_id"]["S"]}, "result_id": {"N": str(result_id)}} 
+            for status in result_statuses
+            for result_id in range(int(status["parts"]['N']))]
+    
+        results_response = dynamodb_client().batch_get_item(
+            RequestItems={TILED_RESULTS_TABLE_NAME: {"Keys": tiles_and_result_parts}}
         )
 
-        results = []
-        for tile_key in tiles_response["Items"]:
-            result_response = dynamodb_client
-
-
-        results = dynamodb_client().query(
-            ExpressionAttributeValues={":id": {"S": self.analysis_id}},
-            KeyConditionExpression="analysis_id = :id",
-            TableName=TILED_RESULTS_TABLE_NAME,
-        )
-
-        page_key = results.get("LastEvaluatedKey", None)
-        while page_key:
-            next_page = dynamodb_client().query(
-                ExpressionAttributeValues={":id": {"S": self.analysis_id}},
-                KeyConditionExpression="analysis_id = :id",
-                TableName=TILED_RESULTS_TABLE_NAME,
-                ExclusiveStartKey=page_key,
+        results = results_response["Responses"][TILED_RESULTS_TABLE_NAME]
+        if len(results) == 0:
+            return results
+        
+        unprocessed = len(results_response["UnprocessedKeys"])
+        while unprocessed > 0:
+            results_response = dynamodb_client().batch_get_item(
+                RequestItems={TILED_RESULTS_TABLE_NAME: {"Keys": unprocessed}}
             )
-            results["Items"] += next_page["Items"]
-            page_key = next_page.get("LastEvaluatedKey", None)
+            results.append(
+                results_response["Responses"][TILED_RESULTS_TABLE_NAME])  
+            unprocessed = results_response["UnprocessedKeys"]
 
         return results
 
@@ -119,7 +120,7 @@ class AnalysisResultsStore:
         statuses_response = dynamodb_client().batch_get_item(
             RequestItems={TILED_STATUS_TABLE_NAME: {"Keys": batch_tiles}})
 
-        return statuses_response
+        return statuses_response["Responses"][TILED_STATUS_TABLE_NAME]
 
     def wait_for_results(self, lambda_tiles: List[str], all_tiles: List[str]) -> DataFrame:
         curr_count = 0
@@ -130,9 +131,7 @@ class AnalysisResultsStore:
             sleep(RESULTS_CHECK_INTERVAL)
             tries += 1
 
-            statuses_response = self.get_statuses(lambda_tiles)
-
-            statuses = statuses_response["Responses"][TILED_STATUS_TABLE_NAME]
+            statuses = self.get_statuses(lambda_tiles)
             for item in statuses:
                 if item["status"]["S"] == ResultStatus.error:
                     raise RasterAnalysisException(
@@ -146,9 +145,9 @@ class AnalysisResultsStore:
                 f"Timeout occurred before all lambdas completed. Result count: {num_results}; results completed: {curr_count}"
             )
 
-        results_response = self.get_results(all_tiles)
+        result_items = self.get_results(all_tiles)
         raw_results = [
-            StringIO(item["result"]["S"]) for item in results_response["Items"]
+            StringIO(item["result"]["S"]) for item in result_items
         ]
 
         dfs = [pd.read_csv(result) for result in raw_results]
