@@ -65,10 +65,14 @@ class AnalysisResultsStore:
                 RequestItems={TILED_RESULTS_TABLE_NAME: items}
             )
 
-        self.save_status(result_id, ResultStatus.success, str(i + 1))
+        self.save_status(result_id, ResultStatus.success, i + 1)
 
     def save_status(
-        self, result_id: str, status: ResultStatus, parts: int, detail: str = " ",
+        self,
+        result_id: str,
+        status: ResultStatus,
+        parts: int,
+        detail: str = " ",
     ) -> None:
         dynamodb_client().put_item(
             TableName=TILED_STATUS_TABLE_NAME,
@@ -76,53 +80,44 @@ class AnalysisResultsStore:
                 "tile_id": {"S": result_id},
                 "status": {"S": status.value},
                 "detail": {"S": detail},
-                "parts": {"N": parts},
+                "parts": {"N": str(parts)},
                 "time_to_live": {"N": self._get_ttl()},
             },
         )
 
-    def get_results(self, tiles: List[str]) -> Dict[str, Any]:
-        
+    def get_results(self, tiles: List) -> List[Dict[str, Any]]:
+
         # Fetching result parts for tile from status table to able to batch_get
         # results that requires secondary index
         result_statuses = self.get_statuses(tiles)
         if len(result_statuses) == 0:
             return []
 
-        tiles_and_result_parts = [
-            {"tile_id": {"S": status["tile_id"]["S"]}, "result_id": {"N": str(result_id)}} 
-            for status in result_statuses
-            for result_id in range(int(status["parts"]['N']))]
-    
-        results_response = dynamodb_client().batch_get_item(
-            RequestItems={TILED_RESULTS_TABLE_NAME: {"Keys": tiles_and_result_parts}}
-        )
+        tiles_and_result_parts = []
+        for status in result_statuses:
+            for part_id in range(int(status["parts"]["N"])):
+                tiles_and_result_parts.append(
+                    {
+                        "tile_id": {"S": status["tile_id"]["S"]},
+                        "result_id": {"N": str(part_id)},
+                    }
+                )
 
-        results = results_response["Responses"][TILED_RESULTS_TABLE_NAME]
-        if len(results) == 0:
-            return results
-        
-        unprocessed = len(results_response["UnprocessedKeys"])
-        while unprocessed > 0:
-            results_response = dynamodb_client().batch_get_item(
-                RequestItems={TILED_RESULTS_TABLE_NAME: {"Keys": unprocessed}}
-            )
-            results.append(
-                results_response["Responses"][TILED_RESULTS_TABLE_NAME])  
-            unprocessed = results_response["UnprocessedKeys"]
+        results = self._get_batch_items(
+            TILED_RESULTS_TABLE_NAME, tiles_and_result_parts
+        )
 
         return results
 
-    def get_statuses(self, tile_ids=List[str]) -> Dict[str, Any]:
-        batch_tiles = [
-            {"tile_id": {"S": tile_id}} for tile_id in tile_ids
-        ]
-        statuses_response = dynamodb_client().batch_get_item(
-            RequestItems={TILED_STATUS_TABLE_NAME: {"Keys": batch_tiles}})
+    def get_statuses(self, tile_ids=List[str]) -> List[Dict[str, Any]]:
+        batch_tiles = [{"tile_id": {"S": tile_id}} for tile_id in tile_ids]
+        statuses = self._get_batch_items(TILED_STATUS_TABLE_NAME, batch_tiles)
 
-        return statuses_response["Responses"][TILED_STATUS_TABLE_NAME]
+        return statuses
 
-    def wait_for_results(self, lambda_tiles: List[str], all_tiles: List[str]) -> DataFrame:
+    def wait_for_results(
+        self, lambda_tiles: List[str], all_tiles: List[str]
+    ) -> DataFrame:
         curr_count = 0
         tries = 0
         num_results = len(lambda_tiles)
@@ -146,9 +141,7 @@ class AnalysisResultsStore:
             )
 
         result_items = self.get_results(all_tiles)
-        raw_results = [
-            StringIO(item["result"]["S"]) for item in result_items
-        ]
+        raw_results = [StringIO(item["result"]["S"]) for item in result_items]
 
         dfs = [pd.read_csv(result) for result in raw_results]
         results = pd.concat(dfs) if dfs else pd.DataFrame()
@@ -162,3 +155,22 @@ class AnalysisResultsStore:
                 (datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()
             )
         )
+
+    @staticmethod
+    def _get_batch_items(table_name, keys):
+        results_response = dynamodb_client().batch_get_item(
+            RequestItems={table_name: {"Keys": keys}}
+        )
+        results = results_response["Responses"][table_name]
+        if len(results) == 0:
+            return results
+
+        unprocessed = len(results_response["UnprocessedKeys"])
+        while unprocessed > 0:
+            results_response = dynamodb_client().batch_get_item(
+                RequestItems={table_name: {"Keys": unprocessed}}
+            )
+            results.append(results_response["Responses"][table_name])
+            unprocessed = results_response["UnprocessedKeys"]
+
+        return results
