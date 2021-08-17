@@ -4,13 +4,11 @@ from copy import deepcopy
 from datetime import datetime
 from io import StringIO
 from typing import Any, Dict, List, Tuple
-from hashlib import md5
 
-from numpy import ceil
 from pandas import DataFrame
 from shapely.geometry import Polygon, box, mapping, shape
 
-from raster_analysis.boto import invoke_lambda, lambda_client, dynamodb_client
+from raster_analysis.boto import invoke_lambda, lambda_client
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.geometry import encode_geometry
 from raster_analysis.globals import (
@@ -19,7 +17,6 @@ from raster_analysis.globals import (
     LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
     LOGGER,
     RASTER_ANALYSIS_LAMBDA_NAME,
-    TILED_STATUS_TABLE_NAME,
     BasePolygon,
     Numeric,
 )
@@ -112,7 +109,7 @@ class AnalysisTiler:
             return results
 
     def _execute_tiles(self) -> DataFrame:
-        tiles_for_lambda = self._get_tiles(self.grid.tile_degrees)
+        tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
             "analysis_id": self.request_id,
             "query": self.raw_query,
@@ -124,6 +121,24 @@ class AnalysisTiler:
         else:
             payload["geometry"] = self.raw_geom
 
+        results_store = AnalysisResultsStore(self.request_id)
+        tile_keys = [
+            results_store.get_cache_key(tile, self.geom, self.raw_query)
+            for tile in tiles
+        ]
+        cached_tile_keys = [
+            status["tile_id"]["S"]
+            for status in results_store.get_statuses(
+                tile_keys, status_filter=ResultStatus.success
+            )
+        ]
+        cache_keys_for_lambda = list(set(tile_keys) - set(cached_tile_keys))
+        tiles_for_lambda = [
+            tile
+            for tile in tiles
+            if results_store.get_cache_key(tile, self.geom, self.raw_query)
+            in cache_keys_for_lambda
+        ]
         geom_count = len(tiles_for_lambda)
 
         LOGGER.info(f"Processing {geom_count} tiles")
@@ -131,7 +146,7 @@ class AnalysisTiler:
         if geom_count <= FANOUT_NUM:
             for tile in tiles_for_lambda:
                 tile_payload = deepcopy(payload)
-                tile_id = self._get_cache_key(tile)
+                tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
                 tile_payload["tile_result_id"] = tile_id
                 tile_payload["tile"] = mapping(tile)
                 invoke_lambda(
@@ -139,7 +154,11 @@ class AnalysisTiler:
                 )
         else:
             tile_geojsons = [
-                (self._get_cache_key(tile), mapping(tile)) for tile in tiles_for_lambda
+                (
+                    results_store.get_cache_key(tile, self.geom, self.raw_query),
+                    mapping(tile),
+                )
+                for tile in tiles
             ]
             tile_chunks = [
                 tile_geojsons[x : x + FANOUT_NUM]
@@ -150,22 +169,17 @@ class AnalysisTiler:
                 event = {"payload": payload, "tiles": chunk}
                 invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
+        LOGGER.info(
+            f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(tile_keys) - geom_count}"
+        )
 
-        results_store = AnalysisResultsStore(self.request_id)
-        all_tile_ids = [
-            self._get_cache_key(tile) for tile in
-            self._get_tiles(self.grid.tile_degrees, include_cached=True)
-        ]
-        lambda_tile_ids = [self._get_cache_key(tile) for tile in tiles_for_lambda]
-        LOGGER.info(f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(all_tile_ids) - geom_count}")
-
-        results = results_store.wait_for_results(lambda_tile_ids, all_tile_ids)
+        results = results_store.wait_for_results(cache_keys_for_lambda, tile_keys)
 
         return results
 
-    def _get_tiles(self, width: Numeric, include_cached=False) -> List[Polygon]:
-        """Get width x width tile geometries over the extent of the
-        geometry snapped to global tile grid of size width."""
+    def _get_tiles(self, width: Numeric) -> List[Polygon]:
+        """Get width x width tile geometries over the extent of the geometry
+        snapped to global tile grid of size width."""
         min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
         tiles = []
 
@@ -177,11 +191,7 @@ class AnalysisTiler:
                     ((i + 1) * width) + min_x,
                     ((j + 1) * width) + min_y,
                 )
-                include_tile = self.geom.intersects(tile)
-                if not include_cached:
-                    include_tile = bool(include_tile * ~self._is_cached(tile))
-
-                if include_tile:
+                if self.geom.intersects(tile):
                     tiles.append(tile)
 
         return tiles
@@ -197,29 +207,4 @@ class AnalysisTiler:
             geom.bounds[1] - (geom.bounds[1] % width),
             geom.bounds[2] + (-geom.bounds[2] % width),
             geom.bounds[3] + (-geom.bounds[3] % width),
-        )
-
-
-    def _get_cache_key(self, tile: Polygon) -> str:
-        "Create md5 has for tile-geom_overlap-query result"
-        geom_tile_intersection = tile.intersection(self.geom)
-        key = f"{self.raw_query}-{tile.wkt}-{geom_tile_intersection.wkt}"
-        
-
-        return md5(key.encode()).hexdigest()
-
-
-    def _is_cached(self, tile: Polygon) -> bool:
-        """Check if query result for the tile-geometry overlap area is in cache"""
-        cache_key = self._get_cache_key(tile)
-
-        tile_response = dynamodb_client().query(
-            ExpressionAttributeValues={":id": {"S": cache_key}, },
-            KeyConditionExpression="tile_id = :id",
-            TableName=TILED_STATUS_TABLE_NAME,
-        )
-
-        return (
-            len(tile_response["Items"]) > 0 and
-            tile_response["Items"][0]["status"]["S"] == ResultStatus.success
         )

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
+from hashlib import md5
 from io import StringIO
 from time import sleep
 from typing import Any, Dict, List
@@ -8,6 +9,7 @@ from typing import Any, Dict, List
 import pandas as pd
 from boto3.dynamodb.table import TableResource
 from pandas import DataFrame
+from shapely.geometry import Polygon
 
 from raster_analysis.boto import dynamodb_client, dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
@@ -17,6 +19,7 @@ from raster_analysis.globals import (
     RESULTS_CHECK_TRIES,
     TILED_RESULTS_TABLE_NAME,
     TILED_STATUS_TABLE_NAME,
+    BasePolygon,
 )
 
 
@@ -109,9 +112,18 @@ class AnalysisResultsStore:
 
         return results
 
-    def get_statuses(self, tile_ids=List[str]) -> List[Dict[str, Any]]:
+    def get_statuses(
+        self, tile_ids=List[str], status_filter: ResultStatus = None
+    ) -> List[Dict[str, Any]]:
         batch_tiles = [{"tile_id": {"S": tile_id}} for tile_id in tile_ids]
         statuses = self._get_batch_items(TILED_STATUS_TABLE_NAME, batch_tiles)
+
+        if status_filter:
+            statuses = [
+                status
+                for status in statuses
+                if status["status"]["S"] == status_filter.success
+            ]
 
         return statuses
 
@@ -147,6 +159,14 @@ class AnalysisResultsStore:
         results = pd.concat(dfs) if dfs else pd.DataFrame()
         print(f"Result dataframe: {results.to_dict()}")
         return results
+
+    @staticmethod
+    def get_cache_key(tile: Polygon, geom: BasePolygon, query: str) -> str:
+        """Create md5 has for tile-geom_overlap-query result."""
+        geom_tile_intersection = tile.intersection(geom)
+        key = f"{query}-{tile.wkt}-{geom_tile_intersection.wkt}"
+
+        return md5(key.encode()).hexdigest()
 
     @staticmethod
     def _get_ttl():
