@@ -14,7 +14,7 @@ from shapely.geometry import Polygon
 from raster_analysis.boto import dynamodb_client, dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.globals import (
-    DYMANODB_TTL_SECONDS,
+    RESULTS_CACHE_TTL_SECONDS,
     RESULTS_CHECK_INTERVAL,
     RESULTS_CHECK_TRIES,
     TILED_RESULTS_TABLE_NAME,
@@ -171,7 +171,9 @@ class AnalysisResultsStore:
     def _get_ttl():
         return str(
             Decimal(
-                (datetime.now() + timedelta(seconds=DYMANODB_TTL_SECONDS)).timestamp()
+                (
+                    datetime.now() + timedelta(seconds=RESULTS_CACHE_TTL_SECONDS)
+                ).timestamp()
             )
         )
 

@@ -27,7 +27,7 @@ resource "aws_lambda_function" "raster_analysis" {
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
       TILED_STATUS_TABLE_NAME     = aws_dynamodb_table.tiled_status_table.name
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
-      DYNAMODB_TTL_SECONDS        = 172800  # 2 days
+      RESULTS_CACHE_TTL_SECONDS   = 172800  # 2 days
     }
   }
 }
