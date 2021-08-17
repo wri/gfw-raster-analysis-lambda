@@ -29,11 +29,10 @@ class ResultStatus(str, Enum):
 
 
 class AnalysisResultsStore:
-    def __init__(self, analysis_id: str):
+    def __init__(self):
         self._client: TableResource = dynamodb_resource().Table(
             TILED_RESULTS_TABLE_NAME
         )
-        self.analysis_id: str = analysis_id
 
     def save_result(self, results: DataFrame, result_id: str) -> None:
         records_per_item = 5000
@@ -52,7 +51,7 @@ class AnalysisResultsStore:
                 "PutRequest": {
                     "Item": {
                         "tile_id": {"S": f"{result_id}"},
-                        "result_id": {"N": f"{i}"},
+                        "part_id": {"N": f"{i}"},
                         "result": {"S": csv_buf.getvalue()},
                         "time_to_live": {"N": self._get_ttl()},
                     }
@@ -102,7 +101,7 @@ class AnalysisResultsStore:
                 tiles_and_result_parts.append(
                     {
                         "tile_id": {"S": status["tile_id"]["S"]},
-                        "result_id": {"N": str(part_id)},
+                        "part_id": {"N": str(part_id)},
                     }
                 )
 

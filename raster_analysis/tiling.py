@@ -111,7 +111,6 @@ class AnalysisTiler:
     def _execute_tiles(self) -> DataFrame:
         tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
-            "analysis_id": self.request_id,
             "query": self.raw_query,
             "environment": self.data_environment.dict()["layers"],
         }
@@ -121,7 +120,7 @@ class AnalysisTiler:
         else:
             payload["geometry"] = self.raw_geom
 
-        results_store = AnalysisResultsStore(self.request_id)
+        results_store = AnalysisResultsStore()
         tile_keys = [
             results_store.get_cache_key(tile, self.geom, self.raw_query)
             for tile in tiles
@@ -147,7 +146,7 @@ class AnalysisTiler:
             for tile in tiles_for_lambda:
                 tile_payload = deepcopy(payload)
                 tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
-                tile_payload["tile_result_id"] = tile_id
+                tile_payload["cache_id"] = tile_id
                 tile_payload["tile"] = mapping(tile)
                 invoke_lambda(
                     tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()

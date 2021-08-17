@@ -12,7 +12,7 @@ from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")
-        results_store = AnalysisResultsStore(event["analysis_id"])
+        results_store = AnalysisResultsStore()
 
         if "geometry" in event:
             source_geom = event["geometry"]
@@ -34,18 +34,16 @@ def handler(event, context):
         data_environment = DataEnvironment(layers=event["environment"])
         query = Query(event["query"], data_environment)
 
-        
         data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
 
         query_executor = QueryExecutor(query, data_cube)
         results: DataFrame = query_executor.execute()
 
         LOGGER.debug(f"Ran analysis with results: {results}")
-        results_store.save_result(results, event["tile_result_id"])
+        results_store.save_result(results, event["cache_id"])
     except Exception as e:
-        results_store = AnalysisResultsStore(event["analysis_id"])
-        results_store.save_status(
-            event["tile_result_id"], ResultStatus.error, 0, str(e))
+        results_store = AnalysisResultsStore()
+        results_store.save_status(event["cache_id"], ResultStatus.error, 0, str(e))
 
         LOGGER.exception(e)
         raise e

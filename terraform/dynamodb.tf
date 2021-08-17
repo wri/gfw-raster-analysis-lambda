@@ -2,7 +2,7 @@ resource "aws_dynamodb_table" "tiled_results_table" {
   name           = substr("${local.project}-tiled_results${local.name_suffix}", 0, 64)
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "tile_id"
-  range_key      = "result_id"
+  range_key      = "part_id"
 
   attribute {
     name = "tile_id"
@@ -10,7 +10,7 @@ resource "aws_dynamodb_table" "tiled_results_table" {
   }
 
   attribute {
-    name = "result_id"
+    name = "part_id"
     type = "N"
   }
 

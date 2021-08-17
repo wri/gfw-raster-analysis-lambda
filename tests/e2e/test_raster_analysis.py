@@ -71,11 +71,11 @@ def context(monkeypatch):
         boto.dynamodb_client().create_table(
             AttributeDefinitions=[
                 {"AttributeName": "tile_id", "AttributeType": "S"},
-                {"AttributeName": "result_id", "AttributeType": "N"},
+                {"AttributeName": "part_id", "AttributeType": "N"},
             ],
             KeySchema=[
                 {"AttributeName": "tile_id", "KeyType": "HASH"},
-                {"AttributeName": "result_id", "KeyType": "RANGE"},
+                {"AttributeName": "part_id", "KeyType": "RANGE"},
             ],
             TableName="tiled-raster-analysis",
             BillingMode="PAY_PER_REQUEST",
