@@ -186,12 +186,12 @@ class AnalysisResultsStore:
         if len(results) == 0:
             return results
 
-        unprocessed = len(results_response["UnprocessedKeys"])
-        while unprocessed > 0:
+        unprocessed = results_response["UnprocessedKeys"][table_name]["Keys"]
+        while len(unprocessed) > 0:
             results_response = dynamodb_client().batch_get_item(
                 RequestItems={table_name: {"Keys": unprocessed}}
             )
             results.append(results_response["Responses"][table_name])
-            unprocessed = results_response["UnprocessedKeys"]
+            unprocessed = results_response["UnprocessedKeys"][table_name]["Keys"]
 
         return results
