@@ -172,7 +172,7 @@ class AnalysisResultsStore:
         return str(
             Decimal(
                 (
-                    datetime.now() + timedelta(seconds=RESULTS_CACHE_TTL_SECONDS)
+                    datetime.now() + timedelta(seconds=int(RESULTS_CACHE_TTL_SECONDS))
                 ).timestamp()
             )
         )
