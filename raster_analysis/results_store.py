@@ -191,7 +191,7 @@ class AnalysisResultsStore:
             results_response = dynamodb_client().batch_get_item(
                 RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
             )
-            results.append(results_response["Responses"][table_name])
+            results += results_response["Responses"][table_name]
             unprocessed = results_response["UnprocessedKeys"]
 
         return results
