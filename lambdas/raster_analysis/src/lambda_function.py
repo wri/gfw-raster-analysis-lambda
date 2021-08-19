@@ -1,3 +1,4 @@
+from aws_xray_sdk.core import patch, xray_recorder
 from pandas import DataFrame
 
 from raster_analysis.data_cube import DataCube
@@ -8,7 +9,10 @@ from raster_analysis.query import Query
 from raster_analysis.query_executor import QueryExecutor
 from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 
+patch(["boto3"])
 
+
+@xray_recorder.capture("Raster Analysis")
 def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")
