@@ -21,7 +21,7 @@ from raster_analysis.globals import (
     Numeric,
 )
 from raster_analysis.query import Function, Query
-from raster_analysis.results_store import AnalysisResultsStore
+from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 
 
 class AnalysisTiler:
@@ -111,7 +111,6 @@ class AnalysisTiler:
     def _execute_tiles(self) -> DataFrame:
         tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
-            "analysis_id": self.request_id,
             "query": self.raw_query,
             "environment": self.data_environment.dict()["layers"],
         }
@@ -121,19 +120,45 @@ class AnalysisTiler:
         else:
             payload["geometry"] = self.raw_geom
 
-        geom_count = len(tiles)
+        results_store = AnalysisResultsStore()
+        tile_keys = [
+            results_store.get_cache_key(tile, self.geom, self.raw_query)
+            for tile in tiles
+        ]
+        cached_tile_keys = [
+            status["tile_id"]["S"]
+            for status in results_store.get_statuses(
+                tile_keys, status_filter=ResultStatus.success
+            )
+        ]
+        cache_keys_for_lambda = list(set(tile_keys) - set(cached_tile_keys))
+        tiles_for_lambda = [
+            tile
+            for tile in tiles
+            if results_store.get_cache_key(tile, self.geom, self.raw_query)
+            in cache_keys_for_lambda
+        ]
+        geom_count = len(tiles_for_lambda)
 
         LOGGER.info(f"Processing {geom_count} tiles")
 
         if geom_count <= FANOUT_NUM:
-            for tile in tiles:
+            for tile in tiles_for_lambda:
                 tile_payload = deepcopy(payload)
+                tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
+                tile_payload["cache_id"] = tile_id
                 tile_payload["tile"] = mapping(tile)
                 invoke_lambda(
                     tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
                 )
         else:
-            tile_geojsons = [mapping(tile) for tile in tiles]
+            tile_geojsons = [
+                (
+                    results_store.get_cache_key(tile, self.geom, self.raw_query),
+                    mapping(tile),
+                )
+                for tile in tiles
+            ]
             tile_chunks = [
                 tile_geojsons[x : x + FANOUT_NUM]
                 for x in range(0, len(tile_geojsons), FANOUT_NUM)
@@ -143,15 +168,17 @@ class AnalysisTiler:
                 event = {"payload": payload, "tiles": chunk}
                 invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
-        LOGGER.info(f"Geom count: {geom_count}")
-        results_store = AnalysisResultsStore(self.request_id)
-        results = results_store.wait_for_results(geom_count)
+        LOGGER.info(
+            f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(tile_keys) - geom_count}"
+        )
+
+        results = results_store.wait_for_results(cache_keys_for_lambda, tile_keys)
 
         return results
 
     def _get_tiles(self, width: Numeric) -> List[Polygon]:
-        """Get width x width tile geometries over the extent of the
-        geometry."""
+        """Get width x width tile geometries over the extent of the geometry
+        snapped to global tile grid of size width."""
         min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
         tiles = []
 
@@ -163,7 +190,6 @@ class AnalysisTiler:
                     ((i + 1) * width) + min_x,
                     ((j + 1) * width) + min_y,
                 )
-
                 if self.geom.intersects(tile):
                     tiles.append(tile)
 

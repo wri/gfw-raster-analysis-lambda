@@ -86,9 +86,6 @@ class DataCube:
             geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
                 which will define the area of the raster to mask.
 
-            geom (Shapely Geometry): A polygon in the same SRS as `raster_path`
-                which will define the area of the raster to mask.
-
         Returns
            Numpy masked array of source raster, cropped to the extent of the
            input geometry, with any modifications applied. Areas where the
