@@ -203,7 +203,7 @@ DATA_ENVIRONMENT = [
         },
     },
     {
-        "source_uri": "s3://gfw-data-lake/gfw_radd_alerts/v20210328/raster/epsg-4326/10/100000/date_conf/geotiff/{tile_id}.tif",
+        "source_uri": "s3://gfw-data-lake/wur_radd_alerts/v20210627/raster/epsg-4326/10/100000/date_conf/geotiff/{tile_id}.tif",
         "tile_scheme": "nw",
         "grid": "10/100000",
         "name": "gfw_radd_alerts__date_conf",
