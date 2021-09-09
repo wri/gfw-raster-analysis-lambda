@@ -127,6 +127,10 @@ class DataEnvironment(BaseModel):
                     if val == decoded_val
                 ]
 
+                # if encoding has default value, encode to NoData
+                if isinstance(encoding, defaultdict) and val == encoding[0]:
+                    encoded_vals.append(0)
+
                 if not encoded_vals:
                     raise ValueError(f"Value {val} not in pixel encoding {encoding}")
                 return encoded_vals
