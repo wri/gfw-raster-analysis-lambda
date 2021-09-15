@@ -19,6 +19,7 @@ from raster_analysis.globals import (
     RESULTS_CHECK_TRIES,
     TILED_RESULTS_TABLE_NAME,
     TILED_STATUS_TABLE_NAME,
+    DYNAMODB_REQUEST_ITEMS_LIMIT,
     BasePolygon,
 )
 
@@ -184,8 +185,8 @@ class AnalysisResultsStore:
         # batch_get_item has 100 items limit when sending request so chunking keys list
         chunk = 0
         while True:
-            start = chunk * 100
-            end = min(start + 100, len(keys))
+            start = chunk * DYNAMODB_REQUEST_ITEMS_LIMIT
+            end = min(start + DYNAMODB_REQUEST_ITEMS_LIMIT, len(keys))
             items = keys[start:end]
 
             results_response = dynamodb_client().batch_get_item(
@@ -201,7 +202,7 @@ class AnalysisResultsStore:
                 results += results_response["Responses"][table_name]
                 unprocessed = results_response["UnprocessedKeys"]
 
-            if start + 100 > len(keys):
+            if start + DYNAMODB_REQUEST_ITEMS_LIMIT > len(keys):
                 break
 
             chunk += 1
