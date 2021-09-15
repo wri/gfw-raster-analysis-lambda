@@ -66,8 +66,9 @@ class AnalysisTiler:
         values."""
         group_columns = self.query.get_group_columns()
         order_by_columns = self.query.get_order_by_columns()
+        selectors = self.query.get_result_selectors()
 
-        for selector in self.query.get_result_selectors():
+        for selector in selectors:
             results[selector.layer] = self.data_environment.decode_layer(
                 selector.layer, results[selector.layer]
             )
@@ -98,7 +99,7 @@ class AnalysisTiler:
                         group_columns.remove(layer.name)
 
         if group_columns:
-            results = results.groupby(group_columns).sum()
+            results = results.groupby(group_columns).sum().reset_index()
         elif self.query.aggregates:
             results = results.sum()
 
@@ -111,6 +112,14 @@ class AnalysisTiler:
 
         if self.query.limit:
             results = results.head(self.query.limit)
+
+        # change column names for AS statements
+        aliases = {
+            col.layer: col.alias
+            for col in selectors + self.query.aggregates
+            if col.alias
+        }
+        results = results.rename(columns=aliases)
 
         return results
 

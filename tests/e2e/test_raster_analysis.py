@@ -101,7 +101,7 @@ def context(monkeypatch):
 
 
 def test_primary_tree_cover_loss(context):
-    query = "select sum(area__ha), sum(gfw_forest_carbon_gross_emissions__Mg_CO2e) from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and (umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true') group by umd_tree_cover_loss__year"
+    query = "select sum(area__ha) AS umd_tree_cover_loss__ha, sum(gfw_forest_carbon_gross_emissions__Mg_CO2e) AS gfw_forest_carbon_gross_emissions__Mg_CO2e from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and (umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true') group by umd_tree_cover_loss__year"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
@@ -110,7 +110,9 @@ def test_primary_tree_cover_loss(context):
     assert result["status"] == "success"
     assert result["data"]
     for row_actual, row_expected in zip(result["data"], IDN_24_9_PRIMARY_LOSS):
-        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.01)
+        assert row_actual["umd_tree_cover_loss__ha"] == pytest.approx(
+            row_expected["area__ha"], 0.01
+        )
         assert row_actual[
             "gfw_forest_carbon_gross_emissions__Mg_CO2e"
         ] == pytest.approx(
@@ -215,7 +217,7 @@ def test_tree_cover_loss_by_driver(context):
 
 
 def test_glad_alerts(context):
-    query = "select count(umd_glad_landsat_alerts) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
+    query = "select count(*) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
@@ -227,7 +229,7 @@ def test_glad_alerts(context):
 
 
 def test_glad_alerts_count(context):
-    query = "select count(umd_glad_landsat_alerts) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
+    query = "select count(*) from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' group by isoweek(umd_glad_landsat_alerts__date)"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
@@ -261,7 +263,7 @@ def test_glad_s2_alerts(context):
 
 
 def test_land_cover_area(context):
-    query = "select sum(area__ha) from esa_land_cover_2015__class group by esa_land_cover_2015__class"
+    query = "select esa_land_cover_2015__class, sum(area__ha) AS esa_land_cover_2015__ha from esa_land_cover_2015__class group by esa_land_cover_2015__class"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,
@@ -269,10 +271,13 @@ def test_land_cover_area(context):
 
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_ESA_LAND_COVER):
-        print(
-            f"{row_actual['esa_land_cover_2015__class']}, {row_expected['esa_land_cover_2015__class']}"
+        assert (
+            row_actual["esa_land_cover_2015__class"]
+            == row_expected["esa_land_cover_2015__class"]
         )
-        assert row_actual["area__ha"] == pytest.approx(row_expected["area__ha"], 0.001)
+        assert row_actual["esa_land_cover_2015__ha"] == pytest.approx(
+            row_expected["area__ha"], 0.001
+        )
 
 
 def test_failed(context):

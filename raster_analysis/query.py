@@ -98,6 +98,7 @@ class SupportedAggregates(str, Enum):
 class Aggregate(BaseModel):
     name: SupportedAggregates
     layer: str
+    alias: Optional[str] = None
 
 
 class Function(str, Enum):
@@ -213,16 +214,19 @@ class Query:
         selectors = []
         aggregates = []
         for selector in Query._ensure_list(query["select"]):
+            alias = selector.get("name", None)
             if isinstance(selector["value"], dict):
                 func_name, layer_name = Query._get_first_key_value(selector["value"])
                 if func_name in SupportedAggregates.__members__.values():
-                    aggregate = Aggregate(name=func_name, layer=layer_name)
+                    aggregate = Aggregate(name=func_name, layer=layer_name, alias=alias)
                     aggregates.append(aggregate)
                 elif func_name in Function.__members__.values():
-                    selector = Selector(layer=layer_name, function=func_name)
+                    selector = Selector(
+                        layer=layer_name, function=func_name, alias=alias
+                    )
                     selectors.append(selector)
             elif isinstance(selector["value"], str):
-                selector = Selector(layer=selector["value"])
+                selector = Selector(layer=selector["value"], alias=alias)
                 selectors.append(selector)
 
         return selectors, aggregates
