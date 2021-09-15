@@ -178,20 +178,32 @@ class AnalysisResultsStore:
         )
 
     @staticmethod
-    def _get_batch_items(table_name, keys):
-        results_response = dynamodb_client().batch_get_item(
-            RequestItems={table_name: {"Keys": keys}}
-        )
-        results = results_response["Responses"][table_name]
-        if len(results) == 0:
-            return results
+    def _get_batch_items(table_name, keys) -> List:
 
-        unprocessed = results_response["UnprocessedKeys"]
-        while len(unprocessed) > 0:
+        results = []
+        # batch_get_item has 100 items limit when sending request so chunking keys list
+        chunk = 0
+        while True:
+            start = chunk * 100
+            end = min(start + 100, len(keys))
+            items = keys[start:end]
+
             results_response = dynamodb_client().batch_get_item(
-                RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
+                RequestItems={table_name: {"Keys": items}}
             )
             results += results_response["Responses"][table_name]
+
             unprocessed = results_response["UnprocessedKeys"]
+            while len(unprocessed) > 0:
+                results_response = dynamodb_client().batch_get_item(
+                    RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
+                )
+                results += results_response["Responses"][table_name]
+                unprocessed = results_response["UnprocessedKeys"]
+
+            if start + 100 > len(keys):
+                break
+
+            chunk += 1
 
         return results
