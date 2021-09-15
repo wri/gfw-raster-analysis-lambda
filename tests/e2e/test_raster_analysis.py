@@ -14,6 +14,7 @@ os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"
 os.environ["TILED_RESULTS_TABLE_NAME"] = "tiled-raster-analysis"
 os.environ["TILED_STATUS_TABLE_NAME"] = "tiled-raster-analysis-status"
 os.environ["DYNAMODB_ENDPOINT_URL"] = "http://127.0.0.1:3000"
+os.environ["RESULTS_CHECK_TIMEOUT"] = "120"  # extend timeout in case local wifi is slow
 os.environ[
     "S3_BUCKET_DATA_LAKE"
 ] = "gfw-data-lake"  # This is actual production data lake
@@ -147,6 +148,29 @@ def test_lat_lon(context):
     assert len(lines) == IDN_24_9_2019_GLAD_ALERTS_TOTAL
 
 
+def test_lat_lon_limit(context):
+    query = "select latitude, longitude, umd_glad_landsat_alerts__date from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' order by umd_glad_landsat_alerts__date desc limit 100"
+    result = tiled_handler(
+        {
+            "geometry": IDN_24_9_GEOM,
+            "query": query,
+            "format": "csv",
+            "environment": DATA_ENVIRONMENT,
+        },
+        context,
+    )
+    assert result["status"] == "success"
+
+    lines = result["data"].splitlines()[1:]
+    assert len(lines) == 100
+
+    dates = [line.split(",")[2] for line in lines]
+    assert dates[0] == "2019-12-28"
+
+    # check the dates are already sorted in descending order
+    assert list(sorted(dates, reverse=True)) == dates
+
+
 def test_raw_area(context):
     query = "select sum(area__ha) from data"
     result = tiled_handler(
@@ -179,7 +203,7 @@ def test_tree_cover_gain(context, monkeypatch):
 
 
 def test_tree_cover_loss_by_driver(context):
-    query = "select sum(area__ha) from umd_tree_cover_loss__year where umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type"
+    query = "select sum(area__ha) from umd_tree_cover_loss__year where umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type order by umd_tree_cover_loss__year, tsc_tree_cover_loss_drivers__type"
     result = tiled_handler(
         {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
         context,

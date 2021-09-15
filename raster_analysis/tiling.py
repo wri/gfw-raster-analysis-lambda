@@ -20,7 +20,7 @@ from raster_analysis.globals import (
     BasePolygon,
     Numeric,
 )
-from raster_analysis.query import Function, Query
+from raster_analysis.query import Function, Query, Sort
 from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 
 
@@ -65,6 +65,7 @@ class AnalysisTiler:
         selector functions, and re-apply any group by's based on final
         values."""
         group_columns = self.query.get_group_columns()
+        order_by_columns = self.query.get_order_by_columns()
 
         for selector in self.query.get_result_selectors():
             results[selector.layer] = self.data_environment.decode_layer(
@@ -97,16 +98,21 @@ class AnalysisTiler:
                         group_columns.remove(layer.name)
 
         if group_columns:
-            grouped_df = results.groupby(group_columns).sum()
-            return grouped_df.sort_values(group_columns).reset_index()
+            results = results.groupby(group_columns).sum()
         elif self.query.aggregates:
-            df = results.sum()
+            results = results.sum()
 
             # convert back to single row DF instead of Series
-            df = DataFrame([df.values], columns=df.keys().values)
-            return df
-        else:
-            return results
+            results = DataFrame([results.values], columns=results.keys().values)
+
+        if order_by_columns:
+            is_asc = self.query.sort == Sort.asc
+            results = results.sort_values(order_by_columns, ascending=is_asc)
+
+        if self.query.limit:
+            results = results.head(self.query.limit)
+
+        return results
 
     def _execute_tiles(self) -> DataFrame:
         tiles = self._get_tiles(self.grid.tile_degrees)
