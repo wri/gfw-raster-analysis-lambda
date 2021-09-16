@@ -202,7 +202,7 @@ class AnalysisResultsStore:
                 results += results_response["Responses"][table_name]
                 unprocessed = results_response["UnprocessedKeys"]
 
-            if start + DYNAMODB_REQUEST_ITEMS_LIMIT > len(keys):
+            if start + DYNAMODB_REQUEST_ITEMS_LIMIT >= len(keys):
                 break
 
             chunk += 1
