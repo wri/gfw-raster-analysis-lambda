@@ -139,10 +139,7 @@ class QueryExecutor:
     def _select(self, mask: ndarray) -> DataFrame:
         results = {}
 
-        selector_names = [
-            selector.alias if selector.alias else selector.layer
-            for selector in self.query.selectors
-        ]
+        selector_names = [selector.layer for selector in self.query.selectors]
 
         if (
             SpecialSelectors.latitude in selector_names
