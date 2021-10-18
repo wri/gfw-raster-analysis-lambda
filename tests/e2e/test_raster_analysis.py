@@ -300,6 +300,7 @@ def test_net_flux(context):
         IDN_24_9_NET_FLUX["gfw_forest_carbon_gross_removals__Mg_CO2e"], 0.01
     )
 
+
 def test_result_tiles_exceed_dynamodb_get_batch_limit(context, monkeypatch):
     monkeypatch.setattr(
         raster_analysis.results_store, "DYNAMODB_REQUEST_ITEMS_LIMIT", 2
@@ -313,3 +314,24 @@ def test_result_tiles_exceed_dynamodb_get_batch_limit(context, monkeypatch):
     assert result["status"] == "success"
     for row_actual, row_expected in zip(result["data"], IDN_24_9_GLAD_ALERTS):
         assert row_actual["count"] == row_expected["alert__count"]
+
+
+def test_result_tiles_exceed_dynamodb_write_batch_limit(context, monkeypatch):
+    monkeypatch.setattr(raster_analysis.results_store, "DYNAMODB_WRITE_ITEMS_LIMIT", 2)
+    query = "select latitude, longitude, umd_glad_landsat_alerts__date from umd_glad_landsat_alerts__date where umd_glad_landsat_alerts__date >= '2019-01-01' and umd_glad_landsat_alerts__date < '2020-01-01' order by umd_glad_landsat_alerts__date desc limit 100"
+    result = tiled_handler(
+        {
+            "geometry": IDN_24_9_GEOM,
+            "query": query,
+            "format": "csv",
+            "environment": DATA_ENVIRONMENT,
+        },
+        context,
+    )
+    assert result["status"] == "success"
+
+    lines = result["data"].splitlines()[1:]
+    assert len(lines) == 100
+
+    dates = [line.split(",")[2] for line in lines]
+    assert dates[0] == "2019-12-28"

@@ -14,12 +14,13 @@ from shapely.geometry import Polygon
 from raster_analysis.boto import dynamodb_client, dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.globals import (
+    DYNAMODB_REQUEST_ITEMS_LIMIT,
+    DYNAMODB_WRITE_ITEMS_LIMIT,
     RESULTS_CACHE_TTL_SECONDS,
     RESULTS_CHECK_INTERVAL,
     RESULTS_CHECK_TRIES,
     TILED_RESULTS_TABLE_NAME,
     TILED_STATUS_TABLE_NAME,
-    DYNAMODB_REQUEST_ITEMS_LIMIT,
     BasePolygon,
 )
 
@@ -64,9 +65,13 @@ class AnalysisResultsStore:
             i += 1
 
         if items:
-            dynamodb_client().batch_write_item(
-                RequestItems={TILED_RESULTS_TABLE_NAME: items}
-            )
+            start = 0
+            while start < len(items):
+                chunk = items[start : start + DYNAMODB_WRITE_ITEMS_LIMIT]
+                dynamodb_client().batch_write_item(
+                    RequestItems={TILED_RESULTS_TABLE_NAME: chunk}
+                )
+                start += DYNAMODB_WRITE_ITEMS_LIMIT
 
         self.save_status(result_id, ResultStatus.success, i + 1)
 
