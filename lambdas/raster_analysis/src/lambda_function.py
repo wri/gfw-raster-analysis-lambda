@@ -43,7 +43,7 @@ def handler(event, context):
         query_executor = QueryExecutor(query, data_cube)
         results: DataFrame = query_executor.execute()
 
-        LOGGER.debug(f"Ran analysis with results: {results}")
+        LOGGER.debug(f"Ran analysis with results: {results.head(100)}")
         results_store.save_result(results, event["cache_id"])
     except Exception as e:
         results_store = AnalysisResultsStore()

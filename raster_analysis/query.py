@@ -28,6 +28,11 @@ class ComparisonOperator(str, Enum):
     neq = "!="
 
 
+class Sort(str, Enum):
+    asc = "asc"
+    desc = "desc"
+
+
 class SetOperator(str, Enum):
     intersect = "intersect"
     union = "union"
@@ -93,6 +98,7 @@ class SupportedAggregates(str, Enum):
 class Aggregate(BaseModel):
     name: SupportedAggregates
     layer: str
+    alias: Optional[str] = None
 
 
 class Function(str, Enum):
@@ -111,7 +117,16 @@ class Selector(BaseModel):
 class Query:
     def __init__(self, query: str, data_environment: DataEnvironment):
         self.data_environment = data_environment
-        base, selectors, filter, groups, aggregates = self.parse_query(query)
+        (
+            base,
+            selectors,
+            filter,
+            groups,
+            aggregates,
+            order_by,
+            sort,
+            limit,
+        ) = self.parse_query(query)
 
         self.raw_query = query
         self.base = base
@@ -119,6 +134,9 @@ class Query:
         self.filter = filter
         self.groups = groups
         self.aggregates = aggregates
+        self.order_by = order_by
+        self.sort = sort
+        self.limit = limit
 
         self.validate_query()
 
@@ -158,6 +176,9 @@ class Query:
     def get_group_columns(self) -> List[str]:
         return [group.layer for group in self.groups]
 
+    def get_order_by_columns(self) -> List[str]:
+        return [order_by.layer for order_by in self.order_by]
+
     def get_minimum_grid(self) -> Grid:
         layers = self.get_source_layers()
         grids = [self.data_environment.get_layer_grid(layer.name) for layer in layers]
@@ -184,23 +205,28 @@ class Query:
         selectors, aggregates = self._parse_select(parsed)
         where = self._parse_where(parsed)
         groups = self._parse_group_by(parsed)
+        order_by, sort = self._parse_order_by(parsed)
+        limit = parsed.get("limit", None)
 
-        return base, selectors, where, groups, aggregates
+        return base, selectors, where, groups, aggregates, order_by, sort, limit
 
     def _parse_select(self, query: Dict[str, Any]):
         selectors = []
         aggregates = []
         for selector in Query._ensure_list(query["select"]):
+            alias = selector.get("name", None)
             if isinstance(selector["value"], dict):
                 func_name, layer_name = Query._get_first_key_value(selector["value"])
                 if func_name in SupportedAggregates.__members__.values():
-                    aggregate = Aggregate(name=func_name, layer=layer_name)
+                    aggregate = Aggregate(name=func_name, layer=layer_name, alias=alias)
                     aggregates.append(aggregate)
                 elif func_name in Function.__members__.values():
-                    selector = Selector(layer=layer_name, function=func_name)
+                    selector = Selector(
+                        layer=layer_name, function=func_name, alias=alias
+                    )
                     selectors.append(selector)
             elif isinstance(selector["value"], str):
-                selector = Selector(layer=selector["value"])
+                selector = Selector(layer=selector["value"], alias=alias)
                 selectors.append(selector)
 
         return selectors, aggregates
@@ -248,6 +274,19 @@ class Query:
                     groups.append(group)
 
         return groups
+
+    def _parse_order_by(self, query: Dict[str, Any]):
+        order_bys = []
+        sort = Sort.asc
+
+        if "orderby" in query:
+            for order_by in Query._ensure_list(query["orderby"]):
+                order_bys.append(Selector(layer=order_by["value"]))
+
+                if "sort" in order_by:
+                    sort = order_by["sort"].lower()
+
+        return order_bys, sort
 
     # the SQL parser sometimes outputs a list or single value depending on input,
     # Just a helper to make it consistent
