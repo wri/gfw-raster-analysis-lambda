@@ -78,6 +78,18 @@ class DataEnvironment(BaseModel):
             if layer.name == name:
                 return layer
 
+        if name.endswith("__ha"):
+            for layer in self.layers:
+                base_name = name.replace("__ha", "")
+                if layer.name.endswith(f"__{base_name}") or layer.name.startswith(
+                    f"{base_name}__"
+                ):
+                    return DerivedLayer(
+                        name=name,
+                        source_layer=layer.name,
+                        calc="np.where(A > 0, area, 0)",
+                    )
+
         LOGGER.error(
             f"Could not find layer with name {name} in data environment {json.dumps(self.dict())}"
         )

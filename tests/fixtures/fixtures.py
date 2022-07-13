@@ -223,6 +223,15 @@ DATA_ENVIRONMENT = [
             "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
         },
     },
+    {
+        "source_uri": "s3://gfw-data-lake/umd_tree_cover_loss_from_fires/v20220309/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "is__umd_tree_cover_loss_from_fires",
+        "raster_table": {
+            "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
+        },
+    },
 ]
 
 IDN_24_9_GEOM = {
@@ -4683,3 +4692,126 @@ IDN_24_9_NET_FLUX = {
     "gfw_forest_carbon_gross_removals__Mg_CO2e": 224974028.46711487,
     "gfw_forest_carbon_gross_emissions__Mg_CO2e": 703443441.3867857,
 }
+
+COD_24_1_TCLF = [
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2001,
+        "umd_tree_cover_loss__ha": 11520.449765065028,
+        "umd_tree_cover_loss_from_fires__ha": 6.527226588321883,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2002,
+        "umd_tree_cover_loss__ha": 4246.393934384567,
+        "umd_tree_cover_loss_from_fires__ha": 15.815472690055092,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2003,
+        "umd_tree_cover_loss__ha": 379.35619533262104,
+        "umd_tree_cover_loss_from_fires__ha": 0.6143005031286273,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2004,
+        "umd_tree_cover_loss__ha": 12000.351188116629,
+        "umd_tree_cover_loss_from_fires__ha": 110.478447009353,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2005,
+        "umd_tree_cover_loss__ha": 5212.287338744705,
+        "umd_tree_cover_loss_from_fires__ha": 9.827638739581088,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2006,
+        "umd_tree_cover_loss__ha": 23406.583502873484,
+        "umd_tree_cover_loss_from_fires__ha": 57.13032874332795,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2007,
+        "umd_tree_cover_loss__ha": 4686.903612609711,
+        "umd_tree_cover_loss_from_fires__ha": 29.87156244249882,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2008,
+        "umd_tree_cover_loss__ha": 9180.779050613963,
+        "umd_tree_cover_loss_from_fires__ha": 48.4484642239651,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2009,
+        "umd_tree_cover_loss__ha": 4175.875333089541,
+        "umd_tree_cover_loss_from_fires__ha": 14.818402805736241,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2010,
+        "umd_tree_cover_loss__ha": 14578.396893734076,
+        "umd_tree_cover_loss_from_fires__ha": 22.41962691531647,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2011,
+        "umd_tree_cover_loss__ha": 4443.673784611833,
+        "umd_tree_cover_loss_from_fires__ha": 2.457118232092981,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2012,
+        "umd_tree_cover_loss__ha": 9210.402694125001,
+        "umd_tree_cover_loss_from_fires__ha": 10.364312888041097,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2013,
+        "umd_tree_cover_loss__ha": 16234.847105481946,
+        "umd_tree_cover_loss_from_fires__ha": 130.12411402895867,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2014,
+        "umd_tree_cover_loss__ha": 27071.884930487162,
+        "umd_tree_cover_loss_from_fires__ha": 200.89413867820144,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2015,
+        "umd_tree_cover_loss__ha": 21776.758781332286,
+        "umd_tree_cover_loss_from_fires__ha": 69.87401521431012,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2016,
+        "umd_tree_cover_loss__ha": 33314.834153557254,
+        "umd_tree_cover_loss_from_fires__ha": 1293.3660542672144,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2017,
+        "umd_tree_cover_loss__ha": 32563.9534280417,
+        "umd_tree_cover_loss_from_fires__ha": 402.3967332001621,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2018,
+        "umd_tree_cover_loss__ha": 39031.61848261437,
+        "umd_tree_cover_loss_from_fires__ha": 1155.6173936804992,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2019,
+        "umd_tree_cover_loss__ha": 31293.85142541742,
+        "umd_tree_cover_loss_from_fires__ha": 192.25052480325212,
+    },
+    {
+        "iso": "COD",
+        "umd_tree_cover_loss__year": 2020,
+        "umd_tree_cover_loss__ha": 25661.04285909984,
+        "umd_tree_cover_loss_from_fires__ha": 448.88513968988684,
+    },
+]

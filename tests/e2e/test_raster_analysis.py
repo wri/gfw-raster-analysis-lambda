@@ -28,6 +28,7 @@ from lambdas.tiled_analysis.src.lambda_function import handler as tiled_handler
 from tests.fixtures.fixtures import (
     BRA_14_87_GEOM,
     COD_21_4_GEOM,
+    COD_24_1_TCLF,
     DATA_ENVIRONMENT,
     IDN_24_9_2010_EXTENT,
     IDN_24_9_2010_RAW_AREA,
@@ -362,3 +363,21 @@ def test_result_tiles_exceed_dynamodb_write_batch_limit(context, monkeypatch):
 
     lines = result["data"].splitlines()
     assert len(lines) == IDN_24_9_2019_GLAD_ALERTS_TOTAL
+
+
+def test_area_layers(context):
+    query = "select sum(umd_tree_cover_loss__ha), sum(umd_tree_cover_loss_from_fires__ha) from data where umd_tree_cover_density_2000__threshold >= 30 group by umd_tree_cover_loss__year"
+    result = tiled_handler(
+        {"geometry": COD_21_4_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )
+
+    assert result["status"] == "success"
+    assert result["data"]
+    for row_actual, row_expected in zip(result["data"], COD_24_1_TCLF):
+        assert row_actual["umd_tree_cover_loss__ha"] == pytest.approx(
+            row_expected["umd_tree_cover_loss__ha"], 0.01
+        )
+        assert row_actual["umd_tree_cover_loss_from_fires__ha"] == pytest.approx(
+            row_expected["umd_tree_cover_loss_from_fires__ha"], 0.01
+        )
