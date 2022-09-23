@@ -11,7 +11,7 @@ setup(
         "aws-xray-sdk",
         "requests",
         "geobuf==1.1.1",
-        "protobuf==3.20.0",
+        "protobuf==3.20.2",
         "pydantic",
         "moz_sql_parser",
     ],
