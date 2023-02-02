@@ -18,14 +18,8 @@ def handler(event, context):
         LOGGER.info(f"Running analysis with parameters: {event}")
         results_store = AnalysisResultsStore()
 
-        if "geometry" in event:
-            source_geom = event["geometry"]
-            is_encoded = False
-        elif "encoded_geometry" in event:
-            source_geom = event["encoded_geometry"]
-            is_encoded = True
-        else:
-            raise KeyError("No valid geometry field")
+        source_geom = event["geometry"]
+        is_encoded = event.get("encoded", False)
 
         tile_geojson = event.get("tile", None)
         geom_tile = GeometryTile(source_geom, tile_geojson, is_encoded)

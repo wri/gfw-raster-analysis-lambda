@@ -1,11 +1,10 @@
-import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import geobuf
-from shapely.geometry import shape, Polygon, mapping
+from shapely.geometry import Polygon, mapping, shape
 
 from raster_analysis.exceptions import InvalidGeometryException
-from raster_analysis.globals import BasePolygon, LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES
+from raster_analysis.globals import BasePolygon
 
 
 class GeometryTile:
@@ -43,28 +42,15 @@ class GeometryTile:
             self.geom = geom_tile
 
 
-def encode_geometry(geom: BasePolygon) -> str:
-    """
-    Encode geometry into a compressed string
-    """
+def encode_geometry(geom: BasePolygon, simplification: Optional[float] = None) -> str:
+    """Encode geometry into a compressed string."""
+    if simplification:
+        geom = geom.simplify(simplification, preserve_topology=False)
+
     encoded_geom = geobuf.encode(mapping(geom)).hex()
-
-    # if the geometry is so complex is still goes over the limit, incrementally attempting to simplify it
-    if sys.getsizeof(encoded_geom) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
-        encoded_geom = geobuf.encode(
-            mapping(geom.simplify(0.005, preserve_topology=False))
-        ).hex()
-
-    if sys.getsizeof(encoded_geom) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
-        encoded_geom = geobuf.encode(
-            mapping(geom.simplify(0.01, preserve_topology=False))
-        ).hex()
-
     return encoded_geom
 
 
 def decode_geometry(geom: str) -> BasePolygon:
-    """
-    Decode geometry from compressed string
-    """
+    """Decode geometry from compressed string."""
     return shape(geobuf.decode(bytes.fromhex(geom))).buffer(0)

@@ -16,3 +16,7 @@ class InvalidGeometryException(Exception):
 
 class QueryParseException(Exception):
     pass
+
+
+class QuerySizeException(Exception):
+    pass

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from threading import Thread
 
 import pytest
-from shapely.geometry import box, mapping
+from shapely.geometry import Point, box, mapping
 
 # set environment before importing our lambda layer
 os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
@@ -381,3 +381,57 @@ def test_area_layers(context):
         assert row_actual["umd_tree_cover_loss_from_fires__ha"] == pytest.approx(
             row_expected["umd_tree_cover_loss_from_fires__ha"], 0.01
         )
+
+
+def test_huge_payload(context):
+    query = "select sum(area__ha) from data"
+
+    data_environment_entry = {
+        "source_uri": "s3://gfw-data-lake/umd_tree_cover_loss/v1.8/raster/epsg-4326/10/40000/year/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "umd_tree_cover_loss__year",
+    }
+
+    huge_data_environment = [data_environment_entry for i in range(0, 100000)]
+
+    result = tiled_handler(
+        {
+            "geometry": IDN_24_9_GEOM,
+            "query": query,
+            "environment": huge_data_environment,
+        },
+        context,
+    )
+    assert result["status"] == "error"
+
+
+def test_encoding_large_geom(context):
+    query = "select sum(area__ha) from data"
+
+    normal_geom = mapping(Point(0, 0).buffer(1))
+    result = tiled_handler(
+        {"geometry": normal_geom, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )
+
+    assert result["status"] == "success"
+    area_ha = result["data"][0]["area__ha"]
+
+    query = "select sum(area__ha) from data"
+    large_geom = mapping(Point(0, 0).buffer(1, quadsegs=2000))
+    result = tiled_handler(
+        {"geometry": large_geom, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )
+
+    assert result["status"] == "success"
+    assert result["data"][0]["area__ha"] == pytest.approx(area_ha, 0.001)
+
+    # larger_geom = mapping(Point(0, 0).buffer(1, quadsegs=2000))
+    # result = tiled_handler(
+    #     {"geometry": large_geom, "query": query, "environment": DATA_ENVIRONMENT},
+    #     context,
+    # )
+    #
+    # assert result["status"] == "success"

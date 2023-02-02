@@ -10,6 +10,7 @@ from shapely.geometry import Polygon, box, mapping, shape
 
 from raster_analysis.boto import invoke_lambda, lambda_client
 from raster_analysis.data_environment import DataEnvironment
+from raster_analysis.exceptions import QuerySizeException
 from raster_analysis.geometry import encode_geometry
 from raster_analysis.globals import (
     FANOUT_LAMBDA_NAME,
@@ -128,12 +129,10 @@ class AnalysisTiler:
         payload: Dict[str, Any] = {
             "query": self.raw_query,
             "environment": self.data_environment.dict()["layers"],
+            "geometry": self.raw_geom,
         }
 
-        if sys.getsizeof(json.dumps(self.raw_geom)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
-            payload["encoded_geometry"] = encode_geometry(self.geom)
-        else:
-            payload["geometry"] = self.raw_geom
+        payload = self._compress_payload(payload)
 
         results_store = AnalysisResultsStore()
         tile_keys = [
@@ -209,6 +208,31 @@ class AnalysisTiler:
                     tiles.append(tile)
 
         return tiles
+
+    def _compress_payload(self, payload):
+        compressed_payload = deepcopy(payload)
+        if (
+            sys.getsizeof(json.dumps(compressed_payload))
+            > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES
+        ):
+            compressed_payload["encoded"] = True
+
+            simplifications = [None, 0.005, 0.01]
+            for simplification in simplifications:
+                compressed_payload["geometry"] = encode_geometry(
+                    self.geom, simplification
+                )
+
+                if (
+                    sys.getsizeof(json.dumps(compressed_payload))
+                    < LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES
+                ):
+                    return compressed_payload
+
+        raise QuerySizeException(
+            f"Payload of {sys.getsizeof(json.dumps(compressed_payload))} bytes goes beyond "
+            f"limit of {LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES} bytes."
+        )
 
     @staticmethod
     def _get_rounded_bounding_box(
