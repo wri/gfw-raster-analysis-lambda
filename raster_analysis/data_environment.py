@@ -37,6 +37,7 @@ class RasterTable(BaseModel):
 
 class BaseLayer(BaseModel):
     name: str
+    no_data: int = 0
 
 
 class EncodedLayer(BaseLayer):

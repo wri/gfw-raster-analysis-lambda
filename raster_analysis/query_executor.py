@@ -27,9 +27,8 @@ class QueryExecutor:
         mask = filter_mask * self.data_cube.mask
 
         if self.query.base.layer in self.data_cube.windows:
-            mask *= self.data_cube.windows[self.query.base.layer].data.astype(
-                dtype=np.bool
-            )
+            base_layer = self.query.data_environment.get_layer(self.query.base.layer)
+            mask *= self.data_cube.windows[base_layer.name].data != base_layer.no_data
 
         if self.query.aggregates:
             return self._aggregate(mask)
@@ -46,10 +45,11 @@ class QueryExecutor:
         group_windows = []
         for group in self.query.groups:
             window = self.data_cube.windows[group.layer]
+            layer = self.query.data_environment.get_layer(group.layer)
             group_windows.append(self.data_cube.windows[group.layer])
 
             if not self.query.data_environment.has_default_value(group.layer):
-                mask *= window.data.astype(dtype=np.bool)
+                mask *= window.data != layer.no_data
 
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]
