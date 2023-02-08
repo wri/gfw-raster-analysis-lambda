@@ -218,3 +218,13 @@ class DataEnvironment(BaseModel):
         """
         encoding = self.get_pixel_encoding(name)
         return isinstance(encoding, defaultdict) or 0 in encoding
+
+    def dict(self, *args, **kwargs):
+        layers = super(DataEnvironment, self).dict()["layers"]
+
+        # nan values must be serialized as strings since they're not JSON-compliant
+        for layer in layers:
+            if layer["no_data"] == nan:
+                layer["no_data"] == "nan"
+
+        return layers
