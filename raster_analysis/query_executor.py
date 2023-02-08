@@ -49,7 +49,12 @@ class QueryExecutor:
             group_windows.append(self.data_cube.windows[group.layer])
 
             if not self.query.data_environment.has_default_value(group.layer):
-                mask *= window.data != layer.no_data
+                if np.isnan(layer.no_data):
+                    layer_mask = ~np.isnan(window.data)
+                else:
+                    layer_mask = window.data != layer.no_data
+
+                mask *= layer_mask
 
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]
