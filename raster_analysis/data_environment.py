@@ -225,6 +225,6 @@ class DataEnvironment(BaseModel):
         # nan values must be serialized as strings since they're not JSON-compliant
         for layer in layers:
             if layer["no_data"] == nan:
-                layer["no_data"] == "nan"
+                layer["no_data"] = "nan"
 
         return layers
