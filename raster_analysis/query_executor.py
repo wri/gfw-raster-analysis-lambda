@@ -28,7 +28,13 @@ class QueryExecutor:
 
         if self.query.base.layer in self.data_cube.windows:
             base_layer = self.query.data_environment.get_layer(self.query.base.layer)
-            mask *= self.data_cube.windows[base_layer.name].data != base_layer.no_data
+
+            if np.isnan(base_layer.no_data):
+                mask *= ~np.isnan(self.data_cube.windows[base_layer.name].data)
+            else:
+                mask *= (
+                    self.data_cube.windows[base_layer.name].data != base_layer.no_data
+                )
 
         if self.query.aggregates:
             return self._aggregate(mask)
