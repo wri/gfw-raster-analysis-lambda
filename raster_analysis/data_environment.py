@@ -11,7 +11,7 @@ from numpy import (
     float32,
     float64,
     floor,
-    nan,
+    isnan,
     timedelta64,
     uint,
     uint8,
@@ -224,7 +224,7 @@ class DataEnvironment(BaseModel):
 
         # nan values must be serialized as strings since they're not JSON-compliant
         for layer in layers:
-            if layer["no_data"] == nan:
+            if isnan(layer["no_data"]):
                 layer["no_data"] = "nan"
 
         return layers
