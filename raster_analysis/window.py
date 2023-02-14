@@ -93,11 +93,6 @@ class SourceWindow:
                         data = vrt.read(1, masked=masked, window=window)
                         no_data_value = src.nodata
 
-                        # convert nan to 0 if no data value is set no nan
-                        if isinstance(no_data_value, float) and math.isnan(
-                            no_data_value
-                        ):
-                            data = np.nan_to_num(data)
                     except MemoryError:
                         logging.exception(
                             "[ERROR][RasterAnalysis] " + traceback.format_exc()
