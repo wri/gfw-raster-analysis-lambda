@@ -149,9 +149,11 @@ class QueryExecutor:
             layer = self.query.data_environment.get_layer(aggregate.layer)
 
             if np.isnan(layer.no_data):
-                mask *= ~np.isnan(window.data)
+                final_mask = mask * ~np.isnan(window.data)
+            else:
+                final_mask = mask
 
-            masked_data = np.extract(mask, window.data)
+            masked_data = np.extract(final_mask, window.data)
             sum = masked_data.sum()
 
             if aggregate.name == SupportedAggregates.sum:
