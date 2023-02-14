@@ -220,7 +220,7 @@ class DataEnvironment(BaseModel):
         return isinstance(encoding, defaultdict) or 0 in encoding
 
     def dict(self, *args, **kwargs):
-        layers = super(DataEnvironment, self).dict()["layers"]
+        layers = super().dict()["layers"]
 
         # nan values must be serialized as strings since they're not JSON-compliant
         for layer in layers:
