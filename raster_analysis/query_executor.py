@@ -149,7 +149,7 @@ class QueryExecutor:
             layer = self.query.data_environment.get_layer(aggregate.layer)
 
             if np.isnan(layer.no_data):
-                mask *= ~np.isnan(window)
+                mask *= ~np.isnan(window.data)
 
             masked_data = np.extract(mask, window.data)
             sum = masked_data.sum()
