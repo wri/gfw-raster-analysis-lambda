@@ -1,6 +1,7 @@
 # flake8: noqa
 import json
 from collections import Iterable, defaultdict
+from enum import Enum
 from typing import Any, Dict, List, Optional, Union, cast
 
 from numpy import (
@@ -10,6 +11,7 @@ from numpy import (
     float32,
     float64,
     floor,
+    isnan,
     timedelta64,
     uint,
     uint8,
@@ -18,10 +20,10 @@ from numpy import (
     uint64,
 )
 from pandas import Series
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from raster_analysis.exceptions import QueryParseException
-from raster_analysis.globals import LOGGER, BasePolygon
+from raster_analysis.globals import LOGGER, BasePolygon, Numeric
 from raster_analysis.grid import Grid, GridName, TileScheme
 
 
@@ -37,6 +39,13 @@ class RasterTable(BaseModel):
 
 class BaseLayer(BaseModel):
     name: str
+    no_data: Numeric = 0
+
+    @validator("no_data")
+    def parse_no_data(cls, v):
+        if v == "nan":
+            return nan
+        return v
 
 
 class EncodedLayer(BaseLayer):
@@ -209,3 +218,13 @@ class DataEnvironment(BaseModel):
         """
         encoding = self.get_pixel_encoding(name)
         return isinstance(encoding, defaultdict) or 0 in encoding
+
+    def dict(self, *args, **kwargs):
+        layers = super().dict()["layers"]
+
+        # nan values must be serialized as strings since they're not JSON-compliant
+        for layer in layers:
+            if isnan(layer["no_data"]):
+                layer["no_data"] = "nan"
+
+        return layers

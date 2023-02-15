@@ -27,9 +27,14 @@ class QueryExecutor:
         mask = filter_mask * self.data_cube.mask
 
         if self.query.base.layer in self.data_cube.windows:
-            mask *= self.data_cube.windows[self.query.base.layer].data.astype(
-                dtype=np.bool
-            )
+            base_layer = self.query.data_environment.get_layer(self.query.base.layer)
+
+            if np.isnan(base_layer.no_data):
+                mask *= ~np.isnan(self.data_cube.windows[base_layer.name].data)
+            else:
+                mask *= (
+                    self.data_cube.windows[base_layer.name].data != base_layer.no_data
+                )
 
         if self.query.aggregates:
             return self._aggregate(mask)
@@ -46,10 +51,16 @@ class QueryExecutor:
         group_windows = []
         for group in self.query.groups:
             window = self.data_cube.windows[group.layer]
+            layer = self.query.data_environment.get_layer(group.layer)
             group_windows.append(self.data_cube.windows[group.layer])
 
             if not self.query.data_environment.has_default_value(group.layer):
-                mask *= window.data.astype(dtype=np.bool)
+                if np.isnan(layer.no_data):
+                    layer_mask = ~np.isnan(window.data)
+                else:
+                    layer_mask = window.data != layer.no_data
+
+                mask *= layer_mask
 
         group_columns = [np.ravel(window.data) for window in group_windows]
         group_dimensions = [col.max() + 1 for col in group_columns]
@@ -93,13 +104,22 @@ class QueryExecutor:
         elif aggregate.layer == SpecialSelectors.area__ha:
             return SpecialSelectors.area__ha, group_counts * self.data_cube.mean_area
         else:
+            layer = self.query.data_environment.get_layer(aggregate.layer)
             window = self.data_cube.windows[aggregate.layer]
             masked_data = np.extract(mask, window.data)
+
+            # is NoData is NaN, need to remove values from before aggregation
+            if np.isnan(layer.no_data):
+                nan_mask = ~np.isnan(masked_data)
+                masked_data = np.extract(nan_mask, masked_data)
+                inverse_index = np.extract(nan_mask, inverse_index)
 
             # this will sum the values of aggregate data into different bins, where each bin
             # is the corresponding group at that pixel
             sums = np.bincount(
-                inverse_index, weights=masked_data, minlength=group_counts.size
+                inverse_index,
+                weights=masked_data,
+                minlength=np.unique(inverse_index).size,
             )
             if aggregate.name == SupportedAggregates.sum:
                 return aggregate.layer, sums
@@ -126,7 +146,14 @@ class QueryExecutor:
             return aggregate.layer, mask.sum() * self.data_cube.mean_area
         else:
             window = self.data_cube.windows[aggregate.layer]
-            masked_data = np.extract(mask, window.data)
+            layer = self.query.data_environment.get_layer(aggregate.layer)
+
+            if np.isnan(layer.no_data):
+                final_mask = mask * ~np.isnan(window.data)
+            else:
+                final_mask = mask
+
+            masked_data = np.extract(final_mask, window.data)
             sum = masked_data.sum()
 
             if aggregate.name == SupportedAggregates.sum:

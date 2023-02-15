@@ -46,8 +46,8 @@ def handler(event, context):
         LOGGER.debug(f"Ran analysis with results: {results.head(100)}")
         results_store.save_result(results, event["cache_id"])
     except Exception as e:
+        LOGGER.exception(e)
+
         results_store = AnalysisResultsStore()
         results_store.save_status(event["cache_id"], ResultStatus.error, 0, str(e))
-
-        LOGGER.exception(e)
         raise e

@@ -127,7 +127,7 @@ class AnalysisTiler:
         tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
             "query": self.raw_query,
-            "environment": self.data_environment.dict()["layers"],
+            "environment": self.data_environment.dict(),
         }
 
         if sys.getsizeof(json.dumps(self.raw_geom)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
