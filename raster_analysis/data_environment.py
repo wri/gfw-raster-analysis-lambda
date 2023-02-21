@@ -12,6 +12,7 @@ from numpy import (
     float64,
     floor,
     isnan,
+    nan,
     timedelta64,
     uint,
     uint8,
@@ -39,7 +40,7 @@ class RasterTable(BaseModel):
 
 class BaseLayer(BaseModel):
     name: str
-    no_data: Numeric = 0
+    no_data: Optional[Numeric] = 0
 
     @validator("no_data")
     def parse_no_data(cls, v):
@@ -224,7 +225,7 @@ class DataEnvironment(BaseModel):
 
         # nan values must be serialized as strings since they're not JSON-compliant
         for layer in layers:
-            if isnan(layer["no_data"]):
+            if layer["no_data"] is not None and isnan(layer["no_data"]):
                 layer["no_data"] = "nan"
 
         return layers
