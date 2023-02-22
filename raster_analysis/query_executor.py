@@ -29,12 +29,14 @@ class QueryExecutor:
         if self.query.base.layer in self.data_cube.windows:
             base_layer = self.query.data_environment.get_layer(self.query.base.layer)
 
-            if np.isnan(base_layer.no_data):
-                mask *= ~np.isnan(self.data_cube.windows[base_layer.name].data)
-            else:
-                mask *= (
-                    self.data_cube.windows[base_layer.name].data != base_layer.no_data
-                )
+            if base_layer.no_data is not None:
+                if np.isnan(base_layer.no_data):
+                    mask *= ~np.isnan(self.data_cube.windows[base_layer.name].data)
+                else:
+                    mask *= (
+                        self.data_cube.windows[base_layer.name].data
+                        != base_layer.no_data
+                    )
 
         if self.query.aggregates:
             return self._aggregate(mask)
@@ -54,7 +56,10 @@ class QueryExecutor:
             layer = self.query.data_environment.get_layer(group.layer)
             group_windows.append(self.data_cube.windows[group.layer])
 
-            if not self.query.data_environment.has_default_value(group.layer):
+            if (
+                not self.query.data_environment.has_default_value(group.layer)
+                and layer.no_data is not None
+            ):
                 if np.isnan(layer.no_data):
                     layer_mask = ~np.isnan(window.data)
                 else:
@@ -109,7 +114,7 @@ class QueryExecutor:
             masked_data = np.extract(mask, window.data)
 
             # is NoData is NaN, need to remove values from before aggregation
-            if np.isnan(layer.no_data):
+            if layer.no_data is not None and np.isnan(layer.no_data):
                 nan_mask = ~np.isnan(masked_data)
                 masked_data = np.extract(nan_mask, masked_data)
                 inverse_index = np.extract(nan_mask, inverse_index)
@@ -148,10 +153,9 @@ class QueryExecutor:
             window = self.data_cube.windows[aggregate.layer]
             layer = self.query.data_environment.get_layer(aggregate.layer)
 
-            if np.isnan(layer.no_data):
+            final_mask = mask
+            if layer.no_data is not None and np.isnan(layer.no_data):
                 final_mask = mask * ~np.isnan(window.data)
-            else:
-                final_mask = mask
 
             masked_data = np.extract(final_mask, window.data)
             sum = masked_data.sum()
