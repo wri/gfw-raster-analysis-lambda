@@ -60,33 +60,39 @@ DATA_ENVIRONMENT = [
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "gfw_forest_carbon_gross_emissions__Mg_CO2e_ha-1",
+        "no_data": "nan",
     },
     {
         "source_layer": "gfw_forest_carbon_gross_emissions__Mg_CO2e_ha-1",
         "name": "gfw_forest_carbon_gross_emissions__Mg_CO2e",
         "calc": "A * area",
+        "no_data": "nan",
     },
     {
         "source_uri": "s3://gfw-data-lake/gfw_forest_carbon_net_flux/v20210331/raster/epsg-4326/10/40000/Mg_CO2e_ha/geotiff/{tile_id}.tif",
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "gfw_forest_carbon_net_flux__Mg_CO2e_ha-1",
+        "no_data": "nan",
     },
     {
         "source_layer": "gfw_forest_carbon_net_flux__Mg_CO2e_ha-1",
         "name": "gfw_forest_carbon_net_flux__Mg_CO2e",
         "calc": "A * area",
+        "no_data": "nan",
     },
     {
         "source_uri": "s3://gfw-data-lake/gfw_forest_carbon_gross_removals/v20210331/raster/epsg-4326/10/40000/Mg_CO2e_ha/geotiff/{tile_id}.tif",
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "gfw_forest_carbon_gross_removals__Mg_CO2e_ha-1",
+        "no_data": "nan",
     },
     {
         "source_layer": "gfw_forest_carbon_gross_removals__Mg_CO2e_ha-1",
         "name": "gfw_forest_carbon_gross_removals__Mg_CO2e",
         "calc": "A * area",
+        "no_data": "nan",
     },
     {
         "source_uri": "s3://gfw-data-lake/umd_tree_cover_gain/v1.6/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
@@ -231,6 +237,13 @@ DATA_ENVIRONMENT = [
         "raster_table": {
             "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
         },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/wri_tropical_tree_cover/v2020/raster/epsg-4326/10/40000/percent/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "wri_tropical_tree_cover__percent",
+        "no_data": 255,
     },
 ]
 
