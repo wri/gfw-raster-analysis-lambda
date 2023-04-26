@@ -2,6 +2,7 @@
 import os
 import subprocess
 import uuid
+from copy import deepcopy
 from datetime import datetime, timedelta
 from threading import Thread
 
@@ -381,3 +382,96 @@ def test_area_layers(context):
         assert row_actual["umd_tree_cover_loss_from_fires__ha"] == pytest.approx(
             row_expected["umd_tree_cover_loss_from_fires__ha"], 0.01
         )
+
+
+def test_nonzero_no_data(context):
+    """Test that nonzero NoData value for raster is respected. This means: 1)
+    the NoData value isn't included in calculations 2) zero is included in
+    calculations.
+
+    Using the wri_tropical_tree_cover__percent raster, which has a
+    NoData value of 255.
+    """
+
+    query = "select sum(area__ha) from wri_tropical_tree_cover__percent where wri_tropical_tree_cover__percent >= 0"
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )
+
+    expected_ttc_ha = 1291143.4962
+
+    # 1291143.4962
+    assert result["status"] == "success"
+    assert result["data"][0]["area__ha"] == pytest.approx(expected_ttc_ha, 0.001)
+
+
+def test_nonzero_no_data_group_by(context):
+    """Test that nonzero NoData values are respected in GROUP BY operations.
+    This means: 1) the NoData value will not be completed as a group value 2)
+    zero can be included as a group value.
+
+    Using the wri_tropical_tree_cover__percent raster, which has a
+    NoData value of 255.
+    """
+    query = "select sum(area__ha) from data group by wri_tropical_tree_cover__percent"
+    result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        context,
+    )
+
+    no_data_value = 255
+    assert result["status"] == "success"
+    assert any([row["wri_tropical_tree_cover__percent"] == 0 for row in result["data"]])
+    assert all(
+        [
+            row["wri_tropical_tree_cover__percent"] != no_data_value
+            for row in result["data"]
+        ]
+    )
+
+
+def test_null_no_data(context):
+    """Test that null NoData values are treated correctly."""
+
+    fake_data_env = deepcopy(DATA_ENVIRONMENT)
+    fake_data_env = [
+        layer
+        for layer in fake_data_env
+        if layer["name"] == "wri_tropical_tree_cover__percent"
+    ]
+    fake_data_env[0]["no_data"] = None
+
+    group_by_query = (
+        "select sum(area__ha) from data group by wri_tropical_tree_cover__percent"
+    )
+    group_result = tiled_handler(
+        {
+            "geometry": IDN_24_9_GEOM,
+            "query": group_by_query,
+            "environment": fake_data_env,
+        },
+        context,
+    )
+
+    assert group_result["status"] == "success"
+    assert any(
+        [row["wri_tropical_tree_cover__percent"] == 0 for row in group_result["data"]]
+    )
+    assert any(
+        [row["wri_tropical_tree_cover__percent"] == 255 for row in group_result["data"]]
+    )
+
+    base_query = "select sum(area__ha) from wri_tropical_tree_cover__percent"
+    base_result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": base_query, "environment": fake_data_env},
+        context,
+    )
+    assert base_result["status"] == "success"
+
+    agg_query = "select sum(wri_tropical_tree_cover__percent) from data"
+    agg_result = tiled_handler(
+        {"geometry": IDN_24_9_GEOM, "query": agg_query, "environment": fake_data_env},
+        context,
+    )
+    assert agg_result["status"] == "success"
