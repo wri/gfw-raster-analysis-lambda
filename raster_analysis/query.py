@@ -73,7 +73,7 @@ class FilterNode(Filter):
             for f in self.filters:
                 node_filter *= f.apply(tile_width, windows)
         elif self.operator == SetOperator.union:
-            node_filter = np.zeros((tile_width, tile_width)).astype(dtype=np.bool)
+            node_filter = np.zeros((tile_width, tile_width)).astype(dtype=bool)
             for f in self.filters:
                 node_filter |= f.apply(tile_width, windows)
         else:
