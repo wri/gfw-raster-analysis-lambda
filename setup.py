@@ -9,9 +9,9 @@ setup(
     license="MIT",
     install_requires=[
         "aws-xray-sdk",
-        "requests",
+        "requests~=1.31.0",
         "geobuf==1.1.1",
-        "protobuf==3.20.0",
+        "protobuf==3.20.3",
         "pydantic",
         "moz_sql_parser",
     ],

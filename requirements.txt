@@ -1,4 +1,4 @@
-requests
+requests~=1.31.0
 aws-xray-sdk
 geobuf~=1.1.1
 protobuf~=3.20.3
