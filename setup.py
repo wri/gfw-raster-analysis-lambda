@@ -13,6 +13,6 @@ setup(
         "geobuf==1.1.1",
         "protobuf==3.20.3",
         "pydantic",
-        "moz_sql_parser",
+        "mo_sql_parsing",
     ],
 )

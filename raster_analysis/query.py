@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-from moz_sql_parser import parse
+from mo_sql_parsing import parse
 from numpy import ndarray
 from pydantic import BaseModel
 
