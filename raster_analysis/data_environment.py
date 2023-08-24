@@ -8,7 +8,6 @@ from typing import Any, Dict, List, Optional, Union, cast
 from numpy import (
     ceil,
     datetime64,
-    float,
     float32,
     float64,
     floor,
