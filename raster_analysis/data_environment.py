@@ -1,6 +1,7 @@
 # flake8: noqa
 import json
-from collections import Iterable, defaultdict
+from collections import defaultdict
+from collections.abc import Iterable
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union, cast
 
