@@ -124,16 +124,18 @@ class AnalysisTiler:
         return results
 
     def _execute_tiles(self) -> DataFrame:
-        tiles = self._get_tiles(self.grid.tile_degrees)
         payload: Dict[str, Any] = {
             "query": self.raw_query,
             "environment": self.data_environment.dict(),
         }
 
-        if sys.getsizeof(json.dumps(self.raw_geom)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
-            payload["encoded_geometry"] = encode_geometry(self.geom)
-        else:
-            payload["geometry"] = self.raw_geom
+        payload["geometry"] = self.raw_geom
+        if sys.getsizeof(json.dumps(payload)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
+            # if payload would be too big, compress geometry
+            geom = shape(payload.pop("geometry"))
+            payload["encoded_geometry"] = encode_geometry(geom)
+
+        tiles = self._get_tiles(self.grid.tile_degrees)
 
         results_store = AnalysisResultsStore()
         tile_keys = [
