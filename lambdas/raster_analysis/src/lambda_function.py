@@ -32,7 +32,7 @@ def handler(event, context):
 
         if not geom_tile.geom:
             LOGGER.info(f"Geometry for tile {context.aws_request_id} is empty.")
-            results_store.save_result({}, context.aws_request_id)
+            results_store.save_result(DataFrame(), context.aws_request_id)
             return {}
 
         data_environment = DataEnvironment(layers=event["environment"])
