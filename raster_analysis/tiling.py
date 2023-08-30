@@ -132,7 +132,8 @@ class AnalysisTiler:
         payload["geometry"] = self.raw_geom
         if sys.getsizeof(json.dumps(payload)) > LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES:
             # if payload would be too big, compress geometry
-            payload["encoded_geometry"] = encode_geometry(payload.pop("geometry"))
+            geom = shape(payload.pop("geometry"))
+            payload["encoded_geometry"] = encode_geometry(geom)
 
         tiles = self._get_tiles(self.grid.tile_degrees)
 
