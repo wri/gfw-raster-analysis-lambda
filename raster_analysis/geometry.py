@@ -37,6 +37,9 @@ class GeometryTile:
                         f"Could not create valid tile from geom {full_geom.wkt} and tile {tile.wkt}"
                     )
 
+            if geom_tile.is_empty:
+                self.geom = {}
+
             self.geom = geom_tile
 
 
