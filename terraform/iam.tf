@@ -42,3 +42,12 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   policy_arn = aws_iam_policy.lambda_logging.arn
 }
 
+resource "aws_iam_role" "process_list-states" {
+  name               = substr("${local.project}-states${local.name_suffix}", 0, 64)
+  assume_role_policy = data.template_file.sts_assume_role_states.rendered
+}
+
+resource "aws_iam_role_policy_attachment" "process_list" {
+  role       = aws_iam_role.process_list-states.name
+  policy_arn = aws_iam_policy.raster_analysis.arn
+}

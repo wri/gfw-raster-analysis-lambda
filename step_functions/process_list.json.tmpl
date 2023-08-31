@@ -1,0 +1,59 @@
+{
+  "StartAt": "process_list",
+  "States": {
+    "process_list": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "DISTRIBUTED",
+          "ExecutionType": "EXPRESS"
+        },
+        "StartAt": "process_geometry",
+        "States": {
+          "process_geometry": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "Payload.$": "$",
+              "FunctionName": "${lambda_raster_analysis_name}"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 2,
+                "MaxAttempts": 6,
+                "BackoffRate": 2
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "End": true,
+      "Label": "process_geometries",
+      "MaxConcurrency": 10000,
+      "ItemReader": {
+          "Resource": "arn:aws:states:::s3:getObject",
+          "ReaderConfig": {
+              "InputType": "JSON"
+          },
+          "Parameters": {
+              "Bucket.$": "$.geometries.bucket",
+              "Key.$": "$.geometries.key"
+          }
+      },
+      "Parameters": {
+        "query.$": "$.query",
+        "environment.$": "$.environment",
+        "format.$": "$.format",
+        "geometry.$": "$$.Map.Item.Value.geometry"
+      }
+    }
+  }
+}
