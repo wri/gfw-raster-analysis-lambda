@@ -107,7 +107,10 @@ class DataEnvironment(BaseModel):
 
     def get_layer_grid(self, name: str) -> Grid:
         layer = self.get_layer(name)
-        return Grid.get_grid(layer.grid)
+        if isinstance(layer, SourceLayer):
+            return Grid.get_grid(layer.grid)
+        else:
+            raise Exception("Tried to get grid of a non-SourceLayer!")
 
     def has_layer(self, name: str) -> bool:
         try:
@@ -122,14 +125,12 @@ class DataEnvironment(BaseModel):
     def get_source_layers(self, layer_names: List[str]) -> List[SourceLayer]:
         layers = self.get_layers(layer_names)
 
-        source_layers = []
+        source_layers: List[SourceLayer] = []
         for layer in layers:
             if isinstance(layer, SourceLayer):
-                layer = cast(SourceLayer, layer)
                 source_layers.append(layer)
             elif isinstance(layer, DerivedLayer):
-                layer = cast(DerivedLayer, layer)
-                source_layer = self.get_layer(layer.source_layer)
+                source_layer: SourceLayer = self.get_layer(layer.source_layer)
                 source_layers.append(source_layer)
 
         return source_layers
@@ -182,17 +183,17 @@ class DataEnvironment(BaseModel):
     def get_source_uri(self, name: str, tile: BasePolygon):
         layer = self.get_layer(name)
 
-        source_uri = layer.source_uri
-
-        if layer.tile_scheme:
-            grid = Grid.get_grid(layer.grid)
+        if isinstance(layer, SourceLayer):
+            grid = Grid.get_grid(GridName(layer.grid))
             tile_id = grid.get_tile_id(tile, layer.tile_scheme)
             source_uri = layer.source_uri.format(tile_id=tile_id)
 
-        if "s3" in source_uri:
-            source_uri = source_uri.replace("s3://", "/vsis3/")
+            if "s3" in source_uri:
+                source_uri = source_uri.replace("s3://", "/vsis3/")
 
-        return source_uri
+            return source_uri
+        else:
+            raise Exception("Tried to call get_source_uri on a non-SourceLayer!")
 
     def get_pixel_encoding(self, name: str) -> Dict[int, Any]:
         layer = self.get_layer(name)
@@ -212,7 +213,7 @@ class DataEnvironment(BaseModel):
             return {}
 
     def has_default_value(self, name):
-        """A layer is defined as having a default value if it's encoding
+        """A layer is defined as having a default value if its encoding
         contains the default value symbol '_', or a mapping for 0.
 
         Otherwise, 0 is considered NoData and will be filtered out.
