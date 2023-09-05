@@ -8,11 +8,11 @@ setup(
     author="Justin Terry/Thomas Maschler",
     license="MIT",
     install_requires=[
-        "aws-xray-sdk",
-        "requests",
+        "aws-xray-sdk~=2.8.0",
+        "requests~=2.25.1",
         "geobuf==1.1.1",
         "protobuf==3.20.0",
-        "pydantic",
-        "moz_sql_parser",
+        "pydantic~=1.7.3",
+        "moz_sql_parser~=4.40.21126",
     ],
 )
