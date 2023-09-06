@@ -1,4 +1,5 @@
 *-info/*
+*/tests/*
 python/awscli/examples/*
 python/boto3/*
 python/botocore/*
@@ -29,3 +30,8 @@ python/tzlocal/test_data/*
 python/urllib3/*
 python/websocket/tests/*
 python/wheel/*
+share/cryptopp/*
+share/doc/*
+share/gtk-doc/*
+share/libxml2-2.9.10/*
+share/man/*
