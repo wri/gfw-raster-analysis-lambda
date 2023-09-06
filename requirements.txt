@@ -1,6 +1,0 @@
-requests~=2.31.0
-aws-xray-sdk~=2.8.0
-geobuf~=1.1.1
-protobuf~=3.20.3
-pydantic<2.0
-mo_sql_parsing
