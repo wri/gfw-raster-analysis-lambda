@@ -1,13 +1,13 @@
 # flake8: noqa
 import json
-from collections import Iterable, defaultdict
+from collections import defaultdict
+from collections.abc import Iterable
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union, cast
 
 from numpy import (
     ceil,
     datetime64,
-    float,
     float32,
     float64,
     floor,

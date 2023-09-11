@@ -10,7 +10,6 @@ import rasterio.windows as wd
 from numpy import (
     ceil,
     datetime64,
-    float,
     float32,
     float64,
     floor,

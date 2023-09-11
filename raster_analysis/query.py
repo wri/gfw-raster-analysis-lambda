@@ -1,17 +1,17 @@
 # flake8: noqa
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
-from moz_sql_parser import parse
 from mo_parsing.results import ParseResults
+from mo_sql_parsing import parse
 from numpy import ndarray
 from pydantic import BaseModel
 
 from raster_analysis.data_environment import (
     DataEnvironment,
-    Layer,
     DerivedLayer,
+    Layer,
     SourceLayer,
 )
 from raster_analysis.exceptions import QueryParseException
@@ -79,7 +79,7 @@ class FilterNode(Filter):
             for f in self.filters:
                 node_filter *= f.apply(tile_width, windows)
         elif self.operator == SetOperator.union:
-            node_filter = np.zeros((tile_width, tile_width)).astype(dtype=np.bool)
+            node_filter = np.zeros((tile_width, tile_width)).astype(dtype=bool)
             for f in self.filters:
                 node_filter |= f.apply(tile_width, windows)
         else:
