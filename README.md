@@ -1,4 +1,4 @@
-# GFW raster analsyis in AWS Lambda
+# GFW raster analysis in AWS Lambda
 
 ### Functionality
 
@@ -290,7 +290,7 @@ There will be a new endpoint that will return a whitelist of whether layers inte
 
 ### Misc Layers
 
-Need to decide if/how we will support miscellanious layers on GFW but not maintained in the data lake, like PRODES and Terra-i. TBD.
+Need to decide if/how we will support miscellaneous layers on GFW but not maintained in the data lake, like PRODES and Terra-i. TBD.
 
 ### Lat/Lon Coordinates
 
