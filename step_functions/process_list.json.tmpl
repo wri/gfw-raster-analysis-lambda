@@ -41,7 +41,8 @@
       "ItemReader": {
           "Resource": "arn:aws:states:::s3:getObject",
           "ReaderConfig": {
-              "InputType": "JSON"
+              "InputType": "CSV",
+              "CSVHeaderLocation": "FIRST_ROW"
           },
           "Parameters": {
               "Bucket.$": "$.geometries.bucket",
@@ -52,7 +53,15 @@
         "query.$": "$.query",
         "environment.$": "$.environment",
         "format.$": "$.format",
-        "geometry.$": "$$.Map.Item.Value.geometry"
+        "geometry.$": "$$.Map.Item.Value.geometry",
+        "fid.$": "$$.Map.Item.Value.fid"
+      },
+      "ResultWriter": {
+        "Resource": "arn:aws:states:::s3:putObject",
+        "Parameters": {
+          "Bucket.$": "$.output.bucket",
+          "Prefix.$": "$.output.prefix"
+        }
       }
     }
   }

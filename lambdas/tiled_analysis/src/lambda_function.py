@@ -1,4 +1,6 @@
 from aws_xray_sdk.core import patch, xray_recorder
+from shapely.geometry import mapping
+from shapely.wkb import loads
 
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.exceptions import QueryParseException
@@ -14,9 +16,10 @@ def handler(event, context):
         LOGGER.info(f"Running analysis with parameters: {event}")
 
         query = event["query"]
-        geojson = event["geometry"]
+        geojson = mapping(loads(bytes.fromhex(event["geometry"])))
         format = event.get("format", "json")
         data_environment = DataEnvironment(layers=event["environment"])
+        fid = event.get("fid", None)
 
         LOGGER.info(f"Executing query: {query}")
         LOGGER.info(f"On geometry: {geojson}")
@@ -30,9 +33,21 @@ def handler(event, context):
             results = tiler.result_as_dict()
 
         LOGGER.info("Successfully merged tiled results")
-        return {"status": "success", "data": results}
+        response = {"status": "success", "data": results}
+        if fid:
+            response["fid"] = fid
+
+        return response
     except QueryParseException as e:
-        return {"status": "failed", "message": str(e)}
+        response = {"status": "failed", "message": str(e)}
+        if fid:
+            response["fid"] = fid
+
+        return response
     except Exception as e:
         LOGGER.exception(e)
-        return {"status": "error", "message": str(e)}
+        response = {"status": "error", "message": str(e)}
+        if fid:
+            response["fid"] = fid
+
+        return response
