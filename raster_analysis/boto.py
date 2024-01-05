@@ -1,13 +1,14 @@
-import boto3
 import json
-from typing import Callable, Dict, Any
+from typing import Any, Callable, Dict
+
+import boto3
 
 from raster_analysis.globals import (
-    LOGGER,
     AWS_REGION,
-    S3_ENDPOINT_URL,
-    LAMBDA_ENDPOINT_URL,
     DYNAMODB_ENDPOINT_URL,
+    LAMBDA_ENDPOINT_URL,
+    LOGGER,
+    S3_ENDPOINT_URL,
 )
 
 
@@ -40,6 +41,7 @@ s3_client = client_constructor("s3", S3_ENDPOINT_URL)
 lambda_client = client_constructor("lambda", LAMBDA_ENDPOINT_URL)
 dynamodb_client = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL)
 dynamodb_resource = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL, "resource")
+sfn_client = client_constructor("stepfunctions", LAMBDA_ENDPOINT_URL)
 
 
 def invoke_lambda(payload: Dict[str, Any], lambda_name: str, client) -> None:

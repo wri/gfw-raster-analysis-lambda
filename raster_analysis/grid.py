@@ -33,7 +33,7 @@ class Grid:
         degrees_str, pixels_str = name.split("/")
         degrees = int(degrees_str)
         pixels = int(pixels_str)
-        tile_degrees = degrees * (5000 / pixels)
+        tile_degrees = degrees * (2000 / pixels)
         return cls(degrees, pixels, tile_degrees)
 
     def get_pixel_width(self) -> float:

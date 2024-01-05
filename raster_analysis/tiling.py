@@ -1,6 +1,5 @@
 import json
 import sys
-from copy import deepcopy
 from datetime import datetime
 from io import StringIO
 from typing import Any, Dict, List, Tuple
@@ -8,15 +7,12 @@ from typing import Any, Dict, List, Tuple
 from pandas import DataFrame
 from shapely.geometry import Polygon, box, mapping, shape
 
-from raster_analysis.boto import invoke_lambda, lambda_client
+from raster_analysis.boto import sfn_client
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.geometry import encode_geometry
 from raster_analysis.globals import (
-    FANOUT_LAMBDA_NAME,
-    FANOUT_NUM,
     LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES,
     LOGGER,
-    RASTER_ANALYSIS_LAMBDA_NAME,
     BasePolygon,
     Numeric,
 )
@@ -157,31 +153,49 @@ class AnalysisTiler:
 
         LOGGER.info(f"Processing {geom_count} tiles")
 
-        if geom_count <= FANOUT_NUM:
-            for tile in tiles_for_lambda:
-                tile_payload = deepcopy(payload)
-                tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
-                tile_payload["cache_id"] = tile_id
-                tile_payload["tile"] = mapping(tile)
-                invoke_lambda(
-                    tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
-                )
-        else:
-            tile_geojsons = [
-                (
-                    results_store.get_cache_key(tile, self.geom, self.raw_query),
-                    mapping(tile),
-                )
-                for tile in tiles
-            ]
-            tile_chunks = [
-                tile_geojsons[x : x + FANOUT_NUM]
-                for x in range(0, len(tile_geojsons), FANOUT_NUM)
-            ]
+        sfn_client().start_execution(
+            stateMachineArn="arn:aws:states:us-east-1:274931322839:stateMachine:raster-analysis-distributed",
+            input=json.dumps(
+                {
+                    "payload": payload,
+                    "tiles": [
+                        {
+                            "cache_id": results_store.get_cache_key(
+                                tile, self.geom, self.raw_query
+                            ),
+                            "tile": mapping(tile),
+                        }
+                        for tile in tiles_for_lambda
+                    ],
+                }
+            ),
+        )
 
-            for chunk in tile_chunks:
-                event = {"payload": payload, "tiles": chunk}
-                invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
+        # if geom_count <= FANOUT_NUM:
+        #     for tile in tiles_for_lambda:
+        #         tile_payload = deepcopy(payload)
+        #         tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
+        #         tile_payload["cache_id"] = tile_id
+        #         tile_payload["tile"] = mapping(tile)
+        #         invoke_lambda(
+        #             tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
+        #         )
+        # else:
+        #     tile_geojsons = [
+        #         (
+        #             results_store.get_cache_key(tile, self.geom, self.raw_query),
+        #             mapping(tile),
+        #         )
+        #         for tile in tiles
+        #     ]
+        #     tile_chunks = [
+        #         tile_geojsons[x : x + FANOUT_NUM]
+        #         for x in range(0, len(tile_geojsons), FANOUT_NUM)
+        #     ]
+        #
+        #     for chunk in tile_chunks:
+        #         event = {"payload": payload, "tiles": chunk}
+        #         invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
         LOGGER.info(
             f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(tile_keys) - geom_count}"

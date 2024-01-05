@@ -17,6 +17,8 @@ def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")
         results_store = AnalysisResultsStore()
+        tile = event["tile"]
+        event = event["payload"]
 
         if "geometry" in event:
             source_geom = event["geometry"]
@@ -27,7 +29,7 @@ def handler(event, context):
         else:
             raise KeyError("No valid geometry field")
 
-        tile_geojson = event.get("tile", None)
+        tile_geojson = tile.get("tile", None)
         geom_tile = GeometryTile(source_geom, tile_geojson, is_encoded)
 
         if not geom_tile.geom:
@@ -44,10 +46,10 @@ def handler(event, context):
         results: DataFrame = query_executor.execute()
 
         LOGGER.debug(f"Ran analysis with results: {results.head(100)}")
-        results_store.save_result(results, event["cache_id"])
+        results_store.save_result(results, tile["cache_id"])
     except Exception as e:
         LOGGER.exception(e)
 
         results_store = AnalysisResultsStore()
-        results_store.save_status(event["cache_id"], ResultStatus.error, 0, str(e))
+        results_store.save_status(tile["cache_id"], ResultStatus.error, 0, str(e))
         raise e

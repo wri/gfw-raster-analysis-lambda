@@ -23,7 +23,7 @@ variable "lambda_fanout_runtime" {
 
 variable "lambda_raster_analysis_memory_size" {
   type        = number
-  default     = 3008
+  default     = 1024
   description = "Memory size version for AWS Lambda"
 }
 
