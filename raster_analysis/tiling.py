@@ -58,7 +58,15 @@ class AnalysisTiler:
             return ""
 
     def result_as_dict(self) -> Dict[str, Any]:
-        return self.results.to_dict(orient="records")
+        results = self.results.to_dict(orient="records")
+
+        # deal with pandas converting ints to floats
+        for result in results:
+            for key, value in result.items():
+                if isinstance(value, float) and value.is_integer():
+                    result[key] = int(value)
+
+        return results
 
     def _postprocess_results(self, results):
         """Decode results from pixel values if necessary for layer, apply any
