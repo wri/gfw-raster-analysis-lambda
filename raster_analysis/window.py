@@ -10,7 +10,6 @@ import rasterio.windows as wd
 from numpy import (
     ceil,
     datetime64,
-    float,
     float32,
     float64,
     floor,
@@ -60,7 +59,7 @@ class SourceWindow:
 
     def clear(self) -> None:
         """Clear internal data array to save memory."""
-        self.data = []
+        self.data = np.empty(0)
 
     @staticmethod
     def _read_window(

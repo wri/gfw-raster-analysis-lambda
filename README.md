@@ -1,4 +1,4 @@
-# GFW raster analsyis in AWS Lambda
+# GFW raster analysis in AWS Lambda
 
 ### Functionality
 
@@ -280,18 +280,3 @@ The GFW data lake is now in production, so this service will soon point to that 
 
 These alerts are currently unsupported because we don't rasterize these layers. Instead, we store all enriched points in an document dataset. You can do on-the-fly analysis for these via SQL. (TBD: do we want to just forward that through here so there's only one endpoint?)
 
-### Aggregation
-
-There will be a new `String` parameter called `agg` that will accept one of `day | week | month | year` and return results aggregated by that timeline.
-
-### Whitelist
-
-There will be a new endpoint that will return a whitelist of whether layers intersect the input geometry. Details TBD.
-
-### Misc Layers
-
-Need to decide if/how we will support miscellanious layers on GFW but not maintained in the data lake, like PRODES and Terra-i. TBD.
-
-### Lat/Lon Coordinates
-
-A new analysis will be added to retrieve lat/lon coordinates of points (e.g. for GLAD alerts).

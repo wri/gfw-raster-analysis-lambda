@@ -1,5 +1,5 @@
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import geobuf
 from shapely.geometry import Polygon, mapping, shape
@@ -11,8 +11,8 @@ from raster_analysis.globals import LAMBDA_ASYNC_PAYLOAD_LIMIT_BYTES, BasePolygo
 class GeometryTile:
     def __init__(
         self,
-        source_geom: Any,
-        tile_geojson: Dict[str, Any] = None,
+        source_geom: str,
+        tile_geojson: Optional[Dict[str, Any]] = None,
         is_encoded: bool = False,
     ):
         if is_encoded:
@@ -21,7 +21,7 @@ class GeometryTile:
             full_geom = shape(source_geom).buffer(0)
 
         self.geom: BasePolygon = full_geom
-        self.tile: Polygon = None
+        self.tile: Optional[Polygon] = None
 
         if tile_geojson:
             tile = shape(tile_geojson)

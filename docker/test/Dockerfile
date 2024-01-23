@@ -1,4 +1,4 @@
-FROM lambgeo/lambda-gdal:3.2-python3.7
+FROM ghcr.io/lambgeo/lambda-gdal:3.6-python3.10
 
 # Make the dir and to install all packages into packages/
 COPY raster_analysis/ raster_analysis/
