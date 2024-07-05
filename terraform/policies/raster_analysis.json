@@ -33,7 +33,8 @@
               "xray:PutTelemetryRecords",
               "xray:GetSamplingRules",
               "xray:GetSamplingTargets",
-              "xray:GetSamplingStatisticSummaries"
+              "xray:GetSamplingStatisticSummaries",
+              "states:*"
           ],
           "Resource": "*"
       }
