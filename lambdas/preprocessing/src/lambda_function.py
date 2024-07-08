@@ -13,12 +13,12 @@ def handler(event, context):
 
         return {"status": "success",
                 "geometries": {
-                    "bucket": "s3://gfw-pipelines-test/test/otf_lists",
-                    "key": "geometries.csv"
+                    "bucket": "gfw-pipelines-test",
+                    "key": "test/otf_lists/geometries.csv"
                 },
                 "output": {
-                    "bucket": "s3://gfw-pipelines-test/test/otf_lists",
-                    "prefix": "output"
+                    "bucket": "gfw-pipelines-test",
+                    "prefix": "test/otf_lists/output"
                 }
                 }
     except QueryParseException as e:
