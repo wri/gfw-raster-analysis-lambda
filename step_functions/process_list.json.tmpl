@@ -9,7 +9,10 @@
         "Payload.$": "$",
         "FunctionName": "${lambda_preprocessing_name}"
       },
-      "OutputPath": "$.Payload",
+      "ResultSelector": {
+        "geometries.$": "$.Payload.geometries",
+        "output.$": "$.Payload.output"
+      },
       "ResultPath": "$.files",
       "Next": "Process List"
     },

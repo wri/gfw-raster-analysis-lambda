@@ -11,7 +11,16 @@ def handler(event, context):
     try:
         LOGGER.info(f"Running preprocessing with parameters: {event}")
 
-        return {"status": "success"}
+        return {"status": "success",
+                "geometries": {
+                    "bucket": "s3://gfw-pipelines-test/test/otf_lists",
+                    "key": "geometries.csv"
+                },
+                "output": {
+                    "bucket": "s3://gfw-pipelines-test/test/otf_lists",
+                    "prefix": "output"
+                }
+                }
     except QueryParseException as e:
         return {"status": "failed", "message": str(e)}
     except Exception as e:
