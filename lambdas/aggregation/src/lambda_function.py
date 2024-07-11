@@ -17,9 +17,10 @@ def handler(event, context):
         response = s3_client().get_object(
             Bucket=results_meta["Bucket"], Key=results_meta["Key"]
         )
-        print("response", response)
+        print("response", response["Body"].read())
         manifest = json.loads(response["Body"].read().decode("utf-8"))
         LOGGER.info("manifest file", manifest)
+        print("succeeded list file", manifest.get("ResultFiles", {}).get("SUCCEEDED"))
 
         for result_record in manifest["ResultFiles"]["SUCCEEDED"]:
             response = s3_client().get_object(
