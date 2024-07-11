@@ -26,7 +26,7 @@ def handler(event, context):
         tiler = AnalysisTiler(query, geojson, context.aws_request_id, data_environment)
         tiler.execute()
 
-        results = tiler.result_as_csv()
+        results = tiler.result_as_dict()
 
         LOGGER.info("Successfully merged tiled results")
         response = {"status": "success", "data": results}
