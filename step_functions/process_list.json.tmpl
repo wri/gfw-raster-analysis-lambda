@@ -84,7 +84,7 @@
     "Aggregation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "Comment": "This function takes files.output.bucket, files.output.prefix, distributed_map, and job_id [other fields also passed], aggregates the results to a new file, and sends the result S3 URI to the data API for the specified job_id",
+      "Comment": "This function takes files.output.bucket, files.output.prefix, distributed_map, and job_id [other fields also passed], aggregates the results to a new file, and puts the S3 URI of the result in its output as download_link",
       "Parameters": {
         "Payload.$": "$",
         "FunctionName": "${lambda_aggregation_name}"
