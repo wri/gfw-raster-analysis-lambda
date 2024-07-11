@@ -17,6 +17,7 @@ def handler(event, context):
         response = s3_client().get_object(
             Bucket=results_meta["Bucket"], Key=results_meta["Key"]
         )
+        print("response", response)
         manifest = json.loads(response["Body"].read().decode("utf-8"))
         LOGGER.info("manifest file", manifest)
 
