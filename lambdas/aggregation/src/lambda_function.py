@@ -27,7 +27,6 @@ def handler(event, context):
             )
             results = json.loads(response["Body"].read().decode("utf-8"))
 
-            combined_data = {}
             for geom_result in results:
                 result = json.loads(geom_result["Output"])
                 if result["status"] == "success":
