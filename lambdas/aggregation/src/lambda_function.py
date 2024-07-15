@@ -29,7 +29,7 @@ def handler(event, context):
 
             combined_data = {}
             for geom_result in results:
-                result = geom_result["Output"]
+                result = json.loads(geom_result["Output"])
                 if result["status"] == "success":
                     fid = result["fid"]
                     combined_data[fid] = result["data"]
