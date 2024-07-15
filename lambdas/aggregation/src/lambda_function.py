@@ -41,7 +41,6 @@ def handler(event, context):
 
         s3_client().put_object(
             Bucket=results_meta["Bucket"],
-            Key=results_meta["Key"].split("/"),
             Key=results_key,
             Body=json.dumps(combined_data),
         )
