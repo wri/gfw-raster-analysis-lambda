@@ -20,18 +20,16 @@ def handler(event, context):
         manifest = json.loads(response["Body"].read().decode("utf-8"))
         LOGGER.info("manifest file", manifest)
 
-        combined_data = {}
+        combined_data = []
         for result_record in manifest["ResultFiles"]["SUCCEEDED"]:
             response = s3_client().get_object(
                 Bucket=results_meta["Bucket"], Key=result_record["Key"]
             )
             results = json.loads(response["Body"].read().decode("utf-8"))
-
             for geom_result in results:
                 result = json.loads(geom_result["Output"])
-                if result["status"] == "success":
-                    fid = result["fid"]
-                    combined_data[fid] = result["data"]
+
+                combined_data.append(result)
 
         LOGGER.info("Successfully aggregated results")
         return {"status": "success", "data": combined_data}
