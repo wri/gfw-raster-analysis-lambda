@@ -37,7 +37,9 @@ def handler(event, context):
                         {"result": result["data"], "geometry_id": result["fid"]}
                     )
                 else:
-                    failed_geometries.append(result["fid"])
+                    failed_geometries.append(
+                        {"geometry_id": result["fid"], "detail": result["message"]}
+                    )
 
         LOGGER.info("Successfully aggregated results")
 
