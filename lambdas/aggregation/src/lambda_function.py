@@ -61,8 +61,8 @@ def handler(event, context):
         return {
             "status": "success",
             "data": {
-                "analysis_results": f"s3://{results_meta['Bucket']}/{results_key}",
-                "failed_geometries": f"s3://{results_meta['Bucket']}/{failed_list_key}",
+                "analysis_results": f"https://{results_meta['Bucket']}.s3.amazonaws.com/{results_key}",
+                "failed_geometries": f"https://{results_meta['Bucket']}.s3.amazonaws.com/{failed_list_key}",
             },
         }
     except QueryParseException as e:
