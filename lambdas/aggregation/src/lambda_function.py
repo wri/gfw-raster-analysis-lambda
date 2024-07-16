@@ -50,7 +50,7 @@ def handler(event, context):
             Body=json.dumps(combined_data),
         )
 
-        expires_in = (86400 * 5,)  # five days
+        expires_in = 86400 * 5  # five days
         result_presigned_url = s3_client().generate_presigned_url(
             "get_object",
             Params={"Bucket": bucket, "Key": results_key},
