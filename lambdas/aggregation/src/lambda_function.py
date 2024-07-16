@@ -16,19 +16,16 @@ patch(["boto3"])
 def handler(event, context):
     results_meta = event["distributed_map"]["ResultWriterDetails"]
     try:
+        bucket = results_meta["Bucket"]
         LOGGER.info(f"Running aggregate with parameters: {event}")
-        response = s3_client().get_object(
-            Bucket=results_meta["Bucket"], Key=results_meta["Key"]
-        )
+        response = s3_client().get_object(Bucket=bucket, Key=results_meta["Key"])
         manifest = json.loads(response["Body"].read().decode("utf-8"))
         LOGGER.info("manifest file", manifest)
 
         combined_data = []
         failed_geometries = []
         for result_record in manifest["ResultFiles"]["SUCCEEDED"]:
-            response = s3_client().get_object(
-                Bucket=results_meta["Bucket"], Key=result_record["Key"]
-            )
+            response = s3_client().get_object(Bucket=bucket, Key=result_record["Key"])
             results = json.loads(response["Body"].read().decode("utf-8"))
             for geom_result in results:
                 result = json.loads(geom_result["Output"])
@@ -48,21 +45,33 @@ def handler(event, context):
         failed_list_key = f"{results_prefix}/failed_geometries.json"
 
         s3_client().put_object(
-            Bucket=results_meta["Bucket"],
+            Bucket=bucket,
             Key=results_key,
             Body=json.dumps(combined_data),
         )
+
+        expires_in = (86400 * 5,)  # five days
+        result_presigned_url = s3_client().generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": results_key},
+            ExpiresIn=expires_in,
+        )
         s3_client().put_object(
-            Bucket=results_meta["Bucket"],
+            Bucket=bucket,
             Key=failed_list_key,
             Body=json.dumps(failed_geometries),
+        )
+        failed_list_presigned_url = s3_client().generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket, "Key": failed_list_key},
+            ExpiresIn=expires_in,
         )
 
         return {
             "status": "success",
             "data": {
-                "analysis_results": f"https://{results_meta['Bucket']}.s3.amazonaws.com/{results_key}",
-                "failed_geometries": f"https://{results_meta['Bucket']}.s3.amazonaws.com/{failed_list_key}",
+                "analysis_results": result_presigned_url,
+                "failed_geometries": failed_list_presigned_url,
             },
         }
     except QueryParseException as e:
