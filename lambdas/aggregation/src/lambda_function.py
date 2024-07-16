@@ -32,6 +32,7 @@ def handler(event, context):
             results = json.loads(response["Body"].read().decode("utf-8"))
             for geom_result in results:
                 result = json.loads(geom_result["Output"])
+                print("result", result)
                 if result["status"] == "success":
                     combined_data.append(
                         {"result": result["data"], "geometry_id": result["fid"]}
