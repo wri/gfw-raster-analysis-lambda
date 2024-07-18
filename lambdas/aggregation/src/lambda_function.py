@@ -35,6 +35,15 @@ def handler(event, context):
                     failed_geometries.append(
                         {"geometry_id": result["fid"], "detail": result["message"]}
                     )
+        for failed_record in manifest["ResultFiles"]["FAILED"]:
+            response = s3_client().get_object(Bucket=bucket, Key=failed_record["Key"])
+            errors = json.loads(response["Body"].read().decode("utf-8"))
+            for error in errors:
+                input = json.loads(error["Input"])
+                if error["Status"] == "FAILED":
+                    failed_geometries.append(
+                        {"geometry_id": input["fid"], "detail": error["Error"]}
+                    )
 
         LOGGER.info("Successfully aggregated results")
 
