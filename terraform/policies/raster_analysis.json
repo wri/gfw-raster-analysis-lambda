@@ -28,6 +28,7 @@
               "iam:PassRole",
               "lambda:*",
               "logs:*",
+              "s3:*",
               "xray:PutTraceSegments",
               "xray:PutTelemetryRecords",
               "xray:GetSamplingRules",
