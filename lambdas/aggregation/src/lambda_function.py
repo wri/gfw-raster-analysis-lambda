@@ -1,7 +1,5 @@
 import json
 
-from datetime import datetime
-
 from aws_xray_sdk.core import patch, xray_recorder
 
 from raster_analysis.exceptions import QueryParseException
@@ -70,8 +68,8 @@ def handler(event, context):
         return {
             "status": "success",
             "data": {
-                "analysis_results": result_presigned_url,
-                "failed_geometries": failed_list_presigned_url,
+                "download_link": result_presigned_url,
+                "failed_geometries_link": failed_list_presigned_url,
             },
         }
     except QueryParseException as e:
