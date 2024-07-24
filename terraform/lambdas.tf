@@ -109,9 +109,9 @@ resource "aws_lambda_function" "preprocessing" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_214_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn
   ]
 
   tracing_config {
