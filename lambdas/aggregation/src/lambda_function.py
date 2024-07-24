@@ -57,28 +57,17 @@ def handler(event, context):
             Body=json.dumps(combined_data),
         )
 
-        expires_in = 86400 * 5  # five days
-        result_presigned_url = s3_client().generate_presigned_url(
-            "get_object",
-            Params={"Bucket": bucket, "Key": results_key},
-            ExpiresIn=expires_in,
-        )
         s3_client().put_object(
             Bucket=bucket,
             Key=failed_list_key,
             Body=json.dumps(failed_geometries),
         )
-        failed_list_presigned_url = s3_client().generate_presigned_url(
-            "get_object",
-            Params={"Bucket": bucket, "Key": failed_list_key},
-            ExpiresIn=expires_in,
-        )
 
         return {
             "status": "success",
             "data": {
-                "download_link": result_presigned_url,
-                "failed_geometries_link": failed_list_presigned_url,
+                "download_link": f"s3://{bucket}/{results_key}",
+                "failed_geometries_link": f"s3://{bucket}/{failed_list_key}",
             },
         }
     except QueryParseException as e:
