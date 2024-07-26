@@ -10,10 +10,11 @@ resource "aws_lambda_function" "raster_analysis" {
   publish          = true
   tags             = local.tags
   layers           = [
-    module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+#    module.lambda_layers.raster_analysis_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_everything_2_arn
   ]
 
   tracing_config {
@@ -44,10 +45,11 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   publish          = true
   tags             = local.tags
   layers           = [
-    module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+#    module.lambda_layers.raster_analysis_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_everything_2_arn
   ]
 
   tracing_config {
@@ -79,8 +81,9 @@ resource "aws_lambda_function" "raster_analysis_fanout" {
   publish          = true
   tags             = local.tags
   layers           = [
-    module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+#    module.lambda_layers.raster_analysis_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_everything_2_arn
   ]
 
   tracing_config {
@@ -108,7 +111,7 @@ resource "aws_lambda_function" "preprocessing" {
   publish          = true
   tags             = local.tags
   layers           = [
-    data.terraform_remote_state.lambda-layers.outputs.py310_everything_1_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_everything_2_arn
 #    data.terraform_remote_state.lambda-layers.outputs.py310_geopandas_0144_arn,
 #    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
   ]
@@ -138,10 +141,11 @@ resource "aws_lambda_function" "list_tiled_raster_analysis" {
   publish          = true
   tags             = local.tags
   layers           = [
-    module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_everything_2_arn
+#    module.lambda_layers.raster_analysis_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
   ]
 
   tracing_config {
@@ -173,10 +177,11 @@ resource "aws_lambda_function" "aggregation" {
   publish          = true
   tags             = local.tags
   layers           = [
-    module.lambda_layers.raster_analysis_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+#    module.lambda_layers.raster_analysis_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+#    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_everything_2_arn
   ]
 
   tracing_config {
