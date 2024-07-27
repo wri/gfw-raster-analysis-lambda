@@ -23,9 +23,8 @@ REGION = "us-east-1"
 def handler(event, context):
     try:
         LOGGER.info(f"Running preprocessing with parameters: {event}")
-        fc: Optional[Dict] = event["feature_collection"]
-        uri: Optional[str] = event["uri"]
-        sql: str = event["sql"]
+        fc: Optional[Dict] = event.get("feature_collection")
+        uri: Optional[str] = event.get("uri")
 
         if fc is not None:
             gpdf = gpd.GeoDataFrame.from_features(fc)
