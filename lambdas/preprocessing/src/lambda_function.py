@@ -25,38 +25,44 @@ def handler(event, context):
         LOGGER.info(f"Running preprocessing with parameters: {event}")
         fc: Optional[Dict] = event.get("feature_collection")
         uri: Optional[str] = event.get("uri")
+        id_field = event["id_field"]  # How to make use of this?
 
         if fc is not None:
-            gpdf = gpd.GeoDataFrame.from_features(fc)
+            gpdf = gpd.GeoDataFrame.from_features(fc, columns=[id_field])
         elif uri is not None:
-            gpdf = gpd.read_file(uri)
+            gpdf = gpd.read_file(uri, columns=[id_field])
         else:
             raise Exception("No valid input methods passed!")
 
+        print("Here come the rows!")
         rows = []
-        for fid, row in gpdf.iterrows():
-            geom_wkb = wkb_dumps(row.geometry)
-            rows.append([fid, geom_wkb])
+        for record in gpdf.itertuples():
+            geom_wkb = wkb_dumps(getattr(record, "geometry"))
+            rows.append([getattr(record, id_field), geom_wkb])
+
+        print(rows)
 
         # FIXME: Hash those args for cacheability!
         request_hash: UUID = uuid4()
+        geom_prefix = f"test/otf_lists/{str(request_hash)}/geometries.csv"
+        output_prefix = f"test/otf_lists/{str(request_hash)}/output"
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            some_path = os.path.join(tmp_dir, "features.csv")
-            df = pd.DataFrame(rows, columns=['fid', 'GeometryWKB'])
+            some_path = os.path.join(tmp_dir, "geometries.csv")
+            df = pd.DataFrame(rows, columns=[id_field, 'geometry'])
             df.to_csv(some_path, index=False)
 
-            upload_to_s3(some_path, BUCKET, str(request_hash))
+            upload_to_s3(some_path, BUCKET, geom_prefix)
 
         return {
             "status": "success",
             "geometries": {
                 "bucket": BUCKET,
-                "key": f"test/otf_lists/{request_hash}/geometries.csv"
+                "key": geom_prefix
             },
             "output": {
                 "bucket": BUCKET,
-                "prefix": f"test/otf_lists/{request_hash}/output"
+                "prefix": output_prefix
             }
         }
     except QueryParseException as e:
