@@ -12,9 +12,9 @@ resource "aws_lambda_function" "raster_analysis" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_numpy_1264_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn,
   ]
 
   tracing_config {
@@ -180,9 +180,9 @@ resource "aws_lambda_function" "aggregation" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_numpy_1264_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_138_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_shapely_185_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_153_arn,
   ]
 
   tracing_config {
