@@ -2,13 +2,13 @@ import os
 from typing import Any, Dict, Optional
 from uuid import uuid4, UUID
 
-import boto3
 import geopandas as gpd
 import pandas as pd
 import tempfile
 from aws_xray_sdk.core import patch, xray_recorder
 from shapely.wkb import dumps as wkb_dumps
 
+from raster_analysis.boto import s3_client
 from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import LOGGER
 
@@ -67,7 +67,4 @@ def handler(event, context):
 
 
 def upload_to_s3(path: str, bucket: str, dst: str) -> Dict[str, Any]:
-    s3_client = boto3.client(
-        "s3", region_name=REGION, endpoint_url=None
-    )
-    return s3_client.upload_file(path, bucket, dst)
+    return s3_client().upload_file(path, bucket, dst)
