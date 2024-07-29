@@ -25,14 +25,16 @@ def handler(event, context):
         LOGGER.info(f"Running preprocessing with parameters: {event}")
         fc: Optional[Dict] = event.get("feature_collection")
         uri: Optional[str] = event.get("uri")
-        id_field = event["id_field"]  # How to make use of this?
+        id_field = event.get("id_field", "fid")  # Reasonable to use a default?
 
-        if fc is not None:
+        if fc is not None and uri is not None:
+            raise Exception("Please specify GeoJSON via (only) one parameter!")
+        elif fc is not None:
             gpdf = gpd.GeoDataFrame.from_features(fc, columns=[id_field])
         elif uri is not None:
             gpdf = gpd.read_file(uri, columns=[id_field])
         else:
-            raise Exception("No valid input methods passed!")
+            raise Exception("Please specify GeoJSON via (only) one parameter!")
 
         rows = []
         for record in gpdf.itertuples():
