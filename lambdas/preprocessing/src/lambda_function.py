@@ -34,13 +34,10 @@ def handler(event, context):
         else:
             raise Exception("No valid input methods passed!")
 
-        print("Here come the rows!")
         rows = []
         for record in gpdf.itertuples():
-            geom_wkb = wkb_dumps(getattr(record, "geometry"))
+            geom_wkb = wkb_dumps(getattr(record, "geometry"), hex=True)
             rows.append([getattr(record, id_field), geom_wkb])
-
-        print(rows)
 
         # FIXME: Hash those args for cacheability!
         request_hash: UUID = uuid4()
