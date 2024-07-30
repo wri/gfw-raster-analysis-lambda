@@ -12,7 +12,7 @@ resource "aws_lambda_function" "raster_analysis" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
-    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_no_numpy_arn_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_no_numpy_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn,
     data.terraform_remote_state.lambda-layers.outputs.py310_pandas_no_numpy_arn,
   ]
