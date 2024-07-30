@@ -1,5 +1,6 @@
 {
   "StartAt": "Preprocessing",
+  "TimeoutSeconds": 300,
   "States": {
     "Preprocessing": {
       "Type": "Task",
@@ -52,7 +53,7 @@
         }
       },
       "Label": "ProcessGeometry",
-      "MaxConcurrency": 10000,
+      "MaxConcurrency": 100,
       "ItemReader": {
           "Resource": "arn:aws:states:::s3:getObject",
           "ReaderConfig": {
