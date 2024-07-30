@@ -43,8 +43,8 @@ def handler(event, context):
 
         # FIXME: Hash those args for cacheability!
         request_hash: UUID = uuid4()
-        geom_prefix = f"test/otf_lists/{str(request_hash)}/geometries.csv"
-        output_prefix = f"test/otf_lists/{str(request_hash)}/output"
+        geom_prefix = f"analysis/jobs/input/{str(request_hash)}/geometries.csv"
+        output_prefix = f"analysis/jobs/output/{str(request_hash)}/output"
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             some_path = os.path.join(tmp_dir, "geometries.csv")
