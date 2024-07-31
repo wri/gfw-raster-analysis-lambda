@@ -18,7 +18,7 @@ def handler(event, context):
         query = event["query"]
         fid = event.get("fid", None)
         geojson = mapping(loads(bytes.fromhex(event["geometry"])))
-        data_environment = DataEnvironment(layers=event["data_environment"])
+        data_environment = DataEnvironment(layers=event["environment"])
 
         LOGGER.info(f"Executing query: {query}")
         LOGGER.info(f"On geometry: {geojson}")

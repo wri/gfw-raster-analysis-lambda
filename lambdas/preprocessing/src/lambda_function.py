@@ -1,10 +1,10 @@
 import os
+import tempfile
 from typing import Any, Dict, Optional
-from uuid import uuid4, UUID
+from uuid import UUID, uuid4
 
 import geopandas as gpd
 import pandas as pd
-import tempfile
 from aws_xray_sdk.core import patch, xray_recorder
 from shapely.wkb import dumps as wkb_dumps
 
@@ -30,9 +30,9 @@ def handler(event, context):
         if fc is not None and uri is not None:
             raise Exception("Please specify GeoJSON via (only) one parameter!")
         elif fc is not None:
-            gpdf = gpd.GeoDataFrame.from_features(fc, columns=[id_field])
+            gpdf = gpd.GeoDataFrame.from_features(fc, columns=[id_field, "geometry"])
         elif uri is not None:
-            gpdf = gpd.read_file(uri, columns=[id_field])
+            gpdf = gpd.read_file(uri, columns=[id_field, "geometry"])
         else:
             raise Exception("Please specify GeoJSON via (only) one parameter!")
 
@@ -48,21 +48,15 @@ def handler(event, context):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             some_path = os.path.join(tmp_dir, "geometries.csv")
-            df = pd.DataFrame(rows, columns=[id_field, 'geometry'])
+            df = pd.DataFrame(rows, columns=[id_field, "geometry"])
             df.to_csv(some_path, index=False)
 
             upload_to_s3(some_path, BUCKET, geom_prefix)
 
         return {
             "status": "success",
-            "geometries": {
-                "bucket": BUCKET,
-                "key": geom_prefix
-            },
-            "output": {
-                "bucket": BUCKET,
-                "prefix": output_prefix
-            }
+            "geometries": {"bucket": BUCKET, "key": geom_prefix},
+            "output": {"bucket": BUCKET, "prefix": output_prefix},
         }
     except QueryParseException as e:
         return {"status": "failed", "message": str(e)}
