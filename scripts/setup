@@ -2,7 +2,7 @@
 
 set -e
 
-docker-compose -f docker/terraform/docker-compose.yml build
+docker compose -f docker/terraform/docker-compose.yml build
 
 pip install -e .
 pip install -r requirements-dev.txt

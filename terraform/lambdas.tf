@@ -125,7 +125,7 @@ resource "aws_lambda_function" "preprocessing" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
+      S3_PIPELINE_BUCKET          = data.terraform_remote_state.core.outputs.pipelines_bucket
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }
