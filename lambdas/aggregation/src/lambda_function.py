@@ -2,10 +2,9 @@ import json
 
 from aws_xray_sdk.core import patch, xray_recorder
 
+from raster_analysis.boto import s3_client
 from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import LOGGER
-from raster_analysis.boto import s3_client
-
 
 patch(["boto3"])
 
@@ -35,6 +34,7 @@ def handler(event, context):
                     failed_geometries.append(
                         {"geometry_id": result["fid"], "detail": result["message"]}
                     )
+
         for failed_record in manifest["ResultFiles"]["FAILED"]:
             response = s3_client().get_object(Bucket=bucket, Key=failed_record["Key"])
             errors = json.loads(response["Body"].read().decode("utf-8"))
@@ -63,11 +63,33 @@ def handler(event, context):
             Body=json.dumps(failed_geometries),
         )
 
+        # get status and links based on results
+        if combined_data:
+            download_link = f"s3://{bucket}/{results_key}"
+
+            # partial success if there are both success and failures present
+            if failed_geometries:
+                status = "partial_success"
+                failed_geometries_link = f"s3://{bucket}/{failed_list_key}"
+            else:
+                status = "success"
+                failed_geometries_link = None
+        else:
+            download_link = None
+
+            if failed_geometries:
+                status = "failed"
+                failed_geometries_link = f"s3://{bucket}/{failed_list_key}"
+            else:
+                # error if there are both are empty, something strange happened
+                status = "error"
+                failed_geometries_link = None
+
         return {
-            "status": "success",
+            "status": status,
             "data": {
-                "download_link": f"s3://{bucket}/{results_key}",
-                "failed_geometries_link": f"s3://{bucket}/{failed_list_key}",
+                "download_link": download_link,
+                "failed_geometries_link": failed_geometries_link,
             },
         }
     except QueryParseException as e:
