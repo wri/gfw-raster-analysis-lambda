@@ -10,13 +10,9 @@ from shapely.wkb import dumps as wkb_dumps
 
 from raster_analysis.boto import s3_client
 from raster_analysis.exceptions import QueryParseException
-from raster_analysis.globals import LOGGER
+from raster_analysis.globals import LOGGER, S3_PIPELINE_BUCKET
 
 patch(["boto3"])
-
-# FIXME: Get these from env
-BUCKET = "gfw-pipelines-test"
-REGION = "us-east-1"
 
 
 @xray_recorder.capture("Preprocessing")
@@ -41,22 +37,22 @@ def handler(event, context):
             geom_wkb = wkb_dumps(getattr(record, "geometry"), hex=True)
             rows.append([getattr(record, id_field), geom_wkb])
 
-        # FIXME: Hash those args for cacheability!
+        # Consider replacing UUID with hash of args for cacheability
         request_hash: UUID = uuid4()
-        geom_prefix = f"analysis/jobs/input/{str(request_hash)}/geometries.csv"
-        output_prefix = f"analysis/jobs/output/{str(request_hash)}/output"
+        geom_prefix = f"analysis/jobs/{str(request_hash)}/geometries.csv"
+        output_prefix = f"analysis/jobs/{str(request_hash)}/output"
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             some_path = os.path.join(tmp_dir, "geometries.csv")
             df = pd.DataFrame(rows, columns=[id_field, "geometry"])
             df.to_csv(some_path, index=False)
 
-            upload_to_s3(some_path, BUCKET, geom_prefix)
+            upload_to_s3(some_path, S3_PIPELINE_BUCKET, geom_prefix)
 
         return {
             "status": "success",
-            "geometries": {"bucket": BUCKET, "key": geom_prefix},
-            "output": {"bucket": BUCKET, "prefix": output_prefix},
+            "geometries": {"bucket": S3_PIPELINE_BUCKET, "key": geom_prefix},
+            "output": {"bucket": S3_PIPELINE_BUCKET, "prefix": output_prefix},
         }
     except QueryParseException as e:
         return {"status": "failed", "message": str(e)}
