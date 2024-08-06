@@ -2,5 +2,5 @@
 
 set -e
 
-docker-compose -f terraform/docker/docker-compose.yml build
-docker-compose -f terraform/docker/docker-compose.yml run --entrypoint delete_workspace --rm  terraform "$@"
+docker compose -f terraform/docker/docker-compose.yml build
+docker compose -f terraform/docker/docker-compose.yml run --entrypoint delete_workspace --rm  terraform "$@"

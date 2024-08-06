@@ -1,4 +1,4 @@
-FROM ghcr.io/lambgeo/lambda-gdal:3.6-python3.10
+FROM --platform=linux/amd64 ghcr.io/lambgeo/lambda-gdal:3.6-python3.10
 
 WORKDIR /var/task
 ENV WORKDIR /var/task
