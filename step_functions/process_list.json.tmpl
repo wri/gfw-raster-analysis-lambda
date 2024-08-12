@@ -5,14 +5,38 @@
     "Preprocessing": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "Comment": "This lambda takes uri, id_field, and query [other fields also passed], chooses a output folder name [maybe using hash of data and query], creates a CSV with a row for each feature id and each geometry in WKB format, and outputs geometries.bucket, geometries.key [where CSV file was put], and output.bucket, and output.prefix [where intermediate and final results will go]",
+      "Comment": "This lambda takes uri or feature collection, id_field, and query [other fields also passed], chooses a output folder name [maybe using hash of data and query], creates a CSV with a row for each feature id and each geometry in WKB format, and outputs geometries.bucket, geometries.key [where CSV file was put], and output.bucket, and output.prefix [where intermediate and final results will go]",
       "Parameters": {
         "Payload.$": "$",
         "FunctionName": "${lambda_preprocessing_name}"
       },
       "ResultSelector": {
-        "geometries.$": "$.Payload.geometries",
-        "output.$": "$.Payload.output"
+        "Payload.$": "$.Payload"
+      },
+      "ResultPath": "$.PreprocOutput",
+      "Next": "Check status"
+    },
+    "Check status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+	  "Variable": "$.PreprocOutput.Payload.status",
+	  "StringEquals": "error",
+	  "Next": "Error state"
+	}
+      ],
+      "Default": "Copy results"
+    },
+    "Error state": {
+      "Type": "Pass",
+      "OutputPath": "$.PreprocOutput.Payload",
+      "End": true
+    },
+    "Copy results": {
+      "Type": "Pass",
+      "Parameters": {
+        "geometries.$": "$.PreprocOutput.Payload.geometries",
+	"output.$": "$.PreprocOutput.Payload.output"
       },
       "ResultPath": "$.files",
       "Next": "Process List"
@@ -29,7 +53,7 @@
           "process_geometry": {
             "Type": "Task",
             "Resource": "arn:aws:states:::lambda:invoke",
-            "Comment": "This lambda takes a query, data_environment, a feature id fid, and a geometry in WKB format, and returns status, data [results for this feature as CSV], and fid.  The results will be written out to the output bucket by ResultWriter",
+            "Comment": "This lambda takes a query, data_environment, a feature id fid, and a geometry in WKB format, and returns status, data [results for this feature as dictionary], and fid.  The results will be written out to the output bucket by ResultWriter",
             "Parameters": {
               "Payload.$": "$",
               "FunctionName": "${lambda_list_tiled_raster_analysis_name}"
@@ -85,7 +109,7 @@
     "Aggregation": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
-      "Comment": "This function takes files.output.bucket, files.output.prefix, distributed_map, and job_id [other fields also passed], aggregates the results to a new file, and puts the S3 URI of the result in its output as download_link",
+      "Comment": "This function takes files.output.bucket, files.output.prefix, distributed_map, and id_field [other fields also passed], aggregates the results to a new file, and puts the S3 URI of the result in its output as download_link",
       "Parameters": {
         "Payload.$": "$",
         "FunctionName": "${lambda_aggregation_name}"

@@ -3,7 +3,6 @@ import json
 from aws_xray_sdk.core import patch, xray_recorder
 
 from raster_analysis.boto import s3_client
-from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import LOGGER
 
 patch(["boto3"])
@@ -11,6 +10,8 @@ patch(["boto3"])
 
 @xray_recorder.capture("Aggregation")
 def handler(event, context):
+    id_field = event["id_field"]
+    query = event["query"]
     results_meta = event["distributed_map"]["ResultWriterDetails"]
     try:
         bucket = results_meta["Bucket"]
@@ -28,11 +29,11 @@ def handler(event, context):
                 result = json.loads(geom_result["Output"])
                 if result["status"] == "success":
                     combined_data.append(
-                        {"result": result["data"], "geometry_id": result["fid"]}
+                        {"result": result["data"], id_field: result["fid"]}
                     )
                 else:
                     failed_geometries.append(
-                        {"geometry_id": result["fid"], "detail": result["message"]}
+                        {id_field: result["fid"], "detail": result["message"]}
                     )
 
         for failed_record in manifest["ResultFiles"]["FAILED"]:
@@ -42,7 +43,7 @@ def handler(event, context):
                 input = json.loads(error["Input"])
                 if error["Status"] == "FAILED":
                     failed_geometries.append(
-                        {"geometry_id": input["fid"], "detail": error["Error"]}
+                        {id_field: input["fid"], "detail": error["Error"]}
                     )
 
         LOGGER.info("Successfully aggregated results")
@@ -87,13 +88,12 @@ def handler(event, context):
 
         return {
             "status": status,
+            "query": query,
             "data": {
                 "download_link": download_link,
                 "failed_geometries_link": failed_geometries_link,
             },
         }
-    except QueryParseException as e:
-        return {"status": "failed", "message": str(e)}
     except Exception as e:
         LOGGER.exception(e)
         return {"status": "error", "message": str(e)}
