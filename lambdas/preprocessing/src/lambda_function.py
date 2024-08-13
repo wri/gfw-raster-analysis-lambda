@@ -22,7 +22,7 @@ def handler(event, context):
         LOGGER.info(f"Running preprocessing with parameters: {event}")
         fc: Optional[Dict] = event.get("feature_collection")
         uri: Optional[str] = event.get("uri")
-        id_field = event.get("id_field", "fid")  # Reasonable to use a default?
+        id_field = event.get("id_field", "fid")
 
         if fc is not None and uri is not None:
             raise Exception("Please specify GeoJSON via (only) one parameter!")

@@ -17,7 +17,7 @@ def handler(event, context):
         LOGGER.info(f"Running analysis with parameters: {event}")
 
         query = event["query"]
-        fid = event.get["fid"]
+        fid = event["fid"]
         geojson = mapping(decode_geometry(event["geometry"]))
         data_environment = DataEnvironment(layers=event["environment"])
 
