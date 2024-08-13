@@ -17,7 +17,7 @@ def handler(event, context):
         LOGGER.info(f"Running analysis with parameters: {event}")
 
         query = event["query"]
-        fid = event.get("fid", None)
+        fid = event.get["fid"]
         geojson = mapping(decode_geometry(event["geometry"]))
         data_environment = DataEnvironment(layers=event["environment"])
 
@@ -31,20 +31,17 @@ def handler(event, context):
 
         LOGGER.info("Successfully merged tiled results: {results}")
         response = {"status": "success", "data": results}
-        if fid:
-            response["fid"] = fid
+        response["fid"] = fid
 
         return response
     except QueryParseException as e:
         response = {"status": "failed", "message": str(e)}
-        if fid:
-            response["fid"] = fid
+        response["fid"] = fid
 
         return response
     except Exception as e:
         LOGGER.exception(e)
         response = {"status": "error", "message": str(e)}
-        if fid:
-            response["fid"] = fid
+        response["fid"] = fid
 
         return response
