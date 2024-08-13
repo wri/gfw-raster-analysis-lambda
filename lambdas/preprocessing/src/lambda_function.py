@@ -9,7 +9,6 @@ from aws_xray_sdk.core import patch, xray_recorder
 from shapely.wkb import dumps as wkb_dumps
 
 from raster_analysis.boto import s3_client
-from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import LOGGER, S3_PIPELINE_BUCKET
 
 patch(["boto3"])
@@ -32,6 +31,9 @@ def handler(event, context):
         else:
             raise Exception("Please specify GeoJSON via (only) one parameter!")
 
+        if id_field not in gpdf.columns.tolist():
+            raise Exception(f"Input feature collection is missing ID field '{id_field}'")
+
         rows = []
         for record in gpdf.itertuples():
             geom_wkb = wkb_dumps(getattr(record, "geometry"), hex=True)
@@ -44,7 +46,9 @@ def handler(event, context):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             some_path = os.path.join(tmp_dir, "geometries.csv")
-            df = pd.DataFrame(rows, columns=[id_field, "geometry"])
+            # In the file sent to the distributed map, use the standard name 'fid'
+            # for the id field, to make the step function code simpler.
+            df = pd.DataFrame(rows, columns=["fid", "geometry"])
             df.to_csv(some_path, index=False)
 
             upload_to_s3(some_path, S3_PIPELINE_BUCKET, geom_prefix)
@@ -54,8 +58,6 @@ def handler(event, context):
             "geometries": {"bucket": S3_PIPELINE_BUCKET, "key": geom_prefix},
             "output": {"bucket": S3_PIPELINE_BUCKET, "prefix": output_prefix},
         }
-    except QueryParseException as e:
-        return {"status": "failed", "message": str(e)}
     except Exception as e:
         LOGGER.exception(e)
         return {"status": "error", "message": str(e)}
