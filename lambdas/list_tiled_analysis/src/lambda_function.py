@@ -4,6 +4,7 @@ from shapely.wkb import loads
 
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.exceptions import QueryParseException
+from raster_analysis.geometry import decode_geometry
 from raster_analysis.globals import LOGGER
 from raster_analysis.tiling import AnalysisTiler
 
@@ -17,7 +18,7 @@ def handler(event, context):
 
         query = event["query"]
         fid = event.get("fid", None)
-        geojson = mapping(loads(bytes.fromhex(event["geometry"])))
+        geojson = mapping(decode_geometry(event["geometry"]))
         data_environment = DataEnvironment(layers=event["environment"])
 
         LOGGER.info(f"Executing query: {query}")
