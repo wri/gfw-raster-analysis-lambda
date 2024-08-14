@@ -6,10 +6,12 @@ from uuid import UUID, uuid4
 import geopandas as gpd
 import pandas as pd
 from aws_xray_sdk.core import patch, xray_recorder
+from shapely.geometry import shape
 from shapely.wkb import dumps as wkb_dumps
 
 from raster_analysis.boto import s3_client
 from raster_analysis.globals import LOGGER, S3_PIPELINE_BUCKET
+from raster_analysis.geometry import encode_geometry
 
 patch(["boto3"])
 
@@ -20,7 +22,7 @@ def handler(event, context):
         LOGGER.info(f"Running preprocessing with parameters: {event}")
         fc: Optional[Dict] = event.get("feature_collection")
         uri: Optional[str] = event.get("uri")
-        id_field = event.get("id_field", "fid")  # Reasonable to use a default?
+        id_field = event.get("id_field", "fid")
 
         if fc is not None and uri is not None:
             raise Exception("Please specify GeoJSON via (only) one parameter!")
@@ -36,8 +38,9 @@ def handler(event, context):
 
         rows = []
         for record in gpdf.itertuples():
-            geom_wkb = wkb_dumps(getattr(record, "geometry"), hex=True)
-            rows.append([getattr(record, id_field), geom_wkb])
+            geom = shape(getattr(record, "geometry"))
+            encoded_geom = encode_geometry(geom)
+            rows.append([getattr(record, id_field), encoded_geom])
 
         # Consider replacing UUID with hash of args for cacheability
         request_hash: UUID = uuid4()
