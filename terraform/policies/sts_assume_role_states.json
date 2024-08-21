@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement":
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": [
+          "states.us-east-1.amazonaws.com",
+          "events.amazonaws.com"
+        ]
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+}

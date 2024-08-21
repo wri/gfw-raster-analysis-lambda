@@ -1,0 +1,122 @@
+{
+  "StartAt": "Preprocessing",
+  "TimeoutSeconds": 360,
+  "States": {
+    "Preprocessing": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Comment": "This lambda takes uri or feature collection, id_field, and query [other fields also passed], chooses a output folder name [maybe using hash of data and query], creates a CSV with a row for each feature id and each geometry in WKB format, and outputs geometries.bucket, geometries.key [where CSV file was put], and output.bucket, and output.prefix [where intermediate and final results will go]",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${lambda_preprocessing_name}"
+      },
+      "ResultSelector": {
+        "Payload.$": "$.Payload"
+      },
+      "ResultPath": "$.PreprocOutput",
+      "Next": "Check status"
+    },
+    "Check status": {
+      "Type": "Choice",
+      "Choices": [
+        {
+	  "Variable": "$.PreprocOutput.Payload.status",
+	  "StringEquals": "error",
+	  "Next": "Error state"
+	}
+      ],
+      "Default": "Copy results"
+    },
+    "Error state": {
+      "Type": "Pass",
+      "OutputPath": "$.PreprocOutput.Payload",
+      "End": true
+    },
+    "Copy results": {
+      "Type": "Pass",
+      "Parameters": {
+        "geometries.$": "$.PreprocOutput.Payload.geometries",
+	"output.$": "$.PreprocOutput.Payload.output"
+      },
+      "ResultPath": "$.files",
+      "Next": "Process List"
+    },
+    "Process List": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "DISTRIBUTED",
+          "ExecutionType": "STANDARD"
+        },
+        "StartAt": "process_geometry",
+        "States": {
+          "process_geometry": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Comment": "This lambda takes a query, data_environment, a feature id fid, and a geometry in WKB format, and returns status, data [results for this feature as dictionary], and fid.  The results will be written out to the output bucket by ResultWriter",
+            "Parameters": {
+              "Payload.$": "$",
+              "FunctionName": "${lambda_list_tiled_raster_analysis_name}"
+            },
+            "OutputPath": "$.Payload",
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 2,
+                "MaxAttempts": 6,
+                "BackoffRate": 2
+              }
+            ],
+            "End": true
+          }
+        }
+      },
+      "Label": "ProcessGeometry",
+      "MaxConcurrency": 100,
+      "ToleratedFailurePercentage": 100,
+      "ItemReader": {
+          "Resource": "arn:aws:states:::s3:getObject",
+          "ReaderConfig": {
+              "InputType": "CSV",
+              "CSVHeaderLocation": "FIRST_ROW"
+          },
+          "Parameters": {
+              "Bucket.$": "$.files.geometries.bucket",
+              "Key.$": "$.files.geometries.key"
+          }
+      },
+      "Parameters": {
+        "query.$": "$.query",
+        "environment.$": "$.environment",
+        "fid.$": "$$.Map.Item.Value.fid",
+        "geometry.$": "$$.Map.Item.Value.geometry"
+      },
+      "ResultWriter": {
+        "Resource": "arn:aws:states:::s3:putObject",
+        "Parameters": {
+          "Bucket.$": "$.files.output.bucket",
+          "Prefix.$": "$.files.output.prefix"
+        }
+      },
+      "Comment": "See https://docs.aws.amazon.com/step-functions/latest/dg/input-output-resultwriter.html, distributed_map.ResultWriterDetails.Key will specify file describing all the output files",
+      "ResultPath": "$.distributed_map",
+      "Next": "Aggregation"
+    },
+    "Aggregation": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Comment": "This function takes files.output.bucket, files.output.prefix, distributed_map, and id_field [other fields also passed], aggregates the results to a new file, and puts the S3 URI of the result in its output as download_link",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${lambda_aggregation_name}"
+      },
+      "OutputPath": "$.Payload",
+      "End": true
+    }
+  }
+}
