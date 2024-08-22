@@ -1,14 +1,12 @@
-from aws_xray_sdk.core import patch, xray_recorder
+from codeguru_profiler_agent import with_lambda_profiler
 
 from raster_analysis.data_environment import DataEnvironment
 from raster_analysis.exceptions import QueryParseException
 from raster_analysis.globals import LOGGER
 from raster_analysis.tiling import AnalysisTiler
 
-patch(["boto3"])
 
-
-@xray_recorder.capture("Tiled Analysis")
+@with_lambda_profiler(profiling_group_name="raster_analysis_tiled_profiler")
 def handler(event, context):
     try:
         LOGGER.info(f"Running analysis with parameters: {event}")
