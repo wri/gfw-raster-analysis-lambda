@@ -42,7 +42,6 @@ class RasterTable(BaseModel):
 class BaseLayer(BaseModel):
     name: str
     no_data: Optional[Numeric] = 0
-    id: Optional[UUID] = None
 
     @validator("no_data")
     def parse_no_data(cls, v):
@@ -61,6 +60,7 @@ class SourceLayer(EncodedLayer):
     source_uri: str
     tile_scheme: TileScheme = TileScheme.nw
     grid: GridName = GridName.ten_by_forty_thousand
+    id: Optional[UUID] = None
 
 
 class DerivedLayer(EncodedLayer):

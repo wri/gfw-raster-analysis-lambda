@@ -4,6 +4,7 @@ DATA_ENVIRONMENT = [
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "umd_tree_cover_loss__year",
+        "id": "95dfb531-558f-421c-99ee-3c80ff37cbac",
         "raster_table": {
             "rows": [
                 {"value": 1, "meaning": 2001},
@@ -34,6 +35,7 @@ DATA_ENVIRONMENT = [
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "umd_tree_cover_density_2000__threshold",
+        "id": "86aab5eb-2705-46e9-852f-32398c8de1d1",
         "raster_table": {
             "rows": [
                 {"value": 1, "meaning": 10},
@@ -51,6 +53,7 @@ DATA_ENVIRONMENT = [
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "is__umd_regional_primary_forest_2001",
+        "id": "fe5c09fe-8eaf-43b6-808d-9203dd4e8e2e",
         "raster_table": {
             "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
         },
@@ -60,6 +63,7 @@ DATA_ENVIRONMENT = [
         "tile_scheme": "nw",
         "grid": "10/40000",
         "name": "gfw_forest_carbon_gross_emissions__Mg_CO2e_ha-1",
+        "id": "f0cc4ee8-7499-4bc3-a660-c718eb322f2f",
         "no_data": "nan",
     },
     {

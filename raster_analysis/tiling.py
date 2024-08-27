@@ -149,7 +149,7 @@ class AnalysisTiler:
             for tile in tiles
         ]
         tile_keys = [
-            results_store.get_cache_key(geom, self.raw_query)
+            results_store.get_cache_key(geom, self.query)
             for geom in tiled_geoms
         ]
         cached_tile_keys = [

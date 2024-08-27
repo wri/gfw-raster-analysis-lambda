@@ -23,6 +23,7 @@ from raster_analysis.globals import (
     TILED_STATUS_TABLE_NAME,
     BasePolygon,
 )
+from raster_analysis.query import Query
 
 
 class ResultStatus(str, Enum):
@@ -166,11 +167,15 @@ class AnalysisResultsStore:
         return results
 
     @staticmethod
-    def get_cache_key(geom: BasePolygon, query: str) -> str:
+    def get_cache_key(geom: BasePolygon, query: Query) -> str:
         """Create md5 has for tile-geom_overlap-query result."""
-        key = f"{query}-{geom.wkt}"
+        source_layers = query.get_source_layers()
+        layer_ids = sorted([str(layer.id) for layer in source_layers if layer.id is not None])
 
-        return md5(key.encode()).hexdigest()
+        key = f"{query.raw_query}-{geom.wkt}--{layer_ids}"
+        cache_key = md5(key.encode()).hexdigest()
+        print(cache_key)
+        return cache_key
 
     @staticmethod
     def _get_ttl():
