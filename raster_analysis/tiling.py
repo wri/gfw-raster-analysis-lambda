@@ -144,9 +144,13 @@ class AnalysisTiler:
             payload["geometry"] = self.raw_geom
 
         results_store = AnalysisResultsStore()
-        tile_keys = [
-            results_store.get_cache_key(tile, self.geom, self.raw_query)
+        tiled_geoms = [
+            tile.intersection(self.geom)
             for tile in tiles
+        ]
+        tile_keys = [
+            results_store.get_cache_key(geom, self.raw_query)
+            for geom in tiled_geoms
         ]
         cached_tile_keys = [
             status["tile_id"]["S"]
@@ -155,20 +159,19 @@ class AnalysisTiler:
             )
         ]
         cache_keys_for_lambda = list(set(tile_keys) - set(cached_tile_keys))
-        tiles_for_lambda = [
-            tile
-            for tile in tiles
-            if results_store.get_cache_key(tile, self.geom, self.raw_query)
-            in cache_keys_for_lambda
-        ]
+
+        tiles_for_lambda = []
+        for tile, cache_key in  zip(tiles, tile_keys):
+            if cache_key in cache_keys_for_lambda:
+                tiles_for_lambda.append((tile, cache_key))
+
         geom_count = len(tiles_for_lambda)
 
         LOGGER.info(f"Processing {geom_count} tiles")
 
         if geom_count <= FANOUT_NUM:
-            for tile in tiles_for_lambda:
+            for tile, tile_id in tiles_for_lambda:
                 tile_payload = deepcopy(payload)
-                tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
                 tile_payload["cache_id"] = tile_id
                 tile_payload["tile"] = mapping(tile)
                 invoke_lambda(
@@ -177,11 +180,12 @@ class AnalysisTiler:
         else:
             tile_geojsons = [
                 (
-                    results_store.get_cache_key(tile, self.geom, self.raw_query),
+                    tile_id,
                     mapping(tile),
                 )
-                for tile in tiles
+                for tile, tile_id in tiles_for_lambda
             ]
+
             tile_chunks = [
                 tile_geojsons[x : x + FANOUT_NUM]
                 for x in range(0, len(tile_geojsons), FANOUT_NUM)
@@ -192,7 +196,7 @@ class AnalysisTiler:
                 invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
 
         LOGGER.info(
-            f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(tile_keys) - geom_count}"
+            f"Geom count: going to lambda: {geom_count}, fetched from cache: {len(tile_keys) - geom_count}"
         )
 
         results = results_store.wait_for_results(cache_keys_for_lambda, tile_keys)

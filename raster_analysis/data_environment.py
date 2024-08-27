@@ -4,6 +4,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union, cast
+from uuid import UUID
 
 from numpy import (
     ceil,
@@ -41,6 +42,7 @@ class RasterTable(BaseModel):
 class BaseLayer(BaseModel):
     name: str
     no_data: Optional[Numeric] = 0
+    id: Optional[UUID] = None
 
     @validator("no_data")
     def parse_no_data(cls, v):

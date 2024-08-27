@@ -166,10 +166,9 @@ class AnalysisResultsStore:
         return results
 
     @staticmethod
-    def get_cache_key(tile: Polygon, geom: BasePolygon, query: str) -> str:
+    def get_cache_key(geom: BasePolygon, query: str) -> str:
         """Create md5 has for tile-geom_overlap-query result."""
-        geom_tile_intersection = tile.intersection(geom)
-        key = f"{query}-{tile.wkt}-{geom_tile_intersection.wkt}"
+        key = f"{query}-{geom.wkt}"
 
         return md5(key.encode()).hexdigest()
 
