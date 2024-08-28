@@ -62,6 +62,10 @@ class SourceLayer(EncodedLayer):
     grid: GridName = GridName.ten_by_forty_thousand
     id: Optional[UUID] = None
 
+    _transform_uuids = validator("id", allow_reuse=True)(
+        lambda x: str(x) if x else x
+    )
+
 
 class DerivedLayer(EncodedLayer):
     source_layer: str
