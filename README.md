@@ -2,26 +2,20 @@
 
 ### Functionality
 
-Run zonal statistics on tree cover loss, GLAD alerts, or arbitrary contextual layers defined in our data lake.
+Run raster zonal analysis on data in [a gfw-data-api](https://github.com/gfw-api/gfw-data-api). Use the lambda to run on one geometry, or the step function to run on a list of geometries. Supported analyses:
 
-See [a gfw-data-api](https://github.com/gfw-api/gfw-data-api) for how to access through analysis API.
+- Zonal statistics across multiple layers at once, including masks and grouping
+- Pulling point data in a zone, including latitude and longitude
 
+See **Raster SQL** for how to query datasets.
 
 ### Query Parameters
 
-All layers should be referred to by their standard data lake column name: <data lake layer name>__<data type> or is__<data lake layer name> for boolean layers.
-
-See the data API for a full list of registered layers.
-
-
-|Parameter|Type|Description|Example|
-|---------|----|-----------|-------|
-|geostore_id (required)| String | A valid geostore ID containing the GeoJSON for the geometry of interest (see further specification in `Limitations and assumtions` | cb64960710fd11925df3fda6a2005ca9 |
-|group_by| [String] | Rasters with categorical pixel values to group by.| umd_tree_cover_loss__year, umd_glad_alerts, tsc_tree_cover_loss_drivers__type |
-|filters| [String] | Rasters to apply as a mask. Pixels with NoData values will be filtered out of the final result. For umd_tree_cover_density_2000/2010, you can put a threshold number as the data type, and it will apply a filter for that threshold|  is__umd_regional_primary_forest_2001, umd_tree_cover_density_2000__30|
-|sum| [String] | Pixel values will be summed based on intersection with group_by layers. If there are no group_by layers, all pixel values will be summed to a single number. Pixel value must be numerical. This field can also include area__ha or alert__count, which will give the pixel count or area.| area__ha, whrc_aboveground_co2_emissions__Mg |
-|start| Date | Filters date group_by columns to this start date. Must be a year or a YYYY-MM-DD formatted date. | 2015, 2015-02-04 |
-|end| Date | Same format as 'start'. Must come after start. | 2016 , 2016-02-10 |
+|Parameter|Type|Description|
+|---------|----|-----------|
+|geometry (required)| GeoJSON | A valid GeoJSON geometry to run analysis on. Must be a Polygon or MultiPolygon. |
+|sql (required)| String | A **Raster SQL** query string for the analysis you want to run. See below for more details.| SELECT SUM(area__ha), umd_tree_cover_loss__year FROM data WHERE umd_tree_cover_density__percent > 30 GROUP BY umd_tree_cover_loss__year |
+|data_environment (required) | Dict | A config telling the raster analysis how to match layer names in the query with the actual source. This is typically created by [a gfw-data-api](https://github.com/gfw-api/gfw-data-api) automatically using layers in the API.|
 #### Examples
 
 Request:
@@ -31,12 +25,7 @@ Request:
         "type": "Polygon",
         "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
     },
-    "group_by": ["umd_tree_cover_loss__year"],
-    "filters": [
-        "is__umd_regional_primary_forest_2001",
-        "umd_tree_cover_density_2000__30",
-    ],
-    "sum": ["area__ha", "whrc_aboveground_co2_emissions__Mg"],
+    "sql": "SELECT umd_tree_cover_loss__year, SUM(area__ha), SUM(whrc_aboveground_co2_emissions__Mg) FROM data WHERE umd_tree_cover_density_2000__percent > 30 GROUP BY umd_tree_cover_loss__year
 }
 ```
 
@@ -141,11 +130,6 @@ Response:
 
 
 ### Endpoints
-```http request
-https://staging-data-api.globalforestwatch.org/analysis
-https://data-api.globalforestwatch.org/analysis
-```
-
 
 ### Assumptions and limitations
 
@@ -153,6 +137,8 @@ GFW raster tiles are organized in 10 x 10 Degree grids and have a pixel size of 
 They are saved as Cloud Optimized TIFFs with 400 x 400 pixels blocks.
 
 Because we can scale up parallel processing with lambda, size of the geometry shouldn't be an issue unless getting to massive scales (> 1 billion ha). But each lambda has in-memory cap of 3 GB, so currently only so many rasters can be loaded into memory at once. The limit depends on the size of the raster values (e.g. binary is way less memory than float), but generally max 4 or 5 raster layers is a good rule of thumb.
+
+To optimize speed for area calculations, we assume each tile has roughly similar pixel area, and only use the pixel area of the centroid pixel for calculations. This may introduce some inaccuracies of the tile is sparsely covered. 
 
 ## Deployment
 
@@ -164,119 +150,6 @@ Use terraform:
 ```
 
 ```
-Runtime: Python 3.7
+Runtime: Python 3.10
 Handler: lambda_function.lambda_handler
 ```
-
-## Future Development
-
-### Data Lake
-
-The GFW data lake is now in production, so this service will soon point to that instead of just test layers. Once it does, all data lake layers should be available for analysis. This currently includes:
-
-* aqueduct_baseline_water_stress
-* aqueduct_erosion_risk
-* birdlife_alliance_for_zero_extinction_site
-* birdlife_endemic_bird_areas
-* birdlife_key_biodiversity_area
-* bra_biomes
-* esa_land_cover_2015
-* gfw_aboveground_carbon_stock_2000
-* gfw_aboveground_carbon_stock_in_emissions_year
-* gfw_aboveground_carbon_stock_in_emissions_year__biomass_swap
-* gfw_aboveground_carbon_stock_in_emissions_year__legal_amazon_loss
-* gfw_aboveground_carbon_stock_in_emissions_year__no_primary_gain
-* gfw_aboveground_carbon_stock_in_emissions_year__us_removals
-* gfw_belowground_carbon_stock_2000
-* gfw_belowground_carbon_stock_in_emissions_year
-* gfw_deadwood_carbon_stock_2000
-* gfw_deadwood_carbon_stock_in_emissions_year
-* gfw_forest_age_category
-* gfw_gross_annual_removals_biomass
-* gfw_gross_cumul_removals_co2
-* gfw_gross_cumul_removals_co2__biomass_swap
-* gfw_gross_cumul_removals_co2__legal_amazon_loss
-* gfw_gross_cumul_removals_co2__maxgain
-* gfw_gross_cumul_removals_co2__no_primary_gain
-* gfw_gross_cumul_removals_co2__us_removals
-* gfw_gross_emissions_co2e_co2_only
-* gfw_gross_emissions_co2e_co2_only__biomass_swap
-* gfw_gross_emissions_co2e_co2_only__convert_to_grassland
-* gfw_gross_emissions_co2e_co2_only__legal_amazon_loss
-* gfw_gross_emissions_co2e_co2_only__no_primary_gain
-* gfw_gross_emissions_co2e_co2_only__no_shifting_ag
-* gfw_gross_emissions_co2e_co2_only__soil_only
-* gfw_gross_emissions_co2e_co2_only__us_removals
-* gfw_gross_emissions_co2e_non_co2
-* gfw_gross_emissions_co2e_non_co2__biomass_swap
-* gfw_gross_emissions_co2e_non_co2__convert_to_grassland
-* gfw_gross_emissions_co2e_non_co2__legal_amazon_loss
-* gfw_gross_emissions_co2e_non_co2__no_primary_gain
-* gfw_gross_emissions_co2e_non_co2__no_shifting_ag
-* gfw_gross_emissions_co2e_non_co2__soil_only
-* gfw_gross_emissions_co2e_non_co2__us_removals
-* gfw_intact_or_primary_forest_2000
-* gfw_land_rights
-* gfw_litter_carbon_stock_2000
-* gfw_litter_carbon_stock_in_emissions_year
-* gfw_managed_forests
-* gfw_mining
-* gfw_net_flux_co2e
-* gfw_net_flux_co2e__biomass_swap
-* gfw_net_flux_co2e__convert_to_grassland
-* gfw_net_flux_co2e__legal_amazon_loss
-* gfw_net_flux_co2e__maxgain
-* gfw_net_flux_co2e__no_primary_gain
-* gfw_net_flux_co2e__no_shifting_ag
-* gfw_net_flux_co2e__us_removals
-* gfw_oil_gas
-* gfw_oil_palm
-* gfw_peatlands
-* gfw_peatlands__flux
-* gfw_pixel_area
-* gfw_plantations
-* gfw_resource_rights
-* gfw_soil_carbon_stock_2000
-* gfw_soil_carbon_stock_in_emissions_year
-* gfw_soil_carbon_stock_in_emissions_year__biomass_swap
-* gfw_soil_carbon_stock_in_emissions_year__legal_amazon_loss
-* gfw_soil_carbon_stock_in_emissions_year__no_primary_gain
-* gfw_soil_carbon_stock_in_emissions_year__us_removals
-* gfw_tiger_landscapes
-* gfw_total_carbon_stock_2000
-* gfw_total_carbon_stock_in_emissions_year
-* gfw_wood_fiber
-* gmw_mangroves_1996
-* gmw_mangroves_2016
-* idn_forest_area
-* idn_forest_moratorium
-* idn_land_cover_2017
-* idn_primary_forest_2000
-* ifl_intact_forest_landscapes
-* jpl_mangrove_aboveground_biomass_stock_2000
-* jpl_tropics_abovegroundbiomass_2000
-* landmark_land_rights
-* mapbox_river_basins
-* mex_forest_zoning
-* mex_payment_ecosystem_services
-* mex_protected_areas
-* per_forest_concessions
-* per_permanent_production_forests
-* per_protected_areas
-* rspo_oil_palm
-* tnc_urban_water_intake
-* tsc_tree_cover_loss_drivers
-* umd_regional_primary_forest_2001
-* umd_tree_cover_density_2000
-* umd_tree_cover_density_2010
-* umd_tree_cover_gain
-* umd_tree_cover_loss
-* usfs_fia_regions
-* wdpa_protected_areas
-* whrc_aboveground_biomass_stock_2000
-* wwf_eco_regions
-
-### VIIRS/MODIS Alerts
-
-These alerts are currently unsupported because we don't rasterize these layers. Instead, we store all enriched points in an document dataset. You can do on-the-fly analysis for these via SQL. (TBD: do we want to just forward that through here so there's only one endpoint?)
-
