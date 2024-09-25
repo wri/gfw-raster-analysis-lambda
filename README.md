@@ -25,7 +25,8 @@ Request:
         "type": "Polygon",
         "coordinates": [[[9, 4.1], [9.1, 4.1], [9.1, 4.2], [9, 4.2], [9, 4.1]]],
     },
-    "sql": "SELECT umd_tree_cover_loss__year, SUM(area__ha), SUM(whrc_aboveground_co2_emissions__Mg) FROM data WHERE umd_tree_cover_density_2000__percent > 30 GROUP BY umd_tree_cover_loss__year
+    "sql": "SELECT umd_tree_cover_loss__year, SUM(area__ha), SUM(whrc_aboveground_co2_emissions__Mg) FROM data
+                WHERE umd_tree_cover_density_2000__percent > 30 GROUP BY umd_tree_cover_loss__year"
 }
 ```
 
@@ -128,6 +129,69 @@ Response:
 }
 ```
 
+### Raster SQL
+
+WRI has a strong need for complex analytics beyond just simple zonal statistics. Often, we need to apply multiple masks based on pixel value, group by pixel values, and aggregate multiple values at once. Traditional GIS involves pregenerating and applying masks on each layer, then running a zonal statistics analysis. Because these analyses have a strong overlap with SQL, we invented a subset SQL called Raster SQL, that allows for expressive queries that apply the necessary GIS operations on-the-fly.
+
+Our SQL subset supports the following:
+- `SELECT` statements, which can be either use aggregate functions or pull out pixel values as "rows"
+- `WHERE` statements, supporting `AND`/`OR` operators, basic comparison operators and nested expression (e.g. `x > 2 AND (y = 3 OR z < 4)`)
+- `GROUP BY` statements, which can include multiple GROUP BY layers
+- The aggregates `COUNT` (just counts pixels), SUM (sums values of pixels), and AVG (average values of pixels)
+
+This translate to GIS operations in the following ways:
+
+**Basics**
+
+`SELECT COUNT(*) FROM data`
+
+While the query will looks like this, based on which datasets in the API you query, it will actually be replaced under the hood to look something like this:
+
+`SELECT COUNT(*) FROM umd_tree_cover_loss__year`
+
+Each field name references either an actual raster layer, or special reserved word. In this basic analysis, the `umd_tree_cover_loss__year` will be applied as a basic mask, and then zonal statistics will be collected on the mask in the `geometry`. To perform zonal statistics, the geometry is rasterized and applied as an additional mask. The `COUNT` aggregate will just count all the non-masked pixels. This will return something like:
+
+```JSON
+{
+   "status":"success",
+   "data": [
+        {
+            "count": 242
+        }
+    ]
+}
+```
+
+The `count` is the number of non-NoData pixels in the `umd_tree_cover_loss__year` raster that intersect the `geometry`.
+
+**Area**
+
+Usually we care about the actual hectare area of loss, not just the count of pixels. All of our analysis in WGS84, a geographic coordinate system, so pixels are degrees rather than meters. The actual meter length of 1 degree varies based on latitude because of the projection. To calculate real hectare, we introduced a special reserved field `area__ha`:
+
+`SELECT SUM(area__ha) FROM umd_tree_cover_loss__year`
+
+Now rather just counting the number of pixels, we're getting the sum of the hectare area of the pixel. When the query executor sees `area__ha`, it will calculate the hectare area of the pixels based on their latitude, and return the sum of area of non-masked pixels. So the results would now look like:
+
+```JSON
+{
+   "status":"success",
+   "data": [
+        {
+            "area__ha": 175.245
+        }
+    ]
+}
+```
+
+Which is the actual hectare of loss in the `geometry`.
+
+**Masking**
+
+Often, we want to apply different filters (masks) to our data to get more specific information. For example, people often care about loss specifically in primary forests, since these forests are especially valuable. Using `WHERE` statements, we can add additional masks to our calculation:
+
+`SELECT SUM(area__ha) FROM umd_tree_cover_loss__year WHERE is__umd_regional_primary_forest_2001 = 'true'`
+
+`is__umd_regional_primary_forest_2001` is a boolean raster layer showing the extent of primary forest in 2001.
 
 ### Endpoints
 
