@@ -347,7 +347,19 @@ Response:
 }
 ```
 
-### Endpoints
+### Architecture
+
+To support fast on-the-fly analytics for both small and large areas, we use a serverless AWS Lambda-based architecture. Lambdas allow us to scale up massive parallel processing very quickly, since requests usually come sporadically and may require very variable workloads.
+
+<img width="1171" alt="image" src="https://github.com/user-attachments/assets/4e359df9-c5c9-4a32-9e7a-1e6359fd03ab">
+
+We have three different lambas. 
+
+**tiled-raster-analysis**: This is the entrypoint function. This function checks the size of the geometry, and splits it up into many chunks if the geometry is large. The chunk size depends on the resolution: 1.25x1.25 degrees for 30m resolution data, and 0.5x0.5 degrees for 10m resolution data. It then invokes a lambda function for each chunk, and waits for the results to be written to a DynamoDB table. Each lambda invocation has 256 KB payload limit, so it may compress or simplify the geometry chunks if the geometry is too complicated. Once all the results are in, it will aggregate the results and return them to the client.
+
+**fanout**: This lambda is optional. One of the bottlenecks for this architecture is the lambda invocations themselves. If a geometry requires 100+ processing lambdas, it can take some time to invoke it all from one lambda. If more than 10 lambdas need to be invoked, the `tiled-raster-analysis` function will actually split the lambdas into groups of 10, and send each to a `fanout` lambda. All the fanout lambda does is invoke those 10 lambdas. This massively speeds up the invocation time for huge amounts of lambdas.
+
+**raster-analysis**: This is the core analysis function. This processes each geometry chunk, reads all necessary rasters, runs the query execution, and writes the results out to DynamoDB. Each of these currently runs with 3 GB of RAM.
 
 ### Assumptions and limitations
 
