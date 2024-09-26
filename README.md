@@ -191,7 +191,23 @@ Often, we want to apply different filters (masks) to our data to get more specif
 
 `SELECT SUM(area__ha) FROM umd_tree_cover_loss__year WHERE is__umd_regional_primary_forest_2001 = 'true'`
 
-`is__umd_regional_primary_forest_2001` is a boolean raster layer showing the extent of primary forest in 2001.
+`is__umd_regional_primary_forest_2001` is a boolean raster layer showing the extent of primary forest in 2001. The statement `is__umd_regional_primary_forest_2001 = 'true'` will load the raster into an area and apply the filter to include `true` values. For this simple boolean raster, this just means any non-NoData pixels. We then apply this as a mask to `umd_tree_cover_loss__year` before running the aggregation and zonal statics. Our result might now look like:
+
+```JSON
+{
+   "status":"success",
+   "data": [
+        {
+            "area__ha": 75.467
+        }
+    ]
+}
+```
+We can also apply multiple masks using `AND`/`OR` conditions. For example, different countries usually have different definitions of how dense a cluster of trees needs to be to be called a "forest" legally. We measure this density by the percent of "canopy cover" in a pixel. We can apply this canopy cover layer as an additional mask with a query like:
+
+`SELECT SUM(area__ha) FROM umd_tree_cover_loss__year WHERE is__umd_regional_primary_forest_2001 = 'true' AND umd_tree_cover_density_2000__percent > 30`
+
+Now, we'll calculate loss area only in primary forests with a canopy cover percent greater than 30. Internally, the umd_tree_cover_density_2000__percent will be loaded, and the comparison operation will be applied to generate a boolean array that's true where the pixel value is greater than 30. We then combine with the overall mask using a bitwise & operation. If we used an `OR` statement in the query, we would use a bitwise | operation instead.
 
 ### Endpoints
 
