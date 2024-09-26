@@ -185,6 +185,25 @@ Now rather just counting the number of pixels, we're getting the sum of the hect
 
 Which is the actual hectare of loss in the `geometry`.
 
+**Aggregation**
+
+We can also aggregate the values of raster layers, like carbon emissions or biomass. All we need to is apply the `SUM` function to the layer:
+
+`SELECT SUM(whrc_aboveground_co2_emissions__Mg) FROM umd_tree_cover_loss__year`
+
+To get the amount of carbon emissions due to tree cover loss. The result might look like:
+
+```JSON
+{
+   "status":"success",
+   "data": [
+        {
+            "whrc_aboveground_co2_emissions__Mg": 245.325
+        }
+    ]
+}
+```
+
 **Masking**
 
 Often, we want to apply different filters (masks) to our data to get more specific information. For example, people often care about loss specifically in primary forests, since these forests are especially valuable. Using `WHERE` statements, we can add additional masks to our calculation:
@@ -203,11 +222,130 @@ Often, we want to apply different filters (masks) to our data to get more specif
     ]
 }
 ```
+
 We can also apply multiple masks using `AND`/`OR` conditions. For example, different countries usually have different definitions of how dense a cluster of trees needs to be to be called a "forest" legally. We measure this density by the percent of "canopy cover" in a pixel. We can apply this canopy cover layer as an additional mask with a query like:
 
 `SELECT SUM(area__ha) FROM umd_tree_cover_loss__year WHERE is__umd_regional_primary_forest_2001 = 'true' AND umd_tree_cover_density_2000__percent > 30`
 
-Now, we'll calculate loss area only in primary forests with a canopy cover percent greater than 30. Internally, the umd_tree_cover_density_2000__percent will be loaded, and the comparison operation will be applied to generate a boolean array that's true where the pixel value is greater than 30. We then combine with the overall mask using a bitwise & operation. If we used an `OR` statement in the query, we would use a bitwise | operation instead.
+Now, we'll calculate loss area only in primary forests with a canopy cover percent greater than 30. Internally, the umd_tree_cover_density_2000__percent will be loaded, and the comparison operation will be applied to generate a boolean array that's true where the pixel value is greater than 30. We then combine with the overall mask using a bitwise & operation. If we used an `OR` statement in the query, we would use a bitwise | operation instead. Now our result might look like:
+
+```JSON
+{
+   "status":"success",
+   "data": [
+        {
+            "area__ha": 25.945
+        }
+    ]
+}
+```
+
+**Grouping**
+
+The final SQL statement we support is `GROUP BY`. This will group the results by unique pixel values in a raster, like a histogram. For example, the loss raster pixel values are actually the year loss occurred, from 2001 to the current year. We often want to know the amount of loss per year, to track how it changed over time. Now we can finally examine the query in our initial example:
+
+`SELECT umd_tree_cover_loss__year, SUM(area__ha), SUM(whrc_aboveground_co2_emissions__Mg) FROM data WHERE umd_tree_cover_density_2000__percent > 30 GROUP BY umd_tree_cover_loss__year`
+
+This will first apply the masks, then applies a weighted histogram function where each unique value in `umd_tree_cover_loss__year` becomes a bucket, and the weights are the values of the pixels we want to aggregate (in this case, `area__ha` and `whrc_aboveground_co2_emissions__Mg`). We then end up with aggregation results by unique value, and the results look like:
+
+Response:
+```JSON
+{
+   "status":"success",
+   "data":[
+      {
+         "umd_tree_cover_loss__year":2001,
+         "area__ha":9.894410216509604,
+         "whrc_aboveground_co2_emissions__Mg":3560.875476837158
+      },
+      {
+         "umd_tree_cover_loss__year":2002,
+         "area__ha":40.0378459923877,
+         "whrc_aboveground_co2_emissions__Mg":14713.026161193848
+      },
+      {
+         "umd_tree_cover_loss__year":2003,
+         "area__ha":6.442871768889975,
+         "whrc_aboveground_co2_emissions__Mg":2568.1107501983643
+      },
+      {
+         "umd_tree_cover_loss__year":2005,
+         "area__ha":3.2214358844449875,
+         "whrc_aboveground_co2_emissions__Mg":1274.5636539459229
+      },
+      {
+         "umd_tree_cover_loss__year":2006,
+         "area__ha":22.01314521037408,
+         "whrc_aboveground_co2_emissions__Mg":8167.388116836548
+      },
+      {
+         "umd_tree_cover_loss__year":2007,
+         "area__ha":0.23010256317464195,
+         "whrc_aboveground_co2_emissions__Mg":136.68091201782227
+      },
+      {
+         "umd_tree_cover_loss__year":2008,
+         "area__ha":3.7583418651858187,
+         "whrc_aboveground_co2_emissions__Mg":1579.5646076202393
+      },
+      {
+         "umd_tree_cover_loss__year":2009,
+         "area__ha":0.7670085439154732,
+         "whrc_aboveground_co2_emissions__Mg":226.95782279968262
+      },
+      {
+         "umd_tree_cover_loss__year":2010,
+         "area__ha":108.37830725525636,
+         "whrc_aboveground_co2_emissions__Mg":41855.43841171265
+      },
+      {
+         "umd_tree_cover_loss__year":2011,
+         "area__ha":12.88574353777995,
+         "whrc_aboveground_co2_emissions__Mg":4887.8897132873535
+      },
+      {
+         "umd_tree_cover_loss__year":2012,
+         "area__ha":0.07670085439154732,
+         "whrc_aboveground_co2_emissions__Mg":23.061389923095703
+      },
+      {
+         "umd_tree_cover_loss__year":2013,
+         "area__ha":1.6107179422224938,
+         "whrc_aboveground_co2_emissions__Mg":601.4241733551025
+      },
+      {
+         "umd_tree_cover_loss__year":2014,
+         "area__ha":54.30420490921551,
+         "whrc_aboveground_co2_emissions__Mg":22433.24832725525
+      },
+      {
+         "umd_tree_cover_loss__year":2015,
+         "area__ha":0.3068034175661893,
+         "whrc_aboveground_co2_emissions__Mg":119.5254955291748
+      },
+      {
+         "umd_tree_cover_loss__year":2016,
+         "area__ha":5.752564079366049,
+         "whrc_aboveground_co2_emissions__Mg":2075.9469604492188
+      },
+      {
+         "umd_tree_cover_loss__year":2017,
+         "area__ha":24.774375968469784,
+         "whrc_aboveground_co2_emissions__Mg":9848.338472366333
+      },
+      {
+         "umd_tree_cover_loss__year":2018,
+         "area__ha":29.75993150392036,
+         "whrc_aboveground_co2_emissions__Mg":11987.563570022583
+      },
+      {
+         "umd_tree_cover_loss__year":2019,
+         "area__ha":27.382205017782393,
+         "whrc_aboveground_co2_emissions__Mg":10558.882364273071
+      }
+   ]
+}
+```
 
 ### Endpoints
 
