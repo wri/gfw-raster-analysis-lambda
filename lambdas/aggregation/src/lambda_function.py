@@ -10,7 +10,7 @@ patch(["boto3"])
 
 @xray_recorder.capture("Aggregation")
 def handler(event, context):
-    id_field = event["id_field"]
+    id_field = event.get("id_field", "fid")
     query = event["query"]
     results_meta = event["distributed_map"]["ResultWriterDetails"]
     try:
