@@ -1,14 +1,12 @@
 from copy import deepcopy
 
-from aws_xray_sdk.core import patch, xray_recorder
+from codeguru_profiler_agent import with_lambda_profiler
 
 from raster_analysis.boto import invoke_lambda, lambda_client
 from raster_analysis.globals import LOGGER, RASTER_ANALYSIS_LAMBDA_NAME
 
-patch(["boto3"])
 
-
-@xray_recorder.capture("Fanout Raster Analysis")
+@with_lambda_profiler(profiling_group_name="raster_analysis_fanout_profiler")
 def handler(event, context):
     tiles = event.get("tiles", [])
     payload_base = event["payload"]

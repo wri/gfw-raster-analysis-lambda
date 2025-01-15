@@ -14,5 +14,6 @@ setup(
         "protobuf==3.20.3",
         "pydantic==1.10.12",
         "mo_sql_parsing==9.436.23241",
+        "codeguru-profiler-agent",
     ],
 )
