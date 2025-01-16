@@ -105,7 +105,8 @@ def upload_to_s3(path: str, bucket: str, dst: str) -> Dict[str, Any]:
     return s3_client().upload_file(path, bucket, dst)
 
 
-# Similar to gfw-datapump:src/datapump/sync/rw_areas.py:get_geostore
+# Similar to gfw-datapump:src/datapump/sync/rw_areas.py:get_geostore, but we
+# use an updated URL and an api key rather than a bearer token.
 def get_geostore_info(geostore_ids: List[str]) -> List[Dict[str, Any]]:
     """
     Get a list of Geostore information (including geometries) from a list of
@@ -114,11 +115,7 @@ def get_geostore_info(geostore_ids: List[str]) -> List[Dict[str, Any]]:
 
     LOGGER.info("Get geostore info by IDs")
 
-    headers: Dict[str, str] = {
-        "Content-Type": "application/json"
-        # Should we supply a bearer token or an API key, even though neither is required?
-        # "Authorization": f"Bearer {token()}"
-    }
+    headers: Dict[str, str] = {"x-api-key": apikey()}
     url: str = (
         "https://api.resourcewatch.org/v2/geostore/find-by-ids"
     )
@@ -146,18 +143,18 @@ def get_geostore_info(geostore_ids: List[str]) -> List[Dict[str, Any]]:
     return geostores
 
 
-TOKEN = None
+APIKEY = None
 
 
-def token() -> str:
-    global TOKEN
-    if TOKEN is None:
-        TOKEN = _get_token()
-    return TOKEN
+def apikey() -> str:
+    global APIKEY
+    if APIKEY is None:
+        APIKEY = _get_apikey()
+    return APIKEY
 
 
-def _get_token() -> str:
+def _get_apikey() -> str:
     response = get_secrets_manager_client().get_secret_value(
-        SecretId="gfw-api/token"
+        SecretId="gfw-api/rw-api-key"
     )
-    return json.loads(response["SecretString"])["token"]
+    return json.loads(response["SecretString"])["api-key"]
