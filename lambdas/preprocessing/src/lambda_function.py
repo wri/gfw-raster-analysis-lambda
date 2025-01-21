@@ -9,7 +9,7 @@ from aws_xray_sdk.core import patch, xray_recorder
 from shapely.geometry import shape
 
 from raster_analysis.boto import s3_client
-from raster_analysis.globals import LOGGER, S3_PIPELINE_BUCKET
+from raster_analysis.globals import LOGGER, S3_PIPELINE_BUCKET, RW_FIND_BY_IDS_URL
 from raster_analysis.geometry import encode_geometry
 
 import requests
@@ -56,18 +56,7 @@ def handler(event: Dict[str, Any], context: Any) -> Any:
             for info in geostore_info:
                 # Use the geostoreId itself as the id field for the output.
                 id = info["geostoreId"]
-                # The RW find-by-ids call returns the geometry as a feature collection,
-                # which I think should always have one feature (?)
-                fc = info["geostore"]["data"]["attributes"]["geojson"]["features"]
-                if fc is None:
-                    raise Exception(f"Missing features attribute for geostore '{id}'")
-                # GeoDataFrame.from_features() expects each feature to have a
-                # 'properties' field.
-                for f in fc:
-                    if f.get("properties") is None:
-                        f["properties"] = {}
-                minidf = gpd.GeoDataFrame.from_features(fc)
-                geom = shape(getattr(minidf.iloc[0], "geometry"))
+                geom = shape(info["geometry"])
                 encoded_geom = encode_geometry(geom)
                 rows.append([id, encoded_geom])
         else:
@@ -105,8 +94,13 @@ def upload_to_s3(path: str, bucket: str, dst: str) -> Dict[str, Any]:
     return s3_client().upload_file(path, bucket, dst)
 
 
-# Similar to gfw-datapump:src/datapump/sync/rw_areas.py:get_geostore, but we
-# use an updated URL and an api key rather than a bearer token.
+# Similar to gfw-datapump:src/datapump/sync/rw_areas.py:get_geostore, but we use an
+# updated URL and an api key rather than a bearer token. Also, we pull out the
+# geostoreId and geometry only, so we return a list of { "geostoreId": id,
+# "geometry": geom } dictionaries.
+#
+# If all geostore ids are invalid, an exception will be raised, but otherwise we will
+# just not return info for the invalid geostore id.
 def get_geostore_info(geostore_ids: List[str]) -> List[Dict[str, Any]]:
     """
     Get a list of Geostore information (including geometries) from a list of
@@ -116,9 +110,7 @@ def get_geostore_info(geostore_ids: List[str]) -> List[Dict[str, Any]]:
     LOGGER.info("Get geostore info by IDs")
 
     headers: Dict[str, str] = {"x-api-key": apikey()}
-    url: str = (
-        "https://api.resourcewatch.org/v2/geostore/find-by-ids"
-    )
+    url: str = RW_FIND_BY_IDS_URL
     geostores: List[Dict[str, Any]] = []
 
     for i in range(0, len(geostore_ids), GEOSTORE_PAGE_SIZE):
@@ -140,7 +132,16 @@ def get_geostore_info(geostore_ids: List[str]) -> List[Dict[str, Any]]:
                 geostores += r.json()["data"]
                 break
 
-    return geostores
+    info: List[Dict[str, Any]] = []
+    for g in geostores:
+        info.append({
+            "geostoreId": g["geostoreId"],
+            # The RW find-by-ids call returns the geometry for each geostore
+            # as a GeoJson feature collection, which has exactly one feature.
+            "geometry": g["geostore"]["data"]["attributes"]["geojson"]["features"][0]["geometry"]
+        })
+
+    return info
 
 
 APIKEY = None
