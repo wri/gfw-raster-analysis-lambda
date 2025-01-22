@@ -40,6 +40,7 @@ s3_client = client_constructor("s3", S3_ENDPOINT_URL)
 lambda_client = client_constructor("lambda", LAMBDA_ENDPOINT_URL)
 dynamodb_client = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL)
 dynamodb_resource = client_constructor("dynamodb", DYNAMODB_ENDPOINT_URL, "resource")
+get_secrets_manager_client = client_constructor("secretsmanager")
 
 
 def invoke_lambda(payload: Dict[str, Any], lambda_name: str, client) -> None:

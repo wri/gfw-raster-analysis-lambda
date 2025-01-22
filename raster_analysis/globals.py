@@ -45,3 +45,4 @@ DYNAMODB_REQUEST_ITEMS_LIMIT = 100
 DYNAMODB_WRITE_ITEMS_LIMIT = 25
 
 S3_PIPELINE_BUCKET = os.environ.get("S3_PIPELINE_BUCKET", "")
+RW_FIND_BY_IDS_URL = "https://api.resourcewatch.org/v2/geostore/find-by-ids"
