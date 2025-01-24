@@ -83,7 +83,7 @@ variable "lambda_raster_analysis_timeout" {
 
 variable "lambda_tiled_analysis_timeout" {
   type        = number
-  default     = 60
+  default     = 90
   description = "Timeout version for AWS Lambda"
 }
 
@@ -95,7 +95,7 @@ variable "lambda_fanout_timeout" {
 
 variable "lambda_preprocessing_timeout" {
   type        = number
-  default     = 60
+  default     = 90
   description = "Timeout version for AWS Lambda"
 }
 
