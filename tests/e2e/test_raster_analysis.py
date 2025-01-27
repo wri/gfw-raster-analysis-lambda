@@ -31,6 +31,7 @@ from tests.fixtures.fixtures import (
     COD_21_4_GEOM,
     COD_24_1_TCLF,
     DATA_ENVIRONMENT,
+    DATA_ENVIRONMENT_10M,
     IDN_24_9_2010_EXTENT,
     IDN_24_9_2010_RAW_AREA,
     IDN_24_9_2019_GLAD_ALERTS_TOTAL,
@@ -246,7 +247,7 @@ def test_radd_alerts(context):
     # TODO calculate number of alerts offline
     query = "select latitude, longitude, gfw_radd_alerts__date, gfw_radd_alerts__confidence from gfw_radd_alerts__date where is__umd_regional_primary_forest_2001 = 'true' and gfw_radd_alerts__date >= '2021-01-01'"
     result = tiled_handler(
-        {"geometry": COD_21_4_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        {"geometry": COD_21_4_GEOM, "query": query, "environment": DATA_ENVIRONMENT_10M},
         context,
     )
 
@@ -257,7 +258,7 @@ def test_glad_s2_alerts(context):
     # TODO calculate number of alerts offline
     query = "select latitude, longitude, umd_glad_sentinel2_alerts__date, umd_glad_sentinel2_alerts__confidence from umd_glad_sentinel2_alerts__date where is__umd_regional_primary_forest_2001 = 'true' and umd_glad_sentinel2_alerts__date >= '2021-03-01'"
     result = tiled_handler(
-        {"geometry": BRA_14_87_GEOM, "query": query, "environment": DATA_ENVIRONMENT},
+        {"geometry": BRA_14_87_GEOM, "query": query, "environment": DATA_ENVIRONMENT_10M},
         context,
     )
 
