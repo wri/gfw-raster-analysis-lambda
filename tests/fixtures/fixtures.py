@@ -188,6 +188,34 @@ DATA_ENVIRONMENT = [
         },
     },
     {
+        "source_uri": "s3://gfw-data-lake/umd_tree_cover_loss_from_fires/v20220309/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "is__umd_tree_cover_loss_from_fires",
+        "raster_table": {
+            "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
+        },
+    },
+    {
+        "source_uri": "s3://gfw-data-lake/wri_tropical_tree_cover/v2020/raster/epsg-4326/10/40000/percent/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/40000",
+        "name": "wri_tropical_tree_cover__percent",
+        "no_data": 255,
+    },
+]
+
+DATA_ENVIRONMENT_10M = [
+    {
+        "source_uri": "s3://gfw-data-lake/umd_regional_primary_forest_2001/v201901/raster/epsg-4326/10/100000/is/geotiff/{tile_id}.tif",
+        "tile_scheme": "nw",
+        "grid": "10/100000",
+        "name": "is__umd_regional_primary_forest_2001",
+        "raster_table": {
+            "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
+        },
+    },
+    {
         "source_uri": "s3://gfw-data-lake/umd_glad_sentinel2_alerts/v20210406/raster/epsg-4326/10/100000/date_conf/geotiff/{tile_id}.tif",
         "tile_scheme": "nw",
         "grid": "10/100000",
@@ -228,22 +256,6 @@ DATA_ENVIRONMENT = [
         "raster_table": {
             "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
         },
-    },
-    {
-        "source_uri": "s3://gfw-data-lake/umd_tree_cover_loss_from_fires/v20220309/raster/epsg-4326/10/40000/is/geotiff/{tile_id}.tif",
-        "tile_scheme": "nw",
-        "grid": "10/40000",
-        "name": "is__umd_tree_cover_loss_from_fires",
-        "raster_table": {
-            "rows": [{"value": 0, "meaning": "false"}, {"value": 1, "meaning": "true"}]
-        },
-    },
-    {
-        "source_uri": "s3://gfw-data-lake/wri_tropical_tree_cover/v2020/raster/epsg-4326/10/40000/percent/geotiff/{tile_id}.tif",
-        "tile_scheme": "nw",
-        "grid": "10/40000",
-        "name": "wri_tropical_tree_cover__percent",
-        "no_data": 255,
     },
 ]
 

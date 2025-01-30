@@ -21,9 +21,7 @@ from numpy import (
     uint64,
 )
 from rasterio import DatasetReader
-from rasterio.enums import Resampling
 from rasterio.transform import Affine
-from rasterio.vrt import WarpedVRT
 from shapely.geometry import Polygon
 
 from raster_analysis.data_environment import DataEnvironment, DerivedLayer, SourceLayer
@@ -77,29 +75,21 @@ class SourceWindow:
         with rasterio.Env(AWS_REQUEST_PAYER="requester"):
             LOGGER.info(f"Reading raster source {raster}")
             with rasterio.open(raster) as src:
-                transform = SourceWindow._adjust_affine_to_grid(src.transform, grid)
-                with WarpedVRT(
-                    src,
-                    transform=transform,
-                    resampling=Resampling.nearest,
-                    height=grid.pixels,
-                    width=grid.pixels,
-                ) as vrt:
-                    try:
-                        window, shifted_affine = SourceWindow._get_window_and_affine(
-                            geom, vrt, grid
-                        )
-                        data = vrt.read(1, masked=masked, window=window)
-                        no_data_value = src.nodata
+                try:
+                    window, shifted_affine = SourceWindow._get_window_and_affine(
+                        geom, src, grid
+                    )
+                    data = src.read(1, masked=masked, window=window)
+                    no_data_value = src.nodata
 
-                    except MemoryError:
-                        logging.exception(
-                            "[ERROR][RasterAnalysis] " + traceback.format_exc()
-                        )
-                        raise Exception(
-                            "Out of memory- input polygon or input extent too large. "
-                            "Try splitting the polygon into multiple requests."
-                        )
+                except MemoryError:
+                    logging.exception(
+                        "[ERROR][RasterAnalysis] " + traceback.format_exc()
+                    )
+                    raise Exception(
+                        "Out of memory- input polygon or input extent too large. "
+                        "Try splitting the polygon into multiple requests."
+                    )
 
         return data, shifted_affine, no_data_value
 
@@ -163,14 +153,11 @@ class SourceWindow:
         # Create a transform relative to this window
         affine = rasterio.windows.transform(window, raster_src.transform)
 
-        # # change pixel width to grid size
-        # pixel_width = grid.get_pixel_width()
-        # affine = Affine(pixel_width, affine[1], affine[2], affine[3], -pixel_width, affine[5])
-
         return window, affine
 
 
 class DerivedWindow(SourceWindow):
     def __init__(self, layer: DerivedLayer, source_window: SourceWindow, area: float):
+        # Note: A is used within the eval
         A = source_window.data
         self.data = eval(layer.calc)
