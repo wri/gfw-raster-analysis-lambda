@@ -77,7 +77,7 @@ variable "lambda_aggregation_memory_size" {
 
 variable "lambda_raster_analysis_timeout" {
   type        = number
-  default     = 60
+  default     = 90
   description = "Timeout version for AWS Lambda"
 }
 
@@ -89,7 +89,7 @@ variable "lambda_tiled_analysis_timeout" {
 
 variable "lambda_fanout_timeout" {
   type        = number
-  default     = 60
+  default     = 90
   description = "Timeout version for AWS Lambda"
 }
 
@@ -101,7 +101,7 @@ variable "lambda_preprocessing_timeout" {
 
 variable "lambda_list_tiled_analysis_timeout" {
   type        = number
-  default     = 60
+  default     = 90
   description = "Timeout version for AWS Lambda"
 }
 
