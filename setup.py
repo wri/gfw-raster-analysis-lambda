@@ -9,7 +9,7 @@ setup(
     license="MIT",
     install_requires=[
         "aws-xray-sdk==2.12.0",
-        "requests==2.31.0",
+        "requests==2.32.0",
         "geobuf==1.1.1",
         "protobuf==3.20.3",
         "pydantic==1.10.12",
