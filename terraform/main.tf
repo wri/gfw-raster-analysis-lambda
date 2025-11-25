@@ -15,9 +15,9 @@ module "lambda_layers" {
 }
 
 module "ssm" {
-  source      = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/ssm?ref=v0.4.2.8"
+  source      = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/ssm?ref=v0.4.2.9"
   environment = var.environment
-  namespace   = "gfw-lambda-layers"
+  namespace   = "gfw-raster-analysis-lambda"
   contract = {
     raster_analysis_state_machine_arn = aws_sfn_state_machine.process_list.arn
     raster_analysis_lambda_arn        = aws_lambda_function.tiled_raster_analysis.arn
