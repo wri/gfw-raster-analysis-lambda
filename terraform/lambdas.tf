@@ -24,7 +24,7 @@ resource "aws_lambda_function" "raster_analysis" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data-lake_bucket
+      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
       TILED_STATUS_TABLE_NAME     = aws_dynamodb_table.tiled_status_table.name
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data-lake_bucket
+      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
       RASTER_ANALYSIS_LAMBDA_NAME = aws_lambda_function.raster_analysis.function_name
       FANOUT_LAMBDA_NAME          = aws_lambda_function.raster_analysis_fanout.function_name
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
@@ -125,7 +125,7 @@ resource "aws_lambda_function" "preprocessing" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_PIPELINE_BUCKET          = local.core.pipelines_bucket
+      S3_PIPELINE_BUCKET          = local.core.gfw_pipelines_bucket_name
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }
@@ -157,7 +157,7 @@ resource "aws_lambda_function" "list_tiled_raster_analysis" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data-lake_bucket
+      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
       RASTER_ANALYSIS_LAMBDA_NAME = aws_lambda_function.raster_analysis.function_name
       FANOUT_LAMBDA_NAME          = aws_lambda_function.raster_analysis_fanout.function_name
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
@@ -193,7 +193,7 @@ resource "aws_lambda_function" "aggregation" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data-lake_bucket
+      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }
