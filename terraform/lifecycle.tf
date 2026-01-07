@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_lifecycle_configuration" "example" {
-  bucket = local.core.pipelines_bucket
+  bucket = local.core.gfw_pipelines_bucket_name
 
   rule {
     id = "expire-jobs"

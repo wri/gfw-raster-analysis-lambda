@@ -113,7 +113,7 @@ resource "aws_lambda_function" "preprocessing" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_geopandas_no_numpy_no_pandas_arn,
+    local.lambda_layers.py310_geopandas_0144_arn,
     local.lambda_layers.py310_pandas_no_numpy_arn,
     local.lambda_layers.py310_shapely_no_numpy_arn
   ]
