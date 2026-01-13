@@ -1,3 +1,11 @@
+data "aws_ssm_parameter" "core_contract" {
+  name = "/infra/${var.environment}/gfw-aws-core-infra/contract"
+}
+
+data "aws_ssm_parameter" "lambda_layers_contract" {
+  name = "/infra/${var.environment}/gfw-lambda-layers/contract"
+}
+
 data "template_file" "sts_assume_role_lambda" {
   template = file("policies/sts_assume_role_lambda.json")
 }
@@ -16,23 +24,5 @@ data "template_file" "sfn_process_list" {
     lambda_preprocessing_name = aws_lambda_function.preprocessing.function_name
     lambda_list_tiled_raster_analysis_name = aws_lambda_function.list_tiled_raster_analysis.function_name
     lambda_aggregation_name = aws_lambda_function.aggregation.function_name
-  }
-}
-
-data "terraform_remote_state" "core" {
-  backend = "s3"
-  config = {
-    bucket = local.tf_state_bucket
-    region = "us-east-1"
-    key    = "core.tfstate"
-  }
-}
-
-data "terraform_remote_state" "lambda-layers" {
-  backend = "s3"
-  config = {
-    bucket = local.tf_state_bucket
-    region = "us-east-1"
-    key    = "lambda-layers.tfstate"
   }
 }

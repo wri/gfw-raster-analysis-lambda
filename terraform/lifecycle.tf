@@ -1,5 +1,5 @@
 resource "aws_s3_bucket_lifecycle_configuration" "example" {
-  bucket = data.terraform_remote_state.core.outputs.pipelines_bucket
+  bucket = local.core.gfw_pipelines_bucket_name
 
   rule {
     id = "expire-jobs"
