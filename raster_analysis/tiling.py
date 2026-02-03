@@ -3,7 +3,7 @@ import sys
 from copy import deepcopy
 from datetime import datetime
 from io import StringIO
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional, Protocol
 
 from pandas import DataFrame
 from shapely.geometry import Polygon, box, mapping, shape
@@ -24,6 +24,15 @@ from raster_analysis.query import Function, Query, Sort
 from raster_analysis.results_store import AnalysisResultsStore, ResultStatus
 
 
+class Invoker(Protocol):
+    def invoke(self, payload: Dict[str, Any], function_name: str) -> None:
+        pass
+
+class LambdaInvoker(Invoker):
+    def invoke(self, payload: Dict[str, Any], function_name: str) -> None:
+        invoke_lambda(payload, function_name, lambda_client())
+
+
 class AnalysisTiler:
     def __init__(
         self,
@@ -31,6 +40,9 @@ class AnalysisTiler:
         raw_geom: Dict[str, Any],
         request_id: str,
         data_environment: DataEnvironment,
+        *,
+        results_store: Optional[AnalysisResultsStore] = None,
+        invoker: Optional[Invoker] = None,
     ):
         self.raw_query: str = raw_query
         self.query: Query = Query(raw_query, data_environment)
@@ -43,11 +55,15 @@ class AnalysisTiler:
         self.request_id: str = request_id
         self.results: DataFrame = None
 
-    def execute(self) -> None:
+        self.results_store = results_store or AnalysisResultsStore()
+        self.invoker = invoker or LambdaInvoker()
+
+    def execute(self) -> DataFrame:
         self.results = self._execute_tiles()
 
         if self.results.size > 0:
             self.results = self._postprocess_results(self.results)
+        return self.results
 
     def result_as_csv(self) -> str:
         if self.results.size > 0:
@@ -145,7 +161,7 @@ class AnalysisTiler:
 
         tiles = self._get_tiles(self.grid.tile_degrees)
 
-        results_store = AnalysisResultsStore()
+        results_store = self.results_store
         tile_keys = [
             results_store.get_cache_key(tile, self.geom, self.raw_query)
             for tile in tiles
@@ -173,8 +189,8 @@ class AnalysisTiler:
                 tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
                 tile_payload["cache_id"] = tile_id
                 tile_payload["tile"] = mapping(tile)
-                invoke_lambda(
-                    tile_payload, RASTER_ANALYSIS_LAMBDA_NAME, lambda_client()
+                self.invoker.invoke(
+                    tile_payload, RASTER_ANALYSIS_LAMBDA_NAME
                 )
         else:
             tile_geojsons = [
@@ -191,7 +207,7 @@ class AnalysisTiler:
 
             for chunk in tile_chunks:
                 event = {"payload": payload, "tiles": chunk}
-                invoke_lambda(event, FANOUT_LAMBDA_NAME, lambda_client())
+                self.invoker.invoke(event, FANOUT_LAMBDA_NAME)
 
         LOGGER.info(
             f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(tile_keys) - geom_count}"
