@@ -155,7 +155,7 @@ class AnalysisResultsStore:
             statuses = [
                 status
                 for status in statuses
-                if status["status"]["S"] == status_filter.success
+                if status["status"]["S"] == status_filter.success.value
             ]
 
         return statuses
@@ -173,7 +173,7 @@ class AnalysisResultsStore:
 
             statuses = self.get_statuses(lambda_tiles)
             for item in statuses:
-                if item["status"]["S"] == ResultStatus.error:
+                if item["status"]["S"] == ResultStatus.error.value:
                     raise RasterAnalysisException(
                         f"Tile {item['tile_id']} encountered error: {item['detail']}"
                     )
