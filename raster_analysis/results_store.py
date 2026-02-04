@@ -96,7 +96,7 @@ class AnalysisResultsStore:
             start = 0
             while start < len(items):
                 chunk = items[start : start + DYNAMODB_WRITE_ITEMS_LIMIT]
-                self._ddb().batch_write_item(
+                self._ddb.batch_write_item(
                     RequestItems={self.results_table_name: chunk}
                 )
                 start += DYNAMODB_WRITE_ITEMS_LIMIT
@@ -110,7 +110,7 @@ class AnalysisResultsStore:
         parts: int,
         detail: str = " ",
     ) -> None:
-        self._ddb().put_item(
+        self._ddb.put_item(
             TableName=self.status_table_name,
             Item={
                 "tile_id": {"S": result_id},
