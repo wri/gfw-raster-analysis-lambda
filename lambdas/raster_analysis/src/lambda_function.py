@@ -24,19 +24,25 @@ except ImportError:
 @with_lambda_profiler(profiling_group_name="raster_analysis_default_profiler")
 def handler(event, context):
     results_store = event.get("__bench_results_store__") or AnalysisResultsStore()
-    try:
-        LOGGER.info(f"Running analysis with parameters: {event}")
-        results: DataFrame = compute(event, context, results_store)
 
-        LOGGER.debug(f"Ran analysis with results: {results.head(100)}")
-        results_store.save_result(results, event["cache_id"])
+    cache_id = event.get("cache_id")
+    if not cache_id:
+        raise KeyError("Missing required field 'cache_id'")
+
+    try:
+        results = compute(event, context)
+        LOGGER.debug("Ran analysis; cache_id=%s rows=%s cols=%s", cache_id, len(results), list(results.columns))
+
+        results_store.save_result(results, cache_id)
+
     except Exception as e:
         LOGGER.exception(e)
-        results_store.save_status(event["cache_id"], ResultStatus.error, 0, str(e))
-        raise e
+        results_store.save_status(cache_id, ResultStatus.error, 0, str(e))
+
+        raise
 
 
-def compute(event, context, results_store) -> DataFrame:
+def compute(event, context) -> DataFrame:
     if "geometry" in event:
         source_geom = event["geometry"]
         is_encoded = False
@@ -50,15 +56,14 @@ def compute(event, context, results_store) -> DataFrame:
     geom_tile = GeometryTile(source_geom, tile_geojson, is_encoded)
 
     if not geom_tile.geom:
-        LOGGER.info(f"Geometry for tile {context.aws_request_id} is empty.")
-        results_store.save_result(DataFrame(), context.aws_request_id)
-        return {}
+        LOGGER.info("Geometry for tile %s is empty.", getattr(context, "aws_request_id", "unknown"))
+        return DataFrame()
 
     data_environment = DataEnvironment(layers=event["environment"])
     query = Query(event["query"], data_environment)
 
     data_cube = DataCube(geom_tile.geom, geom_tile.tile, query)
-
     query_executor = QueryExecutor(query, data_cube)
+
     results: DataFrame = query_executor.execute()
     return results
