@@ -11,10 +11,10 @@ resource "aws_lambda_function" "raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_no_numpy_arn,
   ]
 
   tracing_config {
@@ -24,7 +24,7 @@ resource "aws_lambda_function" "raster_analysis" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
+      S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
       TILED_STATUS_TABLE_NAME     = aws_dynamodb_table.tiled_status_table.name
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
@@ -46,10 +46,10 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_no_numpy_arn
   ]
 
   tracing_config {
@@ -59,7 +59,7 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
+      S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       RASTER_ANALYSIS_LAMBDA_NAME = aws_lambda_function.raster_analysis.function_name
       FANOUT_LAMBDA_NAME          = aws_lambda_function.raster_analysis_fanout.function_name
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
@@ -82,8 +82,8 @@ resource "aws_lambda_function" "raster_analysis_fanout" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn,
   ]
 
   tracing_config {
@@ -112,10 +112,10 @@ resource "aws_lambda_function" "preprocessing" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_geopandas_0144_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_geopandas_no_numpy_no_pandas_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn
   ]
 
   tracing_config {
@@ -125,7 +125,7 @@ resource "aws_lambda_function" "preprocessing" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_PIPELINE_BUCKET          = local.core.gfw_pipelines_bucket_name
+      S3_PIPELINE_BUCKET          = data.terraform_remote_state.core.outputs.pipelines_bucket
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }
@@ -144,10 +144,10 @@ resource "aws_lambda_function" "list_tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn
+    data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_no_numpy_arn
   ]
 
   tracing_config {
@@ -157,7 +157,7 @@ resource "aws_lambda_function" "list_tiled_raster_analysis" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
+      S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       RASTER_ANALYSIS_LAMBDA_NAME = aws_lambda_function.raster_analysis.function_name
       FANOUT_LAMBDA_NAME          = aws_lambda_function.raster_analysis_fanout.function_name
       TILED_RESULTS_TABLE_NAME    = aws_dynamodb_table.tiled_results_table.name
@@ -180,10 +180,10 @@ resource "aws_lambda_function" "aggregation" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_rasterio_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_shapely_no_numpy_arn,
+    data.terraform_remote_state.lambda-layers.outputs.py310_pandas_no_numpy_arn,
   ]
 
   tracing_config {
@@ -193,7 +193,7 @@ resource "aws_lambda_function" "aggregation" {
   environment {
     variables = {
       ENV                         = var.environment
-      S3_BUCKET_DATA_LAKE         = local.core.data_lake_bucket_name
+      S3_BUCKET_DATA_LAKE         = data.terraform_remote_state.core.outputs.data-lake_bucket
       SETUPTOOLS_USE_DISTUTILS    = "stdlib"
     }
   }

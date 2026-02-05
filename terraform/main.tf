@@ -15,7 +15,7 @@ module "lambda_layers" {
 }
 
 module "ssm" {
-  source      = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/ssm?ref=v0.4.2.12"
+  source      = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/ssm?ref=v0.4.2.9"
   environment = var.environment
   namespace   = "gfw-raster-analysis-lambda"
   contract = {
