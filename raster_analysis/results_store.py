@@ -101,7 +101,7 @@ class AnalysisResultsStore:
                 )
                 start += DYNAMODB_WRITE_ITEMS_LIMIT
 
-        self.save_status(result_id, ResultStatus.success, i + 1)
+        self.save_status(result_id, ResultStatus.success, i)
 
     def save_status(
         self,
