@@ -1,17 +1,17 @@
-import os
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from hashlib import md5
 from io import StringIO
 from time import sleep
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List
 
 import pandas as pd
+from boto3.dynamodb.table import TableResource
 from pandas import DataFrame
 from shapely.geometry import Polygon
 
-from raster_analysis.boto import dynamodb_client
+from raster_analysis.boto import dynamodb_client, dynamodb_resource
 from raster_analysis.exceptions import RasterAnalysisException
 from raster_analysis.globals import (
     DYNAMODB_REQUEST_ITEMS_LIMIT,
@@ -30,39 +30,11 @@ class ResultStatus(str, Enum):
     error = "error"
 
 
-
 class AnalysisResultsStore:
-    def __init__(
-        self,
-        *,
-        results_table_name: str = TILED_RESULTS_TABLE_NAME,
-        status_table_name: str = TILED_STATUS_TABLE_NAME,
-        bench_mode: Optional[bool] = None,
-        allowed_table_prefixes: Sequence[str] = ("raster-analysis-bench-", "gfw-raster-analysis-bench-"),
-        ddb_client=None,
-    ):
-        self.results_table_name = results_table_name
-        self.status_table_name = status_table_name
-        self._ddb = ddb_client or dynamodb_client()
-
-        # Bench guardrails
-        if bench_mode is None:
-            bench_mode = os.getenv("BENCH_MODE", "").lower() in ("1", "true", "yes")
-
-        if bench_mode:
-            # Refuse any table that doesn't look like a bench table
-            for name in (results_table_name, status_table_name):
-                if not any(name.startswith(pfx) for pfx in allowed_table_prefixes):
-                    raise RuntimeError(
-                        f"BENCH_MODE=true but DynamoDB table '{name}' is not an allowed bench table."
-                    )
-        else:
-            # Optional: protect against accidentally pointing prod to bench tables
-            for name in (results_table_name, status_table_name):
-                if any(name.startswith(pfx) for pfx in allowed_table_prefixes):
-                    raise RuntimeError(
-                        f"BENCH_MODE is false but table '{name}' looks like a bench table."
-                    )
+    def __init__(self):
+        self._client: TableResource = dynamodb_resource().Table(
+            TILED_RESULTS_TABLE_NAME
+        )
 
     def save_result(self, results: DataFrame, result_id: str) -> None:
         records_per_item = 5000
@@ -96,8 +68,8 @@ class AnalysisResultsStore:
             start = 0
             while start < len(items):
                 chunk = items[start : start + DYNAMODB_WRITE_ITEMS_LIMIT]
-                self._ddb.batch_write_item(
-                    RequestItems={self.results_table_name: chunk}
+                dynamodb_client().batch_write_item(
+                    RequestItems={TILED_RESULTS_TABLE_NAME: chunk}
                 )
                 start += DYNAMODB_WRITE_ITEMS_LIMIT
 
@@ -110,8 +82,8 @@ class AnalysisResultsStore:
         parts: int,
         detail: str = " ",
     ) -> None:
-        self._ddb.put_item(
-            TableName=self.status_table_name,
+        dynamodb_client().put_item(
+            TableName=TILED_STATUS_TABLE_NAME,
             Item={
                 "tile_id": {"S": result_id},
                 "status": {"S": status.value},
@@ -140,22 +112,22 @@ class AnalysisResultsStore:
                 )
 
         results = self._get_batch_items(
-            self.results_table_name, tiles_and_result_parts
+            TILED_RESULTS_TABLE_NAME, tiles_and_result_parts
         )
 
         return results
 
     def get_statuses(
-        self, tile_ids: List[str], status_filter: ResultStatus = None
+        self, tile_ids=List[str], status_filter: ResultStatus = None
     ) -> List[Dict[str, Any]]:
         batch_tiles = [{"tile_id": {"S": tile_id}} for tile_id in tile_ids]
-        statuses = self._get_batch_items(self.status_table_name, batch_tiles)
+        statuses = self._get_batch_items(TILED_STATUS_TABLE_NAME, batch_tiles)
 
         if status_filter:
             statuses = [
                 status
                 for status in statuses
-                if status["status"]["S"] == status_filter.success.value
+                if status["status"]["S"] == status_filter.success
             ]
 
         return statuses
@@ -173,7 +145,7 @@ class AnalysisResultsStore:
 
             statuses = self.get_statuses(lambda_tiles)
             for item in statuses:
-                if item["status"]["S"] == ResultStatus.error.value:
+                if item["status"]["S"] == ResultStatus.error:
                     raise RasterAnalysisException(
                         f"Tile {item['tile_id']} encountered error: {item['detail']}"
                     )
@@ -211,7 +183,9 @@ class AnalysisResultsStore:
             )
         )
 
-    def _get_batch_items(self, table_name, keys) -> List:
+    @staticmethod
+    def _get_batch_items(table_name, keys) -> List:
+
         results = []
         # batch_get_item has 100 items limit when sending request so chunking keys list
         chunk = 0
@@ -220,14 +194,14 @@ class AnalysisResultsStore:
             end = min(start + DYNAMODB_REQUEST_ITEMS_LIMIT, len(keys))
             items = keys[start:end]
 
-            results_response = self._ddb.batch_get_item(
+            results_response = dynamodb_client().batch_get_item(
                 RequestItems={table_name: {"Keys": items}}
             )
             results += results_response["Responses"][table_name]
 
             unprocessed = results_response["UnprocessedKeys"]
             while len(unprocessed) > 0:
-                results_response = self._ddb.batch_get_item(
+                results_response = dynamodb_client().batch_get_item(
                     RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
                 )
                 results += results_response["Responses"][table_name]
