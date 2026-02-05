@@ -146,7 +146,7 @@ class AnalysisResultsStore:
         return results
 
     def get_statuses(
-        self, tile_ids=List[str], status_filter: ResultStatus = None
+        self, tile_ids: List[str], status_filter: ResultStatus = None
     ) -> List[Dict[str, Any]]:
         batch_tiles = [{"tile_id": {"S": tile_id}} for tile_id in tile_ids]
         statuses = self._get_batch_items(self.status_table_name, batch_tiles)
