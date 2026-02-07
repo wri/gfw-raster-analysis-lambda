@@ -12,7 +12,7 @@ setup(
         "requests==2.31.0",
         "geobuf==1.1.1",
         "protobuf==3.20.3",
-        "pydantic==1.10.12",
+        "pydantic==1.10.13",
         "mo_sql_parsing==9.436.23241",
         "codeguru-profiler-agent",
     ],
