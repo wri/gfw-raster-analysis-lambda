@@ -1,4 +1,5 @@
 import os
+import random
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
@@ -29,6 +30,10 @@ class ResultStatus(str, Enum):
     success = "success"
     error = "error"
 
+
+def _chunked(iterable, n):
+    for i in range(0, len(iterable), n):
+        yield iterable[i:i+n]
 
 
 class AnalysisResultsStore:
@@ -93,16 +98,12 @@ class AnalysisResultsStore:
             i += 1
 
         if items:
-            start = 0
-            while start < len(items):
-                chunk = items[start : start + DYNAMODB_WRITE_ITEMS_LIMIT]
-                self._ddb.batch_write_item(
-                    RequestItems={self.results_table_name: chunk}
-                )
-                start += DYNAMODB_WRITE_ITEMS_LIMIT
+            for chunk in _chunked(items, DYNAMODB_WRITE_ITEMS_LIMIT):
+                self._batch_write_items(self.results_table_name, chunk)
         else:
             print(f"Saving status with parts={i+1} despite items being falsy!")
 
+        # FIXME: This seems wrong, shouldn't it be just i?
         self.save_status(result_id, ResultStatus.success, i + 1)
 
     def save_status(
@@ -197,9 +198,9 @@ class AnalysisResultsStore:
 
     @staticmethod
     def get_cache_key(tile: Polygon, geom: BasePolygon, query: str) -> str:
-        """Create md5 has for tile-geom_overlap-query result."""
+        """Create md5 hash for tile-geom_overlap-query result."""
         geom_tile_intersection = tile.intersection(geom)
-        key = f"{query}-{tile.wkt}-{geom_tile_intersection.wkt}"
+        key: str = f"{query}-{tile.wkt}-{geom_tile_intersection.wkt}"
 
         return md5(key.encode()).hexdigest()
 
@@ -213,31 +214,52 @@ class AnalysisResultsStore:
             )
         )
 
-    def _get_batch_items(self, table_name, keys) -> List:
-        results = []
-        # batch_get_item has 100 items limit when sending request so chunking keys list
-        chunk = 0
-        while True:
-            start = chunk * DYNAMODB_REQUEST_ITEMS_LIMIT
-            end = min(start + DYNAMODB_REQUEST_ITEMS_LIMIT, len(keys))
-            items = keys[start:end]
+    def _get_batch_items(self, table_name: str, keys: List[dict], *, max_retries: int = 8) -> List:
+        out: List = []
+        for batch in _chunked(keys, DYNAMODB_REQUEST_ITEMS_LIMIT):
+            request = {table_name: {"Keys": batch}}
+            backoff = 0.05
 
-            results_response = self._ddb.batch_get_item(
-                RequestItems={table_name: {"Keys": items}}
-            )
-            results += results_response["Responses"][table_name]
+            for attempt in range(max_retries + 1):
+                resp = self._ddb.batch_get_item(RequestItems=request)
+                out.extend(resp.get("Responses", {}).get(table_name, []))
 
-            unprocessed = results_response["UnprocessedKeys"]
-            while len(unprocessed) > 0:
-                results_response = self._ddb.batch_get_item(
-                    RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
-                )
-                results += results_response["Responses"][table_name]
-                unprocessed = results_response["UnprocessedKeys"]
+                unprocessed = resp.get("UnprocessedKeys", {})
+                if not unprocessed or not unprocessed.get(table_name, {}).get("Keys"):
+                    break
 
-            if start + DYNAMODB_REQUEST_ITEMS_LIMIT >= len(keys):
-                break
+                request = unprocessed
+                sleep(backoff + random.random() * backoff)
+                backoff = min(backoff * 2, 2.0)
 
-            chunk += 1
+            else:
+                # Ran out of retries: surface the issue explicitly
+                raise RuntimeError(f"BatchGetItem still had UnprocessedKeys after {max_retries} retries")
 
-        return results
+        return out
+
+    def _batch_write_items(self, table_name: str, write_requests: List[dict], *, max_retries: int = 8) -> None:
+        """ Perform BatchWriteItem with retries for UnprocessedItems.
+        `write_requests` must be a list of PutRequest/DeleteRequest objects for ONE table.
+        """
+
+        if not write_requests:
+            return
+
+        request_items = {table_name: write_requests}
+        backoff = 0.05
+
+        for attempt in range(max_retries + 1):
+            resp = self._ddb.batch_write_item(RequestItems=request_items)
+            unprocessed = resp.get("UnprocessedItems", {})
+
+            if not unprocessed or not unprocessed.get(table_name):
+                return
+
+            request_items = unprocessed
+            sleep(backoff + random.random() * backoff)
+            backoff = min(backoff * 2, 2.0)
+
+        raise RuntimeError(
+            f"BatchWriteItem still had UnprocessedItems after {max_retries} retries for table {table_name}"
+        )
