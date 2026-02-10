@@ -76,35 +76,58 @@ class AnalysisResultsStore:
         num_records = results.shape[0]
         items = []
 
-        while curr_record < num_records:
-            curr_df = results[curr_record : (curr_record + records_per_item)]
-
+        if num_records == 0:
+            # Write a single “empty” part so parts>=1 contract holds
             csv_buf = StringIO()
-            curr_df.to_csv(csv_buf, index=False, float_format="%.5f")
 
-            item = {
-                "PutRequest": {
-                    "Item": {
-                        "tile_id": {"S": f"{result_id}"},
-                        "part_id": {"N": f"{i}"},
-                        "result": {"S": csv_buf.getvalue()},
-                        "time_to_live": {"N": self._get_ttl()},
+            if results.shape[1] == 0:
+                # No columns either; write a stable 0-row CSV with a dummy header
+                csv_buf.write("empty\n")
+            else:
+                # Header-only CSV is okay; pandas will include headers even with 0 rows
+                results.to_csv(csv_buf, index=False, float_format="%.5f")
+
+            items.append(
+                {
+                    "PutRequest": {
+                        "Item": {
+                            "tile_id": {"S": f"{result_id}"},
+                            "part_id": {"N": "0"},
+                            "result": {"S": csv_buf.getvalue()},
+                            "time_to_live": {"N": self._get_ttl()},
+                        }
                     }
                 }
-            }
-            items.append(item)
-
-            curr_record += records_per_item
-            i += 1
-
-        if items:
-            for chunk in _chunked(items, DYNAMODB_WRITE_ITEMS_LIMIT):
-                self._batch_write_items(self.results_table_name, chunk)
+            )
+            i = 1  # exactly one part
         else:
-            print(f"Saving status with parts={i+1} despite items being falsy!")
+            while curr_record < num_records:
+                curr_df = results[curr_record: (curr_record + records_per_item)]
+                csv_buf = StringIO()
+                curr_df.to_csv(csv_buf, index=False, float_format="%.5f")
 
-        # FIXME: This seems wrong, shouldn't it be just i?
-        self.save_status(result_id, ResultStatus.success, i + 1)
+                items.append(
+                    {
+                        "PutRequest": {
+                            "Item": {
+                                "tile_id": {"S": f"{result_id}"},
+                                "part_id": {"N": f"{i}"},
+                                "result": {"S": csv_buf.getvalue()},
+                                "time_to_live": {"N": self._get_ttl()},
+                            }
+                        }
+                    }
+                )
+
+                curr_record += records_per_item
+                i += 1
+
+        # Write with retries (UnprocessedItems)
+        for chunk in _chunked(items, DYNAMODB_WRITE_ITEMS_LIMIT):
+            self._batch_write_items(self.results_table_name, chunk)
+
+        # Preserve historical contract: success => parts >= 1
+        self.save_status(result_id, ResultStatus.success, i)
 
     def save_status(
         self,
@@ -191,9 +214,15 @@ class AnalysisResultsStore:
         result_items = self.get_results(all_tiles)
         raw_results = [StringIO(item["result"]["S"]) for item in result_items]
 
-        dfs = [pd.read_csv(result) for result in raw_results]
+        dfs = []
+        for buf in raw_results:
+            try:
+                df = pd.read_csv(buf)
+            except pd.errors.EmptyDataError:
+                df = pd.DataFrame()
+            dfs.append(df)
         results = pd.concat(dfs) if dfs else pd.DataFrame()
-        print(f"Result dataframe: {results.to_dict()}")
+        # print(f"Result dataframe: {results.to_dict()}")
         return results
 
     @staticmethod
