@@ -100,6 +100,8 @@ class AnalysisResultsStore:
                     RequestItems={self.results_table_name: chunk}
                 )
                 start += DYNAMODB_WRITE_ITEMS_LIMIT
+        else:
+            print(f"Saving status with parts={i+1} despite items being falsy!")
 
         self.save_status(result_id, ResultStatus.success, i + 1)
 
