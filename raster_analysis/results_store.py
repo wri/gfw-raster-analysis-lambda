@@ -181,7 +181,7 @@ class AnalysisResultsStore:
             statuses = [
                 status
                 for status in statuses
-                if status["status"]["S"] == status_filter.success.value
+                if status["status"]["S"] == status_filter.value
             ]
 
         return statuses
