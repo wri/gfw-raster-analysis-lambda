@@ -8,12 +8,12 @@ setup(
     author="Justin Terry/Thomas Maschler",
     license="MIT",
     install_requires=[
-        "aws-xray-sdk==2.12.0",
-        "requests==2.31.0",
-        "geobuf==1.1.1",
-        "protobuf==3.20.3",
+        "aws-xray-sdk==2.15.0",
+        "requests==2.32.5",
+        "geobuf==2.0.1",
+        "protobuf==6.33.5",
         "pydantic==1.10.12",
-        "mo_sql_parsing==9.436.23241",
+        "mo_sql_parsing==11.697.25301",
         "codeguru-profiler-agent",
     ],
 )
