@@ -9,6 +9,6 @@ resource "aws_lambda_layer_version" "raster_analysis" {
   layer_name          = substr("${var.project}-raster_analysis${var.name_suffix}", 0, 64)
   s3_bucket           = aws_s3_bucket_object.raster_analysis.bucket
   s3_key              = aws_s3_bucket_object.raster_analysis.key
-  compatible_runtimes = ["python3.10"]
+  compatible_runtimes = ["python3.13"]
   source_code_hash    = "${filebase64sha256("../docker/raster_analysis/layer.zip")}"
 }
