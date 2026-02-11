@@ -31,4 +31,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["lambdas", "raster_analysis"]
+packages = ["raster_analysis"]
