@@ -8,15 +8,18 @@ COPY pyproject.toml ./
 COPY uv.lock ./
 
 # Set uv env variables for behavior and venv directory
-ENV PATH=${USR_LOCAL_BIN}:${PATH} \
-    UV_LINK_MODE=copy \
+ENV USR_LOCAL_BIN="/usr/local/bin"
+RUN mkdir -p ${USR_LOCAL_BIN}
+
+ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_PROJECT_ENVIRONMENT=${VENV_DIR} \
     UV_UNMANAGED_INSTALL=${USR_LOCAL_BIN}
 
-# Create a virtual environment with uv inside the container
-RUN curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh && \
-    uv pip install --system -r requirements-dev.txt && \
+RUN curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh
+ENV PATH=${USR_LOCAL_BIN}:${PATH}
+
+RUN uv pip install --system -r requirements-dev.txt && \
     uv pip install --system .
 
 CMD ["/bin/bash"]
