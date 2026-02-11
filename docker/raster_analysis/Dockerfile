@@ -1,5 +1,7 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
 
+ENV UV_VERSION="0.9.30"
+
 WORKDIR /var/task
 ENV WORKDIR=/var/task
 
