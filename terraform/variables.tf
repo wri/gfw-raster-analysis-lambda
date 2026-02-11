@@ -5,37 +5,37 @@ variable "environment" {
 
 variable "lambda_raster_analysis_runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.13"
   description = "Runtime version for AWS Lambda"
 }
 
 variable "lambda_tiled_analysis_runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.13"
   description = "Runtime version for AWS Lambda"
 }
 
 variable "lambda_fanout_runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.13"
   description = "Runtime version for AWS Lambda"
 }
 
 variable "lambda_preprocessing_runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.13"
   description = "Runtime version for AWS Lambda"
 }
 
 variable "lambda_list_tiled_analysis_runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.13"
   description = "Runtime version for AWS Lambda"
 }
 
 variable "lambda_aggregation_runtime" {
   type        = string
-  default     = "python3.10"
+  default     = "python3.13"
   description = "Runtime version for AWS Lambda"
 }
 

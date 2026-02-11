@@ -11,10 +11,10 @@ resource "aws_lambda_function" "raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn,
+    local.lambda_layers.py313_numpy_242_arn,
+    local.lambda_layers.py313_rasterio_144_arn,
+    local.lambda_layers.py313_shapely_212_arn,
+    local.lambda_layers.py313_pandas_233_arn,
   ]
 
   tracing_config {
@@ -46,10 +46,10 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn
+    local.lambda_layers.py313_numpy_242_arn,
+    local.lambda_layers.py313_rasterio_144_arn,
+    local.lambda_layers.py313_shapely_212_arn,
+    local.lambda_layers.py313_pandas_233_arn
   ]
 
   tracing_config {
@@ -82,8 +82,8 @@ resource "aws_lambda_function" "raster_analysis_fanout" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
+    local.lambda_layers.py313_numpy_242_arn,
+    local.lambda_layers.py313_shapely_212_arn,
   ]
 
   tracing_config {
@@ -112,10 +112,10 @@ resource "aws_lambda_function" "preprocessing" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_geopandas_0144_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn
+    local.lambda_layers.py313_numpy_242_arn,
+    local.lambda_layers.py313_geopandas_112_arn,
+    local.lambda_layers.py313_pandas_233_arn,
+    local.lambda_layers.py313_shapely_212_arn
   ]
 
   tracing_config {
@@ -144,10 +144,10 @@ resource "aws_lambda_function" "list_tiled_raster_analysis" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn
+    local.lambda_layers.py313_numpy_242_arn,
+    local.lambda_layers.py313_rasterio_144_arn,
+    local.lambda_layers.py313_shapely_212_arn,
+    local.lambda_layers.py313_pandas_233_arn
   ]
 
   tracing_config {
@@ -180,10 +180,10 @@ resource "aws_lambda_function" "aggregation" {
   tags             = local.tags
   layers           = [
     module.lambda_layers.raster_analysis_arn,
-    local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_no_numpy_arn,
-    local.lambda_layers.py310_shapely_no_numpy_arn,
-    local.lambda_layers.py310_pandas_no_numpy_arn,
+    local.lambda_layers.py313_numpy_242_arn,
+    local.lambda_layers.py313_rasterio_144_arn,
+    local.lambda_layers.py313_shapely_212_arn,
+    local.lambda_layers.py313_pandas_233_arn,
   ]
 
   tracing_config {
