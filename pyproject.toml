@@ -29,3 +29,6 @@ dependencies = [
     "mo_sql_parsing",
     "numpy"
 ]
+
+[tool.setuptools]
+packages = ["lambdas", "raster_analysis"]
