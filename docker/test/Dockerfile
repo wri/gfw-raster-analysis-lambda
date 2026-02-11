@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ghcr.io/lambgeo/lambda-gdal:3.8-python3.13
+FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
 
 # Make the dir and to install all packages into packages/
 COPY raster_analysis/ raster_analysis/
