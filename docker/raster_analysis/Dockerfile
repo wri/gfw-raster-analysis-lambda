@@ -10,7 +10,8 @@ RUN mkdir -p python
 # Make the dir and install all packages into packages/
 COPY raster_analysis/ raster_analysis/
 COPY pyproject.toml ./
-COPY docker/raster_analysis/.lambdaignore .
+COPY uv.lock ./
+COPY docker/raster_analysis/.lambdaignore ./
 
 # Set uv env variables for behavior and venv directory
 ENV USR_LOCAL_BIN="/usr/local/bin"
@@ -20,14 +21,12 @@ ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_UNMANAGED_INSTALL=${USR_LOCAL_BIN}
 
-RUN dnf install tar && \
+RUN dnf install -y tar zip && \
   curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh
 
 ENV PATH=${USR_LOCAL_BIN}:${PATH}
 
 RUN uv pip install . -t python
-
-RUN dnf install zip
 
 # Precompile all python packages and remove .py files
 #RUN python -m compileall .
