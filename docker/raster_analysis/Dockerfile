@@ -22,7 +22,7 @@ ENV UV_LINK_MODE=copy \
     UV_UNMANAGED_INSTALL=${USR_LOCAL_BIN}
 
 RUN dnf update -y && \
-    dnf install -y expat-devel findutils gzip tar zip && \
+    dnf install -y findutils gzip tar zip && \
     curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh
 
 ENV PATH=${USR_LOCAL_BIN}:${PATH}
