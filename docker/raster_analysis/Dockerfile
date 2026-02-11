@@ -13,6 +13,7 @@ COPY docker/raster_analysis/.lambdaignore .
 
 # Install dependencies to build package
 ENV SETUPTOOLS_USE_DISTUTILS=stdlib
+RUN python -m pip install --upgrade pip setuptools wheel
 RUN pip install . -t python
 
 RUN yum install -y zip

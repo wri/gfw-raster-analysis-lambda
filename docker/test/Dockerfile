@@ -8,6 +8,7 @@ COPY requirements-dev.txt .
 
 # installing dependencies to build package
 ENV SETUPTOOLS_USE_DISTUTILS=stdlib
+RUN python -m pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements-dev.txt
 RUN pip install .
 
