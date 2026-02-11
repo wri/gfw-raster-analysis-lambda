@@ -1,7 +1,7 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
 
 WORKDIR /var/task
-ENV WORKDIR /var/task
+ENV WORKDIR=/var/task
 
 WORKDIR $WORKDIR
 RUN mkdir -p python
@@ -12,7 +12,7 @@ COPY setup.py .
 COPY docker/raster_analysis/.lambdaignore .
 
 # Install dependencies to build package
-ENV SETUPTOOLS_USE_DISTUTILS stdlib
+ENV SETUPTOOLS_USE_DISTUTILS=stdlib
 RUN pip3 install . -t python
 
 RUN yum install -y zip
