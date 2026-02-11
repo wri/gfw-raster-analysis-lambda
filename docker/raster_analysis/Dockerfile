@@ -21,7 +21,7 @@ ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_UNMANAGED_INSTALL=${USR_LOCAL_BIN}
 
-RUN dnf install -y tar gzip zip && \
+RUN dnf install -y findutils gzip tar zip && \
   curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh
 
 ENV PATH=${USR_LOCAL_BIN}:${PATH}
