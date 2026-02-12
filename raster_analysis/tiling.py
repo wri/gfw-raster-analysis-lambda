@@ -1,4 +1,5 @@
 import json
+import math
 import sys
 from copy import deepcopy
 from datetime import datetime
@@ -7,6 +8,7 @@ from typing import Any, Dict, List, Tuple, Optional, Protocol
 
 from pandas import DataFrame
 from shapely.geometry import Polygon, box, mapping, shape
+from shapely.prepared import prep
 
 from raster_analysis.boto import invoke_lambda, lambda_client
 from raster_analysis.data_environment import DataEnvironment
@@ -221,17 +223,28 @@ class AnalysisTiler:
         """Get width x width tile geometries over the extent of the geometry
         snapped to global tile grid of size width."""
         min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
-        tiles = []
 
-        for i in range(0, int((max_x - min_x) / width)):
-            for j in range(0, int((max_y - min_y) / width)):
-                tile = box(
-                    (i * width) + min_x,
-                    (j * width) + min_y,
-                    ((i + 1) * width) + min_x,
-                    ((j + 1) * width) + min_y,
-                )
-                if self.geom.intersects(tile):
+        # Number of tiles in each dimension (ceil avoids dropping edge tiles)
+        nx = int(math.ceil((max_x - min_x) / width))
+        ny = int(math.ceil((max_y - min_y) / width))
+
+        gprep = prep(self.geom)
+        tiles: List[Polygon] = []
+
+        # Localize for speed in Python loops
+        bx = box
+        base_x = min_x
+        base_y = min_y
+        w = width
+
+        for i in range(nx):
+            x0 = (i * w) + base_x
+            x1 = x0 + w
+            for j in range(ny):
+                y0 = (j * w) + base_y
+                y1 = y0 + w
+                tile = bx(x0, y0, x1, y1)
+                if gprep.intersects(tile):
                     tiles.append(tile)
 
         return tiles
