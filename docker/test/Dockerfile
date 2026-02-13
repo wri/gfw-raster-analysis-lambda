@@ -3,8 +3,8 @@ FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
 ENV UV_VERSION="0.10.2"
 
 # Make the dir and install all packages into packages/
-COPY raster_analysis/ raster_analysis
-COPY lambdas/ lambdas
+COPY raster_analysis raster_analysis
+COPY lambdas lambdas
 #COPY requirements-dev.txt ./
 #COPY pyproject.toml ./
 #COPY uv.lock ./

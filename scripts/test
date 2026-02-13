@@ -14,6 +14,7 @@ done
 
 AWS_PROFILE="gfw-dev" # For tests always use dev profile, even for master and develop branch, we need to access the test bucket
 
+# Download the lambda layers
 RUNTIME_PREFIX="python3.13-py313"
 MERCANTILE_VERSION_SUFFIX="121_1.2.1"
 NUMPY_VERSION_SUFFIX="242_2.4.2"
@@ -25,15 +26,14 @@ NUMPY_FILENAME="${RUNTIME_PREFIX}_numpy_${NUMPY_VERSION_SUFFIX}.zip"
 PILLOW_FILENAME="${RUNTIME_PREFIX}_pillow_${PILLOW_VERSION_SUFFIX}.zip"
 RASTERIO_FILENAME="${RUNTIME_PREFIX}_rasterio_${RASTERIO_VERSION_SUFFIX}.zip"
 
+for filename in $MERCANTILE_FILENAME $NUMPY_FILENAME $PILLOW_FILENAME $RASTERIO_FILENAME; do
+  if ! [ -f "tests/fixtures/${filename}" ]; then
+      aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} tests/fixtures/${filename}
+  fi
+done
+
 if [ -z "${AWS_ACCESS_KEY_ID}" ]; then
   # when running locally, use AWS Profile and load latest code, write data to tmp
-
-  for filename in $MERCANTILE_FILENAME $NUMPY_FILENAME $PILLOW_FILENAME $RASTERIO_FILENAME; do
-    if ! [ -f "tests/fixtures/${filename}" ]; then
-        AWS_REGION=us-east-1 AWS_PROFILE=${AWS_PROFILE} aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} tests/fixtures/${filename}
-    fi
-  done
-
 
   echo "Running test with CWD set to /tmp"
   docker run -e AWS_DEFAULT_PROFILE=${AWS_PROFILE} \
