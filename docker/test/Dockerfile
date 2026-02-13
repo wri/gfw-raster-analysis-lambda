@@ -45,5 +45,5 @@ ENV MERCANTILE_FILENAME="${RUNTIME_PREFIX}_mercantile_${MERCANTILE_VERSION_SUFFI
     RASTERIO_FILENAME="${RUNTIME_PREFIX}_rasterio_${RASTERIO_VERSION_SUFFIX}.zip"
 
 RUN for filename in $MERCANTILE_FILENAME $NUMPY_FILENAME $PILLOW_FILENAME $RASTERIO_FILENAME; do \
-      unzip /usr/local/app/tests/fixtures/${filename} \
+      unzip /usr/local/app/tests/fixtures/${filename}; \
     done
