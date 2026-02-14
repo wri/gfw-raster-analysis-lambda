@@ -4,14 +4,14 @@ ENV UV_VERSION="0.10.2"
 
 COPY raster_analysis raster_analysis
 COPY lambdas lambdas
-COPY layers layers
+COPY docker/layers layers
 
 COPY requirements-test.txt requirements-test.txt
 
 RUN dnf install -y unzip
 
 RUN for filename in `ls layers/*.zip`; do \
-      unzip ${filename} -d /opt; \
+      unzip -n ${filename} -d /opt; \
     done
 
 RUN pip install -r requirements-test.txt -t /opt/python
