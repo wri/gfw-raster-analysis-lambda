@@ -4,30 +4,16 @@ version = "2.0.1"
 description = "Add your description here"
 requires-python = "~= 3.13.0"
 dependencies = [
-    "detect-secrets",
-    "flask",
-    "moto[server]==4.2.2",
-    "pre-commit",
-    "pytest",
-    "pytest-cov",
-    "pytest-env",
-    "pytest-mock",
-    "requests_mock",
-    # lambdas
     "asyncclick",
     "geobuf",
     "http3",
     "aws-xray-sdk",
     "lambda-decorators",
-    "pandas<3",  #
     "protobuf",
     "pyproj",
-    "rasterio[s3]==1.4.4",
-    "shapely",
     "codeguru-profiler-agent",
     "mo_parsing",
-    "mo_sql_parsing",
-    "numpy"
+    "mo_sql_parsing"
 ]
 
 [tool.setuptools]

@@ -2,10 +2,12 @@ FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
 
 ENV UV_VERSION="0.10.2"
 
-# Make the dir and install all packages into packages/
 COPY raster_analysis raster_analysis
 COPY lambdas lambdas
-#COPY requirements-dev.txt ./
+COPY layers layers
+
+COPY requirements-test.txt ./
+
 #COPY pyproject.toml ./
 #COPY uv.lock ./
 #
@@ -25,25 +27,16 @@ COPY lambdas lambdas
 #RUN uv pip install --system -r requirements-dev.txt && \
 #    uv pip install --system .
 #
-#CMD ["/bin/bash"]
-
-WORKDIR /opt
 
 RUN dnf install -y unzip
 
+RUN for filename in `ls layers/*.zip`; do \
+      unzip ${filename} -d /opt; \
+    done
+
+# RUN pip install -r requirements-test.txt -t /opt/python
+
+WORKDIR /opt
 ENV PYTHONPATH=/opt/python
 
-ENV RUNTIME_PREFIX="python3.13-py313" \
-    MERCANTILE_VERSION_SUFFIX="121_1.2.1" \
-    NUMPY_VERSION_SUFFIX="242_2.4.2" \
-    PILLOW_VERSION_SUFFIX="1210_12.1.0" \
-    RASTERIO_VERSION_SUFFIX="144_1.4.4"
-
-ENV MERCANTILE_FILENAME="${RUNTIME_PREFIX}_mercantile_${MERCANTILE_VERSION_SUFFIX}.zip" \
-    NUMPY_FILENAME="${RUNTIME_PREFIX}_numpy_${NUMPY_VERSION_SUFFIX}.zip" \
-    PILLOW_FILENAME="${RUNTIME_PREFIX}_pillow_${PILLOW_VERSION_SUFFIX}.zip" \
-    RASTERIO_FILENAME="${RUNTIME_PREFIX}_rasterio_${RASTERIO_VERSION_SUFFIX}.zip"
-
-RUN for filename in $MERCANTILE_FILENAME $NUMPY_FILENAME $PILLOW_FILENAME $RASTERIO_FILENAME; do \
-      unzip /usr/local/app/tests/fixtures/${filename}; \
-    done
+ENTRYPOINT ["python", "-m", "pytest", "--cov-report", "term", "--cov-report", "xml:/usr/local/app/tests/cobertura.xml", "--cov=/usr/local/app", "/usr/local/app/tests/" ]
