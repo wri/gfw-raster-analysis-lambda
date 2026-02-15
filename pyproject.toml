@@ -2,18 +2,18 @@
 name = "gfw-raster-analysis-lambda"
 version = "2.0.1"
 description = "Add your description here"
-requires-python = "~= 3.13.0"
+requires-python = "~= 3.10.0"
 dependencies = [
     "asyncclick",
+    "aws-xray-sdk",
+    "codeguru-profiler-agent",
     "geobuf",
     "http3",
-    "aws-xray-sdk",
     "lambda-decorators",
-    "protobuf",
-    "pyproj",
-    "codeguru-profiler-agent",
     "mo_parsing",
-    "mo_sql_parsing"
+    "mo_sql_parsing",
+    "protobuf",
+    "pyproj"
 ]
 
 [tool.setuptools]

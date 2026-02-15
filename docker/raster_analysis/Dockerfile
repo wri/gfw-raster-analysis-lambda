@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
+FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.10
 
 ENV UV_VERSION="0.10.2"
 

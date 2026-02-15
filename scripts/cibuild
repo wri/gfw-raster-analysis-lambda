@@ -30,7 +30,7 @@ done
 
 # Now download the lambda layers containing packages that the above
 # lambda(s) depend on
-RUNTIME_PREFIX="python3.13"
+RUNTIME_PREFIX="python3.10"
 
 GEOPANDAS_VERSION="1.1.2"
 MERCANTILE_VERSION="1.2.1"
