@@ -20,38 +20,42 @@ function build_lambda_layer {
   docker rm -f lambda_layer
 }
 
-# Download the dependency lambda layers
-RUNTIME_PREFIX="python3.13"
-GEOPANDAS_VERSION_SUFFIX="1.1.2"
-MERCANTILE_VERSION_SUFFIX="1.2.1"
-NUMPY_VERSION_SUFFIX="2.4.2"
-PANDAS_VERSION_SUFFIX="2.3.3"
-PILLOW_VERSION_SUFFIX="12.1.0"
-RASTERIO_VERSION_SUFFIX="1.4.4"
-SHAPELY_VERSION_SUFFIX="2.1.2"
-
-GEOPANDAS_FILENAME="${RUNTIME_PREFIX}-geopandas_${GEOPANDAS_VERSION_SUFFIX}.zip"
-MERCANTILE_FILENAME="${RUNTIME_PREFIX}-mercantile_${MERCANTILE_VERSION_SUFFIX}.zip"
-NUMPY_FILENAME="${RUNTIME_PREFIX}-numpy_${NUMPY_VERSION_SUFFIX}.zip"
-PANDAS_FILENAME="${RUNTIME_PREFIX}-pandas_${PANDAS_VERSION_SUFFIX}.zip"
-PILLOW_FILENAME="${RUNTIME_PREFIX}-pillow_${PILLOW_VERSION_SUFFIX}.zip"
-RASTERIO_FILENAME="${RUNTIME_PREFIX}-rasterio_${RASTERIO_VERSION_SUFFIX}.zip"
-SHAPELY_FILENAME="${RUNTIME_PREFIX}-shapely_${SHAPELY_VERSION_SUFFIX}.zip"
-
-mkdir -p docker/layers
-
-for filename in $GEOPANDAS_FILENAME $MERCANTILE_FILENAME $NUMPY_FILENAME $PANDAS_FILENAME $PILLOW_FILENAME $RASTERIO_FILENAME $SHAPELY_FILENAME; do
-  if ! [ -f docker/layers/${filename} ]; then
-      aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
-  fi
-done
-
 lambda_layers=( raster_analysis )
 
 for l in "${lambda_layers[@]}"
 do
     echo "Build lambda layer ${l}"
     build_lambda_layer "${l}"
+done
+
+# Now download the lambda layers containing packages that the above
+# lambda(s) depend on
+RUNTIME_PREFIX="python3.13"
+
+GEOPANDAS_VERSION="1.1.2"
+MERCANTILE_VERSION="1.2.1"
+NUMPY_VERSION="2.4.2"
+PANDAS_VERSION="2.3.3"
+PILLOW_VERSION="12.1.0"
+RASTERIO_VERSION="1.4.4"
+SHAPELY_VERSION="2.1.2"
+
+ALL_DEP_LAYERS=(
+  "${RUNTIME_PREFIX}-geopandas_${GEOPANDAS_VERSION}.zip"
+  "${RUNTIME_PREFIX}-mercantile_${MERCANTILE_VERSION}.zip"
+  "${RUNTIME_PREFIX}-numpy_${NUMPY_VERSION}.zip"
+  "${RUNTIME_PREFIX}-pandas_${PANDAS_VERSION}.zip"
+  "${RUNTIME_PREFIX}-pillow_${PILLOW_VERSION}.zip"
+  "${RUNTIME_PREFIX}-rasterio_${RASTERIO_VERSION}.zip"
+  "${RUNTIME_PREFIX}-shapely_${SHAPELY_VERSION}.zip"
+)
+
+mkdir -p docker/layers
+
+for filename in $ALL_DEP_LAYERS; do
+  if ! [ -f docker/layers/${filename} ]; then
+      aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
+  fi
 done
 
 docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .
