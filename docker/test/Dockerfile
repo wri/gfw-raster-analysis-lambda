@@ -1,22 +1,31 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.13
 
-ENV UV_VERSION="0.10.2"
+RUN dnf install -y unzip && dnf clean all
 
+# App code goes under /var/task (Lambda task root)
+WORKDIR /var/task
 COPY raster_analysis raster_analysis
 COPY lambdas lambdas
-COPY docker/layers layers
 
-COPY requirements-test.txt requirements-test.txt
+# Layer zips
+COPY docker/layers /layers
 
-RUN dnf install -y unzip
-
-RUN for filename in `ls layers/*.zip`; do \
-      unzip -n ${filename} -d /opt; \
+# Unpack all layer zips into /opt (like Lambda)
+RUN set -eux; \
+    for filename in /layers/*.zip; do \
+      unzip -q -n "$filename" -d /opt; \
     done
 
-RUN pip install -r requirements-test.txt -t /opt/python
+# Test deps in a venv so entrypoints exist (moto_server, pytest, etc.)
+COPY requirements-test.txt /tmp/requirements-test.txt
+RUN python -m venv /venv && \
+    /venv/bin/pip install -r /tmp/requirements-test.txt
 
-WORKDIR /opt
-ENV PYTHONPATH=/opt/python
+ENV PATH="/venv/bin:${PATH}"
+ENV PYTHONPATH="/var/task:/opt/python"
 
-ENTRYPOINT ["python", "-m", "pytest", "--cov-report", "term", "--cov-report", "xml:/usr/local/app/tests/cobertura.xml", "--cov=/usr/local/app", "/usr/local/app/tests/" ]
+# Entrypoint wrapper that always runs the intended tests but allows extra flags
+COPY docker/test/pytest_entrypoint.sh /usr/local/bin/pytest_entrypoint.sh
+RUN chmod +x /usr/local/bin/pytest_entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/pytest_entrypoint.sh"]

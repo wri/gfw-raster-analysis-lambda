@@ -20,22 +20,24 @@ if [ -z "${AWS_ACCESS_KEY_ID}" ]; then
   echo "Running test with CWD set to /tmp"
   docker run -e AWS_DEFAULT_PROFILE=${AWS_PROFILE} \
               -v /tmp:/tmp \
-              -v ${PWD}:/usr/local/app \
+              -v ${PWD}:/var/task \
               -v ${HOME}/.aws:/root/.aws:ro\
               -e ENV="test" \
-              -e PYTHONPATH=/opt/python \
+              -w /var/task \
               --rm \
-              gfw-raster-analysis-test
+              gfw-raster-analysis-test \
+              "$@"
 else
   # when running on Github, use Secrets and link pwd to tmp to have access to coverage file
   echo "Running test with CWD set to ."
   docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
               -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
               -v /tmp:/tmp \
-              -v ${PWD}:/usr/local/app \
+              -v ${PWD}:/var/task \
               -w /usr/local/app \
               -e ENV="test" \
-              -e PYTHONPATH=/opt/python \
+              -w /var/task \
               --rm \
-              gfw-raster-analysis-test
+              gfw-raster-analysis-test \
+              "$@"
 fi
