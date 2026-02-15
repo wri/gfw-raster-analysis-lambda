@@ -1,6 +1,9 @@
 codeguru-profiler-agent==1.2.6
 detect-secrets==1.5.0
 flask==3.1.2
+geobuf==2.0.1
+mo-parsing==8.694.25301
+mo-sql-parsing==11.697.25301
 moto[server]==4.2.2
 pre-commit==4.5.1
 pytest==9.0.2

@@ -1,6 +1,7 @@
 # flake8: noqa
 import os
 import subprocess
+import sys
 import uuid
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -70,7 +71,7 @@ def context(monkeypatch):
         lambdas.fanout.src.lambda_function, "invoke_lambda", mock_lambda
     )
 
-    moto_server = subprocess.Popen(["moto_server", "dynamodb", "-p3000"])
+    moto_server = subprocess.Popen([sys.executable, "-m", "moto.server", "dynamodb", "-p", "3000"])
     try:
         boto.dynamodb_client().create_table(
             AttributeDefinitions=[
