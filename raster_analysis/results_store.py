@@ -1,7 +1,6 @@
 import os
 from datetime import datetime, timedelta
 from decimal import Decimal
-from enum import Enum
 from hashlib import md5
 from io import StringIO
 from time import sleep
@@ -24,8 +23,17 @@ from raster_analysis.globals import (
     BasePolygon,
 )
 
+# After upgrading to Python 3.11, this can become just
+# from enum import StrEnum
+try:
+    from enum import StrEnum
+except ImportError:
+    from enum import Enum
+    class StrEnum(str, Enum):
+        pass
 
-class ResultStatus(str, Enum):
+
+class ResultStatus(StrEnum):
     success = "success"
     error = "error"
 
