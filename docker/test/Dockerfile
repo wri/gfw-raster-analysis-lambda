@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.10
 
-RUN dnf install -y unzip && dnf clean all
+RUN yum install -y unzip && yum clean all
 
 # App code goes under /var/task (Lambda task root)
 WORKDIR /var/task
