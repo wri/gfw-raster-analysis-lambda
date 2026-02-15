@@ -52,13 +52,13 @@ class Context(object):
         self.log_stream_name = log_stream_name
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture()
 def context(monkeypatch):
     def mock_lambda(payload, lambda_name, client):
         uid = str(uuid.uuid1())
         context = Context(uid, f"log_stream_{uid}")
 
-        # don't import until here to makes sure monkey patch works
+        # don't import until here to make sure monkey patch works
         from lambdas.fanout.src.lambda_function import handler as fanout_handler
 
         f = fanout_handler if lambda_name == "fanout" else analysis_handler
@@ -102,7 +102,7 @@ def context(monkeypatch):
         yield context
     finally:
         moto_server.kill()
-
+        moto_server.wait()
 
 def test_primary_tree_cover_loss(context):
     query = "select sum(area__ha) AS umd_tree_cover_loss__ha, sum(gfw_forest_carbon_gross_emissions__Mg_CO2e) AS gfw_forest_carbon_gross_emissions__Mg_CO2e from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and (umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true') group by umd_tree_cover_loss__year"
