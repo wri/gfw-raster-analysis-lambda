@@ -37,7 +37,7 @@ MERCANTILE_VERSION="1.2.1"
 NUMPY_VERSION="1.26.4"
 PANDAS_VERSION="1.5.3"
 PILLOW_VERSION="9.5.0"
-RASTERIO_VERSION="no_numpy"
+RASTERIO_VERSION="no_numpy"  # But really 1.4.3
 SHAPELY_VERSION="1.8.5"
 
 ALL_DEP_LAYERS=(
@@ -53,7 +53,7 @@ ALL_DEP_LAYERS=(
 mkdir -p docker/layers
 
 # In CI, always download fresh layers to avoid stale cache
-# Locally, only download if missing to save time
+# Locally, only download if missing to save time and bandwidth
 if [ "${CI}" = "true" ] || [ -n "${GITHUB_ACTIONS}" ]; then
   echo "Running in CI - downloading fresh layers from S3"
   for filename in "${ALL_DEP_LAYERS[@]}"; do
@@ -71,12 +71,5 @@ else
     fi
   done
 fi
-
-# Touch a timestamp file to ensure Docker sees the layers directory as changed
-touch docker/layers/.timestamp
-
-# Debug: show what's in the layers directory
-echo "Contents of docker/layers:"
-ls -lh docker/layers/
 
 docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .
