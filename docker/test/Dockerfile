@@ -30,6 +30,7 @@ RUN python -m venv /venv && \
 
 ENV PATH="/venv/bin:${PATH}"
 ENV PYTHONPATH="/var/task:/opt/python"
+ENV LD_LIBRARY_PATH="/opt/lib:${LD_LIBRARY_PATH}"
 
 # Entrypoint wrapper that always runs the intended tests but allows extra flags
 COPY docker/test/pytest_entrypoint.sh /usr/local/bin/pytest_entrypoint.sh
