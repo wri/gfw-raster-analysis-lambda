@@ -9,6 +9,11 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Build Lambda layers
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_dev }}
+        AWS_REGION: ${{ secrets.aws_region_dev }}
+        AWS_REQUEST_PAYER: requester
       run: ./scripts/cibuild
 
     - name: Plan production
