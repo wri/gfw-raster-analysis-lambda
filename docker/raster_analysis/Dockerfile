@@ -27,7 +27,7 @@ RUN yum update -y && \
 
 ENV PATH=${USR_LOCAL_BIN}:${PATH}
 
-RUN uv pip install . -t python
+RUN uv pip install . --target python
 
 # Fix pyc files and clean old pycaches
 RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-310//'); cp $f $n; done;
