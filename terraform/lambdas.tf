@@ -12,7 +12,7 @@ resource "aws_lambda_function" "raster_analysis" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_143_arn,
+    local.lambda_layers.py310_rasterio_no_numpy_arn,
     local.lambda_layers.py310_shapely_no_numpy_arn,
     local.lambda_layers.py310_pandas_no_numpy_arn,
   ]
@@ -47,7 +47,7 @@ resource "aws_lambda_function" "tiled_raster_analysis" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_143_arn,
+    local.lambda_layers.py310_rasterio_no_numpy_arn,
     local.lambda_layers.py310_shapely_no_numpy_arn,
     local.lambda_layers.py310_pandas_no_numpy_arn
   ]
@@ -145,7 +145,7 @@ resource "aws_lambda_function" "list_tiled_raster_analysis" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_143_arn,
+    local.lambda_layers.py310_rasterio_no_numpy_arn,
     local.lambda_layers.py310_shapely_no_numpy_arn,
     local.lambda_layers.py310_pandas_no_numpy_arn
   ]
@@ -181,7 +181,7 @@ resource "aws_lambda_function" "aggregation" {
   layers           = [
     module.lambda_layers.raster_analysis_arn,
     local.lambda_layers.py310_numpy_arn,
-    local.lambda_layers.py310_rasterio_143_arn,
+    local.lambda_layers.py310_rasterio_no_numpy_arn,
     local.lambda_layers.py310_shapely_no_numpy_arn,
     local.lambda_layers.py310_pandas_no_numpy_arn,
   ]
