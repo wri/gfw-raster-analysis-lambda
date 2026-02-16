@@ -71,7 +71,7 @@ def context(monkeypatch):
         lambdas.fanout.src.lambda_function, "invoke_lambda", mock_lambda
     )
 
-    moto_server = subprocess.Popen([sys.executable, "-m", "moto.server", "dynamodb", "-p", "3000"])
+    moto_server = subprocess.Popen(["moto_server", "dynamodb", "-p3000"])
     try:
         boto.dynamodb_client().create_table(
             AttributeDefinitions=[
