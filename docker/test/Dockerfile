@@ -10,11 +10,18 @@ COPY lambdas lambdas
 # Layer zips
 COPY docker/layers /layers
 
+# Debug: show what was copied
+RUN echo "=== Contents of /layers ===" && ls -lh /layers/ && echo "========================="
+
 # Unpack all layer zips into /opt (like Lambda)
 RUN set -eux; \
     for filename in /layers/*.zip; do \
+      echo "Unpacking $filename"; \
       unzip -q -n "$filename" -d /opt; \
     done
+
+# Debug: show what's in /opt/python after unpacking
+RUN echo "=== Contents of /opt/python ===" && ls -lh /opt/python/ && echo "========================="
 
 # Test deps in a venv so entrypoints exist (moto_server, pytest, etc.)
 COPY requirements-test.txt /tmp/requirements-test.txt

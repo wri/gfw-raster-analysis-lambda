@@ -58,4 +58,11 @@ for filename in $ALL_DEP_LAYERS; do
   fi
 done
 
+# Touch a timestamp file to ensure Docker sees the layers directory as changed
+touch docker/layers/.timestamp
+
+# Debug: show what's in the layers directory
+echo "Contents of docker/layers:"
+ls -lh docker/layers/
+
 docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .
