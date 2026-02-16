@@ -36,7 +36,7 @@ jobs:
         AWS_XRAY_SDK_ENABLED: false
         AWS_REQUEST_PAYER: requester
       run: |
-        ./scripts/test -b ${{github.ref}} -k ${{ secrets.aws_key_dev }} -s ${{ secrets.aws_secret_dev }}
+        ./scripts/test
 
     - name: Run CodeCOV action
       uses: codecov/codecov-action@v1

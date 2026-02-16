@@ -1,40 +1,30 @@
 #!/usr/bin/env bash
 set -e
 
-BRANCH=""
-
-while getopts b:k:s: option; do
-  case "${option}" in
-
-  b) BRANCH=${OPTARG} ;;
-  k) AWS_ACCESS_KEY_ID=${OPTARG} ;;
-  s) AWS_SECRET_ACCESS_KEY=${OPTARG} ;;
-  esac
-done
-
 AWS_PROFILE="gfw-dev" # For tests always use dev profile, even for master and develop branch, we need to access the test bucket
 
-if [ -z "${AWS_ACCESS_KEY_ID}" ]; then
-  # when running locally, use AWS Profile and load latest code, write data to tmp
-
-  echo "Running test with CWD set to /tmp"
-  docker run -e AWS_DEFAULT_PROFILE=${AWS_PROFILE} \
+# Detect if running in GitHub Actions by checking for CI environment variable
+# GitHub Actions sets CI=true automatically
+if [ "${CI}" = "true" ] || [ -n "${GITHUB_ACTIONS}" ]; then
+  # Running in GitHub Actions - AWS credentials come from environment
+  echo "Running test in CI with CWD set to ."
+  docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+              -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+              -e AWS_REGION=${AWS_REGION} \
               -v /tmp:/tmp \
               -v ${PWD}:/var/task \
-              -v ${HOME}/.aws:/root/.aws:ro\
               -e ENV="test" \
               -w /var/task \
               --rm \
               gfw-raster-analysis-test \
               "$@"
 else
-  # when running on Github, use Secrets and link pwd to tmp to have access to coverage file
-  echo "Running test with CWD set to ."
-  docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-              -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
+  # Running locally - use AWS Profile
+  echo "Running test locally with CWD set to /tmp"
+  docker run -e AWS_DEFAULT_PROFILE=${AWS_PROFILE} \
               -v /tmp:/tmp \
               -v ${PWD}:/var/task \
-              -w /usr/local/app \
+              -v ${HOME}/.aws:/root/.aws:ro\
               -e ENV="test" \
               -w /var/task \
               --rm \
