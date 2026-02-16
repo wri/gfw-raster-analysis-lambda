@@ -20,14 +20,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Build container and lambda layers
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_dev }}
-      run: |
-        ./scripts/cibuild
-
-    - name: Test with pytest
+    - name: Build and test
       env:
         ENV: test
         AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
@@ -36,6 +29,7 @@ jobs:
         AWS_XRAY_SDK_ENABLED: false
         AWS_REQUEST_PAYER: requester
       run: |
+        ./scripts/cibuild
         ./scripts/test
 
     - name: Run CodeCOV action
