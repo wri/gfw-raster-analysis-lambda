@@ -37,7 +37,7 @@ MERCANTILE_VERSION="1.2.1"
 NUMPY_VERSION="1.26.4"
 PANDAS_VERSION="1.5.3"
 PILLOW_VERSION="9.5.0"
-RASTERIO_VERSION="no_numpy"  # Really 1.4.3
+RASTERIO_VERSION="no_numpy"
 SHAPELY_VERSION="1.8.5"
 
 ALL_DEP_LAYERS=(
@@ -52,11 +52,25 @@ ALL_DEP_LAYERS=(
 
 mkdir -p docker/layers
 
-for filename in "${ALL_DEP_LAYERS[@]}"; do
-  if ! [ -f docker/layers/${filename} ]; then
+# In CI, always download fresh layers to avoid stale cache
+# Locally, only download if missing to save time
+if [ "${CI}" = "true" ] || [ -n "${GITHUB_ACTIONS}" ]; then
+  echo "Running in CI - downloading fresh layers from S3"
+  for filename in "${ALL_DEP_LAYERS[@]}"; do
+    echo "Downloading ${filename}..."
+    aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
+  done
+else
+  echo "Running locally - only downloading missing layers"
+  for filename in "${ALL_DEP_LAYERS[@]}"; do
+    if ! [ -f docker/layers/${filename} ]; then
+      echo "Downloading ${filename}..."
       aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
-  fi
-done
+    else
+      echo "Using cached ${filename}"
+    fi
+  done
+fi
 
 # Touch a timestamp file to ensure Docker sees the layers directory as changed
 touch docker/layers/.timestamp
