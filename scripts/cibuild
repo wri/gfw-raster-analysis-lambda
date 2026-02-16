@@ -52,7 +52,7 @@ ALL_DEP_LAYERS=(
 
 mkdir -p docker/layers
 
-for filename in $ALL_DEP_LAYERS; do
+for filename in "${ALL_DEP_LAYERS[@]}"; do
   if ! [ -f docker/layers/${filename} ]; then
       aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
   fi
