@@ -1,6 +1,7 @@
 services:
   terraform:
-    image: globalforestwatch/terraform:2.0_beta6
+    platform: linux/amd64
+    image: globalforestwatch/terraform:v0.13.3
     volumes:
       - ../../:/usr/local/src
       - $HOME/.aws:/root/.aws:ro
