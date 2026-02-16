@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.10
 
-ENV UV_VERSION="0.10.2"
+ENV UV_VERSION="0.9.11"
 
 WORKDIR /var/task
 ENV WORKDIR=/var/task
@@ -29,11 +29,9 @@ ENV PATH=${USR_LOCAL_BIN}:${PATH}
 
 RUN uv pip install . -t python
 
-# Precompile all python packages and remove .py files
-#RUN python -m compileall .
-#RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-313//'); cp $f $n; done;
-#RUN find python/ -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
-#RUN find python/ -type f -a -name '*.py' -print0 | xargs -0 rm -f
+# Fix pyc files and clean old pycaches
+RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-310//'); cp $f $n; done;
+RUN find python/ -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
 
 # Compress all source codes except files listed in .lambdaignore
 RUN cat .lambdaignore | xargs zip -9qyr layer.zip python -x
