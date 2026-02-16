@@ -21,6 +21,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Build container and lambda layers
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_dev }}
       run: |
         ./scripts/cibuild
 
