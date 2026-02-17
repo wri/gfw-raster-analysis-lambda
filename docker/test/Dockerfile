@@ -1,6 +1,8 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.10
 
-RUN yum install -y unzip && yum clean all
+RUN yum update -y && \
+    yum install -y gzip unzip tar && \
+    yum clean all
 
 # App code goes under /var/task (Lambda task root)
 WORKDIR /var/task
@@ -17,10 +19,24 @@ RUN set -eux; \
       unzip -q -n "$filename" -d /opt; \
     done
 
-# Test deps in a venv so entrypoints exist (moto_server, pytest, etc.)
-COPY requirements-test.txt /tmp/requirements-test.txt
+# Install test dependencies in a venv so entrypoints exist (moto_server, pytest, etc.)
+# Using pyproject.toml with [test] optional dependencies
+ENV UV_VERSION="0.9.11"
+ENV USR_LOCAL_BIN="/usr/local/bin"
+RUN mkdir -p ${USR_LOCAL_BIN}
+
+ENV UV_LINK_MODE=copy \
+    UV_COMPILE_BYTECODE=1 \
+    UV_UNMANAGED_INSTALL=${USR_LOCAL_BIN}
+
+RUN curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh
+
+ENV PATH=${USR_LOCAL_BIN}:${PATH}
+
+COPY pyproject.toml ./pyproject.toml
+
 RUN python -m venv /venv && \
-    /venv/bin/pip install -r /tmp/requirements-test.txt
+    uv pip install --python /venv/bin/python ".[test]"
 
 ENV PATH="/venv/bin:${PATH}"
 ENV PYTHONPATH="/var/task:/opt/python"

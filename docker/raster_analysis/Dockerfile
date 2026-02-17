@@ -35,5 +35,3 @@ RUN find python/ -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
 
 # Compress all source codes except files listed in .lambdaignore
 RUN cat .lambdaignore | xargs zip -9qyr layer.zip python -x
-
-CMD ["/bin/bash"]
