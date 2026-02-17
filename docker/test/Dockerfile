@@ -44,8 +44,4 @@ ENV LD_LIBRARY_PATH="/opt/lib:${LD_LIBRARY_PATH}"
 # Preload the SQLite library from /opt/lib to ensure GDAL uses the correct version
 ENV LD_PRELOAD="/opt/lib/libsqlite3.so.0"
 
-# Entrypoint wrapper that always runs the intended tests but allows extra flags
-COPY docker/test/pytest_entrypoint.sh /usr/local/bin/pytest_entrypoint.sh
-RUN chmod +x /usr/local/bin/pytest_entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/pytest_entrypoint.sh"]
+ENTRYPOINT ["python", "-m", "pytest", "--cov-report", "term", "--cov-report", "xml:/var/task/tests/cobertura.xml", "--cov=/var/task"]
