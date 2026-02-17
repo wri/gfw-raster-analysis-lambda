@@ -11,18 +11,6 @@ import sys
 import pytest
 
 
-def pytest_configure(config):
-    """Register custom markers."""
-    config.addinivalue_line(
-        "markers",
-        "integration: marks tests as integration tests (deselect with '-m \"not integration\"')"
-    )
-    config.addinivalue_line(
-        "markers",
-        "slow: marks tests as slow (deselect with '-m \"not slow\"')"
-    )
-
-
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     """

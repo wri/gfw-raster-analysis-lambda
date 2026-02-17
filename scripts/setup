@@ -28,3 +28,5 @@ uv sync --locked --active --all-extras
 echo "Installing pre-commit hooks"
 pre-commit install
 pre-commit
+
+detect-secrets scan > .secrets.baseline
