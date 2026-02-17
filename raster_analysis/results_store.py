@@ -238,12 +238,12 @@ class AnalysisResultsStore:
             )
             results += results_response["Responses"][table_name]
 
-            unprocessed = results_response["UnprocessedKeys"]
-            while len(unprocessed) > 0:
+            unprocessed = results_response.get("UnprocessedKeys", {})
+            while unprocessed.get(table_name, {}).get("Keys", []):
                 results_response = self._ddb.batch_get_item(
                     RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
                 )
-                results += results_response["Responses"][table_name]
+                results += results_response.get("Responses", {}).get(table_name, [])
                 unprocessed = results_response["UnprocessedKeys"]
 
             if start + DYNAMODB_REQUEST_ITEMS_LIMIT >= len(keys):
