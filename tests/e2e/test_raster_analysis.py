@@ -13,8 +13,6 @@ from threading import Thread
 import pytest
 from shapely.geometry import box, mapping
 
-import lambdas.fanout.src.lambda_function
-
 # set environment before importing our lambda layer
 os.environ["FANOUT_LAMBDA_NAME"] = "fanout"
 os.environ["RASTER_ANALYSIS_LAMBDA_NAME"] = "raster_analysis"
