@@ -48,11 +48,6 @@ from tests.fixtures.fixtures import (
     IDN_24_9_PRIMARY_LOSS,
 )
 
-"""
-This is a drop-in replacement for the context fixture in test_raster_analysis.py
-that adds proper thread exception handling and moto server management.
-"""
-
 class Context(object):
     """Mock AWS Lambda context object."""
 
@@ -87,12 +82,6 @@ def wait_for_port(host, port, timeout=10):
 def context(monkeypatch):
     """
     Fixture that sets up the test environment with improved error handling.
-
-    Key improvements:
-    1. Thread exception capture and reporting
-    2. Moto server startup verification
-    3. Better subprocess output capture
-    4. Proper cleanup even on failure
     """
 
     # Queue to capture exceptions from threads
@@ -103,7 +92,7 @@ def context(monkeypatch):
         """
         Mock Lambda invocation by running handler in a thread.
 
-        This wrapper captures exceptions and provides better error reporting.
+        This wrapper captures exceptions and provides error reporting.
         """
         uid = str(uuid.uuid1())
         context_obj = Context(uid, f"log_stream_{uid}")
