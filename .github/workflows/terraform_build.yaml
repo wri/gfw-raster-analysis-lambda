@@ -6,7 +6,8 @@ jobs:
   build:
     runs-on: "ubuntu-24.04"
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v5
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v1
       with:
@@ -30,7 +31,7 @@ jobs:
         AWS_REQUEST_PAYER: requester
       run: |
         ./scripts/cibuild
-        ./scripts/test
+        ./scripts/test tests
 
     - name: Run CodeCOV action
       uses: codecov/codecov-action@v1
