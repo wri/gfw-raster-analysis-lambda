@@ -63,7 +63,7 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-ra -vv --tb=long --capture=no"
 log_cli = true
-log_cli_level = "WARN"
+log_cli_level = "INFO"
 log_file = "tests/test_run.log"
 log_file_level = "DEBUG"
 env = [

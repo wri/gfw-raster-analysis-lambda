@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -198,7 +199,8 @@ class AnalysisResultsStore:
 
         dfs = [pd.read_csv(result) for result in raw_results]
         results = pd.concat(dfs) if dfs else pd.DataFrame()
-        print(f"Result dataframe: {results.to_dict()}")
+        logging.debug(f"Result dataframe: {results.to_dict()}")
+
         return results
 
     @staticmethod
