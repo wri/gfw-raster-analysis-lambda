@@ -221,6 +221,11 @@ class AnalysisResultsStore:
 
     def _get_batch_items(self, table_name, keys) -> List:
         results = []
+
+        # Early return if no keys to fetch
+        if not keys:
+            return results
+
         # batch_get_item has 100 items limit when sending request so chunking keys list
         chunk = 0
         while True:
