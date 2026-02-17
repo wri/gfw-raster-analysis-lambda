@@ -220,12 +220,11 @@ class AnalysisResultsStore:
         )
 
     def _get_batch_items(self, table_name, keys) -> List:
-        results = []
-
         # Early return if no keys to fetch
         if not keys:
-            return results
+            return []
 
+        results = []
         # batch_get_item has 100 items limit when sending request so chunking keys list
         chunk = 0
         while True:
@@ -233,18 +232,23 @@ class AnalysisResultsStore:
             end = min(start + DYNAMODB_REQUEST_ITEMS_LIMIT, len(keys))
             items = keys[start:end]
 
+            # Skip if this chunk is empty (shouldn't happen with proper loop exit, but defensive)
+            if not items:
+                break
+
             results_response = self._ddb.batch_get_item(
                 RequestItems={table_name: {"Keys": items}}
             )
-            results += results_response["Responses"][table_name]
+            results += results_response.get("Responses", {}).get(table_name, [])
 
             unprocessed = results_response.get("UnprocessedKeys", {})
+            # Check if unprocessed has our table AND has non-empty Keys array
             while unprocessed.get(table_name, {}).get("Keys", []):
                 results_response = self._ddb.batch_get_item(
                     RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
                 )
                 results += results_response.get("Responses", {}).get(table_name, [])
-                unprocessed = results_response["UnprocessedKeys"]
+                unprocessed = results_response.get("UnprocessedKeys", {})
 
             if start + DYNAMODB_REQUEST_ITEMS_LIMIT >= len(keys):
                 break
