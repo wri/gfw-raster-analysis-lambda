@@ -15,7 +15,7 @@ def handler(event, context):
     results_meta = event["distributed_map"]["ResultWriterDetails"]
     try:
         bucket = results_meta["Bucket"]
-        LOGGER.info(f"Running aggregate with parameters: {event}")
+        LOGGER.debug(f"Running aggregate with parameters: {event}")
         response = s3_client().get_object(Bucket=bucket, Key=results_meta["Key"])
         manifest = json.loads(response["Body"].read().decode("utf-8"))
         LOGGER.info("manifest file", manifest)
