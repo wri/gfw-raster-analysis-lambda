@@ -1,17 +1,25 @@
 import math
-from enum import Enum
 
 from shapely.geometry import Point, Polygon
 
 from raster_analysis.globals import BasePolygon
 
+# After upgrading to Python 3.11, this can become just
+# from enum import StrEnum
+try:
+    from enum import StrEnum
+except ImportError:
+    from enum import Enum
+    class StrEnum(str, Enum):
+        pass
 
-class TileScheme(str, Enum):
+
+class TileScheme(StrEnum):
     nw = "nw"
     nwse = "nwse"
 
 
-class GridName(str, Enum):
+class GridName(StrEnum):
     one_by_four_thousand = "1/4000"
     three_by_thirty_three_thousand_six_hundred = "3/33600"
     three_by_fifty_thousand = "3/50000"

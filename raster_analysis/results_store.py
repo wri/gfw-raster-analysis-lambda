@@ -1,7 +1,7 @@
+import logging
 import os
 from datetime import datetime, timedelta
 from decimal import Decimal
-from enum import Enum
 from hashlib import md5
 from io import StringIO
 from time import sleep
@@ -24,8 +24,17 @@ from raster_analysis.globals import (
     BasePolygon,
 )
 
+# After upgrading to Python 3.11, this can become just
+# from enum import StrEnum
+try:
+    from enum import StrEnum
+except ImportError:
+    from enum import Enum
+    class StrEnum(str, Enum):
+        pass
 
-class ResultStatus(str, Enum):
+
+class ResultStatus(StrEnum):
     success = "success"
     error = "error"
 
@@ -155,7 +164,7 @@ class AnalysisResultsStore:
             statuses = [
                 status
                 for status in statuses
-                if status["status"]["S"] == status_filter.success.value
+                if status["status"]["S"] == status_filter.value
             ]
 
         return statuses
@@ -190,7 +199,8 @@ class AnalysisResultsStore:
 
         dfs = [pd.read_csv(result) for result in raw_results]
         results = pd.concat(dfs) if dfs else pd.DataFrame()
-        print(f"Result dataframe: {results.to_dict()}")
+        logging.debug(f"Result dataframe: {results.to_dict()}")
+
         return results
 
     @staticmethod
@@ -212,6 +222,10 @@ class AnalysisResultsStore:
         )
 
     def _get_batch_items(self, table_name, keys) -> List:
+        # Early return if no keys to fetch
+        if not keys:
+            return []
+
         results = []
         # batch_get_item has 100 items limit when sending request so chunking keys list
         chunk = 0
@@ -220,18 +234,23 @@ class AnalysisResultsStore:
             end = min(start + DYNAMODB_REQUEST_ITEMS_LIMIT, len(keys))
             items = keys[start:end]
 
+            # Skip if this chunk is empty (shouldn't happen with proper loop exit, but defensive)
+            if not items:
+                break
+
             results_response = self._ddb.batch_get_item(
                 RequestItems={table_name: {"Keys": items}}
             )
-            results += results_response["Responses"][table_name]
+            results += results_response.get("Responses", {}).get(table_name, [])
 
-            unprocessed = results_response["UnprocessedKeys"]
-            while len(unprocessed) > 0:
+            unprocessed = results_response.get("UnprocessedKeys", {})
+            # Check if unprocessed has our table AND has non-empty Keys array
+            while unprocessed.get(table_name, {}).get("Keys", []):
                 results_response = self._ddb.batch_get_item(
                     RequestItems={table_name: {"Keys": unprocessed[table_name]["Keys"]}}
                 )
-                results += results_response["Responses"][table_name]
-                unprocessed = results_response["UnprocessedKeys"]
+                results += results_response.get("Responses", {}).get(table_name, [])
+                unprocessed = results_response.get("UnprocessedKeys", {})
 
             if start + DYNAMODB_REQUEST_ITEMS_LIMIT >= len(keys):
                 break

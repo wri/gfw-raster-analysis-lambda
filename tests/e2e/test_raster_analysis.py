@@ -1,9 +1,13 @@
-# flake8: noqa
 import os
+import socket
 import subprocess
+import sys
+import time
+import traceback
 import uuid
 from copy import deepcopy
 from datetime import datetime, timedelta
+from queue import Queue
 from threading import Thread
 
 import pytest
@@ -44,63 +48,222 @@ from tests.fixtures.fixtures import (
     IDN_24_9_PRIMARY_LOSS,
 )
 
-
 class Context(object):
+    """Mock AWS Lambda context object."""
+
     def __init__(self, aws_request_id, log_stream_name):
         self.aws_request_id = aws_request_id
         self.log_stream_name = log_stream_name
 
 
-@pytest.fixture(autouse=True)
-def context(monkeypatch):
-    def mock_lambda(payload, lambda_name, client):
-        uid = str(uuid.uuid1())
-        context = Context(uid, f"log_stream_{uid}")
+def wait_for_port(host, port, timeout=10):
+    """
+    Wait for a TCP port to become available.
 
-        # don't import until here to makes sure monkey patch works
+    Args:
+        host: Hostname or IP address
+        port: Port number
+        timeout: Maximum time to wait in seconds
+
+    Returns:
+        bool: True if port is available, False if timeout
+    """
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            with socket.create_connection((host, port), timeout=1):
+                return True
+        except (socket.error, ConnectionRefusedError, OSError):
+            time.sleep(0.1)
+    return False
+
+
+@pytest.fixture()
+def context(monkeypatch):
+    """
+    Fixture that sets up the test environment with improved error handling.
+    """
+
+    # Queue to capture exceptions from threads
+    exceptions_queue = Queue()
+    threads_list = []
+
+    def mock_lambda(payload, lambda_name, client):
+        """
+        Mock Lambda invocation by running handler in a thread.
+
+        This wrapper captures exceptions and provides error reporting.
+        """
+        uid = str(uuid.uuid1())
+        context_obj = Context(uid, f"log_stream_{uid}")
+
+        # Import handler based on lambda name
         from lambdas.fanout.src.lambda_function import handler as fanout_handler
 
-        f = fanout_handler if lambda_name == "fanout" else analysis_handler
-        p = Thread(target=f, args=(payload, context))
-        p.start()
+        handler_func = fanout_handler if lambda_name == "fanout" else analysis_handler
 
-    # monkey patch to just run on thread instead of actually invoking lambda
+        def wrapped_target():
+            """Target function that captures exceptions."""
+            try:
+                print(f"[THREAD {lambda_name}] Starting handler execution", file=sys.stderr)
+                result = handler_func(payload, context_obj)
+                print(f"[THREAD {lambda_name}] Handler completed successfully", file=sys.stderr)
+                return result
+            except Exception as e:
+                # Capture the full exception with traceback
+                exc_info = sys.exc_info()
+                exceptions_queue.put((lambda_name, exc_info))
+
+                # Print to stderr so it shows up in pytest output immediately
+                print(f"\n{'=' * 70}", file=sys.stderr)
+                print(f"EXCEPTION IN THREAD ({lambda_name}):", file=sys.stderr)
+                print(f"Exception Type: {type(e).__name__}", file=sys.stderr)
+                print(f"Exception Value: {e}", file=sys.stderr)
+                print(f"{'=' * 70}", file=sys.stderr)
+                print(''.join(traceback.format_exception(*exc_info)), file=sys.stderr)
+                print(f"{'=' * 70}\n", file=sys.stderr)
+
+                # Re-raise so thread terminates with error
+                raise
+
+        # Create and start thread
+        thread = Thread(
+            target=wrapped_target,
+            name=f"{lambda_name}-{uid[:8]}",
+            daemon=False  # Non-daemon so we can track completion
+        )
+        thread.start()
+        threads_list.append((lambda_name, thread))
+
+        print(f"[MAIN] Started thread for {lambda_name}", file=sys.stderr)
+
+    # Monkey patch to use our mock instead of real Lambda invocation
     monkeypatch.setattr(raster_analysis.tiling, "invoke_lambda", mock_lambda)
     monkeypatch.setattr(
         lambdas.fanout.src.lambda_function, "invoke_lambda", mock_lambda
     )
 
-    moto_server = subprocess.Popen(["moto_server", "dynamodb", "-p3000"])
+    print("\n[SETUP] Starting moto server...", file=sys.stderr)
+
+    # Start moto server with output capture
+    moto_server = subprocess.Popen(
+        ["moto_server", "dynamodb", "-p3000"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
     try:
-        boto.dynamodb_client().create_table(
-            AttributeDefinitions=[
-                {"AttributeName": "tile_id", "AttributeType": "S"},
-                {"AttributeName": "part_id", "AttributeType": "N"},
-            ],
-            KeySchema=[
-                {"AttributeName": "tile_id", "KeyType": "HASH"},
-                {"AttributeName": "part_id", "KeyType": "RANGE"},
-            ],
-            TableName="tiled-raster-analysis",
-            BillingMode="PAY_PER_REQUEST",
-        )
+        # Wait for server to be ready
+        print("[SETUP] Waiting for moto server to be ready...", file=sys.stderr)
+        if not wait_for_port("127.0.0.1", 3000, timeout=10):
+            # Server failed to start - try to get output
+            moto_server.terminate()
+            try:
+                stdout, stderr = moto_server.communicate(timeout=2)
+            except subprocess.TimeoutExpired:
+                moto_server.kill()
+                stdout, stderr = moto_server.communicate()
 
-        boto.dynamodb_client().create_table(
-            AttributeDefinitions=[
-                {"AttributeName": "tile_id", "AttributeType": "S"},
-            ],
-            KeySchema=[
-                {"AttributeName": "tile_id", "KeyType": "HASH"},
-            ],
-            TableName="tiled-raster-analysis-status",
-            BillingMode="PAY_PER_REQUEST",
-        )
+            raise RuntimeError(
+                f"Moto server failed to start on port 3000.\n"
+                f"STDOUT:\n{stdout}\n"
+                f"STDERR:\n{stderr}\n"
+                f"Check if port 3000 is already in use: lsof -i :3000"
+            )
 
+        print("[SETUP] Moto server is ready, creating tables...", file=sys.stderr)
+
+        # Give it a moment to fully initialize
+        time.sleep(0.5)
+
+        # Create DynamoDB tables
+        try:
+            boto.dynamodb_client().create_table(
+                AttributeDefinitions=[
+                    {"AttributeName": "tile_id", "AttributeType": "S"},
+                    {"AttributeName": "part_id", "AttributeType": "N"},
+                ],
+                KeySchema=[
+                    {"AttributeName": "tile_id", "KeyType": "HASH"},
+                    {"AttributeName": "part_id", "KeyType": "RANGE"},
+                ],
+                TableName="tiled-raster-analysis",
+                BillingMode="PAY_PER_REQUEST",
+            )
+
+            boto.dynamodb_client().create_table(
+                AttributeDefinitions=[
+                    {"AttributeName": "tile_id", "AttributeType": "S"},
+                ],
+                KeySchema=[
+                    {"AttributeName": "tile_id", "KeyType": "HASH"},
+                ],
+                TableName="tiled-raster-analysis-status",
+                BillingMode="PAY_PER_REQUEST",
+            )
+            print("[SETUP] DynamoDB tables created successfully", file=sys.stderr)
+        except Exception as e:
+            print(f"[SETUP] Failed to create DynamoDB tables: {e}", file=sys.stderr)
+            raise
+
+        # Create context object
         uid = str(uuid.uuid1())
-        context = Context(uid, f"log_stream_{uid}")
-        yield context
+        context_obj = Context(uid, f"log_stream_{uid}")
+
+        print("[SETUP] Test environment ready\n", file=sys.stderr)
+
+        # Yield to run the test
+        yield context_obj
+
     finally:
-        moto_server.kill()
+        print("\n[TEARDOWN] Starting cleanup...", file=sys.stderr)
+
+        # Wait for all threads to complete (with timeout)
+        print(f"[TEARDOWN] Waiting for {len(threads_list)} threads to complete...", file=sys.stderr)
+        for lambda_name, thread in threads_list:
+            thread.join(timeout=30)  # 30 second timeout per thread
+            if thread.is_alive():
+                print(f"[TEARDOWN] WARNING: Thread {lambda_name} did not complete in time",
+                      file=sys.stderr)
+
+        # Check for exceptions from threads
+        if not exceptions_queue.empty():
+            print("\n" + "=" * 70, file=sys.stderr)
+            print("THREAD EXCEPTIONS DETECTED DURING TEST", file=sys.stderr)
+            print("=" * 70, file=sys.stderr)
+
+            thread_exceptions = []
+            while not exceptions_queue.empty():
+                lambda_name, exc_info = exceptions_queue.get_nowait()
+                thread_exceptions.append((lambda_name, exc_info))
+                print(f"\nException in {lambda_name} thread:", file=sys.stderr)
+                print(''.join(traceback.format_exception(*exc_info)), file=sys.stderr)
+
+            print("=" * 70 + "\n", file=sys.stderr)
+
+            # Re-raise the first exception to fail the test
+            lambda_name, exc_info = thread_exceptions[0]
+            raise exc_info[1].with_traceback(exc_info[2]) from None
+
+        # Terminate moto server
+        print("[TEARDOWN] Stopping moto server...", file=sys.stderr)
+        moto_server.terminate()
+        try:
+            stdout, stderr = moto_server.communicate(timeout=5)
+            if moto_server.returncode not in (0, -15):  # -15 is SIGTERM
+                print(f"\n[TEARDOWN] Moto server had non-zero exit code: {moto_server.returncode}",
+                      file=sys.stderr)
+                if stdout:
+                    print(f"STDOUT:\n{stdout}", file=sys.stderr)
+                if stderr:
+                    print(f"STDERR:\n{stderr}", file=sys.stderr)
+        except subprocess.TimeoutExpired:
+            print("[TEARDOWN] Moto server did not terminate, killing it...", file=sys.stderr)
+            moto_server.kill()
+            moto_server.wait()
+
+        print("[TEARDOWN] Cleanup complete\n", file=sys.stderr)
 
 
 def test_primary_tree_cover_loss(context):

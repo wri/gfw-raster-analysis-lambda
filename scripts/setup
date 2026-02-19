@@ -4,8 +4,29 @@ set -e
 
 docker compose -f docker/terraform/docker-compose.yml build
 
-pip install -e .
-pip install -r requirements-dev.txt
+PYTHON_VERSION="3.10"
+VIRTUAL_ENV="${VIRTUAL_ENV:-.venv_uv}"
+
+# Install Python and create the venv all in one go
+if command -v "uv" >/dev/null 2>&1; then
+  echo "uv (needed to create venv) found in path"
+else
+  echo "uv (needed to create venv) NOT found in path"
+  echo "If uv is installed, add its binary directory to your path and try "
+  echo "running setup script again. For example: "
+  echo "'PATH=\$PATH:~/bin ./scripts/setup' for uv installed in ~/bin"
+  echo "Otherwise, see https://docs.astral.sh/uv/getting-started/installation/"
+  exit 1
+fi
+uv venv ${VIRTUAL_ENV} --python ${PYTHON_VERSION} --seed
+. ${VIRTUAL_ENV}/bin/activate
+
+# Now install all raster analysis dev deps in the venv
+echo "Installing deps into venv"
+uv sync --locked --active --all-extras
+
+echo "Installing pre-commit hooks"
+pre-commit install
+pre-commit
 
 detect-secrets scan > .secrets.baseline
-pre-commit install

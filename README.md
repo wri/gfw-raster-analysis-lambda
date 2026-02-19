@@ -375,6 +375,7 @@ To optimize speed for area calculations, we assume each tile has roughly similar
 Use terraform:
 
 ```
+./scripts/cibuild
 ./scripts/infra plan
 ./scripts/infra apply
 ```

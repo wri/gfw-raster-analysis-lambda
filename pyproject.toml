@@ -1,0 +1,95 @@
+[project]
+name = "gfw-raster-analysis-lambda"
+version = "2.0.1"
+description = "Lambda function for serverless on-the-fly raster analysis"
+requires-python = "~= 3.10.0"
+authors = [
+    {name = "Justin Terry"},
+    {name = "Thomas Maschler"},
+]
+license = {text = "MIT"}
+
+dependencies = [
+    # Core Lambda dependencies
+    "aws-xray-sdk==2.15.0",
+    "codeguru-profiler-agent==1.2.6",
+    "geobuf==2.0.1",
+    "http3==0.6.7",
+    "lambda-decorators==0.6.0",
+    "mo-parsing==8.694.25301",
+    "mo-sql-parsing==11.697.25301",
+    "protobuf==6.33.5",
+    "pydantic==1.10.12",
+    "pyproj==3.7.1",
+    "requests==2.32.5",
+    # Note: Heavy binary deps (numpy, pandas, rasterio, shapely, geopandas, pillow, mercantile)
+    # are provided via the actual used pre-built Lambda layers downloaded from S3
+]
+
+[project.optional-dependencies]
+test = [
+    "detect-secrets==1.5.0",
+    "flask==3.1.2",
+    "moto[server]==4.2.14",
+    "pytest==9.0.2",
+    "pytest-cov==7.0.0",
+    "pytest-env==1.2.0",
+    "pytest-mock==3.15.1",
+    "requests-mock==1.12.1",
+    # Runtime deps needed for tests (from Lambda layers when deployed)
+    "numpy==1.26.4",
+    "pandas==1.5.3",
+    "rasterio[s3]==1.4.3",
+    "shapely==1.8.5post1",
+]
+dev = [
+    "asyncclick==v8.3.0.3",  # For stress test script
+    "gfw-raster-analysis-lambda[test]",  # Include all test dependencies
+    "pre-commit==4.5.1",
+]
+
+[tool.setuptools]
+packages = ["raster_analysis"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# Tool configurations
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra -vv --tb=long --capture=no"
+log_cli = true
+log_cli_level = "INFO"
+log_file = "tests/test_run.log"
+log_file_level = "DEBUG"
+env = [
+    "AWS_XRAY_SDK_ENABLED=false",
+    "AWS_REQUEST_PAYER=requester",
+    "BENCH_MODE=false",
+    "DISABLE_CODEGURU=true",
+    "DYNAMODB_ENDPOINT_URL=http://127.0.0.1:3000",
+    "FANOUT_LAMBDA_NAME=fanout",
+    "RASTER_ANALYSIS_LAMBDA_NAME=raster-analysis",
+    "TILED_RESULTS_TABLE_NAME=tiled-raster-analysis",
+    "TILED_STATUS_TABLE_NAME=tiled-raster-analysis-status",
+    "RESULTS_CHECK_TIMEOUT=120",
+    "S3_BUCKET_DATA_LAKE=gfw-data-lake",
+]
+
+[tool.coverage.run]
+source = ["raster_analysis", "lambdas"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
