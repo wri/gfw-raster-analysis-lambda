@@ -5,10 +5,10 @@ set -e
 GIT_SHA="$(git rev-parse HEAD | cut -c 1-8)"
 
 function build_lambda_layer {
-  IMAGE="gfw/${1}_layer"
+  IMAGE="globalforestwatch/${1}_layer"
 
   echo "BUILD image ${IMAGE}"
-  docker build --no-cache -t "${IMAGE}":"${GIT_SHA}" -f docker/"${1}"/Dockerfile .
+  docker build -t "${IMAGE}":"${GIT_SHA}" -f docker/"${1}"/Dockerfile .
 
   echo "CREATE container"
   docker run --name lambda_layer -itd "${IMAGE}":"${GIT_SHA}" /bin/bash
@@ -27,5 +27,49 @@ do
     echo "Build lambda layer ${l}"
     build_lambda_layer "${l}"
 done
+
+# Now download the lambda layers containing packages that the above
+# lambda(s) depend on
+RUNTIME_PREFIX="python3.10"
+
+GEOPANDAS_VERSION="0.14.4"
+MERCANTILE_VERSION="1.2.1"
+NUMPY_VERSION="1.26.4"
+PANDAS_VERSION="1.5.3"
+PILLOW_VERSION="9.5.0"
+RASTERIO_VERSION="no_numpy"  # But really 1.4.3
+SHAPELY_VERSION="1.8.5"
+
+ALL_DEP_LAYERS=(
+  "${RUNTIME_PREFIX}-geopandas_${GEOPANDAS_VERSION}.zip"
+  "${RUNTIME_PREFIX}-mercantile_${MERCANTILE_VERSION}.zip"
+  "${RUNTIME_PREFIX}-numpy_${NUMPY_VERSION}.zip"
+  "${RUNTIME_PREFIX}-pandas_${PANDAS_VERSION}.zip"
+  "${RUNTIME_PREFIX}-pillow_${PILLOW_VERSION}.zip"
+  "${RUNTIME_PREFIX}-rasterio_${RASTERIO_VERSION}.zip"
+  "${RUNTIME_PREFIX}-shapely_${SHAPELY_VERSION}.zip"
+)
+
+mkdir -p docker/layers
+
+# In CI, always download fresh layers to avoid stale cache
+# Locally, only download if missing to save time and bandwidth
+if [ "${CI}" = "true" ] || [ -n "${GITHUB_ACTIONS}" ]; then
+  echo "Running in CI - downloading fresh layers from S3"
+  for filename in "${ALL_DEP_LAYERS[@]}"; do
+    echo "Downloading ${filename}..."
+    aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
+  done
+else
+  echo "Running locally - only downloading missing layers"
+  for filename in "${ALL_DEP_LAYERS[@]}"; do
+    if ! [ -f docker/layers/${filename} ]; then
+      echo "Downloading ${filename}..."
+      aws s3 cp s3://gfw-pipelines-dev/lambda_layers/${filename} docker/layers/${filename}
+    else
+      echo "Using cached ${filename}"
+    fi
+  done
+fi
 
 docker build -t gfw-raster-analysis-test -f docker/test/Dockerfile .

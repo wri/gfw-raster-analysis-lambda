@@ -4,12 +4,18 @@ on: [pull_request]
 
 jobs:
   plan:
-    runs-on: ubuntu-latest
-
+    runs-on: "ubuntu-24.04"
     steps:
     - uses: actions/checkout@v1
+
     - name: Build Lambda layers
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_dev }}
+        AWS_REGION: ${{ secrets.aws_region_dev }}
+        AWS_REQUEST_PAYER: requester
       run: ./scripts/cibuild
+
     - name: Plan production
       if: success() && contains(github.base_ref, 'master')
       env:
@@ -18,6 +24,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_production }}
         AWS_REGION: ${{ secrets.aws_region_production }}
       run: ./scripts/infra plan -w ${{ github.base_ref }}
+
     - name: Plan staging
       if: success() && contains(github.base_ref, 'develop')
       env:
@@ -26,6 +33,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_staging }}
         AWS_REGION: ${{ secrets.aws_region_staging }}
       run: ./scripts/infra plan -w ${{ github.base_ref }}
+
     - name: Plan dev
       if: success() && (! contains(github.base_ref, 'master')) && (! contains(github.base_ref, 'develop'))
       env:

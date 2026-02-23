@@ -1,5 +1,4 @@
 # flake8: noqa
-from enum import Enum
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
@@ -18,14 +17,23 @@ from raster_analysis.exceptions import QueryParseException
 from raster_analysis.grid import Grid, GridName
 from raster_analysis.window import SourceWindow
 
+# After upgrading to Python 3.11, this can become just
+# from enum import StrEnum
+try:
+    from enum import StrEnum
+except ImportError:
+    from enum import Enum
+    class StrEnum(str, Enum):
+        pass
 
-class SpecialSelectors(str, Enum):
+
+class SpecialSelectors(StrEnum):
     latitude = "latitude"
     longitude = "longitude"
     area__ha = "area__ha"
 
 
-class ComparisonOperator(str, Enum):
+class ComparisonOperator(StrEnum):
     gt = ">"
     lt = "<"
     gte = ">="
@@ -34,12 +42,12 @@ class ComparisonOperator(str, Enum):
     neq = "!="
 
 
-class Sort(str, Enum):
+class Sort(StrEnum):
     asc = "asc"
     desc = "desc"
 
 
-class SetOperator(str, Enum):
+class SetOperator(StrEnum):
     intersect = "intersect"
     union = "union"
 
@@ -95,7 +103,7 @@ class FilterNode(Filter):
         return layers
 
 
-class SupportedAggregates(str, Enum):
+class SupportedAggregates(StrEnum):
     sum = "sum"
     avg = "avg"
     count_ = "count"
@@ -107,7 +115,7 @@ class Aggregate(BaseModel):
     alias: Optional[str] = None
 
 
-class Function(str, Enum):
+class Function(StrEnum):
     isoweek = "isoweek"
 
 

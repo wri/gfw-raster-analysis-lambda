@@ -4,15 +4,15 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: "ubuntu-24.04"
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v5
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v1
       with:
         python-version: '3.10'
+
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -20,10 +20,8 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Build container and lambda layers
-      run: |
-        ./scripts/cibuild
-    - name: Test with pytest
+
+    - name: Build and test
       env:
         ENV: test
         AWS_ACCESS_KEY_ID: ${{ secrets.aws_key_dev }}
@@ -32,7 +30,8 @@ jobs:
         AWS_XRAY_SDK_ENABLED: false
         AWS_REQUEST_PAYER: requester
       run: |
-        ./scripts/test -b ${{github.ref}} -k ${{ secrets.aws_key_dev }} -s ${{ secrets.aws_secret_dev }}
+        ./scripts/cibuild
+        ./scripts/test tests
 
     - name: Run CodeCOV action
       uses: codecov/codecov-action@v1
@@ -54,6 +53,7 @@ jobs:
       run: |
         ./scripts/infra plan -w ${{ github.ref }}
         ./scripts/infra apply
+
     - name: Deploy staging
       if: success() && contains(github.ref, 'develop')
       env:
@@ -64,6 +64,7 @@ jobs:
       run: |
         ./scripts/infra plan -w ${{ github.ref }}
         ./scripts/infra apply
+
     - name: Deploy dev
       if: success() && (! contains(github.ref, 'develop')) && (! contains(github.ref, 'master'))
       env:

@@ -5,11 +5,11 @@ terraform {
     }
     aws = {
       source = "hashicorp/aws"
-      version = ">= 4, < 5"
+      version = ">= 5, < 6"
     }
     template = {
       source = "hashicorp/template"
     }
   }
-  required_version = ">= 0.13, < 0.14"
+  required_version = "= 0.13.3"
 }
