@@ -277,7 +277,7 @@ class Query:
                 ],
                 SetOperator.union,
             )
-        raise Exception("Should we be here?")
+        raise QueryParseException(f"Unsupported filter operator: {op}")
 
     def _parse_group_by(self, query: ParseResults) -> List[Selector]:
         groups: List[Selector] = []
