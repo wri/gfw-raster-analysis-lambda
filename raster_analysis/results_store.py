@@ -198,7 +198,9 @@ class AnalysisResultsStore:
         raw_results = [StringIO(item["result"]["S"]) for item in result_items]
 
         dfs = [pd.read_csv(result) for result in raw_results]
-        results = pd.concat(dfs) if dfs else pd.DataFrame()
+        useful_dfs = [df for df in dfs if df is not None and not df.empty]
+        results = pd.concat(useful_dfs) if useful_dfs else pd.DataFrame()
+
         logging.debug(f"Result dataframe: {results.to_dict()}")
 
         return results
