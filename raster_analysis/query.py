@@ -305,18 +305,27 @@ def _parse_group_by(query: ParseResults) -> List[Selector]:
     groups: List[Selector] = []
     if "groupby" in query:
         for group in _ensure_list(query["groupby"]):
-            if isinstance(group["value"], dict):
-                func_name, layer_name = _get_first_key_value(group["value"])
+            group_value = group.get("value")
+            if group_value is None:
+                raise QueryParseException(
+                    f"Unexpected GROUP BY structure, missing 'value' key. Got: {dict(group)}"
+                )
+
+            if isinstance(group_value, dict):
+                func_name, layer_name = _get_first_key_value(group_value)
                 if func_name in Function.__members__.values():
-                    group = Selector(layer=layer_name, function=Function(func_name))
-                    groups.append(group)
+                    groups.append(Selector(layer=layer_name, function=Function(func_name)))
                 else:
                     raise QueryParseException(
-                        f"Unsupported function {func_name} for selector {layer_name} in GROUP BY"
+                        f"Unsupported function '{func_name}' for layer '{layer_name}' in GROUP BY. "
+                        f"Supported functions: {list(Function.__members__.values())}"
                     )
-            elif isinstance(group["value"], str):
-                group = Selector(layer=group["value"])
-                groups.append(group)
+            elif isinstance(group_value, str):
+                groups.append(Selector(layer=group_value))
+            else:
+                raise QueryParseException(
+                    f"Unexpected type {type(group_value).__name__} for GROUP BY value: {group_value}"
+                )
 
     return groups
 
