@@ -218,40 +218,13 @@ class Query:
             )
 
         base = Selector(layer=parsed["from"])
-        selectors, aggregates = self._parse_select(parsed)
+        selectors, aggregates = _parse_select(parsed)
         where = self._parse_where(parsed)
-        groups = self._parse_group_by(parsed)
-        order_by, sort = self._parse_order_by(parsed)
+        groups = _parse_group_by(parsed)
+        order_by, sort = _parse_order_by(parsed)
         limit = parsed.get("limit", None)
 
         return base, selectors, where, groups, aggregates, order_by, sort, limit
-
-    def _parse_select(
-        self, query: ParseResults
-    ) -> Tuple[List[Selector], List[Aggregate]]:
-        selectors: List[Selector] = []
-        aggregates: List[Aggregate] = []
-        for selector in Query._ensure_list(query["select"]):
-            alias = selector.get("name", None)
-            if isinstance(selector["value"], dict):
-                func_name, layer_name = Query._get_first_key_value(selector["value"])
-                if func_name in SupportedAggregates.__members__.values():
-                    aggregate = Aggregate(
-                        name=SupportedAggregates(func_name),
-                        layer=layer_name,
-                        alias=alias,
-                    )
-                    aggregates.append(aggregate)
-                elif func_name in Function.__members__.values():
-                    selector = Selector(
-                        layer=layer_name, function=Function(func_name), alias=alias
-                    )
-                    selectors.append(selector)
-            elif isinstance(selector["value"], str):
-                selector = Selector(layer=selector["value"], alias=alias)
-                selectors.append(selector)
-
-        return selectors, aggregates
 
     def _parse_where(self, query: ParseResults) -> Filter:
         if "where" in query:
@@ -260,7 +233,7 @@ class Query:
         return Filter()
 
     def _parse_filter(self, filter) -> FilterNode:
-        op, values = self._get_first_key_value(filter)
+        op, values = _get_first_key_value(filter)
         if op in ["and", "or"]:
             filters = [self._parse_filter(value) for value in values]
             return FilterNode(filters, self.get_set_operator(op))
@@ -279,54 +252,84 @@ class Query:
             )
         raise QueryParseException(f"Unsupported filter operator: {op}")
 
-    def _parse_group_by(self, query: ParseResults) -> List[Selector]:
-        groups: List[Selector] = []
-        if "groupby" in query:
-            for group in Query._ensure_list(query["groupby"]):
-                if isinstance(group["value"], dict):
-                    func_name, layer_name = Query._get_first_key_value(group["value"])
-                    if func_name in Function.__members__.values():
-                        group = Selector(layer=layer_name, function=Function(func_name))
-                        groups.append(group)
-                    else:
-                        raise QueryParseException(
-                            f"Unsupported function {func_name} for selector {layer_name} in GROUP BY"
-                        )
-                elif isinstance(group["value"], str):
-                    group = Selector(layer=group["value"])
+
+# the SQL parser sometimes outputs a list or single value depending on input,
+# Just a helper to make it consistent
+def _ensure_list(a: Union[List, Any]) -> List:
+    return a if isinstance(a, List) else [a]
+
+
+# certain things are parsed single key value pairs, so just get the first key value pair
+def _get_first_key_value(d: Dict[str, Any]) -> Tuple[str, Any]:
+    for key, val in d.items():
+        return (key, val)
+    raise Exception("Should we be here?")
+
+
+def get_set_operator(sql_op: str) -> SetOperator:
+    return {
+        "and": SetOperator.intersect,
+        "or": SetOperator.union,
+    }[sql_op]
+
+
+def _parse_select(
+        query: ParseResults
+) -> Tuple[List[Selector], List[Aggregate]]:
+    selectors: List[Selector] = []
+    aggregates: List[Aggregate] = []
+    for selector in _ensure_list(query["select"]):
+        alias = selector.get("name", None)
+        if isinstance(selector["value"], dict):
+            func_name, layer_name = _get_first_key_value(selector["value"])
+            if func_name in SupportedAggregates.__members__.values():
+                aggregate = Aggregate(
+                    name=SupportedAggregates(func_name),
+                    layer=layer_name,
+                    alias=alias,
+                )
+                aggregates.append(aggregate)
+            elif func_name in Function.__members__.values():
+                selector = Selector(
+                    layer=layer_name, function=Function(func_name), alias=alias
+                )
+                selectors.append(selector)
+        elif isinstance(selector["value"], str):
+            selector = Selector(layer=selector["value"], alias=alias)
+            selectors.append(selector)
+
+    return selectors, aggregates
+
+
+def _parse_group_by(query: ParseResults) -> List[Selector]:
+    groups: List[Selector] = []
+    if "groupby" in query:
+        for group in _ensure_list(query["groupby"]):
+            if isinstance(group["value"], dict):
+                func_name, layer_name = _get_first_key_value(group["value"])
+                if func_name in Function.__members__.values():
+                    group = Selector(layer=layer_name, function=Function(func_name))
                     groups.append(group)
+                else:
+                    raise QueryParseException(
+                        f"Unsupported function {func_name} for selector {layer_name} in GROUP BY"
+                    )
+            elif isinstance(group["value"], str):
+                group = Selector(layer=group["value"])
+                groups.append(group)
 
-        return groups
+    return groups
 
-    def _parse_order_by(self, query: ParseResults) -> Tuple[List[Selector], Any]:
-        order_bys: List[Selector] = []
-        sort = Sort.asc
 
-        if "orderby" in query:
-            for order_by in Query._ensure_list(query["orderby"]):
-                order_bys.append(Selector(layer=order_by["value"]))
+def _parse_order_by(query: ParseResults) -> Tuple[List[Selector], Any]:
+    order_bys: List[Selector] = []
+    sort = Sort.asc
 
-                if "sort" in order_by:
-                    sort = order_by["sort"].lower()
+    if "orderby" in query:
+        for order_by in _ensure_list(query["orderby"]):
+            order_bys.append(Selector(layer=order_by["value"]))
 
-        return order_bys, sort
+            if "sort" in order_by:
+                sort = order_by["sort"].lower()
 
-    # the SQL parser sometimes outputs a list or single value depending on input,
-    # Just a helper to make it consistent
-    @staticmethod
-    def _ensure_list(a: Union[List, Any]) -> List:
-        return a if isinstance(a, List) else [a]
-
-    # certain things are parsed single key value pairs, so just get the first key value pair
-    @staticmethod
-    def _get_first_key_value(d: Dict[str, Any]) -> Tuple[str, Any]:
-        for key, val in d.items():
-            return (key, val)
-        raise Exception("Should we be here?")
-
-    @staticmethod
-    def get_set_operator(sql_op: str) -> SetOperator:
-        return {
-            "and": SetOperator.intersect,
-            "or": SetOperator.union,
-        }[sql_op]
+    return order_bys, sort
