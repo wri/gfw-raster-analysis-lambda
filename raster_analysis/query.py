@@ -236,7 +236,7 @@ class Query:
         op, values = _get_first_key_value(filter)
         if op in ["and", "or"]:
             filters = [self._parse_filter(value) for value in values]
-            return FilterNode(filters, self.get_set_operator(op))
+            return FilterNode(filters, get_set_operator(op))
         elif op in ComparisonOperator.__members__:
             layer, value = values
             if isinstance(value, dict):
