@@ -330,15 +330,36 @@ def _parse_group_by(query: ParseResults) -> List[Selector]:
     return groups
 
 
-def _parse_order_by(query: ParseResults) -> Tuple[List[Selector], Any]:
+def _parse_order_by(query: ParseResults) -> Tuple[List[Selector], Sort]:
     order_bys: List[Selector] = []
     sort = Sort.asc
 
     if "orderby" in query:
         for order_by in _ensure_list(query["orderby"]):
-            order_bys.append(Selector(layer=order_by["value"]))
+            order_by_value = order_by.get("value")
+            if order_by_value is None:
+                raise QueryParseException(
+                    f"Unexpected ORDER BY structure, missing 'value' key. Got: {dict(order_by)}"
+                )
+
+            order_bys.append(Selector(layer=order_by_value))
 
             if "sort" in order_by:
-                sort = order_by["sort"].lower()
+                try:
+                    column_sort = Sort(order_by["sort"].lower())
+                except ValueError:
+                    raise QueryParseException(
+                        f"Unsupported sort direction '{order_by['sort']}' for layer "
+                        f"'{order_by_value}'. Supported directions: {list(Sort)}"
+                    )
+
+                if order_bys and column_sort != sort and len(order_bys) > 1:
+                    raise QueryParseException(
+                        f"Conflicting sort directions in ORDER BY: '{order_bys[0].layer}' "
+                        f"is '{sort}' but '{order_by_value}' is '{column_sort}'. "
+                        f"All ORDER BY columns must use the same sort direction."
+                    )
+
+                sort = column_sort
 
     return order_bys, sort
