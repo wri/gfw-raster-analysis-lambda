@@ -100,7 +100,8 @@ class DataEnvironment(BaseModel):
                     )
 
         LOGGER.error(
-            f"Could not find layer with name {name} in data environment {json.dumps(self.dict())}"
+            f"Could not find layer with name {name} in data environment: "
+            f"{[layer.name for layer in self.layers]}"
         )
         raise QueryParseException(f"Layer {name} is invalid")
 
