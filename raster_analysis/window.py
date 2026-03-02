@@ -73,7 +73,7 @@ class SourceWindow:
         """
 
         with rasterio.Env(AWS_REQUEST_PAYER="requester"):
-            LOGGER.info(f"Reading raster source {raster}")
+            LOGGER.debug(f"Reading raster source {raster}")
             with rasterio.open(raster) as src:
                 try:
                     window, shifted_affine = SourceWindow._get_window_and_affine(
