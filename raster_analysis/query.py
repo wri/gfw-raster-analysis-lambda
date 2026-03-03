@@ -226,59 +226,59 @@ class Query:
 
         return base, selectors, where, groups, aggregates, order_by, sort, limit
 
-    def _parse_select(
-            query: ParseResults
-    ) -> Tuple[List[Selector], List[Aggregate]]:
-        selectors: List[Selector] = []
-        aggregates: List[Aggregate] = []
-        for selector in _ensure_list(query["select"]):
-            alias = selector.get("name", None)
-            if isinstance(selector["value"], dict):
-                func_name, layer_name = _get_first_key_value(selector["value"])
-                if func_name in SupportedAggregates.__members__.values():
-                    aggregate = Aggregate(
-                        name=SupportedAggregates(func_name),
-                        layer=layer_name,
-                        alias=alias,
-                    )
-                    aggregates.append(aggregate)
-                elif func_name in Function.__members__.values():
-                    selector = Selector(
-                        layer=layer_name, function=Function(func_name), alias=alias
-                    )
-                    selectors.append(selector)
-            elif isinstance(selector["value"], str):
-                selector = Selector(layer=selector["value"], alias=alias)
+def _parse_select(
+    query: ParseResults
+) -> Tuple[List[Selector], List[Aggregate]]:
+    selectors: List[Selector] = []
+    aggregates: List[Aggregate] = []
+    for selector in _ensure_list(query["select"]):
+        alias = selector.get("name", None)
+        if isinstance(selector["value"], dict):
+            func_name, layer_name = _get_first_key_value(selector["value"])
+            if func_name in SupportedAggregates.__members__.values():
+                aggregate = Aggregate(
+                    name=SupportedAggregates(func_name),
+                    layer=layer_name,
+                    alias=alias,
+                )
+                aggregates.append(aggregate)
+            elif func_name in Function.__members__.values():
+                selector = Selector(
+                    layer=layer_name, function=Function(func_name), alias=alias
+                )
                 selectors.append(selector)
+        elif isinstance(selector["value"], str):
+            selector = Selector(layer=selector["value"], alias=alias)
+            selectors.append(selector)
 
-        return selectors, aggregates
+    return selectors, aggregates
 
 
-    def _parse_where(self, query: ParseResults) -> Filter:
-        if "where" in query:
-            return self._parse_filter(query["where"])
+def _parse_where(self, query: ParseResults) -> Filter:
+    if "where" in query:
+        return self._parse_filter(query["where"])
 
-        return Filter()
+    return Filter()
 
-    def _parse_filter(self, filter) -> FilterNode:
-        op, values = _get_first_key_value(filter)
-        if op in ["and", "or"]:
-            filters = [self._parse_filter(value) for value in values]
-            return FilterNode(filters, get_set_operator(op))
-        elif op in ComparisonOperator.__members__:
-            layer, value = values
-            if isinstance(value, dict):
-                value = value["literal"]
+def _parse_filter(self, filter) -> FilterNode:
+    op, values = _get_first_key_value(filter)
+    if op in ["and", "or"]:
+        filters = [self._parse_filter(value) for value in values]
+        return FilterNode(filters, get_set_operator(op))
+    elif op in ComparisonOperator.__members__:
+        layer, value = values
+        if isinstance(value, dict):
+            value = value["literal"]
 
-            encoded_values = self.data_environment.encode_layer(layer, value)
-            return FilterNode(
-                [
-                    FilterLeaf(layer, ComparisonOperator[op], enc_val)
-                    for enc_val in encoded_values
-                ],
-                SetOperator.union,
-            )
-        raise QueryParseException(f"Unsupported filter operator: {op}")
+        encoded_values = self.data_environment.encode_layer(layer, value)
+        return FilterNode(
+            [
+                FilterLeaf(layer, ComparisonOperator[op], enc_val)
+                for enc_val in encoded_values
+            ],
+            SetOperator.union,
+        )
+    raise QueryParseException(f"Unsupported filter operator: {op}")
 
 
 def _parse_group_by(query: ParseResults) -> List[Selector]:
