@@ -226,6 +226,34 @@ class Query:
 
         return base, selectors, where, groups, aggregates, order_by, sort, limit
 
+    def _parse_select(
+            query: ParseResults
+    ) -> Tuple[List[Selector], List[Aggregate]]:
+        selectors: List[Selector] = []
+        aggregates: List[Aggregate] = []
+        for selector in _ensure_list(query["select"]):
+            alias = selector.get("name", None)
+            if isinstance(selector["value"], dict):
+                func_name, layer_name = _get_first_key_value(selector["value"])
+                if func_name in SupportedAggregates.__members__.values():
+                    aggregate = Aggregate(
+                        name=SupportedAggregates(func_name),
+                        layer=layer_name,
+                        alias=alias,
+                    )
+                    aggregates.append(aggregate)
+                elif func_name in Function.__members__.values():
+                    selector = Selector(
+                        layer=layer_name, function=Function(func_name), alias=alias
+                    )
+                    selectors.append(selector)
+            elif isinstance(selector["value"], str):
+                selector = Selector(layer=selector["value"], alias=alias)
+                selectors.append(selector)
+
+        return selectors, aggregates
+
+
     def _parse_where(self, query: ParseResults) -> Filter:
         if "where" in query:
             return self._parse_filter(query["where"])
@@ -251,54 +279,6 @@ class Query:
                 SetOperator.union,
             )
         raise QueryParseException(f"Unsupported filter operator: {op}")
-
-
-# the SQL parser sometimes outputs a list or single value depending on input,
-# Just a helper to make it consistent
-def _ensure_list(a: Union[List, Any]) -> List:
-    return a if isinstance(a, List) else [a]
-
-
-# certain things are parsed single key value pairs, so just get the first key value pair
-def _get_first_key_value(d: Dict[str, Any]) -> Tuple[str, Any]:
-    for key, val in d.items():
-        return (key, val)
-    raise Exception("Should we be here?")
-
-
-def get_set_operator(sql_op: str) -> SetOperator:
-    return {
-        "and": SetOperator.intersect,
-        "or": SetOperator.union,
-    }[sql_op]
-
-
-def _parse_select(
-        query: ParseResults
-) -> Tuple[List[Selector], List[Aggregate]]:
-    selectors: List[Selector] = []
-    aggregates: List[Aggregate] = []
-    for selector in _ensure_list(query["select"]):
-        alias = selector.get("name", None)
-        if isinstance(selector["value"], dict):
-            func_name, layer_name = _get_first_key_value(selector["value"])
-            if func_name in SupportedAggregates.__members__.values():
-                aggregate = Aggregate(
-                    name=SupportedAggregates(func_name),
-                    layer=layer_name,
-                    alias=alias,
-                )
-                aggregates.append(aggregate)
-            elif func_name in Function.__members__.values():
-                selector = Selector(
-                    layer=layer_name, function=Function(func_name), alias=alias
-                )
-                selectors.append(selector)
-        elif isinstance(selector["value"], str):
-            selector = Selector(layer=selector["value"], alias=alias)
-            selectors.append(selector)
-
-    return selectors, aggregates
 
 
 def _parse_group_by(query: ParseResults) -> List[Selector]:
@@ -363,3 +343,23 @@ def _parse_order_by(query: ParseResults) -> Tuple[List[Selector], Sort]:
                 sort = column_sort
 
     return order_bys, sort
+
+
+# the SQL parser sometimes outputs a list or single value depending on input,
+# Just a helper to make it consistent
+def _ensure_list(a: Union[List, Any]) -> List:
+    return a if isinstance(a, List) else [a]
+
+
+# certain things are parsed single key value pairs, so just get the first key value pair
+def _get_first_key_value(d: Dict[str, Any]) -> Tuple[str, Any]:
+    for key, val in d.items():
+        return (key, val)
+    raise Exception("Should we be here?")
+
+
+def get_set_operator(sql_op: str) -> SetOperator:
+    return {
+        "and": SetOperator.intersect,
+        "or": SetOperator.union,
+    }[sql_op]
