@@ -226,6 +226,14 @@ class Query:
 
         return base, selectors, where, groups, aggregates, order_by, sort, limit
 
+
+    def _parse_where(self, query: ParseResults) -> Filter:
+        if "where" in query:
+            return _parse_filter(query["where"], self.data_environment)
+
+        return Filter()
+
+
 def _parse_select(
     query: ParseResults
 ) -> Tuple[List[Selector], List[Aggregate]]:
@@ -254,23 +262,17 @@ def _parse_select(
     return selectors, aggregates
 
 
-def _parse_where(self, query: ParseResults) -> Filter:
-    if "where" in query:
-        return self._parse_filter(query["where"])
-
-    return Filter()
-
-def _parse_filter(self, filter) -> FilterNode:
+def _parse_filter(filter, data_environment) -> FilterNode:
     op, values = _get_first_key_value(filter)
     if op in ["and", "or"]:
-        filters = [self._parse_filter(value) for value in values]
+        filters = [_parse_filter(value, data_environment) for value in values]
         return FilterNode(filters, get_set_operator(op))
     elif op in ComparisonOperator.__members__:
         layer, value = values
         if isinstance(value, dict):
             value = value["literal"]
 
-        encoded_values = self.data_environment.encode_layer(layer, value)
+        encoded_values = data_environment.encode_layer(layer, value)
         return FilterNode(
             [
                 FilterLeaf(layer, ComparisonOperator[op], enc_val)
