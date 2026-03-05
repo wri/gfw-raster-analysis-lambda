@@ -175,14 +175,14 @@ DATA_ENVIRONMENT = [
     {
         "source_layer": "umd_glad_landsat_alerts__date_conf",
         "name": "umd_glad_landsat_alerts__date",
-        "calc": "A % 10000",
-        "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
-        "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
+        "calc": "A.astype(uint16) % 10000",
+        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2015-01-01', 'D')).astype(str)",
+        "encode_expression": "(datetime64(A, 'D') - datetime64('2015-01-01', 'D')).astype(uint16)",
     },
     {
         "source_layer": "umd_glad_landsat_alerts__date_conf",
         "name": "umd_glad_landsat_alerts__confidence",
-        "calc": "floor(A / 10000).astype(uint8)",
+        "calc": "floor(A.astype(uint16) / 10000).astype(uint8)",
         "raster_table": {
             "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
         },
@@ -224,14 +224,14 @@ DATA_ENVIRONMENT_10M = [
     {
         "source_layer": "umd_glad_sentinel2_alerts__date_conf",
         "name": "umd_glad_sentinel2_alerts__date",
-        "calc": "A % 10000",
-        "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
-        "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
+        "calc": "A.astype(uint16) % 10000",
+        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2015-01-01', 'D')).astype(str)",
+        "encode_expression": "(datetime64(A, 'D') - datetime64('2015-01-01', 'D')).astype(uint16)",
     },
     {
         "source_layer": "umd_glad_sentinel2_alerts__date_conf",
         "name": "umd_glad_sentinel2_alerts__confidence",
-        "calc": "floor(A / 10000)",
+        "calc": "floor(A.astype(uint16) / 10000).astype(uint8)",
         "raster_table": {
             "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
         },
@@ -245,14 +245,14 @@ DATA_ENVIRONMENT_10M = [
     {
         "source_layer": "gfw_radd_alerts__date_conf",
         "name": "gfw_radd_alerts__date",
-        "calc": "A % 10000",
-        "decode_expression": "(A + 16435).astype('datetime64[D]').astype(str)",
-        "encode_expression": "(datetime64(A) - 16435).astype(uint16)",
+        "calc": "A.astype(uint16) % 10000",
+        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2015-01-01', 'D')).astype(str)",
+        "encode_expression": "(datetime64(A, 'D') - datetime64('2015-01-01', 'D')).astype(uint16)",
     },
     {
         "source_layer": "gfw_radd_alerts__date_conf",
         "name": "gfw_radd_alerts__confidence",
-        "calc": "floor(A / 10000)",
+        "calc": "floor(A.astype(uint16) / 10000).astype(uint8)",
         "raster_table": {
             "rows": [{"value": 2, "meaning": ""}, {"value": 3, "meaning": "high"}]
         },
