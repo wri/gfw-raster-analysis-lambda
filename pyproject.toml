@@ -2,7 +2,7 @@
 name = "gfw-raster-analysis-lambda"
 version = "2.0.1"
 description = "Lambda function for serverless on-the-fly raster analysis"
-requires-python = "~= 3.10.0"
+requires-python = "~= 3.11.0"
 authors = [
     {name = "Justin Terry"},
     {name = "Thomas Maschler"},
@@ -37,10 +37,10 @@ test = [
     "pytest-mock==3.15.1",
     "requests-mock==1.12.1",
     # Runtime deps needed for tests (from Lambda layers when deployed)
-    "numpy==1.26.4",
-    "pandas==1.5.3",
+    "numpy==2.2.6",
+    "pandas==2.3.3",
     "rasterio[s3]==1.4.3",
-    "shapely==1.8.5post1",
+    "shapely==2.1.2",
 ]
 dev = [
     "asyncclick==v8.3.0.3",  # For stress test script
