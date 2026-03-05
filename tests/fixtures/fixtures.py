@@ -176,8 +176,8 @@ DATA_ENVIRONMENT = [
         "source_layer": "umd_glad_landsat_alerts__date_conf",
         "name": "umd_glad_landsat_alerts__date",
         "calc": "A.astype(uint16) % 10000",
-        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2015-01-01', 'D')).astype(str)",
-        "encode_expression": "(datetime64(A, 'D') - datetime64('2015-01-01', 'D')).astype(uint16)",
+        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2014-12-31', 'D')).astype(str)",
+        "encode_expression": "(datetime64(A, 'D') - datetime64('2014-12-31', 'D')).astype(uint16)",
     },
     {
         "source_layer": "umd_glad_landsat_alerts__date_conf",
@@ -225,8 +225,8 @@ DATA_ENVIRONMENT_10M = [
         "source_layer": "umd_glad_sentinel2_alerts__date_conf",
         "name": "umd_glad_sentinel2_alerts__date",
         "calc": "A.astype(uint16) % 10000",
-        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2015-01-01', 'D')).astype(str)",
-        "encode_expression": "(datetime64(A, 'D') - datetime64('2015-01-01', 'D')).astype(uint16)",
+        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2014-12-31', 'D')).astype(str)",
+        "encode_expression": "(datetime64(A, 'D') - datetime64('2014-12-31', 'D')).astype(uint16)",
     },
     {
         "source_layer": "umd_glad_sentinel2_alerts__date_conf",
@@ -246,8 +246,8 @@ DATA_ENVIRONMENT_10M = [
         "source_layer": "gfw_radd_alerts__date_conf",
         "name": "gfw_radd_alerts__date",
         "calc": "A.astype(uint16) % 10000",
-        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2015-01-01', 'D')).astype(str)",
-        "encode_expression": "(datetime64(A, 'D') - datetime64('2015-01-01', 'D')).astype(uint16)",
+        "decode_expression": "(A.astype('timedelta64[D]') + datetime64('2014-12-31', 'D')).astype(str)",
+        "encode_expression": "(datetime64(A, 'D') - datetime64('2014-12-31', 'D')).astype(uint16)",
     },
     {
         "source_layer": "gfw_radd_alerts__date_conf",
