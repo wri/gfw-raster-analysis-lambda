@@ -23,6 +23,7 @@ try:
     from enum import StrEnum
 except ImportError:
     from enum import Enum
+
     class StrEnum(str, Enum):
         pass
 
@@ -127,6 +128,28 @@ class Selector(BaseModel):
     def __hash__(self):
         return hash(self.layer)
 
+    def __eq__(self, other: object) -> bool:
+        # `alias` is purely presentational (it drives column renaming at the
+        # end of postprocessing) and must NOT influence deduplication.
+        #
+        # Without this override, Pydantic's default __eq__ compares every
+        # field, so Selector(layer="x", alias="y") != Selector(layer="x").
+        # That makes dict.fromkeys — which uses both hash() AND == to detect
+        # duplicates — silently keep both selectors when they share a layer
+        # but differ only in alias (e.g. SELECT date AS d … GROUP BY date).
+        #
+        # _postprocess_results then calls decode_layer() once per selector,
+        # hitting the column twice: the second call receives already-decoded
+        # date strings and A.astype("timedelta64[D]") calls
+        # pd.to_timedelta("2026-01-01"), raising:
+        #   ValueError: only leading negative signs are allowed
+        #
+        # Keeping __eq__ consistent with __hash__ (layer only) ensures
+        # dict.fromkeys removes the duplicate and decode_layer is called once.
+        if isinstance(other, Selector):
+            return self.layer == other.layer
+        return NotImplemented
+
 
 class Query:
     def __init__(self, query: str, data_environment: DataEnvironment):
@@ -226,7 +249,6 @@ class Query:
 
         return base, selectors, where, groups, aggregates, order_by, sort, limit
 
-
     def _parse_where(self, query: ParseResults) -> Filter:
         if "where" in query:
             return _parse_filter(query["where"], self.data_environment)
@@ -234,9 +256,7 @@ class Query:
         return Filter()
 
 
-def _parse_select(
-    query: ParseResults
-) -> Tuple[List[Selector], List[Aggregate]]:
+def _parse_select(query: ParseResults) -> Tuple[List[Selector], List[Aggregate]]:
     selectors: List[Selector] = []
     aggregates: List[Aggregate] = []
     for selector in _ensure_list(query["select"]):
@@ -296,7 +316,9 @@ def _parse_group_by(query: ParseResults) -> List[Selector]:
             if isinstance(group_value, dict):
                 func_name, layer_name = _get_first_key_value(group_value)
                 if func_name in Function.__members__.values():
-                    groups.append(Selector(layer=layer_name, function=Function(func_name)))
+                    groups.append(
+                        Selector(layer=layer_name, function=Function(func_name))
+                    )
                 else:
                     raise QueryParseException(
                         f"Unsupported function '{func_name}' for layer '{layer_name}' in GROUP BY. "
