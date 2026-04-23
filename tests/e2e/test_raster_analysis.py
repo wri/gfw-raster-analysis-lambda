@@ -266,6 +266,7 @@ def context(monkeypatch):
         print("[TEARDOWN] Cleanup complete\n", file=sys.stderr)
 
 
+@pytest.mark.skip("Version has been deleted, will divorce from S3 in subsequent PR")
 def test_primary_tree_cover_loss(context):
     query = "select sum(area__ha) AS umd_tree_cover_loss__ha, sum(gfw_forest_carbon_gross_emissions__Mg_CO2e) AS gfw_forest_carbon_gross_emissions__Mg_CO2e from umd_tree_cover_loss__year where is__umd_regional_primary_forest_2001 = 'true' and (umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true') group by umd_tree_cover_loss__year"
     result = tiled_handler(
@@ -473,6 +474,7 @@ def test_beyond_extent(context):
     assert not result["data"]
 
 
+@pytest.mark.skip("Version has been deleted, will divorce from S3 in subsequent PR")
 def test_net_flux(context):
     query = "select sum(gfw_forest_carbon_net_flux__Mg_CO2e), sum(gfw_forest_carbon_gross_emissions__Mg_CO2e), sum(gfw_forest_carbon_gross_removals__Mg_CO2e) from data where umd_tree_cover_density_2000__threshold >= 30 or is__umd_tree_cover_gain = 'true'"
     result = tiled_handler(
