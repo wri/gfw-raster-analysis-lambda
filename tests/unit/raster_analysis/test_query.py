@@ -99,6 +99,7 @@ class TestParseGroupBy:
         error_message = str(exc_info.value)
         assert "list" in error_message
 
+
     # ---------------------------------------------------------------------------
     # Sanity checks: valid inputs still work correctly
     # ---------------------------------------------------------------------------
