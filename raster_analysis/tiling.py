@@ -1,4 +1,5 @@
 import json
+import math
 import sys
 from copy import deepcopy
 from datetime import datetime
@@ -7,6 +8,7 @@ from typing import Any, Dict, List, Tuple, Optional, Protocol
 
 from pandas import DataFrame
 from shapely.geometry import Polygon, box, mapping, shape
+from shapely.prepared import prep
 
 from raster_analysis.boto import invoke_lambda, lambda_client
 from raster_analysis.data_environment import DataEnvironment
@@ -162,23 +164,26 @@ class AnalysisTiler:
         tiles = self._get_tiles(self.grid.tile_degrees)
 
         results_store = self.results_store
-        tile_keys = [
-            results_store.get_cache_key(tile, self.geom, self.raw_query)
+
+        # Compute each cache key exactly once — get_cache_key does a Shapely
+        # intersection + WKT serialization + MD5 hash per tile, so repeated
+        # calls for the same tile are wasteful.
+        tile_key_map: Dict[int, str] = {
+            id(tile): results_store.get_cache_key(tile, self.geom, self.raw_query)
             for tile in tiles
-        ]
-        cached_tile_keys = [
+        }
+        tile_keys = [tile_key_map[id(tile)] for tile in tiles]
+
+        cached_tile_keys = {
             status["tile_id"]["S"]
             for status in results_store.get_statuses(
                 tile_keys, status_filter=ResultStatus.success
             )
-        ]
-        cache_keys_for_lambda = list(set(tile_keys) - set(cached_tile_keys))
+        }
         tiles_for_lambda = [
-            tile
-            for tile in tiles
-            if results_store.get_cache_key(tile, self.geom, self.raw_query)
-            in cache_keys_for_lambda
+            tile for tile in tiles if tile_key_map[id(tile)] not in cached_tile_keys
         ]
+        cache_keys_for_lambda = [tile_key_map[id(tile)] for tile in tiles_for_lambda]
         geom_count = len(tiles_for_lambda)
 
         LOGGER.info(f"Processing {geom_count} tiles")
@@ -186,18 +191,14 @@ class AnalysisTiler:
         if geom_count <= FANOUT_NUM:
             for tile in tiles_for_lambda:
                 tile_payload = deepcopy(payload)
-                tile_id = results_store.get_cache_key(tile, self.geom, self.raw_query)
-                tile_payload["cache_id"] = tile_id
+                tile_payload["cache_id"] = tile_key_map[id(tile)]
                 tile_payload["tile"] = mapping(tile)
                 self.invoker.invoke(
                     tile_payload, RASTER_ANALYSIS_LAMBDA_NAME
                 )
         else:
             tile_geojsons = [
-                (
-                    results_store.get_cache_key(tile, self.geom, self.raw_query),
-                    mapping(tile),
-                )
+                (tile_key_map[id(tile)], mapping(tile))
                 for tile in tiles
             ]
             tile_chunks = [
@@ -210,7 +211,7 @@ class AnalysisTiler:
                 self.invoker.invoke(event, FANOUT_LAMBDA_NAME)
 
         LOGGER.info(
-            f"Geom count: going to lambda: {geom_count}, fetched from catch: {len(tile_keys) - geom_count}"
+            f"Geom count: going to lambda: {geom_count}, fetched from cache: {len(tile_keys) - geom_count}"
         )
 
         results = results_store.wait_for_results(cache_keys_for_lambda, tile_keys)
@@ -221,20 +222,32 @@ class AnalysisTiler:
         """Get width x width tile geometries over the extent of the geometry
         snapped to global tile grid of size width."""
         min_x, min_y, max_x, max_y = self._get_rounded_bounding_box(self.geom, width)
-        tiles = []
 
-        for i in range(0, int((max_x - min_x) / width)):
-            for j in range(0, int((max_y - min_y) / width)):
-                tile = box(
-                    (i * width) + min_x,
-                    (j * width) + min_y,
-                    ((i + 1) * width) + min_x,
-                    ((j + 1) * width) + min_y,
-                )
-                if self.geom.intersects(tile):
+        # Number of tiles in each dimension (ceil avoids dropping edge tiles)
+        nx = int(math.ceil((max_x - min_x) / width))
+        ny = int(math.ceil((max_y - min_y) / width))
+
+        gprep = prep(self.geom)
+        tiles: List[Polygon] = []
+
+        # Localize for speed in Python loops
+        bx = box
+        base_x = min_x
+        base_y = min_y
+        w = width
+
+        for i in range(nx):
+            x0 = (i * w) + base_x
+            x1 = x0 + w
+            for j in range(ny):
+                y0 = (j * w) + base_y
+                y1 = y0 + w
+                tile = bx(x0, y0, x1, y1)
+                if gprep.intersects(tile):
                     tiles.append(tile)
 
         return tiles
+
 
     @staticmethod
     def _get_rounded_bounding_box(

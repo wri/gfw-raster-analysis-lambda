@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import md5
 from io import StringIO
-from time import sleep
+from time import sleep, monotonic
 from typing import Any, Dict, List, Optional, Sequence
 
 import pandas as pd
@@ -17,11 +17,10 @@ from raster_analysis.globals import (
     DYNAMODB_REQUEST_ITEMS_LIMIT,
     DYNAMODB_WRITE_ITEMS_LIMIT,
     RESULTS_CACHE_TTL_SECONDS,
-    RESULTS_CHECK_INTERVAL,
-    RESULTS_CHECK_TRIES,
     TILED_RESULTS_TABLE_NAME,
     TILED_STATUS_TABLE_NAME,
     BasePolygon,
+    RESULTS_CHECK_TIMEOUT,
 )
 
 # After upgrading to Python 3.11, this can become just
@@ -172,27 +171,36 @@ class AnalysisResultsStore:
     def wait_for_results(
         self, lambda_tiles: List[str], all_tiles: List[str]
     ) -> DataFrame:
-        curr_count = 0
-        tries = 0
         num_results = len(lambda_tiles)
+        completed: set = set()
 
-        while curr_count < len(lambda_tiles) and tries < RESULTS_CHECK_TRIES:
-            sleep(RESULTS_CHECK_INTERVAL)
-            tries += 1
+        # Exponential backoff: start fast for short jobs, slow down for long ones.
+        # Interval doubles each poll up to a 2-second ceiling.
+        interval = 0.1
+        max_interval = 2.0
+        deadline = monotonic() + RESULTS_CHECK_TIMEOUT
+
+        while len(completed) < num_results:
+            sleep(interval)
+            interval = min(interval * 2, max_interval)
 
             statuses = self.get_statuses(lambda_tiles)
             for item in statuses:
-                if item["status"]["S"] == ResultStatus.error.value:
+                tile_id = item["tile_id"]["S"]
+                status = item["status"]["S"]
+                if status == ResultStatus.error.value:
                     raise RasterAnalysisException(
-                        f"Tile {item['tile_id']} encountered error: {item['detail']}"
+                        f"Tile {tile_id} encountered error: {item['detail']}"
                     )
+                # Count any terminal status as done so that a persistently
+                # erroring tile doesn't cause us to spin until timeout.
+                completed.add(tile_id)
 
-            curr_count = len(statuses)
-
-        if curr_count != num_results:
-            raise TimeoutError(
-                f"Timeout occurred before all lambdas completed. Result count: {num_results}; results completed: {curr_count}"
-            )
+            if monotonic() >= deadline:
+                raise TimeoutError(
+                    f"Timeout occurred before all lambdas completed. "
+                    f"Result count: {num_results}; results completed: {len(completed)}"
+                )
 
         result_items = self.get_results(all_tiles)
         raw_results = [StringIO(item["result"]["S"]) for item in result_items]
