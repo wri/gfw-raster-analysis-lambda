@@ -44,7 +44,7 @@ test = [
 dev = [
     "asyncclick==v8.3.0.3",  # For stress test script
     "gfw-raster-analysis-lambda[test]",  # Include all test dependencies
-    "pre-commit==4.5.1",
+    "pre-commit",
 ]
 
 [tool.setuptools]
