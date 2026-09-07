@@ -1,8 +1,7 @@
 FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.12
 
-RUN yum update -y && \
-    yum install -y gzip unzip tar && \
-    yum clean all
+RUN dnf update -y && \
+    dnf install -y gzip unzip tar zip
 
 # App code goes under /var/task (Lambda task root)
 WORKDIR /var/task
