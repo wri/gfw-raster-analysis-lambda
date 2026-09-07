@@ -14,24 +14,24 @@ dependencies = [
     "aws-xray-sdk==2.15.0",
     "codeguru-profiler-agent==1.2.6",
     "geobuf==2.0.1",
-    "mo-parsing==8.694.25301",
-    "mo-sql-parsing==11.697.25301",
-    "protobuf==6.33.5",
-    "pydantic==1.10.12",
-    "pyproj==3.7.1",
-    "requests==2.32.5",
+    "mo-parsing==9.3.26234",
+    "mo-sql-parsing==11.699.26234",
+    "protobuf==7.36.1",
+    "pydantic<2",
+    "pyproj==3.7.2",
+    "requests==2.34.2",
     # Note: Heavy binary deps (numpy, pandas, rasterio, shapely, geopandas, pillow, mercantile)
-    # are provided via the actual used pre-built Lambda layers downloaded from S3
+    # are provided via the pre-built Lambda layers downloaded from S3
 ]
 
 [project.optional-dependencies]
 test = [
     "detect-secrets==1.5.0",
-    "flask==3.1.2",
+    "flask==3.1.3",
     "moto[server]==4.2.14",
-    "pytest==9.0.2",
-    "pytest-cov==7.0.0",
-    "pytest-env==1.2.0",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "pytest-env==1.7.0",
     "pytest-mock==3.15.1",
     "requests-mock==1.12.1",
     # Runtime deps needed for tests (from Lambda layers when deployed)
@@ -42,7 +42,7 @@ test = [
     "shapely==2.1.2",
 ]
 dev = [
-    "asyncclick==v8.3.0.3",  # For stress test script
+    "asyncclick==v8.4.2.1",  # For stress test script
     "gfw-raster-analysis-lambda[test]",  # Include all test dependencies
     "pre-commit",
 ]
