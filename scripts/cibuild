@@ -30,14 +30,14 @@ done
 
 # Now download the lambda layers containing packages that the above
 # lambda(s) depend on
-RUNTIME_PREFIX="python3.11"
+RUNTIME_PREFIX="python3.12"
 
 GEOPANDAS_VERSION="1.1.2"
 MERCANTILE_VERSION="1.2.1"
 NUMPY_VERSION="2.2.6"
-PANDAS_VERSION="2.3.3"
+PANDAS_VERSION="2.3.2"
 PILLOW_VERSION="12.1.1"
-RASTERIO_VERSION="1.4.3"
+RASTERIO_VERSION="1.5.1"
 SHAPELY_VERSION="2.1.2"
 
 ALL_DEP_LAYERS=(
