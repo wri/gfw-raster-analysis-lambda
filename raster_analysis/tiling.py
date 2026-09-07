@@ -123,9 +123,9 @@ class AnalysisTiler:
                         group_columns.remove(layer.name)
 
         if group_columns:
-            results = results.groupby(group_columns).sum().reset_index()
+            results = results.groupby(group_columns).sum(numeric_only=True).reset_index()
         elif self.query.aggregates:
-            results = results.sum()
+            results = results.sum(numeric_only=True)
 
             # convert back to single row DF instead of Series
             results = DataFrame([results.values], columns=results.keys().values)

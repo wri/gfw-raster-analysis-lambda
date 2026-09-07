@@ -1,6 +1,6 @@
-FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.10
+FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.12
 
-ENV UV_VERSION="0.9.11"
+ENV UV_VERSION="0.12.5"
 
 WORKDIR /var/task
 ENV WORKDIR=/var/task
@@ -21,8 +21,8 @@ ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_UNMANAGED_INSTALL=${USR_LOCAL_BIN}
 
-RUN yum update -y && \
-    yum install -y findutils gzip tar zip && \
+RUN dnf update -y && \
+    dnf install -y findutils gzip tar zip && \
     curl -LsSf https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-installer.sh | sh
 
 ENV PATH=${USR_LOCAL_BIN}:${PATH}
@@ -30,7 +30,7 @@ ENV PATH=${USR_LOCAL_BIN}:${PATH}
 RUN uv pip install . --target python
 
 # Fix pyc files and clean old pycaches
-RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-310//'); cp $f $n; done;
+RUN find python/ -type f -name '*.pyc' | while read f; do n=$(echo $f | sed 's/__pycache__\///' | sed 's/.cpython-312//'); cp $f $n; done;
 RUN find python/ -type d -a -name '__pycache__' -print0 | xargs -0 rm -rf
 
 # Compress all source codes except files listed in .lambdaignore

@@ -1,8 +1,7 @@
-FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.10
+FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.12
 
-RUN yum update -y && \
-    yum install -y gzip unzip tar && \
-    yum clean all
+RUN dnf update -y && \
+    dnf install -y gzip unzip tar zip
 
 # App code goes under /var/task (Lambda task root)
 WORKDIR /var/task
@@ -21,7 +20,7 @@ RUN set -eux; \
 
 # Install test dependencies in a venv so entrypoints exist (moto_server, pytest, etc.)
 # Using pyproject.toml with [test] optional dependencies
-ENV UV_VERSION="0.9.11"
+ENV UV_VERSION="0.12.5"
 ENV USR_LOCAL_BIN="/usr/local/bin"
 RUN mkdir -p ${USR_LOCAL_BIN}
 
