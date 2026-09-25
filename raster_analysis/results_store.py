@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 from datetime import datetime, timedelta
 from decimal import Decimal
 from hashlib import md5
@@ -105,12 +106,72 @@ class AnalysisResultsStore:
             start = 0
             while start < len(items):
                 chunk = items[start : start + DYNAMODB_WRITE_ITEMS_LIMIT]
-                self._ddb.batch_write_item(
-                    RequestItems={self.results_table_name: chunk}
-                )
+                self._batch_write_with_backoff(chunk)
                 start += DYNAMODB_WRITE_ITEMS_LIMIT
 
         self.save_status(result_id, ResultStatus.success, i + 1)
+
+    def _batch_write_with_backoff(
+        self,
+        items: List[Dict],
+        max_retries: int = 10,
+        base_delay: float = 0.5,
+        max_delay: float = 30.0,
+    ) -> None:
+        """Write a batch of items to DynamoDB with exponential backoff + jitter.
+
+        Handles both ThrottlingException (raised by boto3 after its own retries
+        are exhausted) and UnprocessedItems returned silently in the response.
+        """
+        pending = items
+        attempt = 0
+
+        while pending:
+            try:
+                response = self._ddb.batch_write_item(
+                    RequestItems={self.results_table_name: pending}
+                )
+                # BatchWriteItem may succeed partially; retry any unprocessed items
+                pending = (
+                    response.get("UnprocessedItems", {})
+                    .get(self.results_table_name, [])
+                )
+                if not pending:
+                    return
+
+                logging.warning(
+                    f"BatchWriteItem returned {len(pending)} UnprocessedItems "
+                    f"(attempt {attempt + 1}/{max_retries}); retrying with backoff."
+                )
+            except self._ddb.exceptions.ProvisionedThroughputExceededException as e:
+                if attempt >= max_retries:
+                    raise
+                logging.warning(
+                    f"ProvisionedThroughputExceededException on attempt "
+                    f"{attempt + 1}/{max_retries}: {e}; retrying with backoff."
+                )
+            except Exception as e:
+                # Re-raise anything that isn't a throttle/capacity error
+                if "ThrottlingException" not in str(e) and "ProvisionedThroughput" not in str(e):
+                    raise
+                if attempt >= max_retries:
+                    raise
+                logging.warning(
+                    f"Throttling error on attempt {attempt + 1}/{max_retries}: {e}; "
+                    f"retrying with backoff."
+                )
+
+            attempt += 1
+            if attempt > max_retries:
+                raise RuntimeError(
+                    f"BatchWriteItem failed after {max_retries} retries with "
+                    f"{len(pending)} unprocessed items remaining."
+                )
+
+            # Exponential backoff with jitter: sleep in [0, min(cap, base * 2^attempt)]
+            ceiling = min(max_delay, base_delay * (2 ** attempt))
+            sleep(random.uniform(0, ceiling))
+
 
     def save_status(
         self,
